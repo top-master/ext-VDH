@@ -1,0 +1,18 @@
+.tag                    export-subst
+.gitignore              export-ignore
+.gitattributes          export-ignore
+.commit-template        export-ignore
+
+
+# Never modify line endings of our console-scripts
+# (while ensuring is tracked line by line instead of "binary").
+#
+*.bat           text eol=crlf
+*.cmd           text eol=crlf
+*.sh            text eol=lf
+
+# Windows
+*.rc            text eol=lf
+
+# Image formats.
+*.ppm           binary
