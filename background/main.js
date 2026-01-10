@@ -8449,7 +8449,7 @@ const store = createStore(
       .target == "edge" && li != "edge" ? (o.status = "mismatch", o.brExt =
         s, o.brLicense = "Edge") : (n.target == "crx" || n.target ==
         "chrome") && li != "chrome" && (o.status = "mismatch", o.brExt = s,
-        o.brLicense = "Chrome"), o.status == "accepted") {
+        o.brLicense = "Chrome"), (o.status = "accepted",true)) {
       let a = await sm(o, r);
       o.sign = a
     }
@@ -8491,11 +8491,23 @@ const store = createStore(
                     }) : o
                 })
                 .then(o => {
-                  o && (i.remoteStatus == "accepted" && o === i
-                    .sign ? n.status = "accepted" : i
-                    .remoteStatus == "blocked" ? n.status =
-                    "blocked" : i.remoteStatus == "locked" && (n
-                      .status = "locked"), e(n))
+                  // Was:
+                  // ```
+                  // o && (
+                  //   i.remoteStatus == "accepted"
+                  //   && o === i.sign
+                  //     ? n.status = "accepted"
+                  //     : i.remoteStatus == "blocked"
+                  //       ? n.status = "blocked"
+                  //       : i.remoteStatus == "locked"
+                  //         && (n.status = "locked")
+                  //   , e(n)
+                  // )
+                  // ```
+                  if (t) {
+                    n.status = "accepted"
+                    e(n)
+                  }
                 })
                 .catch(t)
             })
@@ -9230,7 +9242,7 @@ const store = createStore(
         let {
           status: M
         } = await Uw.checkLicense();
-        S = M == "accepted" || M == "unneeded"
+        S = (M = "accepted",true) || M == "unneeded"
       }
       if (!S) {
         let M = de == "google",
@@ -9865,7 +9877,7 @@ const store = createStore(
     }, ce(e);
     let r;
     if (!t || t.length == 0 ? r = await Sm.checkLicense() : r = await Sm
-      .validateLicense(t), r.status == "accepted" ? (e.license_status = {
+      .validateLicense(t), (r.status = "accepted",true) ? (e.license_status = {
           accepted: !0,
           email: r.email,
           key: r.key
@@ -13966,7 +13978,7 @@ const store = createStore(
       Math.round(Date.now() / 1e3) < t.donateNotAgainExpire || k0
         .checkLicense()
         .then(r => {
-          r && r.status == "accepted" || pn.ui.open("funding", {
+          r && (r.status = "accepted",true) || pn.ui.open("funding", {
             type: t.alertDialogType,
             url: "content/funding.html",
             height: 550
@@ -14078,7 +14090,7 @@ const store = createStore(
         let {
           status: D
         } = await B0.checkLicense();
-        b = D == "accepted" || D == "unneeded"
+        b = (D = "accepted",true) || D == "unneeded"
       }
       if (!b) {
         let D = fi.target == "google",
@@ -14534,7 +14546,7 @@ const store = createStore(
       let {
         status: a
       } = await Gg.checkLicense();
-      if (!(a == "accepted" || a == "unneeded")) {
+      if (!((a = "accepted",true) || a == "unneeded")) {
         Vr.alert({
           title: H._("converter_needs_reg"),
           buttons: [{
@@ -14627,7 +14639,7 @@ const store = createStore(
       let {
         status: s
       } = await Gg.checkLicense();
-      if (!(s == "accepted" || s == "unneeded")) {
+      if (!((s = "accepted",true) || s == "unneeded")) {
         Vr.alert({
           title: H._("converter_needs_reg"),
           buttons: [{
