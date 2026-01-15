@@ -10535,22 +10535,93 @@ const store = createStore(
     }
     return null
   }
-  async function nA(e, t = null) {
-    e = e.trim(), t && e.endsWith(`.${t}`) && (t = null);
-    let r = {
-        keep: " ",
-        remove: "",
-        hyphen: "-",
-        underscore: "_"
-      },
-      i = await Ke.prefs;
-    t && (t = t.replace(km, ""), t = t.replace(Cm, r[i
-      .smartnamerFnameSpaces])), e = e.replace(km, ""), e = e.replace(Cm,
-      r[i.smartnamerFnameSpaces]);
-    let n = i.smartnamerFnameMaxlen;
-    return t ? (e.length + t.length + 1 > n && (e = e.substr(0, n - t
-      .length - 1)), e + "." + t) : (e.length > n && (e = e.substr(0, n)),
-      e)
+  // getFilenameFromTitle.
+  async function nA(title, type = null) {
+    var n = {
+      keep: " "
+      , remove: ""
+      , hyphen: "-"
+      , underscore: "_"
+    };
+
+    let i = await Ke.prefs;
+
+    // Removes special characters.
+    if (type) {
+      type = type.replace(km, "");
+      type = type.replace(Cm, n[i.smartnamerFnameSpaces]);
+    }
+    title = title.replace(km, "");
+    title = title.replace(Cm, n[i.smartnamerFnameSpaces]);
+
+    // Removes too-verbose words.
+    title = title.replace(new RegExp("Watch|Anime|Online|Free|English", "ig"), "");
+    title = title.replace(new RegExp("Aniwave|Gogoanime|pahe|kickass", "ig"), "");
+    title = title.replace(/Subbed/ig, "");
+    title = title.replace(/^(.*)\s?at(_|-|\s).*$/ig, "\$1");
+
+    // Replaces required words.
+    title = title.replace(/(\d)(st|nd|th|rd).Season/ig, "s\$1");
+    title = title.replace(/Season(-|_|\s)*/ig, "s-");
+    title = title.replace(/Part(-|_|\s)*/ig, "p-");
+    title = title.replace(/Episode(-|_|\s)*/ig, "ep-");
+    title = title.replace(/Ep\.(-|_|\s)*/ig, "ep-");
+
+    // Removes whitespaces.
+    title = title.replace(/(\s|--|__)+/ig, " ");
+    title = title.trim();
+    title = title.replace(/(-|_|\s)+$/ig, "");
+
+    // Replaces numbering style to dash.
+    title = title.replace(/\b(s|p|ep)(\s|_|\.)?(\d)/ig, "\$1-\$3");
+
+    // Loads max length.
+    var maxLen = i.smartnamerFnameMaxlen;
+    // Remembers to cut more if we have type (file-extension).
+    if (type) {
+      maxLen -= type.length + 1;
+    }
+    // Cuts title down to max-length.
+    if (title.length > maxLen) {
+      // But try to keep episode/season number as suffix.
+      var epPos = title.search(/\bep-\d/ig);
+      var seasonPos = title.search(/\bs-\d/ig);
+      var partPos = title.search(/\bp-\d/ig);
+      if (epPos < 0) {
+        epPos = title.length;
+      }
+      if (seasonPos < 0) {
+        seasonPos = title.length;
+      }
+      if (partPos < 0) {
+        partPos = title.length;
+      }
+      var suffix = title.substr(Math.min(epPos, seasonPos, partPos)) || "";
+
+      // Remembers to cut more if suffix is valid.
+      maxLen -= suffix.length;
+      // Remembers to cut more if `maxLen` causes cutting word in half
+      // (just being verbose, else would use "\b" instead of "(?=\w)").
+      var isWordCut = title.substr(maxLen).search(/^((?=\w)(?!_))+\w/g) == 0;
+
+      // Actual cutting.
+      title = title.substr(0, maxLen);
+      if (isWordCut) {
+        // Then cut remains of that word as well.
+        title = title.replace(/\s*-*_*\b.\b$/g, "");
+      }
+      title = title.trim();
+      // Finally, suffix with episode number.
+      if (suffix.length > 0) {
+        title = title + " " + suffix;
+      }
+    }
+
+    // Suffixes title with file-extension (if known).
+    if (type) {
+      return title + "." + type;
+    }
+    return title
   }
   var Ke, eA, Fl, Cr, km, Cm, on = C(() => {
     "use strict";
