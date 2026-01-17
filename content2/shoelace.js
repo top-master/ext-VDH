@@ -1282,13 +1282,11 @@ var Eo = globalThis,
   $e = t => t === null || typeof t != "object" && typeof t != "function",
   wr = Array.isArray,
   xr = t => wr(t) || typeof t?.[Symbol.iterator] == "function",
-  $o = `[ 	
-\f\r]`,
+  $o = `[ \t\n\f\r]`,
   Ce = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,
   gr = /-->/g,
   br = />/g,
-  Wt = RegExp(`>|${$o}(?:([^\\s"'>=/]+)(${$o}*=${$o}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"),
+  Wt = RegExp(`>|${$o}(?:([^\\s"'>=/]+)(${$o}*=${$o}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"),
   yr = /'/g,
   vr = /"/g,
   Ar = /^(?:script|style|textarea|title)$/i,
@@ -9523,8 +9521,13 @@ var O = class extends w {
       e = this.hasSlotController.test("help-text"),
       o = this.label ? !0 : !!t,
       r = this.helpText ? !0 : !!e,
-      i = this.clearable && !this.disabled && !this.readonly,
-      s = i && (typeof this.value == "number" || this.value.length > 0);
+      i = this.clearable && !this.disabled && !this.readonly;
+
+    // TRACE/UI BugFix: the `value` can be undefined.
+    let s = i && (typeof this.value == "number"
+      || (typeof this.value != "undefined" && this.value.length > 0)
+    );
+
     return y`
       <div
         part="form-control"

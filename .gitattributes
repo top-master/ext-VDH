@@ -3,6 +3,7 @@
 .gitattributes          export-ignore
 .commit-template        export-ignore
 
+* text=auto
 
 # Never modify line endings of our console-scripts
 # (while ensuring is tracked line by line instead of "binary").

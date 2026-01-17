@@ -164,6 +164,12 @@
                     maxArgs: 1,
                     fallbackToNoCallback: !0
                   },
+                  // TRACE/api: added missing badge API.
+                  setBadgeTextColor: {
+                    minArgs: 1,
+                    maxArgs: 1,
+                    fallbackToNoCallback: true
+                  },
                   setIcon: {
                     minArgs: 1,
                     maxArgs: 1
@@ -9796,21 +9802,35 @@ const store = createStore(
         greyed: !xm(e, t),
         channel: hl
       };
-    e.download_errors.size > 0 ? (V.default.action.setBadgeText({
-      text: e.download_errors.size.toString()
-    }), V.default.action.setBadgeBackgroundColor({
-      color: [255, 0, 0, 190]
-    }), V.default.action.setBadgeTextColor({
-      color: "white"
-    })) : e.downloading.size > 0 ? (V.default.action.setBadgeText({
-      text: e.downloading.size.toString()
-    }), V.default.action.setBadgeBackgroundColor({
-      color: "#0284c7"
-    }), V.default.action.setBadgeTextColor({
-      color: "white"
-    })) : V.default.action.setBadgeText({
-      text: ""
-    });
+    if (e.download_errors.size > 0) {
+      V.default.action.setBadgeText({
+        text: e.download_errors.size.toString()
+      });
+      V.default.action.setBadgeBackgroundColor({
+        color: [255, 0, 0, 190]
+      });
+      try {
+        V.default.action.setBadgeTextColor({
+          color: "white"
+        });
+      } catch(ignored) {}
+    } else if (e.downloading.size > 0) {
+       V.default.action.setBadgeText({
+        text: e.downloading.size.toString()
+      });
+      V.default.action.setBadgeBackgroundColor({
+        color: "#0284c7"
+      });
+      try {
+        V.default.action.setBadgeTextColor({
+          color: "white"
+        });
+      } catch(ignored) {}
+    } else {
+      V.default.action.setBadgeText({
+        text: ""
+      });
+    }
     let n = Jf(i, Qw);
     V.default.action.setIcon({
       imageData: n
@@ -10501,7 +10521,7 @@ const store = createStore(
   var nn = {};
   ie(nn, {
     defineInPage: () => rA,
-    getFilenameFromTitle: () => nA,
+    getFilenameFromTitle: () => getFilenameFromTitleImpl,
     getSpecs: () => iA,
     set: () => tA
   });
@@ -10524,10 +10544,16 @@ const store = createStore(
       tabId: e[0].id
     }, {}, "/injected/smartname.js")
   }
-  async function iA(e) {
-    let t = await Cr,
-      r = new URL(e)
-      .hostname.split(".");
+  async function iA(rawUrl) {
+    let t = await Cr;
+    // TRACE/background BugFix: better URL parsing.
+    let url;
+    try {
+      url = new URL(rawUrl);
+    } catch(error) {
+      throw new Exception('Failed to parse URL: ' + rawUrl);
+    }
+    let r = url.hostname.split(".");
     for (let i = 0; i < r.length - 1; i++) {
       let n = t[r.slice(i)
         .join(".")];
@@ -10535,8 +10561,12 @@ const store = createStore(
     }
     return null
   }
-  // getFilenameFromTitle.
-  async function nA(title, type = null) {
+  // TRACE/background: better handling for file names,
+  // this is only called if legacy-UI mode is enabled.
+  async function getFilenameFromTitleImpl(title) {
+    var type = arguments.length > 1 && void 0 !== arguments[1]
+        ? arguments[1]
+        : null;
     var n = {
       keep: " "
       , remove: ""
@@ -10562,10 +10592,12 @@ const store = createStore(
 
     // Replaces required words.
     title = title.replace(/(\d)(st|nd|th|rd).Season/ig, "s\$1");
+    title = title.replace(/Final(-|_|\s)*Season(?!(-|_|\s)*\d)/ig, "s-final");
     title = title.replace(/Season(-|_|\s)*/ig, "s-");
-    title = title.replace(/Part(-|_|\s)*/ig, "p-");
+    title = title.replace(/Part(?![a-z])(-|_|\s)*/ig, "p-");
+    title = title.replace(/Act(?![a-z])(\.|-|_|\s)*/ig, "act-");
     title = title.replace(/Episode(-|_|\s)*/ig, "ep-");
-    title = title.replace(/Ep\.(-|_|\s)*/ig, "ep-");
+    title = title.replace(/Ep(?![a-z])(\.|-|_|\s)*/ig, "ep-");
 
     // Removes whitespaces.
     title = title.replace(/(\s|--|__)+/ig, " ");
@@ -10623,6 +10655,7 @@ const store = createStore(
     }
     return title
   }
+
   var Ke, eA, Fl, Cr, km, Cm, on = C(() => {
     "use strict";
     Ke = Y(), eA = (he(), R(ge)), Fl = Ke.browser, Cr = Fl.storage.local
