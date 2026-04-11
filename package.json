@@ -1,0 +1,15 @@
+{
+  "name": "video-downloadhelper-9",
+  "private": true,
+  "packageManager": "yarn@4.9.4",
+  "scripts": {
+    "test": "vitest run",
+    "test:cleanroom": "vitest run tests/cleanroom-audit.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8",
+    "vitest": "^4.1.4"
+  }
+}
