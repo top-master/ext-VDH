@@ -1,53 +1,88 @@
 "use strict";
+
+/** @typedef {import("./debugger-types").DebuggerMessage} DebuggerMessage */
+/** @typedef {import("./debugger-types").RuntimeLike} RuntimeLike */
+
 (() => {
-  var o = chrome?.runtime || browser?.runtime;
+  /** @type {RuntimeLike} */
+  const runtimeApi = chrome?.runtime || browser?.runtime;
 
   function disableControlsAndShowLoading() {
-    for (let e of Array.from(document.querySelectorAll("button"))) e
-      .setAttribute("disabled", !0);
-    document.querySelector("#logs")
-      .textContent = "wait\u2026"
+    for (const buttonElement of Array.from(document.querySelectorAll("button"))) {
+      buttonElement.setAttribute("disabled", !0);
+    }
+    document.querySelector("#logs").textContent = "wait\u2026";
   }
 
   function enableControls() {
-    for (let e of Array.from(document.querySelectorAll("button"))) e
-      .removeAttribute("disabled")
+    for (const buttonElement of Array.from(document.querySelectorAll("button"))) {
+      buttonElement.removeAttribute("disabled");
+    }
   }
 
   function renderDebuggerUi() {
-    let e, t = document.querySelector("#core");
-    t.innerHTML = "", e = document.createElement("button"), e.textContent =
-      "Toggle Debugger", e.onclick = () => {
-        disableControlsAndShowLoading(), o.sendMessage("debugger_toggle"),
-          setTimeout(() => o.sendMessage("debugger_request_logs"), 1e3)
-      }, t.appendChild(e), e = document.createElement("button"), e
-      .textContent = "Restart Addon", e.onclick = () => {
-        disableControlsAndShowLoading(), o.sendMessage(
-          "debugger_restart_addon"), setTimeout(() => window.location
-          .reload(), 1e3)
-      }, t.appendChild(e), e = document.createElement("button"), e
-      .textContent = "Update", e.onclick = () => {
-        disableControlsAndShowLoading(), o.sendMessage(
-          "debugger_request_logs")
-      }, t.appendChild(e), e = document.createElement("button"), e
-      .textContent = "Save Logs", e.onclick = async () => {
-        let u = document.querySelector("#logs")
-          .textContent,
-          c = new Blob([u]),
-          d = URL.createObjectURL(c),
-          n = document.createElement("a");
-        n.href = d, n.target = "_blank", n.download = "vdh-logs.txt", n
-          .click(), setTimeout(() => URL.revokeObjectURL(d), 1e3)
-      }, t.appendChild(e);
-    let r = document.createElement("pre");
-    r.textContent = "wait\u2026", r.setAttribute("id", "logs"), t.appendChild(
-      r)
+    const rootElement = document.querySelector("#core");
+    rootElement.innerHTML = "";
+
+    const toggleDebuggerButton = document.createElement("button");
+    toggleDebuggerButton.textContent = "Toggle Debugger";
+    toggleDebuggerButton.onclick = () => {
+      disableControlsAndShowLoading();
+      runtimeApi.sendMessage("debugger_toggle");
+      setTimeout(() => runtimeApi.sendMessage("debugger_request_logs"), 1e3);
+    };
+    rootElement.appendChild(toggleDebuggerButton);
+
+    const restartAddonButton = document.createElement("button");
+    restartAddonButton.textContent = "Restart Addon";
+    restartAddonButton.onclick = () => {
+      disableControlsAndShowLoading();
+      runtimeApi.sendMessage("debugger_restart_addon");
+      setTimeout(() => window.location.reload(), 1e3);
+    };
+    rootElement.appendChild(restartAddonButton);
+
+    const updateLogsButton = document.createElement("button");
+    updateLogsButton.textContent = "Update";
+    updateLogsButton.onclick = () => {
+      disableControlsAndShowLoading();
+      runtimeApi.sendMessage("debugger_request_logs");
+    };
+    rootElement.appendChild(updateLogsButton);
+
+    const saveLogsButton = document.createElement("button");
+    saveLogsButton.textContent = "Save Logs";
+    saveLogsButton.onclick = async () => {
+      const logText = document.querySelector("#logs").textContent;
+      const logFileBlob = new Blob([logText]);
+      const objectUrl = URL.createObjectURL(logFileBlob);
+      const downloadLink = document.createElement("a");
+
+      downloadLink.href = objectUrl;
+      downloadLink.target = "_blank";
+      downloadLink.download = "vdh-logs.txt";
+      downloadLink.click();
+
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 1e3);
+    };
+    rootElement.appendChild(saveLogsButton);
+
+    const logsElement = document.createElement("pre");
+    logsElement.textContent = "wait\u2026";
+    logsElement.setAttribute("id", "logs");
+    rootElement.appendChild(logsElement);
   }
+
   renderDebuggerUi();
   disableControlsAndShowLoading();
-  o.onMessage.addListener(e => {
-    e.all_logs && (enableControls(), document.querySelector("#logs")
-      .textContent = e.all_logs)
-  });
-  setTimeout(() => o.sendMessage("debugger_request_logs"), 1e3);
+  runtimeApi.onMessage.addListener(
+    /** @param {DebuggerMessage} message */
+    (message) => {
+      if (message.all_logs) {
+        enableControls();
+        document.querySelector("#logs").textContent = message.all_logs;
+      }
+    },
+  );
+  setTimeout(() => runtimeApi.sendMessage("debugger_request_logs"), 1e3);
 })();

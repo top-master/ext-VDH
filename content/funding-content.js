@@ -1,11 +1,25 @@
 "use strict";
+
+/** @typedef {import("./ui-types").BuildInfo} BuildInfo */
+/** @typedef {import("./ui-types").BuildOptions} BuildOptions */
+/** @typedef {import("./ui-types").EmptyProps} EmptyProps */
+/** @typedef {import("./ui-types").FundingPageState} FundingPageState */
+/** @typedef {import("./ui-types").PreferenceSnapshot} PreferenceSnapshot */
+/** @typedef {import("./ui-types").VoidHandler} VoidHandler */
+
 (() => {
-  var l = (e, o) => () => (o || e((o = {
-      exports: {}
-    })
-    .exports, o), o.exports);
-  var s = l((p, d) => {
-    d.exports = {
+  var createModuleLoader = (moduleFactory, cachedModule) => () =>
+    (cachedModule ||
+      moduleFactory(
+        (cachedModule = {
+          exports: {},
+        }).exports,
+        cachedModule,
+      ),
+    cachedModule.exports);
+
+  var readBuildInfo = createModuleLoader((_exportsObject, moduleReference) => {
+    moduleReference.exports = {
       prod: !0,
       channel: "stable",
       buildDate: "2024-10-15",
@@ -13,132 +27,259 @@
         linuxlic: !1,
         noyt: !0,
         target: "google",
-        browser: "chrome"
-      }
-    }
+        browser: "chrome",
+      },
+    };
   });
+
   weh.is_safe.then(() => {
-    let e = s()
-      .buildOptions || {};
+    /** @type {BuildOptions} */
+    const buildOptions = readBuildInfo().buildOptions || {};
+
     class FundingPage extends React.Component {
-      constructor(t) {
-        super(t), this.state = {
-          downloadCount: null
+      /**
+       * @param {EmptyProps} props
+       */
+      constructor(props) {
+        super(props);
+        /** @type {FundingPageState} */
+        this.state = {
+          downloadCount: null,
+          missingLocales: 0,
         };
-        var n = 0;
+
+        let missingLocalesCount = 0;
         try {
-          n = JSON.parse(weh._("__missingI18nTags") || "[]")
-            .length || 0
+          missingLocalesCount =
+            JSON.parse(weh._("__missingI18nTags") || "[]").length || 0;
         } catch {}
-        var i = this;
-        weh.prefs.then(a => {
-          i.setState({
-            downloadCount: a.downloadCount,
-            missingLocales: n
-          }), a.on("downloadCount", (w, r) => {
-            i.setState({
-              downloadCount: r,
-              missingLocales: n
-            })
-          })
-        })
+
+        weh.prefs.then(
+          /** @param {PreferenceSnapshot} preferences */
+          (preferences) => {
+            this.setState({
+              downloadCount: preferences.downloadCount || 0,
+              missingLocales: missingLocalesCount,
+            });
+
+            preferences.on &&
+              preferences.on("downloadCount", (_previousValue, nextValue) => {
+                this.setState({
+                  downloadCount: nextValue,
+                  missingLocales: missingLocalesCount,
+                });
+              });
+          },
+        );
       }
+
+      /**
+       * @returns {VoidHandler}
+       */
       createReviewHandler() {
         return () => {
-          var t = null;
-          e.browser == "firefox" ? t =
-            "https://addons.mozilla.org/firefox/addon/video-downloadhelper/reviews/add" :
-            e.browser == "chrome" ? t =
-            "https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfk/reviews" :
-            e.browser == "edge" && (t =
-              "https://microsoftedge.microsoft.com/addons/detail/jmkaglaafmhbcpleggkmaliipiilhldn"
-              ), t && weh.rpc.call("goto", t)
-        }
+          /** @type {?string} */
+          let reviewUrl = null;
+
+          if (buildOptions.browser == "firefox") {
+            reviewUrl =
+              "https://addons.mozilla.org/firefox/addon/video-downloadhelper/reviews/add";
+          } else if (buildOptions.browser == "chrome") {
+            reviewUrl =
+              "https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfk/reviews";
+          } else if (buildOptions.browser == "edge") {
+            reviewUrl =
+              "https://microsoftedge.microsoft.com/addons/detail/jmkaglaafmhbcpleggkmaliipiilhldn";
+          }
+
+          if (reviewUrl) {
+            weh.rpc.call("goto", reviewUrl);
+          }
+        };
       }
+
+      /**
+       * @returns {VoidHandler}
+       */
       createDonateHandler() {
         return () => {
-          weh.rpc.call("goto",
-            "https://www.downloadhelper.net/donate")
-        }
+          weh.rpc.call("goto", "https://www.downloadhelper.net/donate");
+        };
       }
+
+      /**
+       * @returns {VoidHandler}
+       */
       createTranslationHelpHandler() {
         return () => {
-          weh.rpc.call("goto",
-            "https://github.com/aclap-dev/video-downloadhelper/discussions/categories/language-translation"
-            )
-        }
+          weh.rpc.call(
+            "goto",
+            "https://github.com/aclap-dev/video-downloadhelper/discussions/categories/language-translation",
+          );
+        };
       }
+
+      /**
+       * @returns {VoidHandler}
+       */
       createRemindLaterHandler() {
         return () => {
-          weh.rpc.call("fundingLater")
-            .then(() => {
-              weh.rpc.call("closePanel", weh.uiName)
-            })
-        }
+          weh.rpc.call("fundingLater").then(() => {
+            weh.rpc.call("closePanel", weh.uiName);
+          });
+        };
       }
+
       render() {
-        return this.state.downloadCount !== null && React
-          .createElement("div", {
-            className: "funding"
-          }, React.createElement(WehHeader, {
-            title: weh._("donate_vdh")
-          }), React.createElement("main", null, React.createElement(
-            "div", null, React.createElement("h1", null, weh._(
-              "congratulations")), React.createElement("br",
-            null), React.createElement("p", null, weh._(
-              "you_downloaded_n_videos", "" + this.state
-              .downloadCount)), React.createElement("p", null, weh
-              ._("req_donate")), e.browser == "firefox" && React
-            .createElement("p", null, React.createElement("span",
-                null, weh._("req_review")), "  ", React
-              .createElement("a", {
-                onClick: this.createReviewHandler(),
-                href: "#"
-              }, weh._("req_review_link"))), e.browser ==
-            "chrome" && React.createElement("p", null, React
-              .createElement("span", null, weh._(
-                "chrome_req_review")), "  ", React.createElement(
-                "a", {
-                  onClick: this.createReviewHandler(),
-                  href: "#"
-                }, weh._("req_review_link"))), e.browser ==
-            "edge" && React.createElement("p", null, React
-              .createElement("span", null, weh._(
-                "edge_req_review")), "  ", React.createElement(
-                "a", {
-                  onClick: this.createReviewHandler(),
-                  href: "#"
-                }, weh._("req_review_link"))), this.state
-            .missingLocales > 0 && React.createElement("p", null,
-              React.createElement("span", null, weh._(
-                "req_locale", [browser.i18n.getUILanguage(),
-                  this.state.missingLocales
-                ])), " ", React.createElement("a", {
-                onClick: this.createTranslationHelpHandler(),
-                href: "#"
-              }, weh._("help_translating"))), React.createElement(
-              "div", {
-                className: "donate-big-button",
-                onClick: this.createDonateHandler()
-              }, weh._("donate")))), React.createElement("footer",
-            null, React.createElement("div", {
-              className: "btn-toolbar justify-content-end"
-            }, React.createElement("div", {
-              className: "btn-group pull-right"
-            }, React.createElement("button", {
-              className: "btn btn-outline-secondary",
-              onClick: this.createRemindLaterHandler()
-            }, weh._("not_again_3months")), React.createElement(
-              "button", {
-                className: "btn btn-success",
-                onClick: this.createDonateHandler()
-              }, weh._("donate")))))) || null
+        if (this.state.downloadCount === null) {
+          return null;
+        }
+
+        return React.createElement(
+          "div",
+          {
+            className: "funding",
+          },
+          React.createElement(WehHeader, {
+            title: weh._("donate_vdh"),
+          }),
+          React.createElement(
+            "main",
+            null,
+            React.createElement(
+              "div",
+              null,
+              React.createElement("h1", null, weh._("congratulations")),
+              React.createElement("br", null),
+              React.createElement(
+                "p",
+                null,
+                weh._("you_downloaded_n_videos", String(this.state.downloadCount)),
+              ),
+              React.createElement("p", null, weh._("req_donate")),
+              buildOptions.browser == "firefox" &&
+                React.createElement(
+                  "p",
+                  null,
+                  React.createElement("span", null, weh._("req_review")),
+                  "  ",
+                  React.createElement(
+                    "a",
+                    {
+                      onClick: this.createReviewHandler(),
+                      href: "#",
+                    },
+                    weh._("req_review_link"),
+                  ),
+                ),
+              buildOptions.browser == "chrome" &&
+                React.createElement(
+                  "p",
+                  null,
+                  React.createElement("span", null, weh._("chrome_req_review")),
+                  "  ",
+                  React.createElement(
+                    "a",
+                    {
+                      onClick: this.createReviewHandler(),
+                      href: "#",
+                    },
+                    weh._("req_review_link"),
+                  ),
+                ),
+              buildOptions.browser == "edge" &&
+                React.createElement(
+                  "p",
+                  null,
+                  React.createElement("span", null, weh._("edge_req_review")),
+                  "  ",
+                  React.createElement(
+                    "a",
+                    {
+                      onClick: this.createReviewHandler(),
+                      href: "#",
+                    },
+                    weh._("req_review_link"),
+                  ),
+                ),
+              this.state.missingLocales > 0 &&
+                React.createElement(
+                  "p",
+                  null,
+                  React.createElement(
+                    "span",
+                    null,
+                    weh._("req_locale", [
+                      browser.i18n.getUILanguage(),
+                      this.state.missingLocales,
+                    ]),
+                  ),
+                  " ",
+                  React.createElement(
+                    "a",
+                    {
+                      onClick: this.createTranslationHelpHandler(),
+                      href: "#",
+                    },
+                    weh._("help_translating"),
+                  ),
+                ),
+              React.createElement(
+                "div",
+                {
+                  className: "donate-big-button",
+                  onClick: this.createDonateHandler(),
+                },
+                weh._("donate"),
+              ),
+            ),
+          ),
+          React.createElement(
+            "footer",
+            null,
+            React.createElement(
+              "div",
+              {
+                className: "btn-toolbar justify-content-end",
+              },
+              React.createElement(
+                "div",
+                {
+                  className: "btn-group pull-right",
+                },
+                React.createElement(
+                  "button",
+                  {
+                    className: "btn btn-outline-secondary",
+                    onClick: this.createRemindLaterHandler(),
+                  },
+                  weh._("not_again_3months"),
+                ),
+                React.createElement(
+                  "button",
+                  {
+                    className: "btn btn-success",
+                    onClick: this.createDonateHandler(),
+                  },
+                  weh._("donate"),
+                ),
+              ),
+            ),
+          ),
+        );
       }
     }
-    render(React.createElement("div", {
-        className: "weh-shf"
-      }, React.createElement(FundingPage, null)), document.getElementById(
-      "root")),
-      weh.setPageTitle(weh._("donate_vdh"))
+
+    render(
+      React.createElement(
+        "div",
+        {
+          className: "weh-shf",
+        },
+        React.createElement(FundingPage, null),
+      ),
+      document.getElementById("root"),
+    );
+    weh.setPageTitle(weh._("donate_vdh"));
   });
 })();

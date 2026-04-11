@@ -1,96 +1,183 @@
 "use strict";
+
+/** @typedef {import("./ui-types").BlacklistEmbedProps} BlacklistEmbedProps */
+/** @typedef {import("./ui-types").BlacklistEmbedState} BlacklistEmbedState */
+/** @typedef {import("./ui-types").CheckboxChangeEvent} CheckboxChangeEvent */
+/** @typedef {import("./ui-types").VoidHandler} VoidHandler */
+
 (() => {
   weh.is_safe.then(() => {
     class BlacklistEmbed extends React.Component {
-      constructor(e) {
-        super(e), this.state = {
-          domains: {}
-        }
+      /**
+       * @param {BlacklistEmbedProps} props
+       */
+      constructor(props) {
+        super(props);
+        /** @type {BlacklistEmbedState} */
+        this.state = {
+          domains: {},
+        };
       }
-      createDomainToggleHandler(e) {
-        var s = this;
-        return t => {
-          s.setState({
-            domains: Object.assign({}, s.state.domains, {
-              [e]: t.target.checked
-            })
-          })
-        }
+
+      /**
+       * @param {string} domain
+       * @returns {(event: CheckboxChangeEvent) => void}
+       */
+      createDomainToggleHandler(domain) {
+        return (event) => {
+          this.setState({
+            domains: Object.assign({}, this.state.domains, {
+              [domain]: event.target.checked,
+            }),
+          });
+        };
       }
+
+      /**
+       * @returns {VoidHandler}
+       */
       createSaveHandler() {
-        var e = this;
         return () => {
-          var s = Object.keys(e.state.domains)
-            .filter(t => e.state.domains[t]);
-          weh.rpc.call("addToBlacklist", s)
-            .then(() => {
-              e.props.closeWindow && e.props.closeWindow()
-            })
-        }
+          const selectedDomains = Object.keys(this.state.domains).filter(
+            (domain) => this.state.domains[domain],
+          );
+
+          weh.rpc.call("addToBlacklist", selectedDomains).then(() => {
+            if (this.props.closeWindow) {
+              this.props.closeWindow();
+            }
+          });
+        };
       }
+
+      /**
+       * @returns {boolean}
+       */
       hasSelectedDomains() {
-        var e = this;
-        return !Object.keys(this.state.domains)
-          .every(s => !e.state.domains[s])
+        return Object.keys(this.state.domains).some(
+          (domain) => this.state.domains[domain],
+        );
       }
+
       componentWillMount() {
-        var e = this,
-          s = decodeURIComponent(new URL(document.URL)
-            .hash.substr(1));
-        weh.rpc.call("domainsFromHitId", s)
-          .then(t => {
-            var a = {};
-            t.forEach(d => {
-              a[d] = !1
-            }), e.setState({
-              domains: a
-            })
-          })
+        const hitId = decodeURIComponent(new URL(document.URL).hash.substr(1));
+
+        weh.rpc.call("domainsFromHitId", hitId).then(
+          /** @param {string[]} domains */
+          (domains) => {
+            /** @type {BlacklistEmbedState["domains"]} */
+            const availableDomains = {};
+            domains.forEach((domain) => {
+              availableDomains[domain] = !1;
+            });
+
+            this.setState({
+              domains: availableDomains,
+            });
+          },
+        );
       }
+
       render() {
-        var e = this,
-          s = Object.keys(this.state.domains)
+        const domainOptions = Object.keys(this.state.domains)
           .sort()
-          .map((t, a) => React.createElement("div", {
-            key: t
-          }, React.createElement("input", {
-            type: "checkbox",
-            id: "id-" + t,
-            value: e.state[t],
-            onChange: this.createDomainToggleHandler(t)
-          }), React.createElement("label", {
-            htmlFor: "id-" + t,
-            title: t
-          }, t)));
-        return React.createElement("div", {
-          className: "weh-shf embeddable"
-        }, React.createElement("div", null, React.createElement(
-          "main", null, React.createElement("div", {
-              className: "blacklist"
-            }, React.createElement("div", {
-              className: "explain"
-            }, React.createElement("h3", null, weh._(
-              "add_to_blacklist")), React.createElement("p",
-              null, weh._("add_to_blacklist_help"))), React
-            .createElement("div", {
-              className: "domains"
-            }, s))), React.createElement("footer", null, React
-          .createElement("div", {
-              className: "btn-toolbar justify-content-between"
-            }, React.createElement("div", null), React
-            .createElement("div", {
-              className: "btn-group pull-right"
-            }, React.createElement("button", {
-              type: "button",
-              disabled: !this.hasSelectedDomains(),
-              onClick: this.createSaveHandler(),
-              className: "btn btn-outline-primary"
-            }, weh._("save")))))))
+          .map((domain) =>
+            React.createElement(
+              "div",
+              {
+                key: domain,
+              },
+              React.createElement("input", {
+                type: "checkbox",
+                id: "id-" + domain,
+                value: this.state.domains[domain],
+                onChange: this.createDomainToggleHandler(domain),
+              }),
+              React.createElement(
+                "label",
+                {
+                  htmlFor: "id-" + domain,
+                  title: domain,
+                },
+                domain,
+              ),
+            ),
+          );
+
+        return React.createElement(
+          "div",
+          {
+            className: "weh-shf embeddable",
+          },
+          React.createElement(
+            "div",
+            null,
+            React.createElement(
+              "main",
+              null,
+              React.createElement(
+                "div",
+                {
+                  className: "blacklist",
+                },
+                React.createElement(
+                  "div",
+                  {
+                    className: "explain",
+                  },
+                  React.createElement("h3", null, weh._("add_to_blacklist")),
+                  React.createElement("p", null, weh._("add_to_blacklist_help")),
+                ),
+                React.createElement(
+                  "div",
+                  {
+                    className: "domains",
+                  },
+                  domainOptions,
+                ),
+              ),
+            ),
+            React.createElement(
+              "footer",
+              null,
+              React.createElement(
+                "div",
+                {
+                  className: "btn-toolbar justify-content-between",
+                },
+                React.createElement("div", null),
+                React.createElement(
+                  "div",
+                  {
+                    className: "btn-group pull-right",
+                  },
+                  React.createElement(
+                    "button",
+                    {
+                      type: "button",
+                      disabled: !this.hasSelectedDomains(),
+                      onClick: this.createSaveHandler(),
+                      className: "btn btn-outline-primary",
+                    },
+                    weh._("save"),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
       }
     }
-    render(React.createElement(Embedder, null, React.createElement(
-      BlacklistEmbed, {
-      closeWindow: () => weh.rpc.call("closePopup")
-    })), document.getElementById("root"))
+
+    render(
+      React.createElement(
+        Embedder,
+        null,
+        React.createElement(BlacklistEmbed, {
+          closeWindow: () => weh.rpc.call("closePopup"),
+        }),
+      ),
+      document.getElementById("root"),
+    );
   });
 })();
