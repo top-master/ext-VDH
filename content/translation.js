@@ -10,7 +10,7 @@
       e = JSON.parse(browser.i18n.getMessage("__missingI18nTags"))
     } catch {}
 
-    function t() {
+    function renderTranslationFooterLink() {
       return React.createElement("a", {
         href: "#",
         onClick: () => weh.rpc.call("openTranslationForum")
@@ -20,7 +20,7 @@
       store: s
     }, React.createElement(WehTranslationForm, {
       missingTags: e,
-      footerExtra: t()
+      footerExtra: renderTranslationFooterLink()
     })), document.getElementById("root")), weh.setPageTitle(weh._(
       "translation"))
   });

@@ -1,6 +1,6 @@
 "use strict";
 (() => {
-  var e = class extends React.Component {
+  var ExplainQrPage = class extends React.Component {
     constructor(t) {
       super(t), this.state = {
         hit: {}
@@ -15,18 +15,18 @@
           })
         })
     }
-    tellMeMore() {
+    createOpenLicensingInfoHandler() {
       return () => {
         weh.rpc.call("goto",
           "https://www.downloadhelper.net/about-licensing")
       }
     }
-    getLicense() {
+    createOpenConversionLicenseHandler() {
       return () => {
         weh.rpc.call("goto", "https://www.downloadhelper.net/convert")
       }
     }
-    async changedNotAgain(t) {
+    async handleNotAgainChange(t) {
       (await weh.prefs)
       .qrMessageNotAgain = document.querySelector("#checkbox1")
         .checked
@@ -50,17 +50,17 @@
           className: "btn-group"
         }, React.createElement("button", {
           className: "btn btn-outline-secondary",
-          onClick: this.tellMeMore()
+          onClick: this.createOpenLicensingInfoHandler()
         }, weh._("tell_me_more")), React.createElement("button", {
           className: "btn btn-outline-secondary",
-          onClick: this.getLicense()
+          onClick: this.createOpenConversionLicenseHandler()
         }, weh._("get_conversion_license"))))), React.createElement(
           "div", {
             className: "not-again"
           }, React.createElement("input", {
             id: "checkbox1",
             type: "checkbox",
-            onChange: this.changedNotAgain.bind(this)
+            onChange: this.handleNotAgainChange.bind(this)
           }), React.createElement("label", {
             htmlFor: "checkbox1"
           }, weh._("not_see_again")))) || null
@@ -72,7 +72,8 @@
     }, React.createElement("div", null, React.createElement(
       WehHeader, {
         title: weh._("about_qr")
-      }), React.createElement("main", null, React.createElement(e,
+      }), React.createElement("main", null, React.createElement(
+      ExplainQrPage,
       null)))), document.getElementById("root")), weh.setPageTitle(weh
       ._("about_qr"))
   });

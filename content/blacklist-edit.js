@@ -1,7 +1,7 @@
 "use strict";
 (() => {
   weh.is_safe.then(() => {
-    function a(t = [], e) {
+    function blacklistDomainsReducer(t = [], e) {
       switch (e.type) {
         case "SET_BLACKLIST_DATA":
           t = e.payload;
@@ -9,22 +9,23 @@
       }
       return t
     }
-    window.store = createStore(a), weh.rpc.call("getBlacklist")
+    window.store = createStore(blacklistDomainsReducer), weh.rpc.call(
+        "getBlacklist")
       .then(t => {
         window.store.dispatch({
           type: "SET_BLACKLIST_DATA",
           payload: t
         })
       });
-    var i = connect((t, e) => ({
+    var ConnectedBlacklistEditor = connect((t, e) => ({
       domains: t || []
-    }))(class extends React.Component {
+    }))(class BlacklistEditor extends React.Component {
       constructor(t) {
         super(t), this.state = {
           inputDomain: null
         }
       }
-      addDomain() {
+      createAddDomainHandler() {
         var t = this;
         return () => {
           t.setState({
@@ -32,7 +33,7 @@
           })
         }
       }
-      cancelInput() {
+      createCancelInputHandler() {
         var t = this;
         return () => {
           t.setState({
@@ -40,14 +41,14 @@
           })
         }
       }
-      onKeyDown() {
+      createInputKeyDownHandler() {
         var t = this;
         return e => {
-          e.key == "Enter" ? t.doInput()() : e.key == "Escape" &&
-            t.cancelInput()()
+          e.key == "Enter" ? t.createSubmitDomainHandler()() : e.key ==
+            "Escape" && t.createCancelInputHandler()()
         }
       }
-      doInput() {
+      createSubmitDomainHandler() {
         var t = this;
         return () => {
           t.state.inputDomain && weh.rpc.call("addToBlacklist", [t
@@ -64,7 +65,7 @@
             })
         }
       }
-      inputChange() {
+      createInputChangeHandler() {
         var t = this;
         return e => {
           t.setState({
@@ -72,7 +73,7 @@
           })
         }
       }
-      removeDomain(t) {
+      createRemoveDomainHandler(t) {
         var e = this;
         return () => {
           weh.rpc.call("removeFromBlacklist", [t])
@@ -93,7 +94,7 @@
             }, React.createElement("div", null, e), React
             .createElement("div", {
               className: "delete",
-              onClick: this.removeDomain(e)
+              onClick: this.createRemoveDomainHandler(e)
             }, "X")));
         return React.createElement("div", {
           className: "blacklist"
@@ -103,14 +104,14 @@
             "blacklist_edit_descr")), this.state.inputDomain ===
           null && React.createElement("a", {
             href: "#",
-            onClick: this.addDomain()
+            onClick: this.createAddDomainHandler()
           }, weh._("blacklist_add_domain")), this.state
           .inputDomain !== null && React.createElement("div", {
             className: "input-group"
           }, React.createElement("input", {
             value: this.state.inputDomain,
-            onChange: this.inputChange(),
-            onKeyDown: this.onKeyDown(),
+            onChange: this.createInputChangeHandler(),
+            onKeyDown: this.createInputKeyDownHandler(),
             placeholder: weh._("blacklist_add_placeholder"),
             className: "form-control",
             type: "text"
@@ -118,12 +119,12 @@
             className: "input-group-btn"
           }, React.createElement("button", {
             className: "btn btn-primary",
-            onClick: this.doInput()
+            onClick: this.createSubmitDomainHandler()
           }, weh._("ok"))), React.createElement("span", {
             className: "input-group-btn"
           }, React.createElement("button", {
             className: "btn",
-            onClick: this.cancelInput()
+            onClick: this.createCancelInputHandler()
           }, "X")))), React.createElement("div", {
             className: "list-column"
           }, this.props.domains.length == 0 && React
@@ -143,7 +144,8 @@
       WehHeader, {
         title: weh._("blacklist")
       }), React.createElement("main", null, React.createElement(
-      i, null))))), document.getElementById("root")), weh.setPageTitle(
+      ConnectedBlacklistEditor, null))))), document.getElementById("root")),
+      weh.setPageTitle(
       weh._("blacklist"))
   });
 })();

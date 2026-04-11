@@ -1,13 +1,13 @@
 "use strict";
 (() => {
   weh.is_safe.then(() => {
-    class i extends React.Component {
+    class BlacklistEmbed extends React.Component {
       constructor(e) {
         super(e), this.state = {
           domains: {}
         }
       }
-      change(e) {
+      createDomainToggleHandler(e) {
         var s = this;
         return t => {
           s.setState({
@@ -17,7 +17,7 @@
           })
         }
       }
-      save() {
+      createSaveHandler() {
         var e = this;
         return () => {
           var s = Object.keys(e.state.domains)
@@ -28,7 +28,7 @@
             })
         }
       }
-      hasChecked() {
+      hasSelectedDomains() {
         var e = this;
         return !Object.keys(this.state.domains)
           .every(s => !e.state.domains[s])
@@ -57,7 +57,7 @@
             type: "checkbox",
             id: "id-" + t,
             value: e.state[t],
-            onChange: this.change(t)
+            onChange: this.createDomainToggleHandler(t)
           }), React.createElement("label", {
             htmlFor: "id-" + t,
             title: t
@@ -82,13 +82,14 @@
               className: "btn-group pull-right"
             }, React.createElement("button", {
               type: "button",
-              disabled: !this.hasChecked(),
-              onClick: this.save(),
+              disabled: !this.hasSelectedDomains(),
+              onClick: this.createSaveHandler(),
               className: "btn btn-outline-primary"
             }, weh._("save")))))))
       }
     }
-    render(React.createElement(Embedder, null, React.createElement(i, {
+    render(React.createElement(Embedder, null, React.createElement(
+      BlacklistEmbed, {
       closeWindow: () => weh.rpc.call("closePopup")
     })), document.getElementById("root"))
   });

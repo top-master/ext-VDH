@@ -20,7 +20,7 @@
   weh.is_safe.then(() => {
     let e = s()
       .buildOptions || {};
-    class o extends React.Component {
+    class FundingPage extends React.Component {
       constructor(t) {
         super(t), this.state = {
           downloadCount: null
@@ -43,7 +43,7 @@
           })
         })
       }
-      review() {
+      createReviewHandler() {
         return () => {
           var t = null;
           e.browser == "firefox" ? t =
@@ -55,20 +55,20 @@
               ), t && weh.rpc.call("goto", t)
         }
       }
-      donate() {
+      createDonateHandler() {
         return () => {
           weh.rpc.call("goto",
             "https://www.downloadhelper.net/donate")
         }
       }
-      translate() {
+      createTranslationHelpHandler() {
         return () => {
           weh.rpc.call("goto",
             "https://github.com/aclap-dev/video-downloadhelper/discussions/categories/language-translation"
             )
         }
       }
-      notAgain() {
+      createRemindLaterHandler() {
         return () => {
           weh.rpc.call("fundingLater")
             .then(() => {
@@ -92,21 +92,21 @@
             .createElement("p", null, React.createElement("span",
                 null, weh._("req_review")), "  ", React
               .createElement("a", {
-                onClick: this.review(),
+                onClick: this.createReviewHandler(),
                 href: "#"
               }, weh._("req_review_link"))), e.browser ==
             "chrome" && React.createElement("p", null, React
               .createElement("span", null, weh._(
                 "chrome_req_review")), "  ", React.createElement(
                 "a", {
-                  onClick: this.review(),
+                  onClick: this.createReviewHandler(),
                   href: "#"
                 }, weh._("req_review_link"))), e.browser ==
             "edge" && React.createElement("p", null, React
               .createElement("span", null, weh._(
                 "edge_req_review")), "  ", React.createElement(
                 "a", {
-                  onClick: this.review(),
+                  onClick: this.createReviewHandler(),
                   href: "#"
                 }, weh._("req_review_link"))), this.state
             .missingLocales > 0 && React.createElement("p", null,
@@ -114,12 +114,12 @@
                 "req_locale", [browser.i18n.getUILanguage(),
                   this.state.missingLocales
                 ])), " ", React.createElement("a", {
-                onClick: this.translate(),
+                onClick: this.createTranslationHelpHandler(),
                 href: "#"
               }, weh._("help_translating"))), React.createElement(
               "div", {
                 className: "donate-big-button",
-                onClick: this.donate()
+                onClick: this.createDonateHandler()
               }, weh._("donate")))), React.createElement("footer",
             null, React.createElement("div", {
               className: "btn-toolbar justify-content-end"
@@ -127,17 +127,18 @@
               className: "btn-group pull-right"
             }, React.createElement("button", {
               className: "btn btn-outline-secondary",
-              onClick: this.notAgain()
+              onClick: this.createRemindLaterHandler()
             }, weh._("not_again_3months")), React.createElement(
               "button", {
                 className: "btn btn-success",
-                onClick: this.donate()
+                onClick: this.createDonateHandler()
               }, weh._("donate")))))) || null
       }
     }
     render(React.createElement("div", {
         className: "weh-shf"
-      }, React.createElement(o, null)), document.getElementById("root")),
+      }, React.createElement(FundingPage, null)), document.getElementById(
+      "root")),
       weh.setPageTitle(weh._("donate_vdh"))
   });
 })();

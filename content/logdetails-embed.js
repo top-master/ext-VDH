@@ -1,7 +1,7 @@
 "use strict";
 (() => {
   weh.is_safe.then(() => {
-    class t extends React.Component {
+    class LogDetailsEmbed extends React.Component {
       constructor(e) {
         super(e), this.state = {
           message: null,
@@ -33,7 +33,8 @@
               .details))))))
       }
     }
-    render(React.createElement(Embedder, null, React.createElement(t,
+    render(React.createElement(Embedder, null, React.createElement(
+      LogDetailsEmbed,
       null)), document.getElementById("root"))
   });
 })();

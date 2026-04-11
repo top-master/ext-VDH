@@ -1,11 +1,11 @@
 "use strict";
 (() => {
   weh.is_safe.then(() => {
-    class n extends React.Component {
+    class AboutPage extends React.Component {
       constructor(e) {
         super(e), this.state = {}
       }
-      rpcCall(...e) {
+      createCloseAfterRpcHandler(...e) {
         return () => {
           weh.rpc.call(...e)
             .then(() => {
@@ -29,10 +29,10 @@
               className: "about-links"
             }, React.createElement("a", {
               href: "#",
-              onClick: this.rpcCall("openForum")
+              onClick: this.createCloseAfterRpcHandler("openForum")
             }, weh._("support_forum")), React.createElement("a", {
               href: "#",
-              onClick: this.rpcCall("openHomepage")
+              onClick: this.createCloseAfterRpcHandler("openHomepage")
             }, weh._("homepage"))), React.createElement(CopyButton,
               null), React.createElement(AddonInfoPanel, null), React
             .createElement(PlatformInfoPanel, null), React
@@ -43,7 +43,7 @@
     render(React.createElement("div", null, React.createElement("div",
       null, React.createElement(WehHeader, {
         title: weh._("about_vdh")
-      }), React.createElement("main", null, React.createElement(n,
+      }), React.createElement("main", null, React.createElement(AboutPage,
         null)))), document.getElementById("root")), weh.setPageTitle(weh
       ._("about_vdh"))
   });

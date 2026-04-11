@@ -1,7 +1,7 @@
 "use strict";
 (() => {
   weh.is_safe.then(() => {
-    function s(e = {}, a) {
+    function alertStateReducer(e = {}, a) {
       switch (a.type) {
         case "SET_WEH_DATA":
           e = Object.assign({}, e, {
@@ -12,7 +12,7 @@
       }
       return e
     }
-    let i = createStore(s);
+    let i = createStore(alertStateReducer);
     weh.rpc.listen({
       wehInitData: e => {
         i.dispatch({
@@ -21,14 +21,14 @@
         })
       }
     });
-    var r = connect((e, a) => e.wehData || {})(class extends React
-      .Component {
+    var ConnectedAlertDialog = connect((e, a) => e.wehData || {})(
+      class AlertDialog extends React.Component {
         constructor(e) {
           super(e), this.state = {
             notAgain: !1
           }
         }
-        onResize() {
+        createResizeHandler() {
           var e = this;
           return (a, t) => {
             e.props.autoResize && (e.updateTimer && clearTimeout(e
@@ -41,7 +41,7 @@
               }))
           }
         }
-        onClick(e, a, t, ...o) {
+        createButtonClickHandler(e, a, t, ...o) {
           var n = this;
           return () => {
             a && weh.trigger(Object.assign({
@@ -50,7 +50,7 @@
               "closePanel", weh.uiName)
           }
         }
-        onNotAgainChanged() {
+        createNotAgainChangeHandler() {
           var e = this;
           return a => {
             e.setState({
@@ -66,7 +66,7 @@
               rpcArgs: []
             }, t), React.createElement("button", {
               key: t.text,
-              onClick: this.onClick(t.close, t.trigger, t
+              onClick: this.createButtonClickHandler(t.close, t.trigger, t
                 .rpcMethod, ...t.rpcArgs),
               className: "btn " + (t.className || "")
             }, t.text))),
@@ -91,7 +91,7 @@
                 className: "not-again"
               }, React.createElement("input", {
                 type: "checkbox",
-                onChange: this.onNotAgainChanged(),
+                onChange: this.createNotAgainChangeHandler(),
                 value: this.state.notAgain,
                 id: "not-again"
               }), React.createElement("label", {
@@ -101,15 +101,16 @@
                 className: "btn btn-toolbar float-right"
               }, e))), React.createElement(ReactResizeDetector, {
             handleHeight: !0,
-            onResize: this.onResize()
+            onResize: this.createResizeHandler()
           }))
         }
       });
     render(React.createElement("div", {
-        className: "weh-shf auto-height"
+      className: "weh-shf auto-height"
       }, React.createElement(Provider, {
         store: i
-      }, React.createElement(r, null))), document.getElementById(
+      }, React.createElement(ConnectedAlertDialog, null))), document
+      .getElementById(
       "root"))
   });
 })();

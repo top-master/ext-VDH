@@ -6,11 +6,11 @@
         prefs: o.reducer
       }));
     o.reduxDispatch(n);
-    let a = connect(t => ({
+    let ConnectedDownloadConvertEmbed = connect(t => ({
       prefs: t.prefs,
       showSaveAs: new URL(window.location.href)
         .searchParams.get("nosaveas") != "1"
-    }))(class extends React.Component {
+    }))(class DownloadConvertEmbed extends React.Component {
       constructor(t) {
         super(t), this.state = {
           outputConfig: o.dlconvLastOutput ?? "",
@@ -18,7 +18,7 @@
           hit: null
         }
       }
-      changeOutput() {
+      createOutputChangeHandler() {
         var t = this;
         return e => {
           t.setState({
@@ -26,7 +26,7 @@
           })
         }
       }
-      save(t) {
+      createSaveHandler(t) {
         var e = this;
         return () => {
           weh.trigger({
@@ -41,7 +41,7 @@
             })
         }
       }
-      configure() {
+      createConfigureHandler() {
         var t = this;
         return () => {
           weh.rpc.call("editConverterConfigs", t.state
@@ -101,11 +101,11 @@
                 .state.hit.title)), React.createElement(
               "div", null, React.createElement("select", {
                 className: "form-control",
-                onChange: this.changeOutput(),
+                onChange: this.createOutputChangeHandler(),
                 value: this.state.outputConfig
               }, s)), React.createElement("div", null, React
               .createElement("a", {
-                onClick: this.configure(),
+                onClick: this.createConfigureHandler(),
                 href: "#"
               }, weh._("dlconv_output_details"))))), React
           .createElement("footer", null, React.createElement(
@@ -117,13 +117,13 @@
               }, this.props.showSaveAs && React
               .createElement("button", {
                 type: "button",
-                onClick: this.save(!0),
+                onClick: this.createSaveHandler(!0),
                 disabled: this.state.outputConfig == "",
                 className: "btn btn-outline-secondary"
               }, weh._("save_as")), React.createElement(
                 "button", {
                   type: "button",
-                  onClick: this.save(!1),
+                  onClick: this.createSaveHandler(!1),
                   disabled: this.state.outputConfig == "",
                   className: "btn btn-outline-primary"
                 }, weh._("save")))))))
@@ -132,7 +132,7 @@
     render(React.createElement(Embedder, null, React.createElement(
       Provider, {
         store: n
-      }, React.createElement(a, {
+      }, React.createElement(ConnectedDownloadConvertEmbed, {
         closeWindow: () => weh.rpc.call("closePopup")
       }))), document.getElementById("root"))
   });

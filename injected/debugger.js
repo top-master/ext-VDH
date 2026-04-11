@@ -2,31 +2,33 @@
 (() => {
   var o = chrome?.runtime || browser?.runtime;
 
-  function l() {
+  function disableControlsAndShowLoading() {
     for (let e of Array.from(document.querySelectorAll("button"))) e
       .setAttribute("disabled", !0);
     document.querySelector("#logs")
       .textContent = "wait\u2026"
   }
 
-  function s() {
+  function enableControls() {
     for (let e of Array.from(document.querySelectorAll("button"))) e
       .removeAttribute("disabled")
   }
 
-  function a() {
+  function renderDebuggerUi() {
     let e, t = document.querySelector("#core");
     t.innerHTML = "", e = document.createElement("button"), e.textContent =
       "Toggle Debugger", e.onclick = () => {
-        l(), o.sendMessage("debugger_toggle"), setTimeout(() => o.sendMessage(
-          "debugger_request_logs"), 1e3)
+        disableControlsAndShowLoading(), o.sendMessage("debugger_toggle"),
+          setTimeout(() => o.sendMessage("debugger_request_logs"), 1e3)
       }, t.appendChild(e), e = document.createElement("button"), e
       .textContent = "Restart Addon", e.onclick = () => {
-        l(), o.sendMessage("debugger_restart_addon"), setTimeout(() => window
-          .location.reload(), 1e3)
+        disableControlsAndShowLoading(), o.sendMessage(
+          "debugger_restart_addon"), setTimeout(() => window.location
+          .reload(), 1e3)
       }, t.appendChild(e), e = document.createElement("button"), e
       .textContent = "Update", e.onclick = () => {
-        l(), o.sendMessage("debugger_request_logs")
+        disableControlsAndShowLoading(), o.sendMessage(
+          "debugger_request_logs")
       }, t.appendChild(e), e = document.createElement("button"), e
       .textContent = "Save Logs", e.onclick = async () => {
         let u = document.querySelector("#logs")
@@ -41,10 +43,10 @@
     r.textContent = "wait\u2026", r.setAttribute("id", "logs"), t.appendChild(
       r)
   }
-  a();
-  l();
+  renderDebuggerUi();
+  disableControlsAndShowLoading();
   o.onMessage.addListener(e => {
-    e.all_logs && (s(), document.querySelector("#logs")
+    e.all_logs && (enableControls(), document.querySelector("#logs")
       .textContent = e.all_logs)
   });
   setTimeout(() => o.sendMessage("debugger_request_logs"), 1e3);

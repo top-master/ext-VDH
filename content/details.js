@@ -26,8 +26,8 @@
           payload: e.message
         })
       });
-    class a extends React.Component {
-      renderValue() {
+    class DetailsValueRow extends React.Component {
+      renderFieldValue() {
         return this.props.name == "thumbnailUrl" || this.props.name ==
           "thumbnail" ? React.createElement("div", null, React
             .createElement("img", {
@@ -56,25 +56,25 @@
       render() {
         return React.createElement("tr", null, React.createElement(
           "td", null, this.props.name), React.createElement("td",
-          null, this.renderValue()))
+          null, this.renderFieldValue()))
       }
     }
-    var l = connect((e, r) => ({
+    var ConnectedHitDetailsTable = connect((e, r) => ({
       hit: e.hit,
       error: e.error
-    }))(class extends React.Component {
-      renderError() {
+    }))(class HitDetailsTable extends React.Component {
+      renderLoadError() {
         return React.createElement("div", {
           className: "details"
         }, this.props.error)
       }
       render() {
-        if (this.props.error) return this.renderError();
+        if (this.props.error) return this.renderLoadError();
         if (!this.props.hit) return null;
         var e = this,
           r = Object.keys(this.props.hit)
           .sort()
-          .map(s => React.createElement(a, {
+          .map(s => React.createElement(DetailsValueRow, {
             key: s,
             name: s,
             value: e.props.hit[s]
@@ -92,7 +92,8 @@
       WehHeader, {
         title: weh._("hit_details")
       }), React.createElement("main", null, React.createElement(
-      l, null))))), document.getElementById("root")), weh.setPageTitle(
+      ConnectedHitDetailsTable, null))))), document.getElementById("root")),
+      weh.setPageTitle(
       weh._("hit_details"))
   });
 })();
