@@ -2114,6 +2114,65 @@
         }, "Enable New UI")
       }
     };
+    window.CompactViewCheckbox = class extends React.Component {
+      constructor(o) {
+        super(o), this.state = {
+          isCompactViewEnabled: !0
+        }, this.handleStorageChange = this.handleStorageChange.bind(this),
+          this.syncCompactViewPreference = this.syncCompactViewPreference.bind(
+            this)
+      }
+      componentDidMount() {
+        this.syncCompactViewPreference(), browser.storage.onChanged
+          .addListener(this.handleStorageChange)
+      }
+      componentWillUnmount() {
+        browser.storage.onChanged.removeListener(this.handleStorageChange)
+      }
+      async syncCompactViewPreference() {
+        let {
+          use_wide_ui: o = !1
+        } = await browser.storage.local.get("use_wide_ui");
+        this.setState({
+          isCompactViewEnabled: !o
+        })
+      }
+      handleStorageChange(o, i) {
+        if (i !== "local" || !o.use_wide_ui) return;
+        let s = typeof o.use_wide_ui.newValue == "boolean" ? o.use_wide_ui
+          .newValue : !1;
+        this.setState({
+          isCompactViewEnabled: !s
+        })
+      }
+      setCompactView() {
+        return o => {
+          browser.storage.local.set({
+            use_wide_ui: !o.target.checked
+          })
+        }
+      }
+      render() {
+        return React.createElement("div", {
+          style: {
+            marginBottom: "1rem"
+          }
+        }, React.createElement("label", {
+          style: {
+            alignItems: "center",
+            cursor: "pointer",
+            display: "inline-flex"
+          }
+        }, React.createElement("input", {
+          checked: this.state.isCompactViewEnabled,
+          onChange: this.setCompactView(),
+          style: {
+            marginRight: "8px"
+          },
+          type: "checkbox"
+        }), "Compact view in the new UI"))
+      }
+    };
 
     function t(...o) {
       return () => {
@@ -2439,7 +2498,8 @@
       renderTabAppearance() {
         return React.createElement(TabPane, {
           tabId: "appearance"
-        }, React.createElement(WehParam, {
+        }, React.createElement(CompactViewCheckbox, null), React.createElement(
+          WehParam, {
           prefName: "titleMode"
         }), React.createElement(WehParam, {
           prefName: "iconActivation"

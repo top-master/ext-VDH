@@ -73,7 +73,7 @@
     "service_worker": "background/main.js"
   },
   "action": {
-    "default_popup": "/content2/popup.html",
+    "default_popup": "/content/popup.html?panel=main",
     "default_title": "Video DownloadHelper",
     "default_icon": {
       "128": "/content2/icons/stable-color.png"

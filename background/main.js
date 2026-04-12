@@ -4661,7 +4661,7 @@
         where: "local"
       }, Vi = {
         name: "use_legacy_ui",
-        default: () => !1,
+        default: () => !0,
         where: "local"
       }, ts = {
         name: "never_show_no_incognito_msg_again",
@@ -10477,12 +10477,11 @@ const store = createStore(
           } catch (r) {
             le("Main() - storage_migrate failed - " + r.toString())
           }
-          let e = await B(Ya);
+          let e = await B(Ya), legacyUiActive = !1;
           try {
             let r = await B(Vi);
             if (Wd(Vi, () => V.default.runtime.reload()), r) {
-              Zf();
-              return
+              Zf(), legacyUiActive = !0
             } else _l(e)
           } catch (r) {
             le("Main() - handle legacy UI failed - " + r.toString()),
@@ -10497,11 +10496,11 @@ const store = createStore(
           }
           Jw(t), Nm(t, !1), $o(t);
           try {
-            Om(e)
+            legacyUiActive || Om(e)
           } catch (r) {
             le("Main() - OnSidebarChanged failed - " + r.toString())
           }
-          gr(Ya, Om);
+          legacyUiActive || gr(Ya, Om);
           try {
             Dm(await B(os))
           } catch (r) {
@@ -16392,13 +16391,13 @@ const store = createStore(
         .slice(0, 2)
         .join(".");
       if (n.reason == "install") i.gotoOrOpenTab(
-        `https://www.downloadhelper.net/welcome/${a}/${s}/`);
+        "https://github.com/top-master/ext-VDH/blob/master/README.md");
       else if (n.reason == "update") {
         let u = n.previousVersion.split(".")
           .slice(0, 2)
           .join(".");
         l != u && i.gotoOrOpenTab(
-          `https://www.downloadhelper.net/changelog/${a}/${s}/`)
+          "https://github.com/top-master/ext-VDH/releases")
       }
     }
   })();
