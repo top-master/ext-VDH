@@ -835,6 +835,11 @@
         }, this.state.hits_for_current_section.map(t => {
           let i = t[0],
             a = t.length == 1,
+            // TODO(thumbnails): Static review of changes after 01f84f4 found that the
+            // default popup/sidebar path was not touched in that range, but this legacy
+            // popup still ignores `thumbnailUrl2`. Even if the background serializer starts
+            // forwarding the resolved fallback thumbnail, this consumer will keep dropping
+            // it until the fallback chain accepts the same field names as the hit producer.
             c = i.thumbnailUrl ?? i.thumbnail ??
             "./images/no-thumbnail.png";
           return React.createElement("div", {

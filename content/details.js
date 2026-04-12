@@ -71,6 +71,13 @@
       }
 
       renderFieldValue() {
+        // TODO(thumbnails): Static review of changes after 01f84f4 found this legacy details
+        // tab to be the only touched thumbnail consumer in that range. It still recognizes
+        // only `thumbnailUrl` / `thumbnail`, while raw hits returned by `getHit()` commonly
+        // keep the resolved preview in `thumbnailUrl2` and newer downloadable screens use
+        // `thumbnail_url`. When those fields are the populated ones, this page renders plain
+        // text instead of an <img>, which explains the missing-thumbnail report here without
+        // executing the extension.
         if (this.props.name == "thumbnailUrl" || this.props.name == "thumbnail") {
           return React.createElement(
             "div",
