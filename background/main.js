@@ -4055,6 +4055,12 @@
   var Dd, Od, Md, Pd, Rd = C(() => {
     "use strict";
     Dd = Object.keys({
+      // TODO(thumbnails): Static review of changes after 01f84f4 found no edits in the
+      // active `content2/panel.js` renderer, but this legacy serialized-hit whitelist still
+      // exposes only `thumbnail` / `thumbnailUrl`. The background hit model also uses
+      // `thumbnailUrl2` as the resolved fallback, and newer downloadable UIs consume
+      // `thumbnail_url`, so any legacy screen driven by `getSerializedHits()` can silently
+      // lose thumbnails because this serializer drops the populated fallback field.
       id: 1,
       actions: 1,
       status: 1,
