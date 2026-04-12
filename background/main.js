@@ -4661,7 +4661,7 @@
         where: "local"
       }, Vi = {
         name: "use_legacy_ui",
-        default: () => !1,
+        default: () => !0,
         where: "local"
       }, ts = {
         name: "never_show_no_incognito_msg_again",

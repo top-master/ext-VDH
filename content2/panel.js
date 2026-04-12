@@ -2543,7 +2543,7 @@ var j = {
   },
   it = {
     name: "use_legacy_ui",
-    default: () => !1,
+    default: () => !0,
     where: "local"
   };
 var De = {
