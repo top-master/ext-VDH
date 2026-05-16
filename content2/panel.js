@@ -1521,10 +1521,11 @@ function Q(e, t, o) {
       let r = o[e],
         a = 1;
       for (let i = 0; i < t.length; i++) r = r.replace(`$${a}`, t[i]);
-      return r
+      return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(r, o.appName) ?? r
     } else {
       let r = Re.default.i18n.getMessage(e, t);
-      return r || n()
+      return r ? globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(r, Re.default
+        .i18n.getMessage("appName")) ?? r : n()
     }
   } catch {
     return n()
@@ -2760,7 +2761,7 @@ function te(e, t, o, n) {
       let a = r.closest(".download"),
         i = a?.dataset.downloadableId;
       if (r.closest(".error-nocoapp-button-install")) k.default.tabs.create({
-        url: "https://www.downloadhelper.net/install-coapp-v2"
+        url: globalThis.__cleanroomLinkGuard__.getUrlValue("installCoappUrl")
       });
       else if (r.closest(".button-report-error")) {
         let l = r.closest(".download-error");
@@ -2784,10 +2785,10 @@ function te(e, t, o, n) {
         rm_error: "nocoapp"
       });
       else if (r.closest(".error-why-qr")) k.default.tabs.create({
-        url: "https://www.downloadhelper.net/about-licensing"
+        url: globalThis.__cleanroomLinkGuard__.getUrlValue("licenseInfoUrl")
       });
       else if (r.closest(".error-invalid-license-get")) k.default.tabs.create({
-        url: "https://www.downloadhelper.net/convert"
+        url: globalThis.__cleanroomLinkGuard__.getUrlValue("convertUrl")
       });
       else if (r.closest(".download-error .button-hide") || r.closest(
           ".button-error-reported")) {
@@ -2900,7 +2901,7 @@ function te(e, t, o, n) {
       });
       else if (r.closest(".button-open-browser-settings")) le == "mozilla" ? k
         .default.tabs.create({
-          url: "https://github.com/aclap-dev/video-downloadhelper/wiki/Enable-Incognito"
+          url: globalThis.__cleanroomLinkGuard__.getUrlValue("incognitoHelpUrl")
         }) : k.default.tabs.create({
           url: `chrome://extensions/?id=${k.default.runtime.id}`
         });

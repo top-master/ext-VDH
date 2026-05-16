@@ -21,7 +21,7 @@
     "message": "Файлът е генериран"
   },
   "about_vdh": {
-    "message": "Относно Video DownloadHelper"
+    "message": "Относно :appName"
   },
   "action_abort_description": {
     "message": "Прекъсни изпълняваната задача"
@@ -108,7 +108,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "това разширение"
   },
   "appearance": {
     "message": "Изглед"
@@ -129,13 +129,13 @@
     "message": "Инсталирайте Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper за Firefox"
+    "message": ":appName за Firefox"
   },
   "chrome_noyt_text": {
     "message": "За съжаление Chrome Web Store не позволява разширения за сваляне на YouTube видео, така че се наложи да премахнем тази опция."
   },
   "chrome_noyt_text2": {
-    "message": "Може да ползвате Video DownloadHelper за сваляне на YouTube видео във Firefox версията."
+    "message": "Може да ползвате :appName за сваляне на YouTube видео във Firefox версията."
   },
   "chrome_warning_yt": {
     "message": "Предупреждение при Chrome разширения и YouTube"
@@ -291,7 +291,7 @@
     "message": "Дарение"
   },
   "donate_vdh": {
-    "message": "Video DownloadHelper помощ"
+    "message": ":appName помощ"
   },
   "downloading": {
     "message": "Сваляне..."
@@ -414,7 +414,7 @@
     "message": "Евентуално, имате ли нещо против да напишете добър отзвук в сайта на Mozilla addon?"
   },
   "req_review_link": {
-    "message": "Напишете ревю за Video DownloadHelper"
+    "message": "Напишете ревю за :appName"
   },
   "running": {
     "message": "Стартирани"
@@ -462,7 +462,7 @@
     "message": "Кажете ми повече за това"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "validate_license": {
     "message": "Регистрационен лиценз"
@@ -474,7 +474,7 @@
     "message": "Варианти"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Версия $1"
@@ -630,7 +630,7 @@
     "message": "Многоточие отдясно"
   },
   "you_downloaded_n_videos": {
-    "message": "току що успешно свалихте Вашия $1th файл с Video DownloadHelper."
+    "message": "току що успешно свалихте Вашия $1th файл с :appName."
   },
   "v9_converter_needs_reg": {
     "message": "Нужна е регистрация."
@@ -645,7 +645,7 @@
     "message": "Предупреждение при Chrome разширения и YouTube"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Може да ползвате Video DownloadHelper за сваляне на YouTube видео във Firefox версията."
+    "message": "Може да ползвате :appName за сваляне на YouTube видео във Firefox версията."
   },
   "v9_about_qr": {
     "message": "Файлът е генериран"
@@ -666,7 +666,7 @@
     "message": "Максимално текущи сваляния"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" е вече готов"

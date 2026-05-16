@@ -1,6 +1,6 @@
 {
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "st'estensione"
   },
   "Bytes": {
     "message": "$1 ottetti"
@@ -33,7 +33,7 @@
     "message": "Schedariu ingeneratu"
   },
   "about_vdh": {
-    "message": "Apprupositu Video DownloadHelper"
+    "message": "Apprupositu :appName"
   },
   "action_abort_description": {
     "message": "Interrompe l’azzione in corsu"
@@ -180,7 +180,7 @@
     "message": "Scaricà filmetti da u Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "st'estensione"
   },
   "appearance": {
     "message": "Aspettu"
@@ -219,7 +219,7 @@
     "message": "Custruitu u $1"
   },
   "bulk_in_progress": {
-    "message": "Video DownloadHelper face un operazione di gruppu. Ùn chjudite micca st’unghjetta, què serà fattu autumaticamente"
+    "message": ":appName face un operazione di gruppu. Ùn chjudite micca st’unghjetta, què serà fattu autumaticamente"
   },
   "bulk_n_videos": {
     "message": "$1 video"
@@ -261,7 +261,7 @@
     "message": "Installà Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper per Firefox"
+    "message": ":appName per Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "A licenza Chrome Webstore hè attiva"
@@ -273,7 +273,7 @@
     "message": "Per disgrazia, u Web Store di Chrome ùn permittendu micca i moduli addiziunale chì scaricheghjanu video YouTube, simu stati custreti di caccià sta funzione."
   },
   "chrome_noyt_text2": {
-    "message": "Pudete impiegà Video DownloadHelper per scaricà video YouTube via a versione Firefox."
+    "message": "Pudete impiegà :appName per scaricà video YouTube via a versione Firefox."
   },
   "chrome_noyt_text3": {
     "message": "Per disgrazia, u Web Store di Chrome ùn permittendu micca i moduli addiziunale chì scaricheghjanu video YouTube, ùn avemu micca pussutu inchjude sta funzione in a versione Chrome di l’estensione."
@@ -612,7 +612,7 @@
     "message": "Dunazione"
   },
   "donate_vdh": {
-    "message": "Aiutà Video DownloadHelper"
+    "message": "Aiutà :appName"
   },
   "download_error": {
     "message": "Sbagliu di scaricamentu"
@@ -978,7 +978,7 @@
     "message": "Osinnò, chì ne pensate di lascià un bellu cummentu nant’à u situ di l’estensioni di Mozilla ?"
   },
   "req_review_link": {
-    "message": "Scrive un bellu cummentu apprupositu di Video DownloadHelper"
+    "message": "Scrive un bellu cummentu apprupositu di :appName"
   },
   "reset_settings": {
     "message": "Reinizializazione di i parametri"
@@ -1086,7 +1086,7 @@
     "message": "Sapene di più apprupositu di què"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Traduzzione"
@@ -1104,7 +1104,7 @@
     "message": "Variante"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Versione $1"
@@ -1602,7 +1602,7 @@
     "message": "Sì"
   },
   "you_downloaded_n_videos": {
-    "message": "Venite subitu di riesce à scaricà u vostru $1u schedariu cù Video DownloadHelper."
+    "message": "Venite subitu di riesce à scaricà u vostru $1u schedariu cù :appName."
   },
   "v9_yes": {
     "message": "Sì"
@@ -1665,7 +1665,7 @@
     "message": "Per disgrazia, u Web Store di Chrome ùn permittendu micca i moduli addiziunale chì scaricheghjanu video YouTube, ùn avemu micca pussutu inchjude sta funzione in a versione Chrome di l’estensione."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Pudete impiegà Video DownloadHelper per scaricà video YouTube via a versione Firefox."
+    "message": "Pudete impiegà :appName per scaricà video YouTube via a versione Firefox."
   },
   "v9_about_qr": {
     "message": "Schedariu ingeneratu"
@@ -1713,7 +1713,7 @@
     "message": "Accede à e cumande da un cliccu dirittu nant’à a pagina"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "« $1 » hè prontu avà"
@@ -1974,7 +1974,7 @@
     "message": "Micca modu di navigazione anonima"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper ùn hè micca attivatu in modu di navigazione privata o anonima. Ci culerà à attivà st’ozzione manualmente (ma ùn hè micca richiestu)."
+    "message": ":appName ùn hè micca attivatu in modu di navigazione privata o anonima. Ci culerà à attivà st’ozzione manualmente (ma ùn hè micca richiestu)."
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Attivà i i parametri di u navigatore"
@@ -2001,7 +2001,7 @@
     "message": "Ùn arricurdassi di a mo cronolugia"
   },
   "v9_history_no_recording_description": {
-    "message": "Ùn arricurdemu micca a cronolugia di i vostri scaricamenti. Vulete chì Video DownloadHelper s’arricurdeghji di a cronolugia di i vostri scaricamenti ?"
+    "message": "Ùn arricurdemu micca a cronolugia di i vostri scaricamenti. Vulete chì :appName s’arricurdeghji di a cronolugia di i vostri scaricamenti ?"
   },
   "v9_history_no_recording_description_safe": {
     "message": "Ùn v’inchietate, tuttu stà nant’à a vostra mascina. Ci impreme a vostra vita privata."

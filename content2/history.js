@@ -961,10 +961,11 @@ function R(e, t, r) {
       let i = r[e],
         n = 1;
       for (let u = 0; u < t.length; u++) i = i.replace(`$${n}`, t[u]);
-      return i
+      return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(i, r.appName) ?? i
     } else {
       let i = fe.default.i18n.getMessage(e, t);
-      return i || o()
+      return i ? globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(i, fe.default
+        .i18n.getMessage("appName")) ?? i : o()
     }
   } catch {
     return o()

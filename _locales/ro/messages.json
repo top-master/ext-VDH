@@ -15,7 +15,7 @@
     "message": "Fișier generat"
   },
   "about_vdh": {
-    "message": "Despre Video DownloadHelper"
+    "message": "Despre :appName"
   },
   "action_abort_description": {
     "message": "Renunță la acțiunea în desfășurare"
@@ -99,7 +99,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "aceast? extensie"
   },
   "appearance": {
     "message": "Aspect"
@@ -267,7 +267,7 @@
     "message": "Donează"
   },
   "donate_vdh": {
-    "message": "Help Video DownloadHelper"
+    "message": "Help :appName"
   },
   "downloading": {
     "message": "Se descarcă..."
@@ -396,7 +396,7 @@
     "message": "Ca alternativă, ați vrea să scrieți o recenzie drăguță pe site-ul addon-urilor Mozilla?"
   },
   "req_review_link": {
-    "message": "Scrieți o recenzie despre Video DownloadHelper"
+    "message": "Scrieți o recenzie despre :appName"
   },
   "running": {
     "message": "Rulează"
@@ -444,7 +444,7 @@
     "message": "Spune mai multe despre asta."
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "validate_license": {
     "message": "Înregistrează licența"
@@ -456,7 +456,7 @@
     "message": "Variante"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Versiune $1"
@@ -543,7 +543,7 @@
     "message": "Înlocuiește cu linie de subliniere"
   },
   "you_downloaded_n_videos": {
-    "message": "Tocmai ați descărcat cu succes al $1th fișier cu Video DownloadHelper."
+    "message": "Tocmai ați descărcat cu succes al $1th fișier cu :appName."
   },
   "v9_no_media_current_tab": {
     "message": "Nu există media de procesat în fila curentă"
@@ -576,7 +576,7 @@
     "message": "Setări"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" este gata"
@@ -666,6 +666,6 @@
     "message": "Sortare inversă"
   },
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "aceast? extensie"
   }
 }

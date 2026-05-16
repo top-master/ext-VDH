@@ -24,7 +24,7 @@
     "message": "Fil genereret"
   },
   "about_vdh": {
-    "message": "Om Video DownloadHelper"
+    "message": "Om :appName"
   },
   "action_abort_description": {
     "message": "Afbryd igangværende handling"
@@ -138,7 +138,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "denne udvidelse"
   },
   "appearance": {
     "message": "Udseende"
@@ -162,13 +162,13 @@
     "message": "Installér Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper til Firefox"
+    "message": ":appName til Firefox"
   },
   "chrome_noyt_text": {
     "message": "Chrome Web Store tillader desværre ikke udvidelser til downloading af YouTube-videoer, så vi har fjernet denne funktion."
   },
   "chrome_noyt_text2": {
-    "message": "Du kan bruge Video DownloadHelper til at downloade YouTube-videoer på Firefox-versionen."
+    "message": "Du kan bruge :appName til at downloade YouTube-videoer på Firefox-versionen."
   },
   "chrome_warning_yt": {
     "message": "Advarsel om udvidelser til Chrome og YouTube"
@@ -354,7 +354,7 @@
     "message": "Doner"
   },
   "donate_vdh": {
-    "message": "Hjælp Video DownloadHelper"
+    "message": "Hjælp :appName"
   },
   "download_error": {
     "message": "Download fejl"
@@ -630,7 +630,7 @@
     "message": "Vil du have noget imod, at skrive en pæn anmeldelse på Mozillas websted med tilføjelser?"
   },
   "req_review_link": {
-    "message": "Skriv en anmeldelse af Video DownloadHelper"
+    "message": "Skriv en anmeldelse af :appName"
   },
   "reset_settings": {
     "message": "Nulstil indstillingerne"
@@ -717,7 +717,7 @@
     "message": "Forklar mere om den"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Oversættelse"
@@ -735,7 +735,7 @@
     "message": "Varianter"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Version $1"
@@ -1056,7 +1056,7 @@
     "message": "Ja"
   },
   "you_downloaded_n_videos": {
-    "message": "Du har lige downloaded din %. fil med Video DownloadHelper."
+    "message": "Du har lige downloaded din %. fil med :appName."
   },
   "v9_yes": {
     "message": "Ja"
@@ -1092,7 +1092,7 @@
     "message": "Advarsel om udvidelser til Chrome og YouTube"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Du kan bruge Video DownloadHelper til at downloade YouTube-videoer på Firefox-versionen."
+    "message": "Du kan bruge :appName til at downloade YouTube-videoer på Firefox-versionen."
   },
   "v9_about_qr": {
     "message": "Fil genereret"
@@ -1119,7 +1119,7 @@
     "message": "Maks. samtidige downloads"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" er nu klar"

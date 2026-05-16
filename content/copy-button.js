@@ -112,8 +112,9 @@
         return () => {
           let t = g()
             .buildOptions.browser,
-            i = "https://www.downloadhelper.net/convert" + (t ?
-              "?browser=" + encodeURIComponent(t) : "");
+            i = globalThis.__cleanroomLinkGuard__.getUrlValue("convertUrl", {
+              browser: t
+            });
           weh.rpc.call("goto", i)
         }
       }

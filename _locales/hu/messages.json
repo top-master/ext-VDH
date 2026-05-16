@@ -30,7 +30,7 @@
     "message": "Fájl létrehozva"
   },
   "about_vdh": {
-    "message": "A Video DownloadHelper-ről"
+    "message": "A :appName"
   },
   "action_abort_description": {
     "message": "A folyamatban lévő művelet megszakítása"
@@ -147,7 +147,7 @@
     "message": "Videó letöltése az Internetről"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "ez a b?v?tm?ny"
   },
   "appearance": {
     "message": "Megjelenés"
@@ -186,7 +186,7 @@
     "message": "Build időpontja: $1"
   },
   "bulk_in_progress": {
-    "message": "Video DownloadHelper csoportos művelet folyamatban. Ne zárd be ezt a lapot, ez automatikusan megtörténik"
+    "message": ":appName csoportos művelet folyamatban. Ne zárd be ezt a lapot, ez automatikusan megtörténik"
   },
   "bulk_n_videos": {
     "message": "$1 videó"
@@ -228,7 +228,7 @@
     "message": "Firefox letöltése"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper Firefox-hoz"
+    "message": ":appName Firefox-hoz"
   },
   "chrome_license_webstore_accepted": {
     "message": "Aktív licensz a Chrome Webáruházból"
@@ -240,7 +240,7 @@
     "message": "Sajnos, a Chrome Webáruház nem engedélyez YouTube-videó letöltő bővítményeket, ezért ezt a funkciót el kellett távolítanunk a bővítmény Chrome-os verziójából."
   },
   "chrome_noyt_text2": {
-    "message": "A Video DownloadHelper Firefox-os verziója le tud tölteni videókat a YouTube-ról is."
+    "message": "A :appName Firefox-os verziója le tud tölteni videókat a YouTube-ról is."
   },
   "chrome_noyt_text3": {
     "message": "Sajnos, a Chrome Webáruház nem engedélyez YouTube-videó letöltő bővítményeket, ezért ezt a funkciót el kellett távolítanunk a bővítmény Chrome-os verziójából."
@@ -564,7 +564,7 @@
     "message": "Adományozz!"
   },
   "donate_vdh": {
-    "message": "Támogasd a Video DownloadHelpert!"
+    "message": "Támogasd a :appName!"
   },
   "download_error": {
     "message": "Letöltési hiba"
@@ -885,7 +885,7 @@
     "message": "Vagy esetleg írnál egy jó értékelést a Mozilla bővítmény-oldalán?"
   },
   "req_review_link": {
-    "message": "Értékeld a Video DownloadHelper-t"
+    "message": "Értékeld a :appName"
   },
   "reset_settings": {
     "message": "Beállítások visszaállítása"
@@ -1011,7 +1011,7 @@
     "message": "Változatok"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Verzió: $1"
@@ -1500,7 +1500,7 @@
     "message": "Igen"
   },
   "you_downloaded_n_videos": {
-    "message": "Sikeresen letöltötted a(z) $1. fájlodat a Video DownloadHelper-rel!"
+    "message": "Sikeresen letöltötted a(z) $1. fájlodat a :appName!"
   },
   "v9_yes": {
     "message": "Igen"
@@ -1557,7 +1557,7 @@
     "message": "Sajnos, a Chrome Webáruház nem engedélyez YouTube-videó letöltő bővítményeket, ezért ezt a funkciót el kellett távolítanunk a bővítmény Chrome-os verziójából."
   },
   "v9_chrome_noyt_text2": {
-    "message": "A Video DownloadHelper Firefox-os verziója le tud tölteni videókat a YouTube-ról is."
+    "message": "A :appName Firefox-os verziója le tud tölteni videókat a YouTube-ról is."
   },
   "v9_about_qr": {
     "message": "Fájl létrehozva"
@@ -1599,7 +1599,7 @@
     "message": "Parancsok elérése a helyi (jobb-klikkre megjelenő) menüből"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "A(z) \"$1\" kész"

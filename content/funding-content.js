@@ -8,6 +8,8 @@
 /** @typedef {import("./ui-types").VoidHandler} VoidHandler */
 
 (() => {
+  const cleanroomShared = globalThis.__cleanroomLinkGuard__;
+
   var createModuleLoader = (moduleFactory, cachedModule) => () =>
     (cachedModule ||
       moduleFactory(
@@ -82,14 +84,11 @@
           let reviewUrl = null;
 
           if (buildOptions.browser == "firefox") {
-            reviewUrl =
-              "https://addons.mozilla.org/firefox/addon/video-downloadhelper/reviews/add";
+            reviewUrl = cleanroomShared.getUrlValue("firefoxReviewUrl");
           } else if (buildOptions.browser == "chrome") {
-            reviewUrl =
-              "https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfk/reviews";
+            reviewUrl = cleanroomShared.getUrlValue("chromeReviewUrl");
           } else if (buildOptions.browser == "edge") {
-            reviewUrl =
-              "https://microsoftedge.microsoft.com/addons/detail/jmkaglaafmhbcpleggkmaliipiilhldn";
+            reviewUrl = cleanroomShared.getUrlValue("edgeReviewUrl");
           }
 
           if (reviewUrl) {
@@ -103,7 +102,7 @@
        */
       createDonateHandler() {
         return () => {
-          weh.rpc.call("goto", "https://www.downloadhelper.net/donate");
+          weh.rpc.call("goto", cleanroomShared.getUrlValue("donateUrl"));
         };
       }
 
@@ -114,7 +113,7 @@
         return () => {
           weh.rpc.call(
             "goto",
-            "https://github.com/aclap-dev/video-downloadhelper/discussions/categories/language-translation",
+            cleanroomShared.getUrlValue("translationDiscussionsUrl"),
           );
         };
       }

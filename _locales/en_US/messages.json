@@ -1,6 +1,6 @@
 {
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "this extension"
   },
   "Bytes": {
     "message": "$1 Bytes"
@@ -33,7 +33,7 @@
     "message": "File generated"
   },
   "about_vdh": {
-    "message": "About Video DownloadHelper"
+    "message": "About :appName"
   },
   "action_abort_description": {
     "message": "Abort the action in progress"
@@ -180,7 +180,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "this extension"
   },
   "appearance": {
     "message": "Appearance"
@@ -219,7 +219,7 @@
     "message": "Built on $1"
   },
   "bulk_in_progress": {
-    "message": "Video DownloadHelper bulk operation in progress. Do not close this tab, this will be done automatically"
+    "message": ":appName bulk operation in progress. Do not close this tab, this will be done automatically"
   },
   "bulk_n_videos": {
     "message": "$1 videos"
@@ -261,7 +261,7 @@
     "message": "Install Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper for Firefox"
+    "message": ":appName for Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Active license from Chrome Webstore"
@@ -273,7 +273,7 @@
     "message": "Unfortunately, the Chrome Web Store does not allow extensions for downloading YouTube videos so we had to remove this feature."
   },
   "chrome_noyt_text2": {
-    "message": "You can use Video DownloadHelper to download YouTube videos on the Firefox version."
+    "message": "You can use :appName to download YouTube videos on the Firefox version."
   },
   "chrome_noyt_text3": {
     "message": "Unfortunately, the Chrome Web Store does not allow extensions for downloading YouTube videos so we could not include this feature in the Chrome version of the extension."
@@ -612,7 +612,7 @@
     "message": "Donate"
   },
   "donate_vdh": {
-    "message": "Help Video DownloadHelper"
+    "message": "Help :appName"
   },
   "download_error": {
     "message": "Download error"
@@ -978,7 +978,7 @@
     "message": "Alternatively, would you mind writing a nice review on Mozilla addon site ?"
   },
   "req_review_link": {
-    "message": "Write a review about Video DownloadHelper"
+    "message": "Write a review about :appName"
   },
   "reset_settings": {
     "message": "Reset settings"
@@ -1086,7 +1086,7 @@
     "message": "Tell me more about this"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Translation"
@@ -1104,7 +1104,7 @@
     "message": "Variants"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Version $1"
@@ -1602,7 +1602,7 @@
     "message": "Yes"
   },
   "you_downloaded_n_videos": {
-    "message": "You just downloaded successfully your $1th file with Video DownloadHelper."
+    "message": "You just downloaded successfully your $1th file with :appName."
   },
   "v9_yes": {
     "message": "Yes"
@@ -1665,7 +1665,7 @@
     "message": "Unfortunately, the Chrome Web Store does not allow extensions for downloading YouTube videos so we could not include this feature in the Chrome version of the extension."
   },
   "v9_chrome_noyt_text2": {
-    "message": "You can use Video DownloadHelper to download YouTube videos on the Firefox version."
+    "message": "You can use :appName to download YouTube videos on the Firefox version."
   },
   "v9_about_qr": {
     "message": "File generated"
@@ -1713,7 +1713,7 @@
     "message": "Access commands from right-click in page"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" is now ready"
@@ -1980,7 +1980,7 @@
     "message": "No Incognito mode"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper is not enabled in a Private/Incognito windows. You need to turn on that option manually (this is not required)."
+    "message": ":appName is not enabled in a Private/Incognito windows. You need to turn on that option manually (this is not required)."
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Enable in Browser Settings"
@@ -1995,7 +1995,7 @@
     "message": "You've downloaded 100 videos!"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "We hope you're enjoying Video DownloadHelper :) Would you mind writing a nice review on the addon website?"
+    "message": "We hope you're enjoying :appName :) Would you mind writing a nice review on the addon website?"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Leave a review"
@@ -2019,7 +2019,7 @@
     "message": "Do not remember my history"
   },
   "v9_history_no_recording_description": {
-    "message": "We do not record your download history. Do you want Video DownloadHelper to remember your download history?"
+    "message": "We do not record your download history. Do you want :appName to remember your download history?"
   },
   "v9_history_no_recording_description_safe": {
     "message": "Don't worry, everything stays on your machine. We value your privacy."

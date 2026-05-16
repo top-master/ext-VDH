@@ -30,7 +30,7 @@
     "message": "Fil genererades"
   },
   "about_vdh": {
-    "message": "Om Video DownloadHelper"
+    "message": "Om :appName"
   },
   "action_abort_description": {
     "message": "Avbryt pågående handling"
@@ -147,7 +147,7 @@
     "message": "Ladda ner Videos från Webben"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "detta till?gg"
   },
   "appearance": {
     "message": "Utseende"
@@ -186,7 +186,7 @@
     "message": "Baserat på $1"
   },
   "bulk_in_progress": {
-    "message": "Video DownloadHelper nerladdning av media pågår. Stäng inte denna flik, det görs automatiskt"
+    "message": ":appName nerladdning av media pågår. Stäng inte denna flik, det görs automatiskt"
   },
   "bulk_n_videos": {
     "message": "$1 video"
@@ -240,7 +240,7 @@
     "message": "Tyvärr tillåter Chrome Web Store inte tillägg för nedladdning av YouTube-videoklipp så att vi blev tvugna att ta bort den här funktionen."
   },
   "chrome_noyt_text2": {
-    "message": "Du kan använda Video DownloadHelper för att ladda ner YouTube-videor i Firefox-versionen."
+    "message": "Du kan använda :appName för att ladda ner YouTube-videor i Firefox-versionen."
   },
   "chrome_noyt_text3": {
     "message": "Tyvärr tillåter inte Chrome Web Store tillägg att ladda ner videos from YouTube, så vi kunde inte erbjuda den egenskapen i Chrome-verisionen av vårt tillägg."
@@ -564,7 +564,7 @@
     "message": "Donera"
   },
   "donate_vdh": {
-    "message": "Hjälp Video DownloadHelper"
+    "message": "Hjälp :appName"
   },
   "download_error": {
     "message": "Nedladdningsfel"
@@ -885,7 +885,7 @@
     "message": "Alternativt, kanske du vill skriva en snäll recension på Mozillas webbplats för tillägg?"
   },
   "req_review_link": {
-    "message": "Skriv en recension om Video DownloadHelper"
+    "message": "Skriv en recension om :appName"
   },
   "reset_settings": {
     "message": "Återställ inställningar"
@@ -993,7 +993,7 @@
     "message": "Berätta mer om detta"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Översättning"
@@ -1011,7 +1011,7 @@
     "message": "Varianter"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Version $1"
@@ -1500,7 +1500,7 @@
     "message": "Ja"
   },
   "you_downloaded_n_videos": {
-    "message": "Du har precis laddat ned $1 filer med Video DownloadHelper."
+    "message": "Du har precis laddat ned $1 filer med :appName."
   },
   "v9_yes": {
     "message": "Ja"
@@ -1557,7 +1557,7 @@
     "message": "Tyvärr tillåter inte Chrome Web Store tillägg att ladda ner videos from YouTube, så vi kunde inte erbjuda den egenskapen i Chrome-verisionen av vårt tillägg."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Du kan använda Video DownloadHelper för att ladda ner YouTube-videor i Firefox-versionen."
+    "message": "Du kan använda :appName för att ladda ner YouTube-videor i Firefox-versionen."
   },
   "v9_about_qr": {
     "message": "Fil genererades"
@@ -1599,7 +1599,7 @@
     "message": "Åtkomst till kommandon via högerklick i sidan"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" är nu redo"

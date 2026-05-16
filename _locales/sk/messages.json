@@ -144,7 +144,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "toto roz??renie"
   },
   "appearance": {
     "message": "Výstup"
@@ -183,7 +183,7 @@
     "message": "Vytvorenie: $1"
   },
   "bulk_in_progress": {
-    "message": "Prebiehajú hromadné operácie vo Video DownloadHelper. Nezatvárajte túto kartu, zatvorená bude automaticky."
+    "message": "Prebiehajú hromadné operácie vo :appName. Nezatvárajte túto kartu, zatvorená bude automaticky."
   },
   "bulk_n_videos": {
     "message": "$1 videá"
@@ -222,7 +222,7 @@
     "message": "Nainštalujte Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper pre Firefox"
+    "message": ":appName pre Firefox"
   },
   "chrome_licensing": {
     "message": "Chrome licencie"
@@ -231,7 +231,7 @@
     "message": "Žiaľ, obchod Google Web Store nepovoľuje rozšírenia na sťahovanie YouTube videí, takže sme museli funkciu odstrániť."
   },
   "chrome_noyt_text2": {
-    "message": "Video DownloadHelper môžete používať na sťahovanie YouTube videí vo verzii pre Firefox."
+    "message": ":appName môžete používať na sťahovanie YouTube videí vo verzii pre Firefox."
   },
   "chrome_noyt_text3": {
     "message": "Bohužiaľ, Internetový obchod Chrome neumožňuje rozšíreniam sťahovať videá z YouTube, takže sme túto funkcionalitu nemohli zahrnúť do vydania tohto rozšírenia pre Chrome."
@@ -1542,7 +1542,7 @@
     "message": "Bohužiaľ, Internetový obchod Chrome neumožňuje rozšíreniam sťahovať videá z YouTube, takže sme túto funkcionalitu nemohli zahrnúť do vydania tohto rozšírenia pre Chrome."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Video DownloadHelper môžete používať na sťahovanie YouTube videí vo verzii pre Firefox."
+    "message": ":appName môžete používať na sťahovanie YouTube videí vo verzii pre Firefox."
   },
   "v9_about_qr": {
     "message": "Súbor vygenerovaný"

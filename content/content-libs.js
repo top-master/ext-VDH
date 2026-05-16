@@ -19758,13 +19758,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       }
       let r = p5[t];
       if (e && !Array.isArray(e) && (e = [e]), r && r.message.length > 0)
-        return (r.message || "")
+        return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.((r.message || "")
+          .replace(d5, n => {
+            let o = d5.exec(n);
+            return o && e && e[parseInt(o[1]) - 1] || "??"
+          }), p5.appName?.message || Ym.i18n.getMessage("appName")) ?? (r.message ||
+          "")
           .replace(d5, n => {
             let o = d5.exec(n);
             return o && e && e[parseInt(o[1]) - 1] || "??"
           });
       try {
-        return e ? Ym.i18n.getMessage(t, e) : Ym.i18n.getMessage(t)
+        let n = e ? Ym.i18n.getMessage(t, e) : Ym.i18n.getMessage(t);
+        return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(n, Ym.i18n
+          .getMessage("appName")) ?? n
       } catch {
         return ""
       }

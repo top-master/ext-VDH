@@ -30,7 +30,7 @@
     "message": "Fil generert"
   },
   "about_vdh": {
-    "message": "Om Video DownloadHelper"
+    "message": "Om :appName"
   },
   "action_abort_description": {
     "message": "Avbryt gjeldende operasjon"
@@ -138,7 +138,7 @@
     "message": "Last ned videoer fra Internett"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "denne utvidelsen"
   },
   "appearance": {
     "message": "Utseende"
@@ -189,7 +189,7 @@
     "message": "Installer Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper for Firefox"
+    "message": ":appName for Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Aktiv lisens fra Chrome Webstore"
@@ -201,7 +201,7 @@
     "message": "Dessverre tillater ikke Chrome Web Store utvidelser som laster ned videoer fra YouTube, så vi ble nødt til å fjerne denne funksjonen."
   },
   "chrome_noyt_text2": {
-    "message": "Du kan bruke Video DownloadHelper for å laste ned YouTube videoer på Firefox-versjonen."
+    "message": "Du kan bruke :appName for å laste ned YouTube videoer på Firefox-versjonen."
   },
   "chrome_premium_audio": {
     "message": "Generering av kun lydfiler er bare tilgjengelig i Premium-modus"
@@ -393,7 +393,7 @@
     "message": "Doner"
   },
   "donate_vdh": {
-    "message": "Hjelp Video DownloadHelper"
+    "message": "Hjelp :appName"
   },
   "downloading": {
     "message": "Laster ned..."
@@ -519,7 +519,7 @@
     "message": "Alternativt, kunne du tenkt deg å skrive en hyggelig anmeldelse på Mozilla sin utvidelsesside?"
   },
   "req_review_link": {
-    "message": "Skriv en anmeldelse om Video DownloadHelper"
+    "message": "Skriv en anmeldelse om :appName"
   },
   "running": {
     "message": "Kjører"
@@ -564,7 +564,7 @@
     "message": "Fortell meg mer"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "validate_license": {
     "message": "Registrer lisens"
@@ -576,7 +576,7 @@
     "message": "Varianter"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Version"
@@ -711,7 +711,7 @@
     "message": "Ja"
   },
   "you_downloaded_n_videos": {
-    "message": "Du har nettopp lastet ned din $1th vellykkede fil med Video DownloadHelper."
+    "message": "Du har nettopp lastet ned din $1th vellykkede fil med :appName."
   },
   "v9_yes": {
     "message": "Ja"
@@ -738,7 +738,7 @@
     "message": "Advarsel om Chrome utvidelser og YouTube"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Du kan bruke Video DownloadHelper for å laste ned YouTube videoer på Firefox-versjonen."
+    "message": "Du kan bruke :appName for å laste ned YouTube videoer på Firefox-versjonen."
   },
   "v9_about_qr": {
     "message": "Fil generert"
@@ -759,7 +759,7 @@
     "message": "Maks. samtidige nedlastinger"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" er nå klar"

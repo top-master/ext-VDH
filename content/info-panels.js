@@ -112,8 +112,9 @@
         return () => {
           let t = v()
             .buildOptions.browser,
-            s = "https://www.downloadhelper.net/convert" + (t ?
-              "?browser=" + encodeURIComponent(t) : "");
+            s = globalThis.__cleanroomLinkGuard__.getUrlValue("convertUrl", {
+              browser: t
+            });
           weh.rpc.call("goto", s)
         }
       }
@@ -428,7 +429,7 @@
               .message || this.state.error), ". ", React
             .createElement("a", {
               target: "_blank",
-              href: "https://github.com/aclap-dev/video-downloadhelper/wiki/CoApp-not-recognized"
+              href: globalThis.__cleanroomLinkGuard__.getUrlValue("coappHelpUrl")
             }, weh._("coapp_help"))), this.state.status && React
           .createElement("div", null, React.createElement("div",
             null, weh._("coapp_found"), "  ", React.createElement(

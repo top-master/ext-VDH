@@ -30,7 +30,7 @@
     "message": "Fitxer generat"
   },
   "about_vdh": {
-    "message": "Quant a Video DownloadHelper"
+    "message": "Quant a :appName"
   },
   "action_abort_description": {
     "message": "Interromp l'acció en progrés"
@@ -147,7 +147,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "aquesta extensi?"
   },
   "appearance": {
     "message": "Aparença"
@@ -186,7 +186,7 @@
     "message": "Compilat sobre $1"
   },
   "bulk_in_progress": {
-    "message": "L'operació en grup del Video DownloadHelper està en progrés. No tanquis aquesta pestanya, això es farà automàticament"
+    "message": "L'operació en grup del :appName està en progrés. No tanquis aquesta pestanya, això es farà automàticament"
   },
   "bulk_n_videos": {
     "message": "$1 vídeos"
@@ -228,7 +228,7 @@
     "message": "Instal·la el Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper per a Firefox"
+    "message": ":appName per a Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "LLicència activa de la botiga web de Chrome"
@@ -240,7 +240,7 @@
     "message": "Desgraciadament, la Botiga Web de Chrome no permet extensions per a baixar vídeos de YouTube, així que hem hagut d'eliminar aquesta característica."
   },
   "chrome_noyt_text2": {
-    "message": "Pots fer servir el Video DownloadHelper per baixar vídeos de YouTube amb la versió de Firefox."
+    "message": "Pots fer servir el :appName per baixar vídeos de YouTube amb la versió de Firefox."
   },
   "chrome_noyt_text3": {
     "message": "Desafortunadament, la botiga web de Chrome no permet extensions per baixar videos de YouTube i per tant no podem incloure aquesta característica a la versió Chrome de l'extensió"
@@ -564,7 +564,7 @@
     "message": "Dóna"
   },
   "donate_vdh": {
-    "message": "Ajuda el Video DownloadHelper"
+    "message": "Ajuda el :appName"
   },
   "download_error": {
     "message": "Error en la baixada"
@@ -885,7 +885,7 @@
     "message": "De forma alternativa, voldries donar una bona opinió al lloc de connectors de Mozilla?"
   },
   "req_review_link": {
-    "message": "Dóna una opinió del Video DownloadHelper"
+    "message": "Dóna una opinió del :appName"
   },
   "reset_settings": {
     "message": "Reinicia la configuració"
@@ -993,7 +993,7 @@
     "message": "Explica me'n més coses"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Traducció"
@@ -1011,7 +1011,7 @@
     "message": "Variacions"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Versió $1"
@@ -1494,7 +1494,7 @@
     "message": "Sí"
   },
   "you_downloaded_n_videos": {
-    "message": "Has baixat el teu $1è fitxer amb Video DownloadHelper "
+    "message": "Has baixat el teu $1è fitxer amb :appName "
   },
   "v9_yes": {
     "message": "Sí"
@@ -1551,7 +1551,7 @@
     "message": "Desafortunadament, la botiga web de Chrome no permet extensions per baixar videos de YouTube i per tant no podem incloure aquesta característica a la versió Chrome de l'extensió"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Pots fer servir el Video DownloadHelper per baixar vídeos de YouTube amb la versió de Firefox."
+    "message": "Pots fer servir el :appName per baixar vídeos de YouTube amb la versió de Firefox."
   },
   "v9_about_qr": {
     "message": "Fitxer generat"
@@ -1593,7 +1593,7 @@
     "message": "Accedeix a les ordres amb clic-dreta dins de la pàgina"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" està a punt"

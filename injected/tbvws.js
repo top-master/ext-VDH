@@ -1229,7 +1229,7 @@
           .href)
       }
     }
-    if (!t) return console.log("VDH ExtractBaseJS: no base.js ref"), r;
+    if (!t) return console.log(((globalThis.__cleanroomLinkGuard__ && globalThis.__cleanroomLinkGuard__.getLiteralValue("shortName")) || "CRH") + " ExtractBaseJS: no base.js ref"), r;
     try {
       let i = await fetch(t);
       if (!i.ok) throw new Error(
@@ -1242,7 +1242,7 @@
           "s")
         .exec(n)[2], r.baseJs = R, r
     } catch (i) {
-      return console.error("VDH ExtractBaseJS: getting base.js", i), null
+      return console.error(((globalThis.__cleanroomLinkGuard__ && globalThis.__cleanroomLinkGuard__.getLiteralValue("shortName")) || "CRH") + " ExtractBaseJS: getting base.js", i), null
     }
   }
 
@@ -1258,7 +1258,7 @@
           try {
             let u = JSON.parse(A);
             u.streamingData && (t && console.log(
-              "VDH initial multiple candidates"), t = u)
+              ((globalThis.__cleanroomLinkGuard__ && globalThis.__cleanroomLinkGuard__.getLiteralValue("shortName")) || "CRH") + " initial multiple candidates"), t = u)
           } catch {}
         }
       }), t && t.videoDetails && t.videoDetails.videoId == r.videoId && t
@@ -1370,7 +1370,7 @@
             .streamingData.hlsManifestUrl)
       }
     } catch (g) {
-      console.log("VDH: getting player data", g)
+      console.log(((globalThis.__cleanroomLinkGuard__ && globalThis.__cleanroomLinkGuard__.getLiteralValue("shortName")) || "CRH") + ": getting player data", g)
     }
     return r
   }
@@ -1486,7 +1486,7 @@
         xe.rpc.call("tbvwsDetectedVideo", f)
       }
     } catch (i) {
-      t.videoId && console.log("VDH ProcessPage:", i)
+      t.videoId && console.log(((globalThis.__cleanroomLinkGuard__ && globalThis.__cleanroomLinkGuard__.getLiteralValue("shortName")) || "CRH") + " ProcessPage:", i)
     }
   }
 

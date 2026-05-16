@@ -1137,13 +1137,19 @@
       }
       let m = J[n];
       if (e && !Array.isArray(e) && (e = [e]), m && m.message.length > 0)
-        return (m.message || "")
+        return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.((m.message || "")
+          .replace(V, a => {
+            let t = V.exec(a);
+            return t && e && e[parseInt(t[1]) - 1] || "??"
+          }), J.appName?.message || I.i18n.getMessage("appName")) ?? (m.message || "")
           .replace(V, a => {
             let t = V.exec(a);
             return t && e && e[parseInt(t[1]) - 1] || "??"
           });
       try {
-        return e ? I.i18n.getMessage(n, e) : I.i18n.getMessage(n)
+        let a = e ? I.i18n.getMessage(n, e) : I.i18n.getMessage(n);
+        return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(a, I.i18n
+          .getMessage("appName")) ?? a
       } catch {
         return ""
       }

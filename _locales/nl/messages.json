@@ -30,7 +30,7 @@
     "message": "Bestand aangemaakt"
   },
   "about_vdh": {
-    "message": "Over Video DownloadHelper"
+    "message": "Over :appName"
   },
   "action_abort_description": {
     "message": "Lopende actie afbreken"
@@ -147,7 +147,7 @@
     "message": "Download videos van het web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "deze extensie"
   },
   "appearance": {
     "message": "Weergave"
@@ -186,7 +186,7 @@
     "message": "Gebouwd op $1"
   },
   "bulk_in_progress": {
-    "message": "Video DownloadHelper bulk download bezig. Sluit dit tabblad niet, dat gebeurt automatisch"
+    "message": ":appName bulk download bezig. Sluit dit tabblad niet, dat gebeurt automatisch"
   },
   "bulk_n_videos": {
     "message": "$1 video's"
@@ -228,7 +228,7 @@
     "message": "Installeer Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper voor Firefox"
+    "message": ":appName voor Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Actieve licentie uit de Chrome Webstore"
@@ -240,7 +240,7 @@
     "message": "Jammer genoeg laat de Chrome Web Store geen extensies om YouTubefilms te downloaden toe, dus moesten we deze feature verwijderen."
   },
   "chrome_noyt_text2": {
-    "message": "Met de Firefoxversie kan je Video DownloadHelper wel gebruiken om YouTubefilms te downloaden."
+    "message": "Met de Firefoxversie kan je :appName wel gebruiken om YouTubefilms te downloaden."
   },
   "chrome_noyt_text3": {
     "message": "Helaas, de Chrome Web winkel laat geen invoegtoepassingen toe voor het downloaden van Youtube videos, daarom is deze toevoeging niet bijgevoegd in de Chrome extensie"
@@ -564,7 +564,7 @@
     "message": "Doneren"
   },
   "donate_vdh": {
-    "message": "Help Video DownloadHelper"
+    "message": "Help :appName"
   },
   "download_error": {
     "message": "Downloadfout"
@@ -885,7 +885,7 @@
     "message": "Zou u als alternatief een mooie beoordeling op de Mozilla-add-ons-website willen schrijven?"
   },
   "req_review_link": {
-    "message": "Een beoordeling over Video DownloadHelper schrijven"
+    "message": "Een beoordeling over :appName schrijven"
   },
   "reset_settings": {
     "message": "Reset de instellingen"
@@ -993,7 +993,7 @@
     "message": "Meer hierover"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Vertaling"
@@ -1011,7 +1011,7 @@
     "message": "Varianten"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Versie $1"
@@ -1500,7 +1500,7 @@
     "message": "Ja"
   },
   "you_downloaded_n_videos": {
-    "message": "U hebt zojuist met succes uw $1e bestand met Video DownloadHelper gedownload."
+    "message": "U hebt zojuist met succes uw $1e bestand met :appName gedownload."
   },
   "v9_yes": {
     "message": "Ja"
@@ -1557,7 +1557,7 @@
     "message": "Helaas, de Chrome Web winkel laat geen invoegtoepassingen toe voor het downloaden van Youtube videos, daarom is deze toevoeging niet bijgevoegd in de Chrome extensie"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Met de Firefoxversie kan je Video DownloadHelper wel gebruiken om YouTubefilms te downloaden."
+    "message": "Met de Firefoxversie kan je :appName wel gebruiken om YouTubefilms te downloaden."
   },
   "v9_about_qr": {
     "message": "Bestand aangemaakt"
@@ -1599,7 +1599,7 @@
     "message": "Toegang tot commando's door rechter muisklik op de pagina"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "“$1” is nu klaar"
@@ -1620,7 +1620,7 @@
     "message": "Geen licentie geregistreerd"
   },
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "deze extensie"
   },
   "v9_badge_new": {
     "message": "Nieuw"
@@ -1872,7 +1872,7 @@
     "message": "Verberg gedownloade media automatisch?"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Vidoe DownloadHelper is niet ingeschakeld voor Privé/Incognito schermen. Je moet die optie handmatig inschakelen (dit is geen vereiste)."
+    "message": ":appName is niet ingeschakeld voor Privé/Incognito schermen. Je moet die optie handmatig inschakelen (dit is geen vereiste)."
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Inschakelen in je Browser instellingen"
@@ -1890,7 +1890,7 @@
     "message": "U heeft 100 video's gedownload!"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Wij hopen dat Video DownloadHelper U bevat :) Zou U een beoordeling voor de website willen schrijven?"
+    "message": "Wij hopen dat :appName U bevat :) Zou U een beoordeling voor de website willen schrijven?"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Laat een beoordeling achter"

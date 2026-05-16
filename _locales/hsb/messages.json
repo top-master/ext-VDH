@@ -27,7 +27,7 @@
     "message": "Dataja je so wutworiła."
   },
   "about_vdh": {
-    "message": "Wo Video DownloadHelper"
+    "message": "Wo :appName"
   },
   "action_abort_description": {
     "message": "Běžacu akciju přetorhnyć"
@@ -144,7 +144,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "tute roz??rjenje"
   },
   "appearance": {
     "message": "Napohlad"
@@ -183,7 +183,7 @@
     "message": "$1 wutworjeny"
   },
   "bulk_in_progress": {
-    "message": "Masowe sćehnjenje Video DownloadHelper běži. Njezačińće tutón rajtark, to so awtomatisce stanje."
+    "message": "Masowe sćehnjenje :appName běži. Njezačińće tutón rajtark, to so awtomatisce stanje."
   },
   "bulk_n_videos": {
     "message": "$1 widejow"
@@ -222,7 +222,7 @@
     "message": "Firefox instalować"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper za Firefox"
+    "message": ":appName za Firefox"
   },
   "chrome_licensing": {
     "message": "Licencowanje Chrome"
@@ -231,7 +231,7 @@
     "message": "Bohužel Chrome Web Store rozšěrjenja za sćahowanje widejow Youtube njedowola. Tohodla dyrbjachmy tutu funkciju wotstronić."
   },
   "chrome_noyt_text2": {
-    "message": "Móžeće VideoDownloadHelper wužiwać, zo byšće wideja Youtube z Firefox sćahnył."
+    "message": "Móžeće :appName wužiwać, zo byšće wideja Youtube z Firefox sćahnył."
   },
   "chrome_premium_audio": {
     "message": "Awdiodataje dadźa so jenož w premiumowym modusu wutworić"
@@ -552,7 +552,7 @@
     "message": "Darić"
   },
   "donate_vdh": {
-    "message": "Video DownloadHelper pomhać"
+    "message": ":appName pomhać"
   },
   "download_error": {
     "message": "Sćehnjenski zmylk"
@@ -846,7 +846,7 @@
     "message": "Jeli chceće, móžeće wšak tež pohódnoćenje na sydle přidatkow Mozilla pisać."
   },
   "req_review_link": {
-    "message": "Pohódnoćenje wo Video DownloadHelper pisać"
+    "message": "Pohódnoćenje wo :appName pisać"
   },
   "reset_settings": {
     "message": "Nastajenja za wróćostajenje"
@@ -948,7 +948,7 @@
     "message": "Powědajće wjace wo tym"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Přełožk"
@@ -966,7 +966,7 @@
     "message": "Warianty"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Wersija $1"
@@ -1443,7 +1443,7 @@
     "message": "Haj"
   },
   "you_downloaded_n_videos": {
-    "message": "Sće runje swoju dataju $1. dataju z Video DownloadHelper wuspěšnje sćahnył."
+    "message": "Sće runje swoju dataju $1. dataju z :appName wuspěšnje sćahnył."
   },
   "v9_yes": {
     "message": "Haj"
@@ -1497,7 +1497,7 @@
     "message": "Warnowanje za rozšěrjenja Chrome a Youtube"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Móžeće VideoDownloadHelper wužiwać, zo byšće wideja Youtube z Firefox sćahnył."
+    "message": "Móžeće :appName wužiwać, zo byšće wideja Youtube z Firefox sćahnył."
   },
   "v9_about_qr": {
     "message": "Dataja je so wutworiła."
@@ -1539,7 +1539,7 @@
     "message": "Přistup na prikazy z praweho kliknjenja na stronje"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" je nětko hotowa"

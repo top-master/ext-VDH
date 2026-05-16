@@ -30,7 +30,7 @@
     "message": "Datei erzeugt"
   },
   "about_vdh": {
-    "message": "Über Video DownloadHelper"
+    "message": "Über :appName"
   },
   "action_abort_description": {
     "message": "Laufende Aktion abbrechen"
@@ -147,7 +147,7 @@
     "message": "Videos aus dem Internet herunterladen"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "diese Erweiterung"
   },
   "appearance": {
     "message": "Aussehen"
@@ -186,7 +186,7 @@
     "message": "Kompilierungszeitpunkt: $1"
   },
   "bulk_in_progress": {
-    "message": "Video DownloadHelper-Massenvorgang in Bearbeitung. Schließen Sie den Tab nicht, dies erfolgt automatisch."
+    "message": "Massenvorgang dieser Erweiterung in Bearbeitung. Schließen Sie den Tab nicht, dies erfolgt automatisch."
   },
   "bulk_n_videos": {
     "message": "$1 Videos"
@@ -228,7 +228,7 @@
     "message": "Firefox installieren"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper für Firefox"
+    "message": ":appName für Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Aktive Lizenz vom Chrome Web Store"
@@ -240,7 +240,7 @@
     "message": "Leider erlaubt der Chrome Web Store keine Erweiterungen zum Herunterladen von YouTube-Videos, daher mussten wir diese Funktion entfernen."
   },
   "chrome_noyt_text2": {
-    "message": "Um YouTube-Videos herunterzuladen, können Sie Video DownloadHelper für Firefox verwenden."
+    "message": "Um YouTube-Videos herunterzuladen, können Sie :appName für Firefox verwenden."
   },
   "chrome_noyt_text3": {
     "message": "Leider erlaubt der Chrome Web Store keine Erweiterungen zum Herunterladen von YouTube-Videos, sodass wir diese Funktion nicht in die Chrome-Version der Erweiterung aufnehmen konnten."
@@ -564,7 +564,7 @@
     "message": "Spenden"
   },
   "donate_vdh": {
-    "message": "Video DownloadHelper unterstützen"
+    "message": ":appName unterstützen"
   },
   "download_error": {
     "message": "Fehler beim Herunterladen"
@@ -885,7 +885,7 @@
     "message": "Würden Sie alternativ eine gute Bewertung auf der Add-on-Seite von Mozilla schreiben?"
   },
   "req_review_link": {
-    "message": "Eine Bewertung zu Video DownloadHelper schreiben"
+    "message": "Eine Bewertung zu :appName schreiben"
   },
   "reset_settings": {
     "message": "Einstellungen zurücksetzen"
@@ -993,7 +993,7 @@
     "message": "Teilen Sie uns mehr darüber mit"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Übersetzung"
@@ -1011,7 +1011,7 @@
     "message": "Varianten"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Version $1"
@@ -1098,7 +1098,7 @@
     "message": "Manche Sites können eine neue URL an Stelle des Medieninhalts zurückgeben"
   },
   "weh_prefs_description_contextMenuEnabled": {
-    "message": "Auf Video DownloadHelper-Befehle auf der Seite per Rechtsklick zugreifen"
+    "message": "Per Rechtsklick auf der Seite auf Befehle dieser Erweiterung zugreifen"
   },
   "weh_prefs_description_convertControlledMax": {
     "message": "Maximale Anzahl der gleichzeitigen Zusammenführungs- oder Konvertierungsvorgänge"
@@ -1500,7 +1500,7 @@
     "message": "Ja"
   },
   "you_downloaded_n_videos": {
-    "message": "Sie haben gerade die $1. Datei mit Video DownloadHelper heruntergeladen"
+    "message": "Sie haben gerade die $1. Datei mit :appName heruntergeladen"
   },
   "v9_yes": {
     "message": "Ja"
@@ -1554,7 +1554,7 @@
     "message": "Leider erlaubt der Chrome Web Store keine Erweiterungen zum Herunterladen von YouTube-Videos, sodass wir diese Funktion nicht in die Chrome-Version der Erweiterung aufnehmen konnten."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Um YouTube-Videos herunterzuladen, können Sie Video DownloadHelper für Firefox verwenden."
+    "message": "Um YouTube-Videos herunterzuladen, können Sie :appName für Firefox verwenden."
   },
   "v9_about_qr": {
     "message": "Datei erzeugt"
@@ -1590,10 +1590,10 @@
     "message": "Maximal gleichzeitige Downloads"
   },
   "v9_weh_prefs_description_contextMenuEnabled": {
-    "message": "Auf Video DownloadHelper-Befehle auf der Seite per Rechtsklick zugreifen"
+    "message": "Per Rechtsklick auf der Seite auf Befehle dieser Erweiterung zugreifen"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "'$1' ist jetzt fertig."
@@ -1734,7 +1734,7 @@
     "message": "Information in die Zwischenablage kopieren"
   },
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "diese Erweiterung"
   },
   "v9_panel_view_show_all_tabs": {
     "message": "Alle Tabs anzeigen"
@@ -1803,7 +1803,7 @@
     "message": "In den Browser-Einstellungen aktivieren"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper ist nicht im Privat-/Inkognito-Fenster aktiviert. Sie müssen diese Option manuell einschalten (dies ist nicht erforderlich)."
+    "message": ":appName ist nicht im Privat-/Inkognito-Fenster aktiviert. Sie müssen diese Option manuell einschalten (dies ist nicht erforderlich)."
   },
   "v9_user_message_no_incognito_title": {
     "message": "Kein Inkognito-Modus"
@@ -1995,7 +1995,7 @@
     "message": "Sie haben 100 Videos heruntergeladen!"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Wir hoffen, Ihnen gefällt der Video DownloadHelper. Lassen Sie uns doch bitte noch eine gute Bewertung auf der Add-on-Seite da."
+    "message": "Wir hoffen, Ihnen gefällt der :appName. Lassen Sie uns doch bitte noch eine gute Bewertung auf der Add-on-Seite da."
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Eine Bewertung hinterlassen"
@@ -2028,7 +2028,7 @@
     "message": "Chronik nicht anlegen"
   },
   "v9_history_no_recording_description": {
-    "message": "Es ist keine Download-Chronik angelegt. Möchten Sie, dass Video DownloadHelper eine Download-Chronik anlegt?"
+    "message": "Es ist keine Download-Chronik angelegt. Möchten Sie, dass :appName eine Download-Chronik anlegt?"
   },
   "v9_history_no_recording_description_safe": {
     "message": "Keine Sorge, alles bleibt auf Ihrem Gerät. Wir respektieren Ihre Privatsphäre."

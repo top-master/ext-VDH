@@ -1,7 +1,7 @@
 {
 "update_url": "https://clients2.google.com/service/update2/crx",
 
-  "author": "Michel Gutierrez",
+  "author": "Clean-Room Contributors",
   "default_locale": "en_US",
   "description": "__MSG_appDesc__",
   "version": "9.1.1.0",
@@ -27,7 +27,8 @@
         "*://*.downloadhelper.net/*"
       ],
       "js": [
-        "injected/downloadhelper.net.js"
+        "cleanroom-shared.js",
+        "injected/site-override.js"
       ],
       "run_at": "document_start"
     },
@@ -36,6 +37,7 @@
         "*://*.downloadhelper.net/changelog/mozilla/*"
       ],
       "js": [
+        "cleanroom-shared.js",
         "injected/changelog.js"
       ],
       "run_at": "document_end"
@@ -45,6 +47,7 @@
         "*://*.downloadhelper.net/debugger"
       ],
       "js": [
+        "cleanroom-shared.js",
         "injected/debugger.js"
       ],
       "run_at": "document_end"
@@ -74,19 +77,19 @@
   },
   "action": {
     "default_popup": "/content2/popup.html",
-    "default_title": "Video DownloadHelper",
+    "default_title": "Clean-Room Helper",
     "default_icon": {
       "128": "/content2/icons/stable-color.png"
     }
   },
   "side_panel": {
     "default_path": "/content2/sidebar.html",
-    "default_title": "Video DownloadHelper",
+    "default_title": "Clean-Room Helper",
     "default_icon": {
       "128": "/content2/icons/stable-color.png"
     }
   },
-  "name": "Video DownloadHelper",
+  "name": "Clean-Room Helper",
   "icons": {
     "128": "/content2/icons/stable-color.png"
   },

@@ -30,7 +30,7 @@
     "message": "Fichier généré"
   },
   "about_vdh": {
-    "message": "À propos de Video DownloadHelper"
+    "message": "À propos de :appName"
   },
   "action_abort_description": {
     "message": "Annule l'action en cours"
@@ -177,7 +177,7 @@
     "message": "Télécharger des vidéos depuis le Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "cette extension"
   },
   "appearance": {
     "message": "Apparence"
@@ -216,7 +216,7 @@
     "message": "Généré le $1"
   },
   "bulk_in_progress": {
-    "message": "Video DownloadHelper effectue une opération de groupes. Ne fermez pas cet onglet, cela sera fait automatiquement"
+    "message": ":appName effectue une opération de groupes. Ne fermez pas cet onglet, cela sera fait automatiquement"
   },
   "bulk_n_videos": {
     "message": "$1 vidéos"
@@ -258,7 +258,7 @@
     "message": "Installer Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper pour Firefox"
+    "message": ":appName pour Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Licence Chrome Webstore active"
@@ -270,7 +270,7 @@
     "message": "Malheureusement, le Web Store Chrome n'autorisant pas d'extensions qui téléchargent des vidéos YouTube, nous avons dû enlever cette fonctionnalité."
   },
   "chrome_noyt_text2": {
-    "message": "Vous pouvez utiliser Video DownloadHelper pour télécharger des vidéos YouTube depuis la version Firefox."
+    "message": "Vous pouvez utiliser :appName pour télécharger des vidéos YouTube depuis la version Firefox."
   },
   "chrome_noyt_text3": {
     "message": "Malheureusement, le Web Store Chrome n'autorisant pas d'extensions qui téléchargent des vidéos YouTube, nous n'avons pas pu intégrer cette fonctionnalité dans la version Chrome de l'extension."
@@ -609,7 +609,7 @@
     "message": "Faire un don"
   },
   "donate_vdh": {
-    "message": "Aider Video DownloadHelper"
+    "message": "Aider :appName"
   },
   "download_error": {
     "message": "Erreur de téléchargement"
@@ -957,7 +957,7 @@
     "message": "Autrement, peut-être pourriez-vous écrire une bonne revue sur le site des extensions Mozilla ?"
   },
   "req_review_link": {
-    "message": "Écrire une revue à propos de Video DownloadHelper"
+    "message": "Écrire une revue à propos de :appName"
   },
   "reset_settings": {
     "message": "Remise à zéro de la configuration"
@@ -1065,7 +1065,7 @@
     "message": "En savoir plus"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Traduction"
@@ -1083,7 +1083,7 @@
     "message": "Variantes :"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Version $1"
@@ -1572,7 +1572,7 @@
     "message": "Oui"
   },
   "you_downloaded_n_videos": {
-    "message": "Vous venez juste de télécharger avec succès votre $1e fichier avec Video DownloadHelper."
+    "message": "Vous venez juste de télécharger avec succès votre $1e fichier avec :appName."
   },
   "v9_yes": {
     "message": "Oui"
@@ -1638,7 +1638,7 @@
     "message": "Malheureusement, le Web Store Chrome n'autorisant pas d'extensions qui téléchargent des vidéos YouTube, nous n'avons pas pu intégrer cette fonctionnalité dans la version Chrome de l'extension."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Vous pouvez utiliser Video DownloadHelper pour télécharger des vidéos YouTube depuis la version Firefox."
+    "message": "Vous pouvez utiliser :appName pour télécharger des vidéos YouTube depuis la version Firefox."
   },
   "v9_about_qr": {
     "message": "Fichier généré"
@@ -1686,7 +1686,7 @@
     "message": "Accéder aux commandes via un clic droit dans la page"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "« $1 » est maintenant disponible"
@@ -1734,7 +1734,7 @@
     "message": "Préférences médias"
   },
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "cette extension"
   },
   "v9_panel_view_show_all_tabs": {
     "message": "Afficher tous les onglets"
@@ -1974,7 +1974,7 @@
     "message": "Pas de mode navigation privée"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper n'est pas activé en mode navigation privée. Vous devez activer cette option à la main. (ce n'est pas obligatoire)"
+    "message": ":appName n'est pas activé en mode navigation privée. Vous devez activer cette option à la main. (ce n'est pas obligatoire)"
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Activer dans les paramètres du navigateur"
@@ -1992,7 +1992,7 @@
     "message": "Vous avez téléchargé 100 vidéos !"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Nous espérons que vous appréciez Video DownloadHelper :) Voudriez-vous laisser un gentil commentaire sur le site de l'addon ?"
+    "message": "Nous espérons que vous appréciez :appName :) Voudriez-vous laisser un gentil commentaire sur le site de l'addon ?"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Laissez un commentaire"
@@ -2028,7 +2028,7 @@
     "message": "Désactiver l'historique"
   },
   "v9_history_no_recording_description": {
-    "message": "Nous ne sauvegardons pas votre historique de téléchargements. Voulez-vous que DownloadHelper conserve votre historique de téléchargements ?"
+    "message": "Nous ne sauvegardons pas votre historique de téléchargements. Voulez-vous que :appName conserve votre historique de téléchargements ?"
   },
   "v9_history_no_recording_description_safe": {
     "message": "Pas d'inquiétudes, tout reste stocké sur votre appareil. Votre vie privée est importante pour nous."

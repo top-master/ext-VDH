@@ -30,7 +30,7 @@
     "message": "Archivo generado."
   },
   "about_vdh": {
-    "message": "Acerca de Video DownloadHelper"
+    "message": "Acerca de :appName"
   },
   "action_abort_description": {
     "message": "Cancelar el proceso en marcha."
@@ -165,7 +165,7 @@
     "message": "Descarga Videos desde la Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "esta extensi?n"
   },
   "appearance": {
     "message": "Apariencia"
@@ -204,7 +204,7 @@
     "message": "Compilado el $1"
   },
   "bulk_in_progress": {
-    "message": "Video Downloadhelper esta procesando sus vídeos en bruto. No cierre esta pestaña, se cerrará automáticamente."
+    "message": ":appName esta procesando sus vídeos en bruto. No cierre esta pestaña, se cerrará automáticamente."
   },
   "bulk_n_videos": {
     "message": "$1 vídeos"
@@ -246,7 +246,7 @@
     "message": "Instalar Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper para Firefox"
+    "message": ":appName para Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "La Licencia de Webstore Chrome se encuentra Activa (Aceptada)"
@@ -258,7 +258,7 @@
     "message": "Por desgracia, la Web Store de Chrome no permite extensiones para descargar vídeos de Youtube así que debemos quitar esta característica"
   },
   "chrome_noyt_text2": {
-    "message": "Puedes usar Video DownloadHelper para descargar vídeos de YouTube en la versión de Firefox"
+    "message": "Puedes usar :appName para descargar vídeos de YouTube en la versión de Firefox"
   },
   "chrome_noyt_text3": {
     "message": "Desgraciadamente, la Chrome Web Store no permite la descarga de vídeos de YouTube, por lo que no hemos podido incluir esta función en la versión de Chrome de la extensión."
@@ -591,7 +591,7 @@
     "message": "Donar"
   },
   "donate_vdh": {
-    "message": "Ayuda a Video DownloadHelper"
+    "message": "Ayuda a :appName"
   },
   "download_error": {
     "message": "Error en la descarga"
@@ -912,7 +912,7 @@
     "message": "En todo caso, ¿le importaría escribir una reseña en el Sitio Mozilla de Complementos?"
   },
   "req_review_link": {
-    "message": "Escriba una reseña sobre Video Downloadhelper"
+    "message": "Escriba una reseña sobre :appName"
   },
   "reset_settings": {
     "message": "Restabecer las preferencias"
@@ -1020,7 +1020,7 @@
     "message": "Explicar esto un poco más"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Traducción"
@@ -1038,7 +1038,7 @@
     "message": "Variantes"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Versión $1"
@@ -1530,7 +1530,7 @@
     "message": "Sí"
   },
   "you_downloaded_n_videos": {
-    "message": "Ha descargado correctamente su $1º archivo con Video DownloadHelper."
+    "message": "Ha descargado correctamente su $1º archivo con :appName."
   },
   "v9_yes": {
     "message": "Sí"
@@ -1590,7 +1590,7 @@
     "message": "Desgraciadamente, la Chrome Web Store no permite la descarga de vídeos de YouTube, por lo que no hemos podido incluir esta función en la versión de Chrome de la extensión."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Puedes usar Video DownloadHelper para descargar vídeos de YouTube en la versión de Firefox"
+    "message": "Puedes usar :appName para descargar vídeos de YouTube en la versión de Firefox"
   },
   "v9_about_qr": {
     "message": "Archivo generado."
@@ -1635,7 +1635,7 @@
     "message": "Acceder al menú contextual al hacer click en el botón derecho"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" está listo"

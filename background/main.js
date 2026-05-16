@@ -1,5 +1,21 @@
+typeof importScripts == "function" && importScripts("../cleanroom-shared.js");
 "use strict";
 (() => {
+  var __cleanroomShared = globalThis.__cleanroomLinkGuard__ || {};
+  var __cleanroomText = function(literalName) {
+    return typeof __cleanroomShared.getLiteralValue == "function" ?
+      __cleanroomShared.getLiteralValue(literalName) : "";
+  };
+  var __cleanroomUrl = function(urlName, queryValues) {
+    return typeof __cleanroomShared.getUrlValue == "function" ?
+      __cleanroomShared.getUrlValue(urlName, queryValues) :
+      "about:blank#cleanroom-" + urlName;
+  };
+  var __cleanroomLocaleText = function(messageText, appNameValue) {
+    return typeof __cleanroomShared.resolveLocaleText == "function" ?
+      __cleanroomShared.resolveLocaleText(messageText, appNameValue) :
+      messageText;
+  };
   var Uh = Object.create;
   var xn = Object.defineProperty;
   var jh = Object.getOwnPropertyDescriptor;
@@ -1147,13 +1163,14 @@
       }
       let r = qu[e];
       if (t && !Array.isArray(t) && (t = [t]), r && r.message.length > 0)
-        return (r.message || "")
+        return __cleanroomLocaleText((r.message || "")
           .replace(Cu, i => {
             let n = Cu.exec(i);
             return n && t && t[parseInt(n[1]) - 1] || "??"
-          });
+          }), qu.appName?.message || ya.i18n.getMessage("appName"));
       try {
-        return t ? ya.i18n.getMessage(e, t) : ya.i18n.getMessage(e)
+        let i = t ? ya.i18n.getMessage(e, t) : ya.i18n.getMessage(e);
+        return __cleanroomLocaleText(i, ya.i18n.getMessage("appName"))
       } catch {
         return ""
       }
@@ -8427,7 +8444,7 @@ const store = createStore(
       i;
     try {
       i = await xl.request({
-        url: "https://www.downloadhelper.net/license-check.json",
+        url: __cleanroomUrl("licenseCheckUrl"),
         content: "key=" + encodeURIComponent(e) +
           "&product=converthelper",
         headers: {
@@ -8535,8 +8552,9 @@ const store = createStore(
         text: Ir._("get_conversion_license"),
         className: "btn-success",
         rpcMethod: "goto",
-        rpcArgs: ["https://www.downloadhelper.net/convert" + (li ?
-          "?browser=" + encodeURIComponent(li) : "")]
+        rpcArgs: [__cleanroomUrl("convertUrl", {
+          browser: li
+        })]
       }]
     })
   }
@@ -10098,11 +10116,11 @@ const store = createStore(
           "leave_review" && (e.user_messages.delete(
               "one_hundred_downloads"), de == "mozilla" ? V.default
             .tabs.create({
-              url: "https://addons.mozilla.org/firefox/addon/video-downloadhelper"
+              url: __cleanroomUrl("firefoxListingUrl")
             }) : de == "google" ? V.default.tabs.create({
-              url: "https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfk"
+              url: __cleanroomUrl("chromeListingUrl")
             }) : de == "microsoft" && V.default.tabs.create({
-              url: "https://microsoftedge.microsoft.com/addons/detail/video-downloadhelper/jmkaglaafmhbcpleggkmaliipiilhldn"
+              url: __cleanroomUrl("edgeListingUrl")
             }), ce(e)), n == "never_ask_for_review" && (e
             .user_messages.delete("one_hundred_downloads"), await Z(
               ns, !0), ce(e)), n == "bulk_download" && (e
@@ -10186,7 +10204,7 @@ const store = createStore(
                   details: s.details
                 };
                 await fetch(
-                  "https://api.downloadhelper.net/v1/reports", {
+                  __cleanroomUrl("reportsApiUrl"), {
                     method: "POST",
                     cache: "no-cache",
                     headers: {
@@ -10341,7 +10359,7 @@ const store = createStore(
     let t = i => new Promise(n => V.default.contextMenus.create(i, n));
     await t({
       id: "vdh-top",
-      title: "Video DownloadHelper",
+      title: __cleanroomText("productName"),
       contexts: ["page"]
     });
     for (let i = 0; i < Mm; i++) await t({
@@ -13924,7 +13942,7 @@ const store = createStore(
           return Og.gotoOrOpenTab("https://getfirefox.com/");
         case "vdhForFirefox":
           return Og.gotoOrOpenTab(
-            "https://addons.mozilla.org/firefox/addon/video-downloadhelper/"
+            __cleanroomUrl("firefoxListingUrl")
             )
       }
     } catch (o) {
@@ -13949,7 +13967,7 @@ const store = createStore(
         try {
           await O0(e)
         } catch (t) {
-          console.error("VDH error: detectedVideo", t)
+          console.error(__cleanroomText("shortName") + " error: detectedVideo", t)
         }
       }
     });
@@ -13980,7 +13998,7 @@ const store = createStore(
           _$vdhTopUrl: i.url
         }, "/injected/tbvws-bulk.js")
       } catch (i) {
-        console.error("VDH error: could not inject bulk script",
+        console.error(__cleanroomText("shortName") + " error: could not inject bulk script",
           i)
       }
     }, {
@@ -14204,7 +14222,7 @@ const store = createStore(
           M = S * 60 * 1e3,
           N = await B(Wt),
           j = l - N,
-          W = "https://www.downloadhelper.net/convert";
+          W = __cleanroomUrl("convertUrl");
         if (i && (m == "mpd" || m == "hls" || u)) {
           ir.alert({
             title: z._("chrome_premium_required"),
@@ -14657,7 +14675,7 @@ const store = createStore(
             text: H._("get_conversion_license"),
             className: "btn-success",
             rpcMethod: "goto",
-            rpcArgs: ["https://www.downloadhelper.net/convert"]
+            rpcArgs: [__cleanroomUrl("convertUrl")]
           }]
         });
         return
@@ -14750,7 +14768,7 @@ const store = createStore(
             text: H._("get_conversion_license"),
             className: "btn-success",
             rpcMethod: "goto",
-            rpcArgs: ["https://www.downloadhelper.net/convert"]
+            rpcArgs: [__cleanroomUrl("convertUrl")]
           }]
         });
         return
@@ -15503,7 +15521,7 @@ const store = createStore(
         } else o = "data:," + n;
         Hr.downloads.download({
           url: o,
-          filename: "vdh-settings.json",
+          filename: __cleanroomText("settingsFileName"),
           saveAs: !0,
           conflictAction: "uniquify"
         })
@@ -15700,7 +15718,9 @@ const store = createStore(
     tx(async () => {
       let e = await ca.prefs,
         t =
-        `https://www.downloadhelper.net/install-coapp-v2?channel=${ix}`;
+        __cleanroomUrl("installCoappUrl", {
+          channel: ix
+        });
       return e.forcedCoappVersion && (t += "&version=" + e
         .forcedCoappVersion), ex.gotoOrOpenTab(t)
     })
@@ -15806,7 +15826,7 @@ const store = createStore(
     "use strict";
     ca = Y(), mh = (he(), R(ge)), Y1 = (ad(), R(od)), {
       compareSemVer: Z1
-    } = (qa(), R(gd)), et = _d()("net.downloadhelper.coapp"), ex = (
+    } = (qa(), R(gd)), et = _d()(__cleanroomText("nativeHostId")), ex = (
     Rr(), R(Pr)), tx = mh.Concurrent(), rx = mh.Concurrent(), {
       channel: ix
     } = lr(), wn = null;
@@ -16318,7 +16338,7 @@ const store = createStore(
     let e = Y(),
       t = e.browser,
       r = lr();
-    r.prod || console.info("=========== VDH started", new Date()
+    r.prod || console.info("=========== " + __cleanroomText("shortName") + " started", new Date()
         .toLocaleTimeString(), "=========="), Yu(), ft(), Kt(), Su(),
       kh(), fu();
     let i = (Rr(), R(Pr));
@@ -16336,14 +16356,14 @@ const store = createStore(
         }), e.ui.close("main")
       },
       openSites: () => i.gotoOrOpenTab(
-        "https://www.downloadhelper.net/sites"),
+        __cleanroomUrl("sitesUrl")),
       openForum: () => i.gotoOrOpenTab(
-        "https://github.com/aclap-dev/video-downloadhelper/discussions"
+        __cleanroomUrl("communityDiscussionsUrl")
         ),
       openHomepage: () => i.gotoOrOpenTab(
-        "https://www.downloadhelper.net/"),
+        __cleanroomUrl("rootWebsiteUrl")),
       openTranslationForum: () => i.gotoOrOpenTab(
-        "https://github.com/aclap-dev/video-downloadhelper/discussions/categories/language-translation"
+        __cleanroomUrl("translationDiscussionsUrl")
         ),
       openWeh: () => i.gotoOrOpenTab("https://github.com/mi-g/weh"),
       openAbout: () => {
@@ -16386,13 +16406,19 @@ const store = createStore(
         .slice(0, 2)
         .join(".");
       if (n.reason == "install") i.gotoOrOpenTab(
-        `https://www.downloadhelper.net/welcome/${a}/${s}/`);
+        __cleanroomUrl("welcomeUrl", {
+          locale: a,
+          version: s
+        }));
       else if (n.reason == "update") {
         let u = n.previousVersion.split(".")
           .slice(0, 2)
           .join(".");
         l != u && i.gotoOrOpenTab(
-          `https://www.downloadhelper.net/changelog/${a}/${s}/`)
+          __cleanroomUrl("changelogUrl", {
+          locale: a,
+          version: s
+        }))
       }
     }
   })();
