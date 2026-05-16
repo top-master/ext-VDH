@@ -30,7 +30,7 @@
     "message": "生成文件"
   },
   "about_vdh": {
-    "message": "關於 Video DownloadHelper"
+    "message": "關於 :appName"
   },
   "action_abort_description": {
     "message": "終止正在運行的活動"
@@ -153,7 +153,7 @@
     "message": "從網頁下載視訊"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "這個擴充功能"
   },
   "appearance": {
     "message": "外觀"
@@ -246,7 +246,7 @@
     "message": "由於Chrome瀏覽器不支援附加元件下載Youtube影片，因此我們將此功能移除"
   },
   "chrome_noyt_text2": {
-    "message": "您可以透過Firefox瀏覽器安裝Video DownloadHelper附加元件來下載Youtube影片"
+    "message": "您可以透過Firefox瀏覽器安裝這個擴充功能來下載Youtube影片"
   },
   "chrome_noyt_text3": {
     "message": "很遺憾，因為 Chrome 線上應用程式商店不允許可下載 Youtube 影片的擴充功能，所以我們在 Chrome 版本的擴充功能不提供這項功能。"
@@ -579,7 +579,7 @@
     "message": "捐贈"
   },
   "donate_vdh": {
-    "message": "幫助 Video DownloadHelper"
+    "message": "幫助 :appName"
   },
   "download_error": {
     "message": "下載錯誤"
@@ -900,7 +900,7 @@
     "message": "或者, 你可以在 Mozilla addon site 寫一個好的評論嗎?"
   },
   "req_review_link": {
-    "message": "為 Video DownloadHelper 寫一個評論"
+    "message": "為 :appName 寫一個評論"
   },
   "reset_settings": {
     "message": "重置設定"
@@ -1008,7 +1008,7 @@
     "message": "瞭解更多"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "翻譯"
@@ -1026,7 +1026,7 @@
     "message": "版本"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "版本 $1"
@@ -1515,7 +1515,7 @@
     "message": "是"
   },
   "you_downloaded_n_videos": {
-    "message": "你剛剛用 Video DownloadHelper 成功下載第 $1 個檔案"
+    "message": "你剛剛用 :appName 成功下載第 $1 個檔案"
   },
   "v9_yes": {
     "message": "是"
@@ -1575,7 +1575,7 @@
     "message": "很遺憾，因為 Chrome 線上應用程式商店不允許可下載 Youtube 影片的擴充功能，所以我們在 Chrome 版本的擴充功能不提供這項功能。"
   },
   "v9_chrome_noyt_text2": {
-    "message": "您可以透過Firefox瀏覽器安裝Video DownloadHelper附加元件來下載Youtube影片"
+    "message": "您可以透過Firefox瀏覽器安裝這個擴充功能來下載Youtube影片"
   },
   "v9_about_qr": {
     "message": "產生檔案"
@@ -1620,7 +1620,7 @@
     "message": "使用右鍵來查詢可用的指令"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "檔案準備就緒"
@@ -1638,7 +1638,7 @@
     "message": "無註冊序號"
   },
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "這個擴充功能"
   },
   "v9_badge_new": {
     "message": "新的"
@@ -1881,7 +1881,7 @@
     "message": "非無痕模式"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper 於無痕視窗中未啟用自動偵測，請手動啟用 (如非必要)"
+    "message": ":appName 於無痕視窗中未啟用自動偵測，請手動啟用 (如非必要)"
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "於瀏覽器設定中啟用"
@@ -1914,7 +1914,7 @@
     "message": "您已下載 100 個影片！"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "希望您喜歡 Video DownloadHelper， 您介意在外網上給予好評嗎？"
+    "message": "希望您喜歡 :appName， 您介意在外網上給予好評嗎？"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "發表評論"

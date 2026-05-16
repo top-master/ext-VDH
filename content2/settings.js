@@ -1598,10 +1598,11 @@ function $(e, t, r) {
       let o = r[e],
         i = 1;
       for (let a = 0; a < t.length; a++) o = o.replace(`$${i}`, t[a]);
-      return o
+      return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(o, r.appName) ?? o
     } else {
       let o = ze.default.i18n.getMessage(e, t);
-      return o || n()
+      return o ? globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(o, ze.default
+        .i18n.getMessage("appName")) ?? o : n()
     }
   } catch {
     return n()
@@ -2727,15 +2728,15 @@ async function mr() {
         if (u && O.default.tabs.create({
             url: "/content2/locales.html"
           }), x && O.default.tabs.create({
-            url: "https://www.downloadhelper.net/convert"
+            url: globalThis.__cleanroomLinkGuard__.getUrlValue("convertUrl")
           }), A && O.default.tabs.create({
-            url: "https://www.downloadhelper.net/help"
+            url: globalThis.__cleanroomLinkGuard__.getUrlValue("helpUrl")
           }), _ && qe({
             coapp_check: !0
           }), N && O.default.tabs.create({
-            url: "https://downloadhelper.net/install-coapp-v2"
+            url: globalThis.__cleanroomLinkGuard__.getUrlValue("installCoappUrl")
           }), D && O.default.tabs.create({
-            url: "https://github.com/aclap-dev/video-downloadhelper/wiki/CoApp-not-recognized"
+            url: globalThis.__cleanroomLinkGuard__.getUrlValue("coappHelpUrl")
           }), Q && Ve(B), S && nt(), U && qe("select_download_directory"),
           d) {
           let m = await Le(),
@@ -2747,7 +2748,7 @@ async function mr() {
             C = document.documentElement.id == "sidebar";
           O.default.downloads.download({
             url: T,
-            filename: "vdh-settings.json",
+            filename: globalThis.__cleanroomLinkGuard__.getLiteralValue("settingsFileName"),
             saveAs: C,
             conflictAction: "uniquify"
           })

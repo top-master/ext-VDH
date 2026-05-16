@@ -21,7 +21,7 @@
     "message": "Skrá útbúin"
   },
   "about_vdh": {
-    "message": "Um Video DownloadHelper niðurhalshjálpina"
+    "message": "Um :appName niðurhalshjálpina"
   },
   "action_abort_description": {
     "message": "Hætta við aðgerðina sem er í gangi"
@@ -114,7 +114,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "?essi vi?b?t"
   },
   "appearance": {
     "message": "Útlit"
@@ -135,13 +135,13 @@
     "message": "Setja upp Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper fyrir Firefox"
+    "message": ":appName fyrir Firefox"
   },
   "chrome_noyt_text": {
     "message": "Því miður, leyfir Chrome Web Store ekki viðbætur sem sækja YouTube-myndskeið, þannig að við þurftum að fjarlægja þennan eiginleika."
   },
   "chrome_noyt_text2": {
-    "message": "Þú getur notað VDH-niðurhalshjálpina til að sækja YouTube-myndskeið með Firefox-útgáfunni."
+    "message": "Þú getur notað :appName til að sækja YouTube-myndskeið með Firefox-útgáfunni."
   },
   "chrome_warning_yt": {
     "message": "Aðvörun vegna Chrome-viðbóta og YouTube"
@@ -303,7 +303,7 @@
     "message": "Styrkja"
   },
   "donate_vdh": {
-    "message": "Hjálpa Video DownloadHelper"
+    "message": "Hjálpa :appName"
   },
   "downloading": {
     "message": "Sæki..."
@@ -438,7 +438,7 @@
     "message": "Nú, eða kannski skrifa skemmtilega umsögn á vefsvæðinu fyrir Mozilla viðbæturnar ?"
   },
   "req_review_link": {
-    "message": "Skrifa umsögn um VDH-niðurhalshjálpina"
+    "message": "Skrifa umsögn um :appName"
   },
   "running": {
     "message": "Í gangi"
@@ -486,7 +486,7 @@
     "message": "Segðu mér meira um þetta"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "validate_license": {
     "message": "Skrá notkunarleyfi"
@@ -498,7 +498,7 @@
     "message": "Tilbrigði"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Útgáfa $1"
@@ -705,7 +705,7 @@
     "message": "Úrfellingarmerki til hægri"
   },
   "you_downloaded_n_videos": {
-    "message": "Þú varst að sækja skrá númer $1th með VDH-niðurhalshjálpinni."
+    "message": "Þú varst að sækja skrá númer $1th með :appName."
   },
   "v9_no_media_current_tab": {
     "message": "Engin margmiðlunargögn til að vinna með í núverandi flipa"
@@ -726,7 +726,7 @@
     "message": "Aðvörun vegna Chrome-viðbóta og YouTube"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Þú getur notað VDH-niðurhalshjálpina til að sækja YouTube-myndskeið með Firefox-útgáfunni."
+    "message": "Þú getur notað :appName til að sækja YouTube-myndskeið með Firefox-útgáfunni."
   },
   "v9_about_qr": {
     "message": "Skrá útbúin"
@@ -747,7 +747,7 @@
     "message": "Hámarksfjöldi samtímis niðurhala"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" er núna tilbúið"

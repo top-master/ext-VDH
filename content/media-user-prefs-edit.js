@@ -981,13 +981,19 @@ var Oe = ie((xt, Me) => {
     }
     let r = Ce[e];
     if (t && !Array.isArray(t) && (t = [t]), r && r.message.length > 0)
-      return (r.message || "")
+      return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.((r.message || "")
+        .replace(Te, o => {
+          let i = Te.exec(o);
+          return i && t && t[parseInt(i[1]) - 1] || "??"
+        }), Ce.appName?.message || le.i18n.getMessage("appName")) ?? (r.message || "")
         .replace(Te, o => {
           let i = Te.exec(o);
           return i && t && t[parseInt(i[1]) - 1] || "??"
         });
     try {
-      return t ? le.i18n.getMessage(e, t) : le.i18n.getMessage(e)
+      let o = t ? le.i18n.getMessage(e, t) : le.i18n.getMessage(e);
+      return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(o, le.i18n
+        .getMessage("appName")) ?? o
     } catch {
       return ""
     }

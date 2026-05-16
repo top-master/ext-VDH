@@ -126,7 +126,7 @@
         <spacer flex="1"></spacer>
         <sl-icon-button name="x" class="button-hide"></sl-icon-button>
       </hbox>
-      <p><span data-i18n="v9_coapp_required_text"></span> <a target="_blank" href="https://github.com/aclap-dev/video-downloadhelper/wiki/CoApp-not-recognized" data-i18n="v9_coapp_help"></a></p>
+      <p><span data-i18n="v9_coapp_required_text"></span> <a target="_blank" data-cleanroom-url="coappHelpUrl" href="about:blank#cleanroom-coapp-help" data-i18n="v9_coapp_help"></a></p>
       <hbox class="download-error-actions" pack="end">
         <sl-button size="small" variant="success" class="error-nocoapp-button-success">
           <sl-icon slot="prefix" name="check-circle"></sl-icon>
@@ -412,6 +412,7 @@
 
 
   </template>
+  <script src="../cleanroom-shared.js"></script>
   <script type="module" src="shoelace.js"></script>
   <script type="module" src="panel.js"></script>
   <script type="module" src="settings.js"></script>

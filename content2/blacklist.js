@@ -1876,10 +1876,11 @@ function ue(e, t, r) {
       let n = r[e],
         o = 1;
       for (let u = 0; u < t.length; u++) n = n.replace(`$${o}`, t[u]);
-      return n
+      return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(n, r.appName) ?? n
     } else {
       let n = ce.default.i18n.getMessage(e, t);
-      return n || a()
+      return n ? globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(n, ce.default
+        .i18n.getMessage("appName")) ?? n : a()
     }
   } catch {
     return a()

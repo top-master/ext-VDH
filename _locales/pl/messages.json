@@ -30,7 +30,7 @@
     "message": "Plik został wygenerowany"
   },
   "about_vdh": {
-    "message": "Video DownloadHelper – informacje"
+    "message": ":appName – informacje"
   },
   "action_abort_description": {
     "message": "Przerwij trwające działanie"
@@ -147,7 +147,7 @@
     "message": "Ściągnij wideo ze strony"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "to rozszerzenie"
   },
   "appearance": {
     "message": "Wygląd"
@@ -186,7 +186,7 @@
     "message": "Budowa w $1"
   },
   "bulk_in_progress": {
-    "message": "Video DownloadHelper Masowe pobieranie w toku - nie zamykaj tej zakładki, zostanie ona zamknięta automatycznie"
+    "message": ":appName Masowe pobieranie w toku - nie zamykaj tej zakładki, zostanie ona zamknięta automatycznie"
   },
   "bulk_n_videos": {
     "message": "wideo $1"
@@ -228,7 +228,7 @@
     "message": "Zainstaluj Firefoks"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper dla Firefoxa"
+    "message": ":appName dla Firefoxa"
   },
   "chrome_license_webstore_accepted": {
     "message": "Aktywna licencja dla Chrome Webstore"
@@ -240,7 +240,7 @@
     "message": "Niestety, Chrome Web Store nie pozwala na rozszerzenia umożliwiające pobieranie filmów z serwisu Youtube, więc byliśmy zmuszeni usunąć tę funkcję."
   },
   "chrome_noyt_text2": {
-    "message": "Możesz skorzystać z Video DownloadHelper dla przeglądarki Firefox, aby pobierać filmy z serwisu Youtube."
+    "message": "Możesz skorzystać z :appName dla przeglądarki Firefox, aby pobierać filmy z serwisu Youtube."
   },
   "chrome_noyt_text3": {
     "message": "Niestety, Chrome Web Store nie pozwala na zamieszczanie rozszerzeń pozwalajacych na pobieranie plików wideo z serwisu YouTube. Nie możemy więc dołączyć tej funkcji do tego rozszerzenia w wersji dla przeglądarki Chrome."
@@ -564,7 +564,7 @@
     "message": "Dotacja"
   },
   "donate_vdh": {
-    "message": "Video DownloadHelper – pomoc"
+    "message": ":appName – pomoc"
   },
   "download_error": {
     "message": "Błąd pobierania"
@@ -885,7 +885,7 @@
     "message": "Lub napisz wspaniałą recenzję na witrynie dodatków Mozilli."
   },
   "req_review_link": {
-    "message": "Napisz opinię o Video DownloadHelper"
+    "message": "Napisz opinię o :appName"
   },
   "reset_settings": {
     "message": "Restartuj ustawienia"
@@ -993,7 +993,7 @@
     "message": "Powiedz więcej o tym"
   },
   "title": {
-    "message": "Pomocnik Pobierania Wideo "
+    "message": ":appName"
   },
   "translation": {
     "message": "Tłumaczenie"
@@ -1011,7 +1011,7 @@
     "message": "Warianty"
   },
   "vdh_notification": {
-    "message": "Pomocnik Pobierania Wideo "
+    "message": ":appName"
   },
   "version": {
     "message": "Wersja $1"
@@ -1500,7 +1500,7 @@
     "message": "Tak"
   },
   "you_downloaded_n_videos": {
-    "message": "Za pomocą Video DownloadHelpera został pobrany %ty plik."
+    "message": "Za pomocą :appName został pobrany %ty plik."
   },
   "v9_yes": {
     "message": "Tak"
@@ -1557,7 +1557,7 @@
     "message": "Niestety, Chrome Web Store nie pozwala na zamieszczanie rozszerzeń pozwalajacych na pobieranie plików wideo z serwisu YouTube. Nie możemy więc dołączyć tej funkcji do tego rozszerzenia w wersji dla przeglądarki Chrome."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Możesz skorzystać z Video DownloadHelper dla przeglądarki Firefox, aby pobierać filmy z serwisu Youtube."
+    "message": "Możesz skorzystać z :appName dla przeglądarki Firefox, aby pobierać filmy z serwisu Youtube."
   },
   "v9_about_qr": {
     "message": "Plik został wygenerowany"
@@ -1599,7 +1599,7 @@
     "message": "Uzyskaj dostęp do komend poprzez kliknięcie prawym przyciskiem myszy na stronie"
   },
   "v9_vdh_notification": {
-    "message": "Pomocnik Pobierania Wideo "
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "„$1” jest gotowy"
@@ -1620,7 +1620,7 @@
     "message": "Brak zarejestrowanej licencji"
   },
   "__MSG_appDesc_": {
-    "message": "Pomocnik Pobierania Wideo"
+    "message": "to rozszerzenie"
   },
   "v9_badge_new": {
     "message": "nowy"
@@ -1881,7 +1881,7 @@
     "message": "Automatycznie ukryć pobrane multimedia?"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Narzędzie Video DownloadHelper nie jest włączone w oknach prywatnych/incognito. Musisz włączyć tę opcję ręcznie (nie jest to wymagane)."
+    "message": "Narzędzie :appName nie jest włączone w oknach prywatnych/incognito. Musisz włączyć tę opcję ręcznie (nie jest to wymagane)."
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Włącz w Ustawieniach przeglądarki"
@@ -1893,7 +1893,7 @@
     "message": "Pobrałeś 100 filmów!"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Mamy nadzieję, że podoba Ci się Video DownloadHelper :) Czy zechciałbyś napisać miłą recenzję na stronie dodatku?"
+    "message": "Mamy nadzieję, że podoba Ci się :appName :) Czy zechciałbyś napisać miłą recenzję na stronie dodatku?"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Zostaw recenzję"

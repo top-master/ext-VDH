@@ -2109,10 +2109,11 @@ function Ae(e, t, r) {
       let i = r[e],
         o = 1;
       for (let u = 0; u < t.length; u++) i = i.replace(`$${o}`, t[u]);
-      return i
+      return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(i, r.appName) ?? i
     } else {
       let i = xe.default.i18n.getMessage(e, t);
-      return i || n()
+      return i ? globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(i, xe.default
+        .i18n.getMessage("appName")) ?? i : n()
     }
   } catch {
     return n()

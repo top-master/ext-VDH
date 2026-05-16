@@ -960,10 +960,11 @@ function $(t, r, e) {
       let o = e[t],
         l = 1;
       for (let c = 0; c < r.length; c++) o = o.replace(`$${l}`, r[c]);
-      return o
+      return globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(o, e.appName) ?? o
     } else {
       let o = O.default.i18n.getMessage(t, r);
-      return o || s()
+      return o ? globalThis.__cleanroomLinkGuard__?.resolveLocaleText?.(o, O.default
+        .i18n.getMessage("appName")) ?? o : s()
     }
   } catch {
     return s()

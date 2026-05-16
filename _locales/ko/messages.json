@@ -27,7 +27,7 @@
     "message": "파일 생성됨"
   },
   "about_vdh": {
-    "message": "Video DownloadHelper 정보"
+    "message": ":appName 정보"
   },
   "action_abort_description": {
     "message": "진행중인 작업 중단"
@@ -144,7 +144,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "이 확장 프로그램"
   },
   "appearance": {
     "message": "외형"
@@ -237,7 +237,7 @@
     "message": "불행하게도, 크롬 웹 스토어는 유튜브 동영상"
   },
   "chrome_noyt_text2": {
-    "message": "파이어폭스 버전 Video DownloadHelper를 사용하면 유튜브 동영상을 다운로드 할 수 있습니다."
+    "message": "파이어폭스 버전 :appName을 사용하면 유튜브 동영상을 다운로드 할 수 있습니다."
   },
   "chrome_noyt_text3": {
     "message": "크롬 웹 스토어가 유튜브 비디오 다운로드를 지원하는 확장기능을 허용하지 않아, 우리는 크롬 확장기능에 이 기능을 포함할 수 없습니다."
@@ -516,7 +516,7 @@
     "message": "기부"
   },
   "donate_vdh": {
-    "message": "Video DownloadHelper 도움말"
+    "message": ":appName 도움말"
   },
   "download_error": {
     "message": "다운로드 오류"
@@ -681,7 +681,7 @@
     "message": "다른 방법으로, 모질라 부가기능 웹사이트에서 좋은 리뷰를 쓰는 것은 어떨까요?"
   },
   "req_review_link": {
-    "message": "Video DownloadHelper 리뷰 작성"
+    "message": ":appName 리뷰 작성"
   },
   "reset_settings": {
     "message": "설정 초기화"
@@ -879,7 +879,7 @@
     "message": "크롬 웹 스토어가 유튜브 비디오 다운로드를 지원하는 확장기능을 허용하지 않아, 우리는 크롬 확장기능에 이 기능을 포함할 수 없습니다."
   },
   "v9_chrome_noyt_text2": {
-    "message": "파이어폭스 버전 Video DownloadHelper를 사용하면 유튜브 동영상을 다운로드 할 수 있습니다."
+    "message": "파이어폭스 버전 :appName을 사용하면 유튜브 동영상을 다운로드 할 수 있습니다."
   },
   "v9_about_qr": {
     "message": "파일 생성됨"

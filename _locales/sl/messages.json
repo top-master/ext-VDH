@@ -30,7 +30,7 @@
     "message": "Datoteka je bila ustvarjena"
   },
   "about_vdh": {
-    "message": "O Video DownloadHelperju"
+    "message": "O :appName"
   },
   "action_abort_description": {
     "message": "Prekini dejanje, ki se izvaja"
@@ -147,7 +147,7 @@
     "message": "Prenesi video iz interneta"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "ta raz?iritev"
   },
   "appearance": {
     "message": "Videz"
@@ -186,7 +186,7 @@
     "message": "Izgrajeno $1"
   },
   "bulk_in_progress": {
-    "message": "Paketno opravilo Video DownloadHelper je v teku. Ne zapirajte tega zavihka - to se bo zgodilo samodejno"
+    "message": "Paketno opravilo :appName je v teku. Ne zapirajte tega zavihka - to se bo zgodilo samodejno"
   },
   "bulk_n_videos": {
     "message": "$1 videoposnetkov"
@@ -240,7 +240,7 @@
     "message": "Na žalost Spletna trgovina Chrome ne dovoli razširitev za prenos videoposnetkov z YouTuba, tako da smo morali to značilnost odstraniti."
   },
   "chrome_noyt_text2": {
-    "message": "Za prenos videoposnetkov z YouTuba lahko uporabljate različico razširitve Video DownloadHelper za Firefox."
+    "message": "Za prenos videoposnetkov z YouTuba lahko uporabljate različico razširitve :appName za Firefox."
   },
   "chrome_noyt_text3": {
     "message": "Spletna trgovina Chrome žal ne dovoljuje razširitev za prenos videoposnetkov YouTube, zato te funkcije nismo mogli vključiti v različico razširitve za Chrome."
@@ -564,7 +564,7 @@
     "message": "Prispevaj"
   },
   "donate_vdh": {
-    "message": "Pomagajte dodatku Video DownloadHelper"
+    "message": "Pomagajte dodatku :appName"
   },
   "download_error": {
     "message": "Napaka pri prenosu"
@@ -885,7 +885,7 @@
     "message": "Po drugi strani ali bi imeli kaj proti pisanju prijazne ocene na strani Mozillinih dodatkov?"
   },
   "req_review_link": {
-    "message": "Napiši oceno o razširitvi Video DownloadHelper"
+    "message": "Napiši oceno o razširitvi :appName"
   },
   "reset_settings": {
     "message": "Ponastavi nastavitve"
@@ -993,7 +993,7 @@
     "message": "Povej več o tem"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Prevajanje"
@@ -1011,7 +1011,7 @@
     "message": "Različice"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Različica $1"
@@ -1500,7 +1500,7 @@
     "message": "Da"
   },
   "you_downloaded_n_videos": {
-    "message": "Z Video DownloadHelperjem ste uspešno prenesli $1. datoteko."
+    "message": "Z :appName ste uspešno prenesli $1. datoteko."
   },
   "v9_yes": {
     "message": "Da"
@@ -1557,7 +1557,7 @@
     "message": "Spletna trgovina Chrome žal ne dovoljuje razširitev za prenos videoposnetkov YouTube, zato te funkcije nismo mogli vključiti v različico razširitve za Chrome."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Za prenos videoposnetkov z YouTuba lahko uporabljate različico razširitve Video DownloadHelper za Firefox."
+    "message": "Za prenos videoposnetkov z YouTuba lahko uporabljate različico razširitve :appName za Firefox."
   },
   "v9_about_qr": {
     "message": "Datoteka je bila ustvarjena"
@@ -1599,7 +1599,7 @@
     "message": "Dostop do ukazov z desnim klikom na strani"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" je sedaj pripravljen"

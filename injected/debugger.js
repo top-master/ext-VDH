@@ -60,7 +60,7 @@
 
       downloadLink.href = objectUrl;
       downloadLink.target = "_blank";
-      downloadLink.download = "vdh-logs.txt";
+      downloadLink.download = globalThis.__cleanroomLinkGuard__.getLiteralValue("logsFileName");
       downloadLink.click();
 
       setTimeout(() => URL.revokeObjectURL(objectUrl), 1e3);

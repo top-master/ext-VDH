@@ -30,7 +30,7 @@
     "message": "Berkas yg dihasilkan"
   },
   "about_vdh": {
-    "message": "Tentang Video DownloadHelper"
+    "message": "Tentang :appName"
   },
   "action_abort_description": {
     "message": "Batalkan tindakan yg berjalan"
@@ -147,7 +147,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "ekstensi ini"
   },
   "appearance": {
     "message": "Tampilan"
@@ -186,7 +186,7 @@
     "message": "Dibuat berdasar $1"
   },
   "bulk_in_progress": {
-    "message": "Unduhan massal Video DownloadHelper sedang berlangsung. Jangan tutup tab ini, ini akan dilakukan secara otomatis"
+    "message": "Unduhan massal :appName sedang berlangsung. Jangan tutup tab ini, ini akan dilakukan secara otomatis"
   },
   "bulk_n_videos": {
     "message": "Video $1"
@@ -228,7 +228,7 @@
     "message": "Pasang Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper untuk Firefox"
+    "message": ":appName untuk Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "lisensi aktif dari chrome webstore"
@@ -240,7 +240,7 @@
     "message": "Sayangnya, Chrome Web Store tidak mengizinkan ekstensi untuk mengunduh video YouTube sehingga kami harus menghapus fitur ini."
   },
   "chrome_noyt_text2": {
-    "message": "Anda dapat menggunakan Video DownloadHelper untuk mengunduh video YouTube pada versi Firefox."
+    "message": "Anda dapat menggunakan :appName untuk mengunduh video YouTube pada versi Firefox."
   },
   "chrome_noyt_text3": {
     "message": "Mohon maaf, Chrome webstore tidak mengizinkan ekstensi untuk mengunduh video YouTube sehingga kami tidak dapat menyediakan fitur ini dalam versi ekstensi Chrome."
@@ -564,7 +564,7 @@
     "message": "Donasi"
   },
   "donate_vdh": {
-    "message": "Bantu Video DownloadHelper"
+    "message": "Bantu :appName"
   },
   "download_error": {
     "message": "Kesalahan unduhan"
@@ -885,7 +885,7 @@
     "message": "Atau, maukah anda menulis ulasan bagus di situs pengaya Mozilla?"
   },
   "req_review_link": {
-    "message": "Tulis ulasan mengenai Video DownloadHelper"
+    "message": "Tulis ulasan mengenai :appName"
   },
   "reset_settings": {
     "message": "Setel ulang setelan"
@@ -993,7 +993,7 @@
     "message": "Info lebih lanjut tentang ini"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Terjemahan"
@@ -1011,7 +1011,7 @@
     "message": "Varian"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Versi $1"
@@ -1494,7 +1494,7 @@
     "message": "Ya"
   },
   "you_downloaded_n_videos": {
-    "message": "Anda baru saja berhasil mengunduh berkas $1th dengan Video DownloadHelper."
+    "message": "Anda baru saja berhasil mengunduh berkas $1th dengan :appName."
   },
   "v9_yes": {
     "message": "Ya"
@@ -1551,7 +1551,7 @@
     "message": "Mohon maaf, Chrome webstore tidak mengizinkan ekstensi untuk mengunduh video YouTube sehingga kami tidak dapat menyediakan fitur ini dalam versi ekstensi Chrome."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Anda dapat menggunakan Video DownloadHelper untuk mengunduh video YouTube pada versi Firefox."
+    "message": "Anda dapat menggunakan :appName untuk mengunduh video YouTube pada versi Firefox."
   },
   "v9_about_qr": {
     "message": "Berkas yg dihasilkan"
@@ -1593,7 +1593,7 @@
     "message": "Perintah akses dari klik-kanan di laman"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" sudah siap"

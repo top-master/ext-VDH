@@ -1,6 +1,6 @@
 {
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "це розширення"
   },
   "Bytes": {
     "message": "$1 байт"
@@ -33,7 +33,7 @@
     "message": "Файл створено"
   },
   "about_vdh": {
-    "message": "Про Video DownloadHelper"
+    "message": "Про :appName"
   },
   "action_abort_description": {
     "message": "Скасування цієї дії у процесі"
@@ -180,7 +180,7 @@
     "message": "Завантаження відео з Інтернету"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "це розширення"
   },
   "appearance": {
     "message": "Вигляд"
@@ -261,7 +261,7 @@
     "message": "Встановити Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper для Firefox"
+    "message": ":appName для Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Активна ліцензія з Chrome Webstore"
@@ -273,7 +273,7 @@
     "message": "На жаль, Chrome Web Store не дозволяє додатки для завантаження відео YouTube і тому ми прибрали цю функцію."
   },
   "chrome_noyt_text2": {
-    "message": "Ви можете використати Video DownloadHelper, щоб завантажити відео YouTube в Firefox версії."
+    "message": "Ви можете використати :appName, щоб завантажити відео YouTube в Firefox версії."
   },
   "chrome_noyt_text3": {
     "message": "На жаль, Веб-магазин Chrome не дозволяє розширення для завантаження відео YouTube, тому ми не могли включити цю функцію до версії розширення Chrome."
@@ -612,7 +612,7 @@
     "message": "Пожертвувати"
   },
   "donate_vdh": {
-    "message": "Допомога Video DownloadHelper"
+    "message": "Допомога :appName"
   },
   "download_error": {
     "message": "Помилка завантаження"
@@ -978,7 +978,7 @@
     "message": "Крім того, ви не могли б написати хороший відгук на сайті додатків Mozilla?"
   },
   "req_review_link": {
-    "message": "Написати відгук про Video DownloadHelper"
+    "message": "Написати відгук про :appName"
   },
   "reset_settings": {
     "message": "Скинути налаштування"
@@ -1086,7 +1086,7 @@
     "message": "Розкажіть більше про це"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Переклад"
@@ -1107,7 +1107,7 @@
     "message": "Запам'ятати, як звичайну дію"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Ви можете використати Video DownloadHelper, щоб завантажити відео YouTube в Firefox версії."
+    "message": "Ви можете використати :appName, щоб завантажити відео YouTube в Firefox версії."
   },
   "v9_chrome_noyt_text3": {
     "message": "На жаль, Веб-магазин Chrome не дозволяє розширення для завантаження відео YouTube, тому ми не могли включити цю функцію до версії розширення Chrome."
@@ -1458,7 +1458,7 @@
     "message": "Автоматично приховувати завантажені медіа?"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper не активовано в приватних/інкогніто вікнах. Вам потрібно активувати цю опцію вручну (це необов'язково)."
+    "message": ":appName не активовано в приватних/інкогніто вікнах. Вам потрібно активувати цю опцію вручну (це необов'язково)."
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Увімкніть у налаштуваннях браузера"
@@ -1470,7 +1470,7 @@
     "message": "Ви завантажили 100 відео!"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Ми сподіваємося, що вам подобається Video DownloadHelper :) Не могли б ви написати хороший відгук на веб-сайті додатка?"
+    "message": "Ми сподіваємося, що вам подобається :appName :) Не могли б ви написати хороший відгук на веб-сайті додатка?"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Залишити відгук"
@@ -1479,7 +1479,7 @@
     "message": "Не запитувати знову "
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_weh_prefs_description_contextMenuEnabled": {
     "message": "Доступ до команд через клік правою кнопкою миші на сторінці"
@@ -1506,7 +1506,7 @@
     "message": "Варіанти"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Версія $1"
@@ -2004,6 +2004,6 @@
     "message": "Так"
   },
   "you_downloaded_n_videos": {
-    "message": "Ви тільки що успішно завантажили ваш $1й файл з Video DownloadHelper."
+    "message": "Ви тільки що успішно завантажили ваш $1й файл з :appName."
   }
 }

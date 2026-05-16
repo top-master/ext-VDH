@@ -147,7 +147,7 @@
     "message": "Скачать видео из интернета"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "это расширение"
   },
   "appearance": {
     "message": "Внешний вид"
@@ -186,7 +186,7 @@
     "message": "Скомпилировано $1"
   },
   "bulk_in_progress": {
-    "message": "Выполняется пакетная операция Video DownloadHelper. Не закрывайте вкладку, это будет сделано автоматически"
+    "message": "Выполняется пакетная операция :appName. Не закрывайте вкладку, это будет сделано автоматически"
   },
   "bulk_n_videos": {
     "message": "$1 видео"
@@ -228,7 +228,7 @@
     "message": "Установите Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper для Firefox"
+    "message": ":appName для Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Активная лицензия из интернет-магазина Chrome"
@@ -240,7 +240,7 @@
     "message": "К сожалению, Chrome Web Store не позволяет расширениям загружать YouTube-видео, поэтому нам пришлось убрать такую возможность"
   },
   "chrome_noyt_text2": {
-    "message": "Вы можете использовать Video DownloadHelper для скачивания YouTube-видео, используя Firefox версию"
+    "message": "Вы можете использовать :appName для скачивания YouTube-видео, используя Firefox версию"
   },
   "chrome_noyt_text3": {
     "message": "К сожалению, интернет-магазин Chrome не допускает расширений для загрузки видео с YouTube, потому эта функция отсутствует в версии дополнения для Chrome."
@@ -564,7 +564,7 @@
     "message": "Пожертвования"
   },
   "donate_vdh": {
-    "message": "Справка по Video DownloadHelper"
+    "message": "Справка по :appName"
   },
   "download_error": {
     "message": "Ошибка загрузки"
@@ -885,7 +885,7 @@
     "message": "Или же, не хотите ли написать отличный отзыв на сайте дополнений Mozilla ?"
   },
   "req_review_link": {
-    "message": "Написать отзыв о Video DownloadHelper"
+    "message": "Написать отзыв о :appName"
   },
   "reset_settings": {
     "message": "Сброс настроек"
@@ -993,7 +993,7 @@
     "message": "Рассказать больше об этом"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Перевод"
@@ -1011,7 +1011,7 @@
     "message": "Варианты"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Версия $1"
@@ -1500,7 +1500,7 @@
     "message": "Да"
   },
   "you_downloaded_n_videos": {
-    "message": "Вы только что успешно загрузили Ваш $1th файл с помощью Video DownloadHelper."
+    "message": "Вы только что успешно загрузили Ваш $1th файл с помощью :appName."
   },
   "v9_yes": {
     "message": "Да"
@@ -1557,7 +1557,7 @@
     "message": "К сожалению, интернет-магазин Chrome не допускает расширений для загрузки видео с YouTube, потому эта функция отсутствует в версии дополнения для Chrome."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Вы можете использовать Video DownloadHelper для скачивания YouTube-видео, используя Firefox версию"
+    "message": "Вы можете использовать :appName для скачивания YouTube-видео, используя Firefox версию"
   },
   "v9_about_qr": {
     "message": "Файл сгенерирован"
@@ -1599,7 +1599,7 @@
     "message": "Доступ к меню команд по правому клику мышью на целевой странице"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" готов"

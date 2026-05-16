@@ -30,7 +30,7 @@
     "message": "Soubor vygenerován"
   },
   "about_vdh": {
-    "message": "O Video DownloadHelperu"
+    "message": "O :appName"
   },
   "action_abort_description": {
     "message": "Zrušit probíhající úkon"
@@ -147,7 +147,7 @@
     "message": "Stáhnout videa z webu"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "toto roz???en?"
   },
   "appearance": {
     "message": "Vzhled"
@@ -186,7 +186,7 @@
     "message": "Postaveno na $1"
   },
   "bulk_in_progress": {
-    "message": "Probíhá hromadný úkon Video DownloadHelperu. Nezavírejte tuto kartu, stane se tak automaticky"
+    "message": "Probíhá hromadný úkon :appName. Nezavírejte tuto kartu, stane se tak automaticky"
   },
   "bulk_n_videos": {
     "message": "$1 videí"
@@ -228,7 +228,7 @@
     "message": "Instalovat Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper pro Firefox"
+    "message": ":appName pro Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Aktivní licence z webobchodu Chromu"
@@ -240,7 +240,7 @@
     "message": "Bohužel webobchod Chromu nepovoluje rozšíření, která stahují videa z YouTube, takže jsme tuto funkci museli odstranit"
   },
   "chrome_noyt_text2": {
-    "message": "Můžete použít Firefox verzi Video DownloadHelperu ke stažení videí z YouTube"
+    "message": "Můžete použít Firefox verzi :appName ke stažení videí z YouTube"
   },
   "chrome_noyt_text3": {
     "message": "Bohužel webobchod Chromu nepovoluje rozšíření, která stahují videa z YouTube, takže jsme tuto funkci nemohli zahrnout v Chrome verzi rozšíření"
@@ -564,7 +564,7 @@
     "message": "Darovat"
   },
   "donate_vdh": {
-    "message": "Pomoc Video DownloadHelperu"
+    "message": "Pomoc :appName"
   },
   "download_error": {
     "message": "Chyba stahování"
@@ -885,7 +885,7 @@
     "message": "Případně, napsali byste pěkné hodnocení na stránku Mozilly s rozšířením ?"
   },
   "req_review_link": {
-    "message": "Napsat recenzi o Video DownloadHelperu"
+    "message": "Napsat recenzi o :appName"
   },
   "reset_settings": {
     "message": "Resetovat nastavení"
@@ -993,7 +993,7 @@
     "message": "Řekni mi více o tomhle"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Překlad"
@@ -1011,7 +1011,7 @@
     "message": "Varianty"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Verze $1"
@@ -1500,7 +1500,7 @@
     "message": "Ano"
   },
   "you_downloaded_n_videos": {
-    "message": "Právě jste úspěšně stáhli váš $1tý soubor s Video DownloadHelperem."
+    "message": "Právě jste úspěšně stáhli váš $1tý soubor s :appName."
   },
   "v9_yes": {
     "message": "Ano"
@@ -1557,7 +1557,7 @@
     "message": "Bohužel webobchod Chromu nepovoluje rozšíření, která stahují videa z YouTube, takže jsme tuto funkci nemohli zahrnout v Chrome verzi rozšíření"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Můžete použít Firefox verzi Video DownloadHelperu ke stažení videí z YouTube"
+    "message": "Můžete použít Firefox verzi :appName ke stažení videí z YouTube"
   },
   "v9_about_qr": {
     "message": "Soubor vygenerován"
@@ -1599,7 +1599,7 @@
     "message": "Přístup k příkazům pravým klinutím na stránce"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" je připraveno."
@@ -1620,7 +1620,7 @@
     "message": "Žádná licence není registrovaná"
   },
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "toto roz???en?"
   },
   "v9_badge_new": {
     "message": "nové"
@@ -1875,7 +1875,7 @@
     "message": "Automaticky skrýt stažená média?"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper není povolen v anonymních oknech. Tuto možnost musíte zapnout ručně (není vyžadováno)."
+    "message": ":appName není povolen v anonymních oknech. Tuto možnost musíte zapnout ručně (není vyžadováno)."
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Povolit v Nastavení prohlížeče"
@@ -1899,7 +1899,7 @@
     "message": "Už jste stáhl 100 videí!"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Doufáme, že se vám Video DownloadHelper líbí :-) Napsali byste hezké hodnocení na stránku s rozšířeními?"
+    "message": "Doufáme, že se vám :appName líbí :-) Napsali byste hezké hodnocení na stránku s rozšířeními?"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Napište hodnocení"

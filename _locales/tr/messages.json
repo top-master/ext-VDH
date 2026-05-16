@@ -30,7 +30,7 @@
     "message": "Üretilen dosya"
   },
   "about_vdh": {
-    "message": "Video DownloadHelper hakkında"
+    "message": ":appName hakkında"
   },
   "action_abort_description": {
     "message": "Süren eylemi durdurun"
@@ -147,7 +147,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "bu uzant?"
   },
   "appearance": {
     "message": "Görünüm"
@@ -186,7 +186,7 @@
     "message": "$1 üzerine derlenmiştir."
   },
   "bulk_in_progress": {
-    "message": "Video DownloadHelper toplu işlemleri sürdürülmektedir. Bu sekmeyi kapatmayın, kendiliğinden kapatılacaktır."
+    "message": ":appName toplu işlemleri sürdürülmektedir. Bu sekmeyi kapatmayın, kendiliğinden kapatılacaktır."
   },
   "bulk_n_videos": {
     "message": "$1 videolar"
@@ -228,7 +228,7 @@
     "message": "Firefox Yükle"
   },
   "chrome_install_fx_vdh": {
-    "message": "Firefox için Video DownloadHelper"
+    "message": "Firefox için :appName"
   },
   "chrome_license_webstore_accepted": {
     "message": "Lisansı Chrome Web mağazasından aktifleştir"
@@ -240,7 +240,7 @@
     "message": "Maalesef, Chrome Web Mağazası YouTube videolarını indirmeye yarayan uzantılara izin vermediği için bu özelliği kaldırmak zorunda kaldık."
   },
   "chrome_noyt_text2": {
-    "message": "YouTube videolarını indirebilmek için Video DownloadHelper uzantısının Firefox versiyonunu kullanabilirsiniz."
+    "message": "YouTube videolarını indirebilmek için :appName uzantısının Firefox versiyonunu kullanabilirsiniz."
   },
   "chrome_noyt_text3": {
     "message": "Ne yazıkki, Chrome Web Mağazası YouTube videolarının indirilmesini sağlayan eklentilere izin vermemektedir, bu nedenle biz eklentinin Chrome sürümüne bu özelliği koymuyoruz."
@@ -564,7 +564,7 @@
     "message": "Bağış yap"
   },
   "donate_vdh": {
-    "message": "Video DownloadHelper'a yardım et"
+    "message": ":appName yardım et"
   },
   "download_error": {
     "message": "İndirme  Hatası"
@@ -885,7 +885,7 @@
     "message": "Seçenek olarak, Mozilla eklenti sitesinde güzel bir yorum yazmak ister misiniz?"
   },
   "req_review_link": {
-    "message": "Video DownloadHelper hakkında yorum yazar mısınız"
+    "message": ":appName hakkında yorum yazar mısınız"
   },
   "reset_settings": {
     "message": "Sıfırlama Ayarları"
@@ -993,7 +993,7 @@
     "message": "Bununla ilgili daha çok bilgi ver"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Çeviri"
@@ -1011,7 +1011,7 @@
     "message": "Değişkeler"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Sürüm $1"
@@ -1494,7 +1494,7 @@
     "message": "Evet"
   },
   "you_downloaded_n_videos": {
-    "message": "Şu anda $1 adedinci dosyayı Video DownloadHelper ile başarıyla indirdin."
+    "message": "Şu anda $1 adedinci dosyayı :appName ile başarıyla indirdin."
   },
   "v9_yes": {
     "message": "Evet"
@@ -1551,7 +1551,7 @@
     "message": "Ne yazıkki, Chrome Web Mağazası YouTube videolarının indirilmesini sağlayan eklentilere izin vermemektedir, bu nedenle biz eklentinin Chrome sürümüne bu özelliği koymuyoruz."
   },
   "v9_chrome_noyt_text2": {
-    "message": "YouTube videolarını indirebilmek için Video DownloadHelper uzantısının Firefox versiyonunu kullanabilirsiniz."
+    "message": "YouTube videolarını indirebilmek için :appName uzantısının Firefox versiyonunu kullanabilirsiniz."
   },
   "v9_about_qr": {
     "message": "Üretilen dosya"
@@ -1593,7 +1593,7 @@
     "message": "Sayfa içi sağ-click ten erişim komutları"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" şimdi hazır"
@@ -1614,7 +1614,7 @@
     "message": "Kayıtlı lisans yok"
   },
   "__MSG_appDesc_": {
-    "message": "Video İndirme Yardımcısı"
+    "message": "bu uzant?"
   },
   "v9_badge_new": {
     "message": "Yeni"
@@ -1830,7 +1830,7 @@
     "message": "İndirilen Medya Otomatik Kaldırılsın Mı?"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper Gizli Sekmede Çalışmaz. Fakat Ayarlardan Manuel Olarak Açabilirsiniz. (Zorunlu Değil)"
+    "message": ":appName Gizli Sekmede Çalışmaz. Fakat Ayarlardan Manuel Olarak Açabilirsiniz. (Zorunlu Değil)"
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Tarayıcı Ayarlarında Aç"
@@ -1842,7 +1842,7 @@
     "message": "100 İndirmeye Ulaştın!"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Umarız Video DownloadHelper'ın Tadını Çıkarabilmişsinizdir. :) Sitemizde Bizi Değerlendirmeyi Düşünürmüsünüz?"
+    "message": "Umarız :appName Tadını Çıkarabilmişsinizdir. :) Sitemizde Bizi Değerlendirmeyi Düşünürmüsünüz?"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Bizi Değerlendir."

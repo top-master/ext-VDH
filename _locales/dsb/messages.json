@@ -27,7 +27,7 @@
     "message": "Dataja jo se napórała."
   },
   "about_vdh": {
-    "message": "Wó Video DownloadHelper"
+    "message": "Wó :appName"
   },
   "action_abort_description": {
     "message": "Běžecu akciju pśetergnuś"
@@ -144,7 +144,7 @@
     "message": "Download Videos from the Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "to? to roz?yrjenje"
   },
   "appearance": {
     "message": "Wuglědanje"
@@ -183,7 +183,7 @@
     "message": "$1 napórany"
   },
   "bulk_in_progress": {
-    "message": "Masowe ześěgnjenje Video DownloadHelper běžy. Njezacyńśo toś ten rejtark, to se awtomatiski stanjo."
+    "message": "Masowe ześěgnjenje :appName běžy. Njezacyńśo toś ten rejtark, to se awtomatiski stanjo."
   },
   "bulk_n_videos": {
     "message": "$1 wideo"
@@ -222,7 +222,7 @@
     "message": "Firefox instalěrowaś"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper za Firefox"
+    "message": ":appName za Firefox"
   },
   "chrome_licensing": {
     "message": "Licencěrowanje Chrome"
@@ -231,7 +231,7 @@
     "message": "Bóžko Chrome Web Store rozšyrjenja za ześěgowanje wideo Youtube njedowolujo. Togodla smy musyli toś tu funkciju wótwónoźeś."
   },
   "chrome_noyt_text2": {
-    "message": "Móžośo VideoDownloadHelper wužywaś, aby wideo Youtube z Firefox ześěgnuś."
+    "message": "Móžośo :appName wužywaś, aby wideo Youtube z Firefox ześěgnuś."
   },
   "chrome_premium_audio": {
     "message": "Awdiodataje daju se jano w premiumowem modusu napóraś"
@@ -552,7 +552,7 @@
     "message": "Pósćiś"
   },
   "donate_vdh": {
-    "message": "Video DownloadHelper pódprěś"
+    "message": ":appName pódprěś"
   },
   "download_error": {
     "message": "Ześěgowańska zmólka"
@@ -846,7 +846,7 @@
     "message": "Jolic cośo, móžośo pak teke pógódnośenje na sedle dodankow Mozilla pisaś."
   },
   "req_review_link": {
-    "message": "Pógódnośenje wó Video DownloadHelper pisaś"
+    "message": "Pógódnośenje wó :appName pisaś"
   },
   "reset_settings": {
     "message": "Nastajenja slědk stajiś"
@@ -948,7 +948,7 @@
     "message": "Wulicujśo wěcej wó tom"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Pśełožk"
@@ -966,7 +966,7 @@
     "message": "Warianty"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Wersija $1"
@@ -1443,7 +1443,7 @@
     "message": "Jo"
   },
   "you_downloaded_n_videos": {
-    "message": "Sćo rowno ześěgnuł swóju $1. dataju z Video DownloadHelper."
+    "message": "Sćo rowno ześěgnuł swóju $1. dataju z :appName."
   },
   "v9_yes": {
     "message": "Jo"
@@ -1497,7 +1497,7 @@
     "message": "Warnowanje za rozšyrjenja Chrome a Youtube"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Móžośo VideoDownloadHelper wužywaś, aby wideo Youtube z Firefox ześěgnuś."
+    "message": "Móžośo :appName wužywaś, aby wideo Youtube z Firefox ześěgnuś."
   },
   "v9_about_qr": {
     "message": "Dataja jo se napórała."
@@ -1539,7 +1539,7 @@
     "message": "Pśistup na pśikaze z prawego kliknjenja na boku"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" jo něnto gótowy"

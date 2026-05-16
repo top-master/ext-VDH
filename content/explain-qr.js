@@ -7,6 +7,8 @@
 /** @typedef {import("./ui-types").VoidHandler} VoidHandler */
 
 (() => {
+  const cleanroomShared = globalThis.__cleanroomLinkGuard__;
+
   class ExplainQrPage extends React.Component {
     /**
      * @param {EmptyProps} props
@@ -34,7 +36,7 @@
      */
     createOpenLicensingInfoHandler() {
       return () => {
-        weh.rpc.call("goto", "https://www.downloadhelper.net/about-licensing");
+        weh.rpc.call("goto", cleanroomShared.getUrlValue("licenseInfoUrl"));
       };
     }
 
@@ -43,7 +45,7 @@
      */
     createOpenConversionLicenseHandler() {
       return () => {
-        weh.rpc.call("goto", "https://www.downloadhelper.net/convert");
+        weh.rpc.call("goto", cleanroomShared.getUrlValue("convertUrl"));
       };
     }
 

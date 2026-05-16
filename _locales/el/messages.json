@@ -30,7 +30,7 @@
     "message": "Το αρχείο δημιουργήθηκε"
   },
   "about_vdh": {
-    "message": "Σχετικά με το Video DownloadHelper"
+    "message": "Σχετικά με το :appName"
   },
   "action_abort_description": {
     "message": "Ακύρωση της υπό εξέλιξη ενέργειας"
@@ -147,7 +147,7 @@
     "message": "Κατέβασμα Βίντεο από το Ίντερνετ"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "αυτή η επέκταση"
   },
   "appearance": {
     "message": "Εμφάνιση"
@@ -228,7 +228,7 @@
     "message": "Εγκατάσταση Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper για Firefox"
+    "message": ":appName για Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Ενεργή άδεια από το Chrome Webstore"
@@ -240,7 +240,7 @@
     "message": "Δυστυχώς το Chrome Web Store δεν επιτρέπει επεκτάσεις για λήψη βίντεο από το YouTube, και επομένως αυτή η λειτουργία έπρεπε να αφαιρεθεί."
   },
   "chrome_noyt_text2": {
-    "message": "Μπορείτε να κατεβάσετε βίντεο από το YouTube χρησιμοποιώντας την έκδοση του Video DownloadHelper για Firefox."
+    "message": "Μπορείτε να κατεβάσετε βίντεο από το YouTube χρησιμοποιώντας την έκδοση του :appName για Firefox."
   },
   "chrome_noyt_text3": {
     "message": "Δυστυχώς, το διαδυκτιακό κατάστημα του Chrome δεν επιτρέπει επεκτάσεις για κατέβασμα βίντεο από το YouTube, συνεπώς δεν μπορούμε να συμπεριλάβουμε αυτή την λειτουργία της επέκτασης στην έκδοση για Chrome."
@@ -564,7 +564,7 @@
     "message": "Κάντε μια δωρεά"
   },
   "donate_vdh": {
-    "message": "Βοηθήστε το Video DownloadHelper"
+    "message": "Βοηθήστε το :appName"
   },
   "download_error": {
     "message": "Σφάλμα λήψης"
@@ -885,7 +885,7 @@
     "message": "Εναλλακτικά, θα θέλατε να γράψετε μια καλή κριτική στον ιστότοπο των πρόσθετων του Mozilla;"
   },
   "req_review_link": {
-    "message": "Γράψτε μια κριτική για το Video DownloadHelper"
+    "message": "Γράψτε μια κριτική για το :appName"
   },
   "reset_settings": {
     "message": "Επαναφορά ρυθμίσεων"
@@ -993,7 +993,7 @@
     "message": "Πείτε μου περισσότερα γι' αυτό"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Μετάφραση"
@@ -1011,7 +1011,7 @@
     "message": "Παραλλαγές"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Έκδοση $1"
@@ -1500,7 +1500,7 @@
     "message": "Ναι"
   },
   "you_downloaded_n_videos": {
-    "message": "Μόλις κατεβάσατε επιτυχώς το $1ο σας βίντεο με τον Video DownloadHelper."
+    "message": "Μόλις κατεβάσατε επιτυχώς το $1ο σας βίντεο με τον :appName."
   },
   "v9_yes": {
     "message": "Ναι"
@@ -1557,7 +1557,7 @@
     "message": "Δυστυχώς, το διαδυκτιακό κατάστημα του Chrome δεν επιτρέπει επεκτάσεις για κατέβασμα βίντεο από το YouTube, συνεπώς δεν μπορούμε να συμπεριλάβουμε αυτή την λειτουργία της επέκτασης στην έκδοση για Chrome."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Μπορείτε να κατεβάσετε βίντεο από το YouTube χρησιμοποιώντας την έκδοση του Video DownloadHelper για Firefox."
+    "message": "Μπορείτε να κατεβάσετε βίντεο από το YouTube χρησιμοποιώντας την έκδοση του :appName για Firefox."
   },
   "v9_about_qr": {
     "message": "Το αρχείο δημιουργήθηκε"
@@ -1599,7 +1599,7 @@
     "message": "Πρόσβαση στις εντολές με δεξί κλικ στη σελίδα"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "Το \"$1\" είναι τώρα έτοιμο"
@@ -1620,7 +1620,7 @@
     "message": "Δεν έχει γίνει καταχώριση άδειας χρήσης"
   },
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "αυτή η επέκταση"
   },
   "v9_coapp_help": {
     "message": "Πατήστε εδώ για να αντιμετωπιστεί το πρόβλημά σας."
@@ -1884,7 +1884,7 @@
     "message": "Χωρίς λειτουργία ανώνυμης περιήγησης"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Το Video DownloadHelper δεν είναι ενεργοποιημένο σε Ιδιωτικά/Ανώνυμα παράθυρα. Θα χρειαστεί να ενεργοποιήσετε αυτήν την επιλογή χειροκίνητα (αυτό δεν υποχρεωτικό)."
+    "message": "Το :appName δεν είναι ενεργοποιημένο σε Ιδιωτικά/Ανώνυμα παράθυρα. Θα χρειαστεί να ενεργοποιήσετε αυτήν την επιλογή χειροκίνητα (αυτό δεν υποχρεωτικό)."
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Ενεργοποίηση στις Ρυθμίσεις Προγράματος Περιήγησης"
@@ -1899,7 +1899,7 @@
     "message": "Έχετε κατεβάσει 100 βίντεο!"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Ελπίζουμε να απολαμβάνετε το Video DownloadHelper :) Θα θέλατε να γράψετε μια ωραία αξιολόγηση στον ιστότοπο του πρόσθετου;"
+    "message": "Ελπίζουμε να απολαμβάνετε το :appName :) Θα θέλατε να γράψετε μια ωραία αξιολόγηση στον ιστότοπο του πρόσθετου;"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Αφήστε μια αξιολόγηση"

@@ -30,7 +30,7 @@
     "message": "生成文件"
   },
   "about_vdh": {
-    "message": "关于 Video DownloadHelper"
+    "message": "关于 :appName"
   },
   "action_abort_description": {
     "message": "终止正在运行的活动"
@@ -147,7 +147,7 @@
     "message": "下载网页上面的视频"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "此扩展程序"
   },
   "appearance": {
     "message": "界面"
@@ -240,7 +240,7 @@
     "message": "抱歉，Chrome Web Store 不允许扩展下载 YouTube 视频，所以我们不得不去掉这个功能。"
   },
   "chrome_noyt_text2": {
-    "message": "你可以在 Firefox 版本上使用 Video DownloadHelper 下载 YouTube 视频。"
+    "message": "你可以在 Firefox 版本上使用 :appName 下载 YouTube 视频。"
   },
   "chrome_noyt_text3": {
     "message": "遗憾的是，Chrome网上应用店不允许扩展程序下载YouTube视频，因此我们无法在扩展程序的Chrome版本中包含此功能。"
@@ -564,7 +564,7 @@
     "message": "捐款"
   },
   "donate_vdh": {
-    "message": "帮助 Video DownloadHelper"
+    "message": "帮助 :appName"
   },
   "download_error": {
     "message": "下载错误"
@@ -885,7 +885,7 @@
     "message": "或者，在 Mozilla 附加组件上写一个优秀评价？"
   },
   "req_review_link": {
-    "message": "撰写对 Video DownloadHelper 的评价"
+    "message": "撰写对 :appName 的评价"
   },
   "reset_settings": {
     "message": "重置设置"
@@ -993,7 +993,7 @@
     "message": "了解更多"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "翻译"
@@ -1011,7 +1011,7 @@
     "message": "变量"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "版本 $1"
@@ -1500,7 +1500,7 @@
     "message": "是"
   },
   "you_downloaded_n_videos": {
-    "message": "您刚刚成功用 Video DownloadHelper 下载您的第 $1 个文件。"
+    "message": "您刚刚成功用 :appName 下载您的第 $1 个文件。"
   },
   "v9_yes": {
     "message": "是"
@@ -1557,7 +1557,7 @@
     "message": "遗憾的是，Chrome网上应用店不允许扩展程序下载YouTube视频，因此我们无法在扩展程序的Chrome版本中包含此功能。"
   },
   "v9_chrome_noyt_text2": {
-    "message": "你可以在 Firefox 版本上使用 Video DownloadHelper 下载 YouTube 视频。"
+    "message": "你可以在 Firefox 版本上使用 :appName 下载 YouTube 视频。"
   },
   "v9_about_qr": {
     "message": "文件已生成"
@@ -1599,7 +1599,7 @@
     "message": "访问来自页面右击的命令"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "“$1”现已就绪"
@@ -1956,7 +1956,7 @@
     "message": "自动隐藏已下载媒体？"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper 未在隐身模式中启用，你需要在选项中手工启动（非必须）。"
+    "message": ":appName 未在隐身模式中启用，你需要在选项中手工启动（非必须）。"
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "启用浏览器中设置"

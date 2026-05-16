@@ -30,7 +30,7 @@
     "message": "Arquivo gerado"
   },
   "about_vdh": {
-    "message": "Sobre o Video DownloadHelper"
+    "message": "Sobre o :appName"
   },
   "action_abort_description": {
     "message": "Anula a ação em andamento"
@@ -147,7 +147,7 @@
     "message": "Baixar vídeos da Web"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "esta extens?o"
   },
   "appearance": {
     "message": "Aparência"
@@ -186,7 +186,7 @@
     "message": "Construído em $1"
   },
   "bulk_in_progress": {
-    "message": "Operações em massa do Video DownloadHelper em progresso. Não feche esta aba, isso ocorrerá automaticamente"
+    "message": "Operações em massa do :appName em progresso. Não feche esta aba, isso ocorrerá automaticamente"
   },
   "bulk_n_videos": {
     "message": "$1 vídeos"
@@ -228,7 +228,7 @@
     "message": "Instalar Firefox"
   },
   "chrome_install_fx_vdh": {
-    "message": "Video DownloadHelper para o Firefox"
+    "message": ":appName para o Firefox"
   },
   "chrome_license_webstore_accepted": {
     "message": "Licença Chrome Webstore aceite"
@@ -240,7 +240,7 @@
     "message": "Infelizmente, a Loja Web do Chrome não permite extensões para baixar vídeos do YouTube, então nós tivemos que remover esta funcionalidade"
   },
   "chrome_noyt_text2": {
-    "message": "Você pode usar o Video DownloadHelper para baixar vídeos do Youtube na versão para Firefox"
+    "message": "Você pode usar o :appName para baixar vídeos do Youtube na versão para Firefox"
   },
   "chrome_noyt_text3": {
     "message": "Infelizmente, a loja do navegador Chrome não permite realizar transferências de vídeos, sendo assim não podemos incluir esta função na versão destinada ao Chrome."
@@ -564,7 +564,7 @@
     "message": "Doe"
   },
   "donate_vdh": {
-    "message": "Ajude o Video DownloadHelper"
+    "message": "Ajude o :appName"
   },
   "download_error": {
     "message": "Erro no download"
@@ -885,7 +885,7 @@
     "message": "Alternativamente, você se importaria de escrever um comentário legal no site de complementos da Mozilla ?"
   },
   "req_review_link": {
-    "message": "Escreva um comentário sobre o Video DownloadHelper"
+    "message": "Escreva um comentário sobre o :appName"
   },
   "reset_settings": {
     "message": "Resetar configurações"
@@ -993,7 +993,7 @@
     "message": "Mais informações sobre isso"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "Tradução"
@@ -1011,7 +1011,7 @@
     "message": "Variantes"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "Versão $1"
@@ -1500,7 +1500,7 @@
     "message": "Sim"
   },
   "you_downloaded_n_videos": {
-    "message": "Você acabou de baixar com sucesso seu $1º arquivo com o Video DownloadHelper."
+    "message": "Você acabou de baixar com sucesso seu $1º arquivo com o :appName."
   },
   "v9_yes": {
     "message": "Sim"
@@ -1557,7 +1557,7 @@
     "message": "Infelizmente, a loja do navegador Chrome não permite realizar transferências de vídeos, sendo assim não podemos incluir esta função na versão destinada ao Chrome."
   },
   "v9_chrome_noyt_text2": {
-    "message": "Você pode usar o Video DownloadHelper para baixar vídeos do Youtube na versão para Firefox"
+    "message": "Você pode usar o :appName para baixar vídeos do Youtube na versão para Firefox"
   },
   "v9_about_qr": {
     "message": "Arquivo gerado"
@@ -1599,7 +1599,7 @@
     "message": "Comandos de acesso a partir do botão direito na página"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" já está pronto"
@@ -1734,7 +1734,7 @@
     "message": "Máximo de formatos"
   },
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "esta extens?o"
   },
   "v9_badge_new": {
     "message": "novo"
@@ -1974,7 +1974,7 @@
     "message": "Ocultar automaticamente a mídia baixada?"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper não está habilitado em janelas privadas/anônimas. Você precisa ativar essa opção manualmente (isso não é obrigatório)."
+    "message": ":appName não está habilitado em janelas privadas/anônimas. Você precisa ativar essa opção manualmente (isso não é obrigatório)."
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "Ativar nas Configurações do Navegador"
@@ -2001,7 +2001,7 @@
     "message": "Você baixou 100 vídeos!"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Esperamos que você esteja gostando do Vídeo DownloadHelper :) Você se importaria de escrever uma boa crítica no site do complemento?"
+    "message": "Esperamos que você esteja gostando do :appName :) Você se importaria de escrever uma boa crítica no site do complemento?"
   },
   "v9_user_message_one_hundred_downloads_leave_review": {
     "message": "Deixe um comentário"

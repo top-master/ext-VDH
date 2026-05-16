@@ -30,7 +30,7 @@
     "message": "生成されたファイル"
   },
   "about_vdh": {
-    "message": "Video DownloadHelper について"
+    "message": ":appName について"
   },
   "action_abort_description": {
     "message": "進行中の動作を中断します。"
@@ -147,7 +147,7 @@
     "message": "Web からビデオをダウンロードする"
   },
   "appName": {
-    "message": "Video DownloadHelper"
+    "message": "この拡張機能"
   },
   "appearance": {
     "message": "外観"
@@ -228,7 +228,7 @@
     "message": "Firefox をインストールする"
   },
   "chrome_install_fx_vdh": {
-    "message": "Firefox 用 Video DownloadHelper"
+    "message": "Firefox 用 :appName"
   },
   "chrome_license_webstore_accepted": {
     "message": "Chrome ウェブストアからの有効なライセンス"
@@ -240,7 +240,7 @@
     "message": "申し訳ありませんが、Chrome ウェブストアでは YouTube の動画をダウンロードするための拡張機能を使用できないため、この機能を削除する必要がありました。"
   },
   "chrome_noyt_text2": {
-    "message": "Video DownloadHelper を使用すると、Firefox 版で YouTube の動画をダウンロードできます。"
+    "message": ":appName を使用すると、Firefox 版で YouTube の動画をダウンロードできます。"
   },
   "chrome_noyt_text3": {
     "message": "申し訳ありませんが、Chrome ウェブストアでは YouTube 動画のダウンロード用の拡張機能が許可されないため、この機能を Chrome バージョンの拡張機能に含めることができませんでした。"
@@ -564,7 +564,7 @@
     "message": "寄付する"
   },
   "donate_vdh": {
-    "message": "Video DownloadHelper のヘルプ"
+    "message": ":appName のヘルプ"
   },
   "download_error": {
     "message": "ダウンロードエラー"
@@ -885,7 +885,7 @@
     "message": "あるいは、Mozilla アドオンのサイトで素敵なレビューを書いてもらえますか?"
   },
   "req_review_link": {
-    "message": "Video DownloadHelper に関するレビューを書く"
+    "message": ":appName に関するレビューを書く"
   },
   "reset_settings": {
     "message": "設定をリセットする"
@@ -993,7 +993,7 @@
     "message": "詳細情報を Web で確認する"
   },
   "title": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "translation": {
     "message": "翻訳を編集する"
@@ -1011,7 +1011,7 @@
     "message": "変種"
   },
   "vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "version": {
     "message": "バージョン $1"
@@ -1500,7 +1500,7 @@
     "message": "はい"
   },
   "you_downloaded_n_videos": {
-    "message": "Video DownloadHelper で $1 個目のファイルをダウンロードしました。"
+    "message": ":appName で $1 個目のファイルをダウンロードしました。"
   },
   "v9_yes": {
     "message": "はい"
@@ -1557,7 +1557,7 @@
     "message": "申し訳ありませんが、Chrome ウェブストアでは YouTube 動画のダウンロード用の拡張機能が許可されないため、この機能を Chrome バージョンの拡張機能に含めることができませんでした。"
   },
   "v9_chrome_noyt_text2": {
-    "message": "Firefox 版なら、Video DownloadHelper を使用して YouTube の動画をダウンロードできます。"
+    "message": "Firefox 版なら、:appName を使用して YouTube の動画をダウンロードできます。"
   },
   "v9_about_qr": {
     "message": "生成されたファイル"
@@ -1599,7 +1599,7 @@
     "message": "ページ内を右クリックしてコマンドにアクセスします。"
   },
   "v9_vdh_notification": {
-    "message": "Video DownloadHelper"
+    "message": ":appName"
   },
   "v9_file_ready": {
     "message": "\"$1\" はダウンロード完了です。"
@@ -1620,7 +1620,7 @@
     "message": "ライセンスは登録されていません。"
   },
   "__MSG_appDesc_": {
-    "message": "Video DownloadHelper"
+    "message": "この拡張機能"
   },
   "v9_blacklist_glob": {
     "message": "より広範囲の一致には「*」を使用します。"
@@ -1773,7 +1773,7 @@
     "message": "設定のインポート"
   },
   "v9_settings_button_reload": {
-    "message": "DownloadHelperを再起動する"
+    "message": ":appNameを再起動する"
   },
   "v9_settings_button_reset": {
     "message": "設定を初期値に戻す"
@@ -1857,7 +1857,7 @@
     "message": "ダウンロードしたメディアを自動的に非表示にしますか?"
   },
   "v9_user_message_no_incognito_body": {
-    "message": "Video DownloadHelper はプライベート/シークレット ウィンドウでは有効になりません。そのオプションを手動でオンにする必要があります (これは必須ではありません)。"
+    "message": ":appName はプライベート/シークレット ウィンドウでは有効になりません。そのオプションを手動でオンにする必要があります (これは必須ではありません)。"
   },
   "v9_user_message_no_incognito_open_settings": {
     "message": "ブラウザ設定で有効にする"
@@ -1866,7 +1866,7 @@
     "message": "シークレットモードなし"
   },
   "v9_user_message_one_hundred_downloads_body": {
-    "message": "Video DownloadHelper をお楽しみいただければ幸いです :) アドオン Web サイトに素敵なレビューを書いていただけませんか?"
+    "message": ":appName をお楽しみいただければ幸いです :) アドオン Web サイトに素敵なレビューを書いていただけませんか?"
   },
   "v9_yt_bulk_detected_trigger": {
     "message": "一括ダウンロードを開始"
