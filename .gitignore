@@ -5,3 +5,30 @@ node_modules/
 coverage/
 
 .yarn/install-state.gz
+
+
+# MARK: IDEs.
+
+/.idea/*
+*.sublime-workspace
+# VSCode
+.vscode/*
+
+# MAEK: IDEs: whitelist shared settings.
+
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.idea/codeStyles/
+!.idea/dictionaries/
+!.idea/inspectionProfiles/
+!.idea/jsLinters/
+!.idea/runConfigurations/
+!.idea/jsLibraryMappings.xml
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/prettier.xml
+!.idea/root-project.iml
+!.idea/sqldialects.xml
+!.idea/vcs.xml

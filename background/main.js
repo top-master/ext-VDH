@@ -6,6 +6,7 @@
   var getOwnPropNames = Object.getOwnPropertyNames;
   var getPrototypeOf = Object.getPrototypeOf,
     hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+  var globalDebugLevel = 3;
   var defineLazyModule = (initModule, cachedModule) => () => (initModule && (cachedModule = initModule(initModule = 0)), cachedModule);
   var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
         exports: {}
@@ -987,10 +988,17 @@
   var requireRpc = defineCommonjsModule((rpcExports, rpcModule) => {
     "use strict";
     var Rpc = class {
+      replyId = 0;
+      replies = {};
+      listeners = {};
+      hook = this.nullHook;
+      debugLevel = 0;
+      useTarget = false;
+      logger = console;
+      posts = {};
+
       constructor() {
-        this.replyId = 0, this.replies = {}, this.listeners = {}, this
-          .hook = this.nullHook, this.debugLevel = 0, this
-          .useTarget = !1, this.logger = console, this.posts = {}
+        this.debugLevel = globalDebugLevel;
       }
       setPost(peerOrPostFn, postFn) {
         typeof peerOrPostFn == "string" ? this.posts[peerOrPostFn] = postFn : this.post = peerOrPostFn
@@ -1054,69 +1062,97 @@
       }
       receive(message, sendReply, caller) {
         let self = this;
-        if (message._request) Promise.resolve()
-          .then(() => {
-            let listener = self.listeners[message._method];
-            if (typeof listener == "function") return self.debugLevel >= 2 &&
-              self.logger.info("rpc #" + message._request, "serve <= ", message
-                ._method, message._args), self.hook({
+
+        if (message._request) {
+          Promise.resolve()
+            .then(() => {
+              let listener = self.listeners[message._method];
+
+              if (typeof listener !== "function") {
+                throw new Error("Method " + message._method + " is not a function");
+              }
+
+              if (self.debugLevel >= 2) {
+                self.logger.info("rpc #" + message._request, "serve <= ", message._method, message._args);
+              }
+
+              self.hook({
                 type: "call",
                 caller: caller,
                 rid: message._request,
                 method: message._method,
                 args: message._args
-              }), Promise.resolve(listener.apply(null, message._args))
-              .then(result => (self.hook({
-                type: "reply",
-                caller: caller,
-                rid: message._request,
-                result: result
-              }), result))
-              .catch(error => {
-                throw self.hook({
-                  type: "reply",
-                  caller: caller,
-                  rid: message._request,
-                  error: error.message
-                }), error
               });
-            throw new Error("Method " + message._method +
-              " is not a function")
-          })
-          .then(result => {
-            self.debugLevel >= 2 && self.logger.info("rpc #" + message._request,
-              "serve => ", result), sendReply({
-              type: "weh#rpc",
-              _reply: message._request,
-              _result: result
+
+              return Promise.resolve(listener.apply(null, message._args))
+                .then(result => {
+                  self.hook({
+                    type: "reply",
+                    caller: caller,
+                    rid: message._request,
+                    result: result
+                  });
+                  return result;
+                })
+                .catch(error => {
+                  self.hook({
+                    type: "reply",
+                    caller: caller,
+                    rid: message._request,
+                    error: error.message
+                  });
+                  throw error;
+                });
             })
-          })
-          .catch(error => {
-            self.debugLevel >= 1 && self.logger.info("rpc #" + message._request,
-              "serve => !", error.message), sendReply({
-              type: "weh#rpc",
-              _reply: message._request,
-              _error: error.message
+            .then(result => {
+              if (self.debugLevel >= 2) {
+                self.logger.info("rpc #" + message._request, "serve => ", result);
+              }
+              sendReply({
+                type: "weh#rpc",
+                _reply: message._request,
+                _result: result
+              });
             })
-          });
-        else if (message._reply) {
+            .catch(error => {
+              if (self.debugLevel >= 1) {
+                self.logger.info("rpc #" + message._request, "serve => !", error.message);
+              }
+              sendReply({
+                type: "weh#rpc",
+                _reply: message._request,
+                _error: error.message
+              });
+            });
+        } else if (message._reply) {
           let pending = self.replies[message._reply];
-          delete self.replies[message._reply], pending ? message._error ? (self.debugLevel >=
-            1 && self.logger.info("rpc #" + message._reply, "call <= !", message
-              ._error), self.hook({
+          delete self.replies[message._reply];
+
+          if (!pending) {
+            self.logger.error("Missing reply handler");
+          } else if (message._error) {
+            if (self.debugLevel >= 1) {
+              self.logger.info("rpc #" + message._reply, "call <= !", message._error);
+            }
+            self.hook({
               type: "reply",
               callee: pending.peer,
               rid: message._reply,
               error: message._error
-            }), pending.reject(new Error(message._error))) : (self.debugLevel >=
-            2 && self.logger.info("rpc #" + message._reply, "call <= ", message
-              ._result), self.hook({
+            });
+            pending.reject(new Error(message._error));
+          } else {
+            if (self.debugLevel >= 2) {
+              self.logger.info("rpc #" + message._reply, "call <= ", message._result);
+            }
+            self.hook({
               type: "reply",
               callee: pending.peer,
               rid: message._reply,
               result: message._result
-            }), pending.resolve(message._result)) : self.logger.error(
-            "Missing reply handler")
+            });
+            pending.resolve(message._result);
+          }
         }
       }
       listen(listeners) {
@@ -2794,82 +2830,119 @@
 
           function flushPending(error) {
             let pendingCall;
-            for (; pendingCall = self.pendingCalls.shift();)
-              if (error) pendingCall.reject(error);
-              else {
+            while ((pendingCall = self.pendingCalls.shift())) {
+              if (error) {
+                pendingCall.reject(error);
+              } else {
                 self.runningCalls.push(pendingCall);
                 let call = pendingCall;
                 rpc.call(self.postFn, self.name, ...pendingCall.params)
-                  .then(result => (self.runningCalls.splice(self.runningCalls
-                    .indexOf(call), 1), result))
+                  .then(result => {
+                    self.runningCalls.splice(self.runningCalls.indexOf(call), 1);
+                    return result;
+                  })
                   .then(call.resolve)
                   .catch(callError => {
-                    self.runningCalls.splice(self.runningCalls.indexOf(call),
-                      1), call.reject(callError)
-                  })
+                    self.runningCalls.splice(self.runningCalls.indexOf(call), 1);
+                    call.reject(callError);
+                  });
               }
+            }
           }
-          switch (onNotFound && (self.appStatus == "unknown" || self.appStatus ==
-              "checking") && self.onAppNotFoundCheck.addListener(onNotFound), self
-            .updateCallCount(CALL_ADDON_TO_APP, 1), this.state) {
+
+          if (onNotFound && (self.appStatus == "unknown" || self.appStatus == "checking")) {
+            self.onAppNotFoundCheck.addListener(onNotFound);
+          }
+          self.updateCallCount(CALL_ADDON_TO_APP, 1);
+
+          switch (this.state) {
             case "running":
               return new Promise((resolve, reject) => {
-                  let call = {
-                    resolve: resolve,
-                    reject: reject,
-                    params: [...params]
-                  };
-                  self.runningCalls.push(call), rpc.call(self.postFn, self.name,
-                      ...params)
-                    .then(result => (self.runningCalls.splice(self.runningCalls
-                      .indexOf(call), 1), result))
-                    .then(call.resolve)
-                    .catch(callError => {
-                      self.runningCalls.splice(self.runningCalls.indexOf(
-                        call), 1), call.reject(callError)
-                    })
-                })
-                .then(result => (self.updateCallCount(CALL_ADDON_TO_APP, -1), result))
-                .catch(callError => {
-                  throw self.updateCallCount(CALL_ADDON_TO_APP, -1), callError
-                });
-            case "idle":
-              return self.state = "pending", new Promise((resolve, reject) => {
-                  self.pendingCalls.push({
-                    resolve: resolve,
-                    reject: reject,
-                    params: [...params]
+                let call = {
+                  resolve: resolve,
+                  reject: reject,
+                  params: [...params]
+                };
+                self.runningCalls.push(call);
+                rpc.call(self.postFn, self.name, ...params)
+                  .then(result => {
+                    self.runningCalls.splice(self.runningCalls.indexOf(call), 1);
+                    return result;
+                  })
+                  .then(call.resolve)
+                  .catch(callError => {
+                    self.runningCalls.splice(self.runningCalls.indexOf(call), 1);
+                    call.reject(callError);
                   });
-                  let port = browser.runtime.connectNative(self.appId);
-                  self.appStatus = "checking", self.appPort = port, port.onMessage
-                    .addListener(message => {
-                      self.appStatus == "checking" && (self.appStatus =
-                        "ok", self.onAppNotFoundCheck
-                        .removeAllListeners()), rpc.receive(message, self
-                        .postMessageFn, self.name)
-                    }), port.onDisconnect.addListener(() => {
-                      flushPending(new Error("Disconnected")), self.cleanup(), self
-                        .appStatus == "checking" && !onNotFound && self
-                        .onAppNotFound.notify(self.appPort && self.appPort
-                          .error || browser.runtime.lastError)
-                    }), self.state = "running", flushPending()
+              })
+                .then(result => {
+                  self.updateCallCount(CALL_ADDON_TO_APP, -1);
+                  return result;
                 })
-                .then(result => (self.updateCallCount(CALL_ADDON_TO_APP, -1), result))
                 .catch(callError => {
-                  throw self.updateCallCount(CALL_ADDON_TO_APP, -1), callError
+                  self.updateCallCount(CALL_ADDON_TO_APP, -1);
+                  throw callError;
                 });
+
+            case "idle":
+              self.state = "pending";
+              return new Promise((resolve, reject) => {
+                self.pendingCalls.push({
+                  resolve: resolve,
+                  reject: reject,
+                  params: [...params]
+                });
+                let port = browser.runtime.connectNative(self.appId);
+
+                self.appStatus = "checking";
+                self.appPort = port;
+
+                port.onMessage.addListener(message => {
+                  if (self.appStatus == "checking") {
+                    self.appStatus = "ok";
+                    self.onAppNotFoundCheck.removeAllListeners();
+                  }
+                  rpc.receive(message, self.postMessageFn, self.name);
+                });
+
+                port.onDisconnect.addListener(() => {
+                  flushPending(new Error("Disconnected"));
+                  self.cleanup();
+                  if (self.appStatus == "checking" && !onNotFound) {
+                    self.onAppNotFound.notify(
+                      (self.appPort && self.appPort.error) || browser.runtime.lastError
+                    );
+                  }
+                });
+
+                self.state = "running";
+                flushPending();
+              })
+                .then(result => {
+                  self.updateCallCount(CALL_ADDON_TO_APP, -1);
+                  return result;
+                })
+                .catch(callError => {
+                  self.updateCallCount(CALL_ADDON_TO_APP, -1);
+                  throw callError;
+                });
+
             case "pending":
               return new Promise((resolve, reject) => {
-                  self.pendingCalls.push({
-                    resolve: resolve,
-                    reject: reject,
-                    params: [...params]
-                  })
+                self.pendingCalls.push({
+                  resolve: resolve,
+                  reject: reject,
+                  params: [...params]
+                });
+              })
+                .then(result => {
+                  self.updateCallCount(CALL_ADDON_TO_APP, -1);
+                  return result;
                 })
-                .then(result => (self.updateCallCount(CALL_ADDON_TO_APP, -1), result))
                 .catch(callError => {
-                  throw self.updateCallCount(CALL_ADDON_TO_APP, -1), callError
-                })
+                  self.updateCallCount(CALL_ADDON_TO_APP, -1);
+                  throw callError;
+                });
           }
         }
         listen(handlers) {
