@@ -1,64 +1,64 @@
 "use strict";
 (() => {
-  var Uh = Object.create;
-  var xn = Object.defineProperty;
-  var jh = Object.getOwnPropertyDescriptor;
-  var Wh = Object.getOwnPropertyNames;
-  var Xh = Object.getPrototypeOf,
-    Gh = Object.prototype.hasOwnProperty;
-  var C = (e, t) => () => (e && (t = e(e = 0)), t);
-  var v = (e, t) => () => (t || e((t = {
+  var objectCreate = Object.create;
+  var defineProperty = Object.defineProperty;
+  var getOwnPropDescriptor = Object.getOwnPropertyDescriptor;
+  var getOwnPropNames = Object.getOwnPropertyNames;
+  var getPrototypeOf = Object.getPrototypeOf,
+    hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+  var defineLazyModule = (initModule, cachedModule) => () => (initModule && (cachedModule = initModule(initModule = 0)), cachedModule);
+  var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
         exports: {}
       })
-      .exports, t), t.exports),
-    ie = (e, t) => {
-      for (var r in t) xn(e, r, {
-        get: t[r],
+      .exports, cachedExports), cachedExports.exports),
+    defineExports = (targetObject, getters) => {
+      for (var exportName in getters) defineProperty(targetObject, exportName, {
+        get: getters[exportName],
         enumerable: !0
       })
     },
-    Ru = (e, t, r, i) => {
-      if (t && typeof t == "object" || typeof t == "function")
-        for (let n of Wh(t)) !Gh.call(e, n) && n !== r && xn(e, n, {
-          get: () => t[n],
-          enumerable: !(i = jh(t, n)) || i.enumerable
+    copyProperties = (targetObject, sourceObject, excludedKey, propDescriptor) => {
+      if (sourceObject && typeof sourceObject == "object" || typeof sourceObject == "function")
+        for (let propName of getOwnPropNames(sourceObject)) !hasOwnPropertyRef.call(targetObject, propName) && propName !== excludedKey && defineProperty(targetObject, propName, {
+          get: () => sourceObject[propName],
+          enumerable: !(propDescriptor = getOwnPropDescriptor(sourceObject, propName)) || propDescriptor.enumerable
         });
-      return e
+      return targetObject
     };
-  var yt = (e, t, r) => (r = e != null ? Uh(Xh(e)) : {}, Ru(t || !e || !e
-      .__esModule ? xn(r, "default", {
-        value: e,
+  var toEsm = (moduleExports, targetObject, protoHolder) => (protoHolder = moduleExports != null ? objectCreate(getPrototypeOf(moduleExports)) : {}, copyProperties(targetObject || !moduleExports || !moduleExports
+      .__esModule ? defineProperty(protoHolder, "default", {
+        value: moduleExports,
         enumerable: !0
-      }) : r, e)),
-    R = e => Ru(xn({}, "__esModule", {
+      }) : protoHolder, moduleExports)),
+    toCommonjs = moduleExports => copyProperties(defineProperty({}, "__esModule", {
       value: !0
-    }), e);
-  var Iu = v(() => {
+    }), moduleExports);
+  var requireEmptySideEffect = defineCommonjsModule(() => {
     "use strict"
   });
-  var Ht = v((_a, Nu) => {
-    (function(e, t) {
+  var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
+    (function(globalScope, defineFactory) {
       if (typeof define == "function" && define.amd) define(
-        "webextension-polyfill", ["module"], t);
-      else if (typeof _a < "u") t(Nu);
+        "webextension-polyfill", ["module"], defineFactory);
+      else if (typeof polyfillExports < "u") defineFactory(polyfillModule);
       else {
-        var r = {
+        var fallbackModule = {
           exports: {}
         };
-        t(r), e.browser = r.exports
+        defineFactory(fallbackModule), globalScope.browser = fallbackModule.exports
       }
     })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self :
-      _a,
-      function(e) {
+      polyfillExports,
+      function(moduleObject) {
         "use strict";
         if (!globalThis.chrome?.runtime?.id) throw new Error(
           "This script should only be loaded in a browser extension.");
         if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
             globalThis.browser) !== Object.prototype) {
-          let t =
+          let messagePortClosedMessage =
             "The message port closed before a response was received.",
-            r = i => {
-              let n = {
+            buildBrowserApiWrapper = extensionApis => {
+              let apiMetadata = {
                 alarms: {
                   clear: {
                     minArgs: 0,
@@ -736,207 +736,207 @@
                   }
                 }
               };
-              if (Object.keys(n)
+              if (Object.keys(apiMetadata)
                 .length === 0) throw new Error(
                 "api-metadata.json has not been included in browser-polyfill"
                 );
-              class o extends WeakMap {
-                constructor(b, D = void 0) {
-                  super(D), this.createItem = b
+              class DefaultWeakMap extends WeakMap {
+                constructor(createItem, entries = void 0) {
+                  super(entries), this.createItem = createItem
                 }
-                get(b) {
-                  return this.has(b) || this.set(b, this.createItem(b)),
-                    super.get(b)
+                get(key) {
+                  return this.has(key) || this.set(key, this.createItem(key)),
+                    super.get(key)
                 }
               }
-              let s = x => x && typeof x == "object" && typeof x.then ==
+              let isThenable = value => value && typeof value == "object" && typeof value.then ==
                 "function",
-                a = (x, b) => (...D) => {
-                  i.runtime.lastError ? x.reject(new Error(i.runtime
-                      .lastError.message)) : b.singleCallbackArg || D
-                    .length <= 1 && b.singleCallbackArg !== !1 ? x
-                    .resolve(D[0]) : x.resolve(D)
+                makeCallback = (promise, metadata) => (...callbackArgs) => {
+                  extensionApis.runtime.lastError ? promise.reject(new Error(extensionApis.runtime
+                      .lastError.message)) : metadata.singleCallbackArg || callbackArgs
+                    .length <= 1 && metadata.singleCallbackArg !== !1 ? promise
+                    .resolve(callbackArgs[0]) : promise.resolve(callbackArgs)
                 },
-                l = x => x == 1 ? "argument" : "arguments",
-                u = (x, b) => function(P, ...k) {
-                  if (k.length < b.minArgs) throw new Error(
-                    `Expected at least ${b.minArgs} ${l(b.minArgs)} for ${x}(), got ${k.length}`
+                pluralizeArguments = count => count == 1 ? "argument" : "arguments",
+                wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (k.length > b.maxArgs) throw new Error(
-                    `Expected at most ${b.maxArgs} ${l(b.maxArgs)} for ${x}(), got ${k.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArguments(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((S, M) => {
-                    if (b.fallbackToNoCallback) try {
-                      P[x](...k, a({
-                        resolve: S,
-                        reject: M
-                      }, b))
-                    } catch (N) {
+                  return new Promise((resolve, reject) => {
+                    if (metadata.fallbackToNoCallback) try {
+                      apiTarget[name](...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
+                    } catch (callbackError) {
                       console.warn(
-                          `${x} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                          N), P[x](...k), b.fallbackToNoCallback = !
-                        1, b.noCallback = !0, S()
-                    } else b.noCallback ? (P[x](...k), S()) : P[x](
-                      ...k, a({
-                        resolve: S,
-                        reject: M
-                      }, b))
+                          `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                          callbackError), apiTarget[name](...args), metadata.fallbackToNoCallback = !
+                        1, metadata.noCallback = !0, resolve()
+                    } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](
+                      ...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
                   })
                 },
-                d = (x, b, D) => new Proxy(b, {
-                  apply(P, k, S) {
-                    return D.call(k, x, ...S)
+                wrapMethod = (apiTarget, method, wrapper) => new Proxy(method, {
+                  apply(proxyTarget, thisArg, args) {
+                    return wrapper.call(thisArg, apiTarget, ...args)
                   }
                 }),
-                c = Function.call.bind(Object.prototype.hasOwnProperty),
-                m = (x, b = {}, D = {}) => {
-                  let P = Object.create(null),
-                    k = {
-                      has(M, N) {
-                        return N in x || N in P
+                hasOwnProp = Function.call.bind(Object.prototype.hasOwnProperty),
+                wrapObject = (target, wrappers = {}, metadata = {}) => {
+                  let cache = Object.create(null),
+                    handler = {
+                      has(proxyTarget, prop) {
+                        return prop in target || prop in cache
                       },
-                      get(M, N, j) {
-                        if (N in P) return P[N];
-                        if (!(N in x)) return;
-                        let W = x[N];
-                        if (typeof W == "function")
-                          if (typeof b[N] == "function") W = d(x, x[N],
-                            b[N]);
-                          else if (c(D, N)) {
-                          let $ = u(N, D[N]);
-                          W = d(x, x[N], $)
-                        } else W = W.bind(x);
-                        else if (typeof W == "object" && W !== null && (
-                            c(b, N) || c(D, N))) W = m(W, b[N], D[N]);
-                        else if (c(D, "*")) W = m(W, b[N], D["*"]);
-                        else return Object.defineProperty(P, N, {
+                      get(proxyTarget, prop, receiver) {
+                        if (prop in cache) return cache[prop];
+                        if (!(prop in target)) return;
+                        let wrappedValue = target[prop];
+                        if (typeof wrappedValue == "function")
+                          if (typeof wrappers[prop] == "function") wrappedValue = wrapMethod(target, target[prop],
+                            wrappers[prop]);
+                          else if (hasOwnProp(metadata, prop)) {
+                          let wrappedAsync = wrapAsyncFunction(prop, metadata[prop]);
+                          wrappedValue = wrapMethod(target, target[prop], wrappedAsync)
+                        } else wrappedValue = wrappedValue.bind(target);
+                        else if (typeof wrappedValue == "object" && wrappedValue !== null && (
+                            hasOwnProp(wrappers, prop) || hasOwnProp(metadata, prop))) wrappedValue = wrapObject(wrappedValue, wrappers[prop], metadata[prop]);
+                        else if (hasOwnProp(metadata, "*")) wrappedValue = wrapObject(wrappedValue, wrappers[prop], metadata["*"]);
+                        else return Object.defineProperty(cache, prop, {
                           configurable: !0,
                           enumerable: !0,
                           get() {
-                            return x[N]
+                            return target[prop]
                           },
-                          set($) {
-                            x[N] = $
+                          set(newValue) {
+                            target[prop] = newValue
                           }
-                        }), W;
-                        return P[N] = W, W
+                        }), wrappedValue;
+                        return cache[prop] = wrappedValue, wrappedValue
                       },
-                      set(M, N, j, W) {
-                        return N in P ? P[N] = j : x[N] = j, !0
+                      set(proxyTarget, prop, value, receiver) {
+                        return prop in cache ? cache[prop] = value : target[prop] = value, !0
                       },
-                      defineProperty(M, N, j) {
-                        return Reflect.defineProperty(P, N, j)
+                      defineProperty(proxyTarget, prop, descriptor) {
+                        return Reflect.defineProperty(cache, prop, descriptor)
                       },
-                      deleteProperty(M, N) {
-                        return Reflect.deleteProperty(P, N)
+                      deleteProperty(proxyTarget, prop) {
+                        return Reflect.deleteProperty(cache, prop)
                       }
                     },
-                    S = Object.create(x);
-                  return new Proxy(S, k)
+                    proxyTarget = Object.create(target);
+                  return new Proxy(proxyTarget, handler)
                 },
-                w = x => ({
-                  addListener(b, D, ...P) {
-                    b.addListener(x.get(D), ...P)
+                wrapEvent = wrapperMap => ({
+                  addListener(target, listener, ...args) {
+                    target.addListener(wrapperMap.get(listener), ...args)
                   },
-                  hasListener(b, D) {
-                    return b.hasListener(x.get(D))
+                  hasListener(target, listener) {
+                    return target.hasListener(wrapperMap.get(listener))
                   },
-                  removeListener(b, D) {
-                    b.removeListener(x.get(D))
+                  removeListener(target, listener) {
+                    target.removeListener(wrapperMap.get(listener))
                   }
                 }),
-                p = new o(x => typeof x != "function" ? x : function(D) {
-                  let P = m(D, {}, {
+                onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
+                  let wrappedRequest = wrapObject(request, {}, {
                     getContent: {
                       minArgs: 0,
                       maxArgs: 0
                     }
                   });
-                  x(P)
+                  listener(wrappedRequest)
                 }),
-                _ = new o(x => typeof x != "function" ? x : function(D, P,
-                  k) {
-                  let S = !1,
-                    M, N = new Promise(pe => {
-                      M = function(te) {
-                        S = !0, pe(te)
+                onMessageWrappers = new DefaultWeakMap(messageListener => typeof messageListener != "function" ? messageListener : function(message, sender,
+                  sendResponse) {
+                  let didRespond = !1,
+                    wrappedSendResponse, responsePromise = new Promise(resolveResponse => {
+                      wrappedSendResponse = function(response) {
+                        didRespond = !0, resolveResponse(response)
                       }
                     }),
-                    j;
+                    listenerResult;
                   try {
-                    j = x(D, P, M)
-                  } catch (pe) {
-                    j = Promise.reject(pe)
+                    listenerResult = messageListener(message, sender, wrappedSendResponse)
+                  } catch (listenerError) {
+                    listenerResult = Promise.reject(listenerError)
                   }
-                  let W = j !== !0 && s(j);
-                  if (j !== !0 && !W && !S) return !1;
-                  let $ = pe => {
-                    pe.then(te => {
-                        k(te)
-                      }, te => {
-                        let Oe;
-                        te && (te instanceof Error || typeof te
-                            .message == "string") ? Oe = te
-                          .message : Oe =
-                          "An unexpected error occurred", k({
+                  let resultIsThenable = listenerResult !== !0 && isThenable(listenerResult);
+                  if (listenerResult !== !0 && !resultIsThenable && !didRespond) return !1;
+                  let sendResponseWhenReady = resultPromise => {
+                    resultPromise.then(replyValue => {
+                        sendResponse(replyValue)
+                      }, replyError => {
+                        let errorMessage;
+                        replyError && (replyError instanceof Error || typeof replyError
+                            .message == "string") ? errorMessage = replyError
+                          .message : errorMessage =
+                          "An unexpected error occurred", sendResponse({
                             __mozWebExtensionPolyfillReject__: !0,
-                            message: Oe
+                            message: errorMessage
                           })
                       })
-                      .catch(te => {
+                      .catch(sendError => {
                         console.error(
                           "Failed to send onMessage rejected reply",
-                          te)
+                          sendError)
                       })
                   };
-                  return $(W ? j : N), !0
+                  return sendResponseWhenReady(resultIsThenable ? listenerResult : responsePromise), !0
                 }),
-                f = ({
-                  reject: x,
-                  resolve: b
-                }, D) => {
-                  i.runtime.lastError ? i.runtime.lastError.message ===
-                    t ? b() : x(new Error(i.runtime.lastError.message)) :
-                    D && D.__mozWebExtensionPolyfillReject__ ? x(
-                      new Error(D.message)) : b(D)
+                handleSendMessageResponse = ({
+                  reject: reject,
+                  resolve: resolve
+                }, reply) => {
+                  extensionApis.runtime.lastError ? extensionApis.runtime.lastError.message ===
+                    messagePortClosedMessage ? resolve() : reject(new Error(extensionApis.runtime.lastError.message)) :
+                    reply && reply.__mozWebExtensionPolyfillReject__ ? reject(
+                      new Error(reply.message)) : resolve(reply)
                 },
-                g = (x, b, D, ...P) => {
-                  if (P.length < b.minArgs) throw new Error(
-                    `Expected at least ${b.minArgs} ${l(b.minArgs)} for ${x}(), got ${P.length}`
+                wrappedSendMessage = (name, metadata, target, ...args) => {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (P.length > b.maxArgs) throw new Error(
-                    `Expected at most ${b.maxArgs} ${l(b.maxArgs)} for ${x}(), got ${P.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArguments(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((k, S) => {
-                    let M = f.bind(null, {
-                      resolve: k,
-                      reject: S
+                  return new Promise((resolve, reject) => {
+                    let responseCallback = handleSendMessageResponse.bind(null, {
+                      resolve: resolve,
+                      reject: reject
                     });
-                    P.push(M), D.sendMessage(...P)
+                    args.push(responseCallback), target.sendMessage(...args)
                   })
                 },
-                h = {
+                staticWrappers = {
                   devtools: {
                     network: {
-                      onRequestFinished: w(p)
+                      onRequestFinished: wrapEvent(onRequestFinishedWrappers)
                     }
                   },
                   runtime: {
-                    onMessage: w(_),
-                    onMessageExternal: w(_),
-                    sendMessage: g.bind(null, "sendMessage", {
+                    onMessage: wrapEvent(onMessageWrappers),
+                    onMessageExternal: wrapEvent(onMessageWrappers),
+                    sendMessage: wrappedSendMessage.bind(null, "sendMessage", {
                       minArgs: 1,
                       maxArgs: 3
                     })
                   },
                   tabs: {
-                    sendMessage: g.bind(null, "sendMessage", {
+                    sendMessage: wrappedSendMessage.bind(null, "sendMessage", {
                       minArgs: 2,
                       maxArgs: 3
                     })
                   }
                 },
-                T = {
+                settingApiMetadata = {
                   clear: {
                     minArgs: 1,
                     maxArgs: 1
@@ -950,537 +950,537 @@
                     maxArgs: 1
                   }
                 };
-              return n.privacy = {
+              return apiMetadata.privacy = {
                 network: {
-                  "*": T
+                  "*": settingApiMetadata
                 },
                 services: {
-                  "*": T
+                  "*": settingApiMetadata
                 },
                 websites: {
-                  "*": T
+                  "*": settingApiMetadata
                 }
-              }, m(i, h, n)
+              }, wrapObject(extensionApis, staticWrappers, apiMetadata)
             };
-          e.exports = r(chrome)
-        } else e.exports = globalThis.browser
+          moduleObject.exports = buildBrowserApiWrapper(chrome)
+        } else moduleObject.exports = globalThis.browser
       })
   });
-  var Lr = v((Bx, vt) => {
+  var requireWehCore = defineCommonjsModule((browserExports, browserModule) => {
     "use strict";
-    vt.exports.browser = Ht();
-    var xi;
+    browserModule.exports.browser = requirePolyfill();
+    var browserType;
     typeof browser > "u" && typeof chrome < "u" && chrome.runtime ?
-      /\bOPR\//.test(navigator.userAgent) ? xi = "opera" : xi = "chrome" :
-      /\bEdge\//.test(navigator.userAgent) ? xi = "edge" : xi = "firefox",
-      vt.exports.browserType = xi, typeof vt.exports.browser.action >
-      "u" && (vt.exports.browser.action = vt.exports.browser
-        .browserAction), vt.exports.isBrowser = (...e) => {
-        for (let t = 0; t < e.length; t++)
-          if (e[t] == vt.exports.browserType) return !0;
+      /\bOPR\//.test(navigator.userAgent) ? browserType = "opera" : browserType = "chrome" :
+      /\bEdge\//.test(navigator.userAgent) ? browserType = "edge" : browserType = "firefox",
+      browserModule.exports.browserType = browserType, typeof browserModule.exports.browser.action >
+      "u" && (browserModule.exports.browser.action = browserModule.exports.browser
+        .browserAction), browserModule.exports.isBrowser = (...browserNames) => {
+        for (let index = 0; index < browserNames.length; index++)
+          if (browserNames[index] == browserModule.exports.browserType) return !0;
         return !1
-      }, vt.exports.error = e => {
-        console.groupCollapsed(e.message), e.stack && console.error(e
+      }, browserModule.exports.error = error => {
+        console.groupCollapsed(error.message), error.stack && console.error(error
           .stack), console.groupEnd()
       }
   });
-  var Ft = v((Vx, ku) => {
+  var requireRpc = defineCommonjsModule((rpcExports, rpcModule) => {
     "use strict";
-    var ba = class {
+    var Rpc = class {
       constructor() {
         this.replyId = 0, this.replies = {}, this.listeners = {}, this
           .hook = this.nullHook, this.debugLevel = 0, this
           .useTarget = !1, this.logger = console, this.posts = {}
       }
-      setPost(t, r) {
-        typeof t == "string" ? this.posts[t] = r : this.post = t
+      setPost(peerOrPostFn, postFn) {
+        typeof peerOrPostFn == "string" ? this.posts[peerOrPostFn] = postFn : this.post = peerOrPostFn
       }
-      setUseTarget(t) {
-        this.useTarget = t
+      setUseTarget(useTarget) {
+        this.useTarget = useTarget
       }
-      setDebugLevel(t) {
-        this.debugLevel = t
+      setDebugLevel(debugLevel) {
+        this.debugLevel = debugLevel
       }
-      setHook(t) {
-        let r = this,
-          i = Date.now();
+      setHook(hook) {
+        let self = this,
+          startTime = Date.now();
 
-        function n() {
+        function now() {
           return typeof window < "u" && typeof window.performance <
-            "u" ? window.performance.now() : Date.now() - i
+            "u" ? window.performance.now() : Date.now() - startTime
         }
-        t ? this.hook = o => {
-          o.timestamp = n();
+        hook ? this.hook = event => {
+          event.timestamp = now();
           try {
-            t(o)
-          } catch (s) {
-            r.logger.warn("Hoor error", s)
+            hook(event)
+          } catch (hookError) {
+            self.logger.warn("Hoor error", hookError)
           }
         } : this.hook = this.nullHook
       }
       nullHook() {}
       call() {
-        let t = this,
-          r, i, n, o, s = Array.prototype.slice.call(arguments);
-        return typeof s[0] == "function" && (r = s.shift()), t
-          .useTarget ? [i, n, ...o] = s : [n, ...o] = s, new Promise(
-            function(a, l) {
-              let u = ++t.replyId;
-              t.debugLevel >= 2 && t.logger.info("rpc #" + u,
-                "call =>", n, o), t.hook({
+        let self = this,
+          postFn, peer, method, args, argsArray = Array.prototype.slice.call(arguments);
+        return typeof argsArray[0] == "function" && (postFn = argsArray.shift()), self
+          .useTarget ? [peer, method, ...args] = argsArray : [method, ...args] = argsArray, new Promise(
+            function(resolve, reject) {
+              let requestId = ++self.replyId;
+              self.debugLevel >= 2 && self.logger.info("rpc #" + requestId,
+                "call =>", method, args), self.hook({
                 type: "call",
-                callee: i,
-                rid: u,
-                method: n,
-                args: o
-              }), t.replies[u] = {
-                resolve: a,
-                reject: l,
-                peer: i
+                callee: peer,
+                rid: requestId,
+                method: method,
+                args: args
+              }), self.replies[requestId] = {
+                resolve: resolve,
+                reject: reject,
+                peer: peer
               };
-              let d = r || t.useTarget && t.posts[i] || t.post;
-              t.useTarget ? d(i, {
+              let post = postFn || self.useTarget && self.posts[peer] || self.post;
+              self.useTarget ? post(peer, {
                 type: "weh#rpc",
-                _request: u,
-                _method: n,
-                _args: [...o]
-              }) : d({
+                _request: requestId,
+                _method: method,
+                _args: [...args]
+              }) : post({
                 type: "weh#rpc",
-                _request: u,
-                _method: n,
-                _args: [...o]
+                _request: requestId,
+                _method: method,
+                _args: [...args]
               })
             })
       }
-      receive(t, r, i) {
-        let n = this;
-        if (t._request) Promise.resolve()
+      receive(message, sendReply, caller) {
+        let self = this;
+        if (message._request) Promise.resolve()
           .then(() => {
-            let o = n.listeners[t._method];
-            if (typeof o == "function") return n.debugLevel >= 2 &&
-              n.logger.info("rpc #" + t._request, "serve <= ", t
-                ._method, t._args), n.hook({
+            let listener = self.listeners[message._method];
+            if (typeof listener == "function") return self.debugLevel >= 2 &&
+              self.logger.info("rpc #" + message._request, "serve <= ", message
+                ._method, message._args), self.hook({
                 type: "call",
-                caller: i,
-                rid: t._request,
-                method: t._method,
-                args: t._args
-              }), Promise.resolve(o.apply(null, t._args))
-              .then(s => (n.hook({
+                caller: caller,
+                rid: message._request,
+                method: message._method,
+                args: message._args
+              }), Promise.resolve(listener.apply(null, message._args))
+              .then(result => (self.hook({
                 type: "reply",
-                caller: i,
-                rid: t._request,
-                result: s
-              }), s))
-              .catch(s => {
-                throw n.hook({
+                caller: caller,
+                rid: message._request,
+                result: result
+              }), result))
+              .catch(error => {
+                throw self.hook({
                   type: "reply",
-                  caller: i,
-                  rid: t._request,
-                  error: s.message
-                }), s
+                  caller: caller,
+                  rid: message._request,
+                  error: error.message
+                }), error
               });
-            throw new Error("Method " + t._method +
+            throw new Error("Method " + message._method +
               " is not a function")
           })
-          .then(o => {
-            n.debugLevel >= 2 && n.logger.info("rpc #" + t._request,
-              "serve => ", o), r({
+          .then(result => {
+            self.debugLevel >= 2 && self.logger.info("rpc #" + message._request,
+              "serve => ", result), sendReply({
               type: "weh#rpc",
-              _reply: t._request,
-              _result: o
+              _reply: message._request,
+              _result: result
             })
           })
-          .catch(o => {
-            n.debugLevel >= 1 && n.logger.info("rpc #" + t._request,
-              "serve => !", o.message), r({
+          .catch(error => {
+            self.debugLevel >= 1 && self.logger.info("rpc #" + message._request,
+              "serve => !", error.message), sendReply({
               type: "weh#rpc",
-              _reply: t._request,
-              _error: o.message
+              _reply: message._request,
+              _error: error.message
             })
           });
-        else if (t._reply) {
-          let o = n.replies[t._reply];
-          delete n.replies[t._reply], o ? t._error ? (n.debugLevel >=
-            1 && n.logger.info("rpc #" + t._reply, "call <= !", t
-              ._error), n.hook({
+        else if (message._reply) {
+          let pending = self.replies[message._reply];
+          delete self.replies[message._reply], pending ? message._error ? (self.debugLevel >=
+            1 && self.logger.info("rpc #" + message._reply, "call <= !", message
+              ._error), self.hook({
               type: "reply",
-              callee: o.peer,
-              rid: t._reply,
-              error: t._error
-            }), o.reject(new Error(t._error))) : (n.debugLevel >=
-            2 && n.logger.info("rpc #" + t._reply, "call <= ", t
-              ._result), n.hook({
+              callee: pending.peer,
+              rid: message._reply,
+              error: message._error
+            }), pending.reject(new Error(message._error))) : (self.debugLevel >=
+            2 && self.logger.info("rpc #" + message._reply, "call <= ", message
+              ._result), self.hook({
               type: "reply",
-              callee: o.peer,
-              rid: t._reply,
-              result: t._result
-            }), o.resolve(t._result)) : n.logger.error(
+              callee: pending.peer,
+              rid: message._reply,
+              result: message._result
+            }), pending.resolve(message._result)) : self.logger.error(
             "Missing reply handler")
         }
       }
-      listen(t) {
-        Object.assign(this.listeners, t)
+      listen(listeners) {
+        Object.assign(this.listeners, listeners)
       }
     };
-    ku.exports = new ba
+    rpcModule.exports = new Rpc
   });
-  var va = v((Hx, Vu) => {
+  var requireI18n = defineCommonjsModule((i18nExports, i18nModule) => {
     "use strict";
     var {
-      browser: ya
-    } = Lr(), qu = {}, Cu = new RegExp("\\$[a-zA-Z]*([0-9]+)\\$", "g"),
-      Bu = !1, Qh = ya.storage.local.get("wehI18nCustom")
-      .then(e => {
-        Bu = !0;
-        let t = e.wehI18nCustom;
-        t && Object.assign(qu, t)
+      browser: browser
+    } = requireWehCore(), customStrings = {}, placeholderRegex = new RegExp("\\$[a-zA-Z]*([0-9]+)\\$", "g"),
+      customStringsLoaded = !1, customStringsReady = browser.storage.local.get("wehI18nCustom")
+      .then(stored => {
+        customStringsLoaded = !0;
+        let custom = stored.wehI18nCustom;
+        custom && Object.assign(customStrings, custom)
       });
 
-    function zh(e, t) {
-      if (Bu || console.warn(
-          "Using `weh._` before custom strings were loaded:", e), /-/
-        .test(e)) {
-        let i = e.replace(/-/g, "_");
-        console.warn("Wrong i18n message name. Should it be", i,
-          "instead of", e, "?"), e = i
+    function getMessage(messageName, substitutions) {
+      if (customStringsLoaded || console.warn(
+          "Using `weh._` before custom strings were loaded:", messageName), /-/
+        .test(messageName)) {
+        let normalizedName = messageName.replace(/-/g, "_");
+        console.warn("Wrong i18n message name. Should it be", normalizedName,
+          "instead of", messageName, "?"), messageName = normalizedName
       }
-      let r = qu[e];
-      if (t && !Array.isArray(t) && (t = [t]), r && r.message.length > 0)
-        return (r.message || "")
-          .replace(Cu, i => {
-            let n = Cu.exec(i);
-            return n && t && t[parseInt(n[1]) - 1] || "??"
+      let customString = customStrings[messageName];
+      if (substitutions && !Array.isArray(substitutions) && (substitutions = [substitutions]), customString && customString.message.length > 0)
+        return (customString.message || "")
+          .replace(placeholderRegex, placeholder => {
+            let match = placeholderRegex.exec(placeholder);
+            return match && substitutions && substitutions[parseInt(match[1]) - 1] || "??"
           });
       try {
-        return t ? ya.i18n.getMessage(e, t) : ya.i18n.getMessage(e)
+        return substitutions ? browser.i18n.getMessage(messageName, substitutions) : browser.i18n.getMessage(messageName)
       } catch {
         return ""
       }
     }
-    Vu.exports = {
-      getMessage: zh,
-      custom_strings_ready: Qh
+    i18nModule.exports = {
+      getMessage: getMessage,
+      custom_strings_ready: customStringsReady
     }
   });
-  var Lu = v((Fx, Fu) => {
+  var requireAppTab = defineCommonjsModule((appTabExports, appTabModule) => {
     "use strict";
-    var Ti = Lr(),
-      $h = Ft(),
-      J = Ti.browser,
-      Ei = {},
-      Tn = {};
+    var browserModule = requireWehCore(),
+      rpc = requireRpc(),
+      browser = browserModule.browser,
+      openPanels = {},
+      tabToPanel = {};
 
-    function Hu(e, t) {
-      let r = !1;
-      return new Promise(function(i, n) {
-        return J.tabs.query({})
-          .then(function(o) {
-            o.forEach(function(s) {
-              s.url === e && (J.tabs.update(s.id, {
+    function focusExistingTab(url, options) {
+      let found = !1;
+      return new Promise(function(resolve, reject) {
+        return browser.tabs.query({})
+          .then(function(tabs) {
+            tabs.forEach(function(tab) {
+              tab.url === url && (browser.tabs.update(tab.id, {
                 active: !0
-              }), J.windows?.update(s.windowId, {
+              }), browser.windows?.update(tab.windowId, {
                 focused: !0
-              }), r = !0)
-            }), i(r)
+              }), found = !0)
+            }), resolve(found)
           })
       })
     }
 
-    function Jh(e, t) {
-      return new Promise((r, i) => {
-        let n = J.runtime.getURL(t.url + "?panel=" + e);
-        Hu(n)
-          .then(function(o) {
-            if (!o) return J.tabs.create({
-                url: n
+    function openAppTab(panelName, options) {
+      return new Promise((resolve, reject) => {
+        let panelUrl = browser.runtime.getURL(options.url + "?panel=" + panelName);
+        focusExistingTab(panelUrl)
+          .then(function(alreadyFocused) {
+            if (!alreadyFocused) return browser.tabs.create({
+                url: panelUrl
               })
-              .then(function(s) {
-                Ti.__declareAppTab(e, {
-                  tab: s.id,
-                  initData: t.initData
-                }), Ei[e] = {
+              .then(function(tab) {
+                browserModule.__declareAppTab(panelName, {
+                  tab: tab.id,
+                  initData: options.initData
+                }), openPanels[panelName] = {
                   type: "tab",
-                  tabId: s.id
-                }, Tn[s.id] = e
+                  tabId: tab.id
+                }, tabToPanel[tab.id] = panelName
               })
           })
-          .then(r)
-          .catch(i)
+          .then(resolve)
+          .catch(reject)
       })
     }
 
-    function Kh(e, t) {
-      return new Promise((r, i) => {
-        let n = J.runtime.getURL(t.url + "?panel=" + e);
-        J.windows.getCurrent()
-          .then(o => {
-            let s = t.width || 500,
-              a = t.height || 400,
-              l = {
-                url: n,
-                width: s,
-                height: a,
+    function openPopupWindow(panelName, options) {
+      return new Promise((resolve, reject) => {
+        let panelUrl = browser.runtime.getURL(options.url + "?panel=" + panelName);
+        browser.windows.getCurrent()
+          .then(currentWindow => {
+            let windowWidth = options.width || 500,
+              windowHeight = options.height || 400,
+              windowOptions = {
+                url: panelUrl,
+                width: windowWidth,
+                height: windowHeight,
                 type: "popup",
-                left: Math.round((o.width - s) / 2 + o.left),
-                top: Math.round((o.height - a) / 2 + o.top)
+                left: Math.round((currentWindow.width - windowWidth) / 2 + currentWindow.left),
+                top: Math.round((currentWindow.height - windowHeight) / 2 + currentWindow.top)
               };
-            return Ti.isBrowser("chrome", "opera") && (l.focused = !
-                0), J.windows.create(l)
-              .then(u => (Ei[e] = {
+            return browserModule.isBrowser("chrome", "opera") && (windowOptions.focused = !
+                0), browser.windows.create(windowOptions)
+              .then(createdWindow => (openPanels[panelName] = {
                 type: "window",
-                windowId: u.id
-              }, Promise.all([u, J.windows.update(u.id, {
+                windowId: createdWindow.id
+              }, Promise.all([createdWindow, browser.windows.update(createdWindow.id, {
                 focused: !0
               })])))
-              .then(([u]) => {
+              .then(([createdWindow]) => {
                 Promise.resolve()
                   .then(() => {
-                    if (!(t.initData && t.initData.autoResize))
-                      return J.windows.update(u.id, {
-                          height: u.height + 1
+                    if (!(options.initData && options.initData.autoResize))
+                      return browser.windows.update(createdWindow.id, {
+                          height: createdWindow.height + 1
                         })
-                        .then(() => J.windows.update(u.id, {
-                          height: u.height - 1
+                        .then(() => browser.windows.update(createdWindow.id, {
+                          height: createdWindow.height - 1
                         }))
                   })
                   .then(() => {
-                    let m = new Promise((p, _) => {
-                        let f;
+                    let tabOpenedPromise = new Promise((resolveTab, rejectTab) => {
+                        let openTimeoutId;
 
-                        function g(h) {
-                          h.windowId == u.id && (clearTimeout(
-                              f), J.tabs.onCreated
-                            .removeListener(g), p(h))
+                        function onTabCreated(createdTab) {
+                          createdTab.windowId == createdWindow.id && (clearTimeout(
+                              openTimeoutId), browser.tabs.onCreated
+                            .removeListener(onTabCreated), resolveTab(createdTab))
                         }
-                        f = setTimeout(() => {
-                            J.tabs.onCreated.removeListener(
-                              g), _(new Error(
+                        openTimeoutId = setTimeout(() => {
+                            browser.tabs.onCreated.removeListener(
+                              onTabCreated), rejectTab(new Error(
                               "Tab did not open"))
-                          }, 5e3), J.tabs.onCreated
-                          .addListener(g)
+                          }, 5e3), browser.tabs.onCreated
+                          .addListener(onTabCreated)
                       }),
-                      w = J.tabs.query({
-                        windowId: u.id
+                      existingTabPromise = browser.tabs.query({
+                        windowId: createdWindow.id
                       })
-                      .then(p => new Promise((_, f) => {
-                        p.length > 0 && _(p[0])
+                      .then(queriedTabs => new Promise((resolveExistingTab, rejectExistingTab) => {
+                        queriedTabs.length > 0 && resolveExistingTab(queriedTabs[0])
                       }));
-                    return Promise.race([m, w])
+                    return Promise.race([tabOpenedPromise, existingTabPromise])
                   })
-                  .then(m => m.status == "loading" ? new Promise((
-                    w, p) => {
-                    let _;
+                  .then(openedTab => openedTab.status == "loading" ? new Promise((
+                    resolveComplete, rejectComplete) => {
+                    let completeTimeoutId;
 
-                    function f(g, h, T) {
-                      g == m.id && T.status == "complete" && (
-                        clearTimeout(_), J.tabs.onUpdated
-                        .removeListener(f), w(T))
+                    function onTabUpdated(updatedTabId, changeInfo, updatedTab) {
+                      updatedTabId == openedTab.id && updatedTab.status == "complete" && (
+                        clearTimeout(completeTimeoutId), browser.tabs.onUpdated
+                        .removeListener(onTabUpdated), resolveComplete(updatedTab))
                     }
-                    _ = setTimeout(() => {
-                      J.tabs.onUpdated.removeListener(f),
-                        p(new Error(
+                    completeTimeoutId = setTimeout(() => {
+                      browser.tabs.onUpdated.removeListener(onTabUpdated),
+                        rejectComplete(new Error(
                           "Tab did not complete"))
-                    }, 6e4), J.tabs.onUpdated.addListener(f)
-                  }) : m)
-                  .then(m => {
-                    Ti.__declareAppTab(e, {
-                      tab: m.id,
-                      initData: t.initData
-                    }), Tn[m.id] = e
+                    }, 6e4), browser.tabs.onUpdated.addListener(onTabUpdated)
+                  }) : openedTab)
+                  .then(readyTab => {
+                    browserModule.__declareAppTab(panelName, {
+                      tab: readyTab.id,
+                      initData: options.initData
+                    }), tabToPanel[readyTab.id] = panelName
                   })
-                  .then(r)
-                  .catch(i);
+                  .then(resolve)
+                  .catch(reject);
 
-                function d(m) {
-                  m != u.id && t.autoClose && J.windows
+                function onWindowFocusChanged(focusedWindowId) {
+                  focusedWindowId != createdWindow.id && options.autoClose && browser.windows
                     .getCurrent()
-                    .then(w => {
-                      w.id != u.id && J.windows.remove(u.id)
+                    .then(activeWindow => {
+                      activeWindow.id != createdWindow.id && browser.windows.remove(createdWindow.id)
                         .then(() => {}, () => {})
                     })
                 }
 
-                function c(m) {
-                  m == u.id && (J.windows.onFocusChanged
-                    ?.removeListener(d), J.windows
-                    .onFocusChanged?.removeListener(c))
+                function onWindowRemoved(removedWindowId) {
+                  removedWindowId == createdWindow.id && (browser.windows.onFocusChanged
+                    ?.removeListener(onWindowFocusChanged), browser.windows
+                    .onFocusChanged?.removeListener(onWindowRemoved))
                 }
-                J.windows.onFocusChanged?.addListener(d), J
-                  .windows.onRemoved?.addListener(c)
+                browser.windows.onFocusChanged?.addListener(onWindowFocusChanged), browser
+                  .windows.onRemoved?.addListener(onWindowRemoved)
               })
-              .catch(i)
+              .catch(reject)
           })
-          .catch(i)
+          .catch(reject)
       })
     }
 
-    function Yh(e, t) {
-      return new Promise((r, i) => {
-        let n = J.runtime.getURL(t.url + "?panel=" + e);
-        Hu(n)
-          .then(o => {
-            if (!o) return Kh(e, t)
+    function openPanelWindow(panelName, options) {
+      return new Promise((resolve, reject) => {
+        let panelUrl = browser.runtime.getURL(options.url + "?panel=" + panelName);
+        focusExistingTab(panelUrl)
+          .then(alreadyFocused => {
+            if (!alreadyFocused) return openPopupWindow(panelName, options)
           })
-          .then(r)
-          .catch(i)
+          .then(resolve)
+          .catch(reject)
       })
     }
 
-    function Zh(e, t) {
-      switch (t.type) {
+    function openPanel(panelName, options) {
+      switch (options.type) {
         case "panel":
-          return Yh(e, t);
+          return openPanelWindow(panelName, options);
         case "tab":
         default:
-          return Jh(e, t)
+          return openAppTab(panelName, options)
       }
     }
-    J.tabs.onRemoved.addListener(e => {
-      Ti.__closeByTab(e);
-      let t = Tn[e];
-      t && (delete Tn[e], delete Ei[t])
+    browser.tabs.onRemoved.addListener(tabId => {
+      browserModule.__closeByTab(tabId);
+      let panelName = tabToPanel[tabId];
+      panelName && (delete tabToPanel[tabId], delete openPanels[panelName])
     });
 
-    function e_(e) {
-      let t = Ei[e];
-      t && t.type == "tab" ? J.tabs.remove(t.tabId) : t && t.type ==
-        "window" ? J.windows.remove(t.windowId) : $h.call(e, "close")
+    function closePanel(panelName) {
+      let entry = openPanels[panelName];
+      entry && entry.type == "tab" ? browser.tabs.remove(entry.tabId) : entry && entry.type ==
+        "window" ? browser.windows.remove(entry.windowId) : rpc.call(panelName, "close")
     }
 
-    function t_(e) {
-      return !!Ei[e]
+    function isPanelOpen(panelName) {
+      return !!openPanels[panelName]
     }
-    Fu.exports = {
-      open: Zh,
-      close: e_,
-      isOpen: t_
+    appTabModule.exports = {
+      open: openPanel,
+      close: closePanel,
+      isOpen: isPanelOpen
     }
   });
-  var xa = v((Lx, Wu) => {
+  var requirePrefsLib = defineCommonjsModule((prefsExports, prefsModule) => {
     "use strict";
-    var wa = va()
+    var getMessage = requireI18n()
       .getMessage,
-      Uu = {};
+      reservedKeys = {};
 
-    function ju() {
+    function WehPrefs() {
       this.$specs = {}, this.$values = null, this.$values || (this
         .$values = {}), this.$listeners = {}
     }
-    ju.prototype = {
-      notify: function(e, t, r, i) {
-        let n = this,
-          o = e.split("."),
-          s = [];
-        for (let a = o.length; a >= 0; a--) s.push(o.slice(0, a)
+    WehPrefs.prototype = {
+      notify: function(key, value, oldValue, specsFlag) {
+        let self = this,
+          keyParts = key.split("."),
+          prefixes = [];
+        for (let partCount = keyParts.length; partCount >= 0; partCount--) prefixes.push(keyParts.slice(0, partCount)
           .join("."));
-        s.forEach(function(a) {
-          let l = n.$listeners[a];
-          l && l.forEach(function(u) {
-            if (u.specs == i)
-              if (u.pack) u.pack[e] = t, typeof u.old[e] >
-                "u" && (u.old[e] = r), u.timer &&
-                clearTimeout(u.timer), u.timer = setTimeout(
+        prefixes.forEach(function(prefix) {
+          let listeners = self.$listeners[prefix];
+          listeners && listeners.forEach(function(listener) {
+            if (listener.specs == specsFlag)
+              if (listener.pack) listener.pack[key] = value, typeof listener.old[key] >
+                "u" && (listener.old[key] = oldValue), listener.timer &&
+                clearTimeout(listener.timer), listener.timer = setTimeout(
                   function() {
-                    delete u.timer;
-                    let d = u.pack,
-                      c = u.old;
-                    u.pack = {}, u.old = {};
+                    delete listener.timer;
+                    let packData = listener.pack,
+                      oldData = listener.old;
+                    listener.pack = {}, listener.old = {};
                     try {
-                      u.callback(d, c)
+                      listener.callback(packData, oldData)
                     } catch {}
                   }, 0);
               else try {
-                u.callback(e, t, r)
+                listener.callback(key, value, oldValue)
               } catch {}
           })
         })
       },
-      forceNotify: function(e) {
-        typeof e > "u" && (e = !1);
-        let t = this;
-        Object.keys(t.$specs)
-          .forEach(r => {
-            t.notify(r, t.$values[r], t.$values[r], e)
+      forceNotify: function(includeSpecs) {
+        typeof includeSpecs > "u" && (includeSpecs = !1);
+        let self = this;
+        Object.keys(self.$specs)
+          .forEach(key => {
+            self.notify(key, self.$values[key], self.$values[key], includeSpecs)
           })
       },
-      declare: function(e) {
-        let t = this;
-        Array.isArray(e) || (e = Object.keys(e)
-          .map(function(r) {
-            let i = e[r];
-            return i.name = r, i
-          })), e.forEach(function(r) {
-          if (Uu[r.name]) throw new Error("Forbidden prefs key " +
-            r.name);
-          let i;
-          r.hidden ? (r.label = r.name, r.description = "") : (i =
-              r.name.replace(/[^0-9a-zA-Z_]/g, "_"), r.label = r
-              .label || wa("weh_prefs_label_" + i) || r.name, r
-              .description = r.description || wa(
-                "weh_prefs_description_" + i) || ""), r.type ==
-            "choice" && (r.choices = (r.choices || [])
-              .map(function(s) {
-                if (typeof s == "object") return s;
-                if (r.hidden) return {
-                  value: s,
-                  name: s
+      declare: function(specsInput) {
+        let self = this;
+        Array.isArray(specsInput) || (specsInput = Object.keys(specsInput)
+          .map(function(specKey) {
+            let spec = specsInput[specKey];
+            return spec.name = specKey, spec
+          })), specsInput.forEach(function(spec) {
+          if (reservedKeys[spec.name]) throw new Error("Forbidden prefs key " +
+            spec.name);
+          let sanitizedName;
+          spec.hidden ? (spec.label = spec.name, spec.description = "") : (sanitizedName =
+              spec.name.replace(/[^0-9a-zA-Z_]/g, "_"), spec.label = spec
+              .label || getMessage("weh_prefs_label_" + sanitizedName) || spec.name, spec
+              .description = spec.description || getMessage(
+                "weh_prefs_description_" + sanitizedName) || ""), spec.type ==
+            "choice" && (spec.choices = (spec.choices || [])
+              .map(function(choice) {
+                if (typeof choice == "object") return choice;
+                if (spec.hidden) return {
+                  value: choice,
+                  name: choice
                 };
                 {
-                  let a = s.replace(/[^0-9a-zA-Z_]/g, "_");
+                  let sanitizedOption = choice.replace(/[^0-9a-zA-Z_]/g, "_");
                   return {
-                    value: s,
-                    name: wa("weh_prefs_" + i + "_option_" +
-                      a) || s
+                    value: choice,
+                    name: getMessage("weh_prefs_" + sanitizedName + "_option_" +
+                      sanitizedOption) || choice
                   }
                 }
               }));
-          let n = null;
-          t.$specs[r.name] || function(s) {
-            typeof t[r.name] < "u" && (n = t[r.name]), Object
-              .defineProperty(t, s, {
-                set: function(a) {
-                  let l = t.$values[s];
-                  l !== a && (t.$values[s] = a, t.notify(s,
-                    a, l, !1))
+          let existingValue = null;
+          self.$specs[spec.name] || function(specName) {
+            typeof self[spec.name] < "u" && (existingValue = self[spec.name]), Object
+              .defineProperty(self, specName, {
+                set: function(newValue) {
+                  let oldValue = self.$values[specName];
+                  oldValue !== newValue && (self.$values[specName] = newValue, self.notify(specName,
+                    newValue, oldValue, !1))
                 },
                 get: function() {
-                  return t.$values[s] !== void 0 ? t
-                    .$values[s] : t.$specs[s] && t.$specs[s]
+                  return self.$values[specName] !== void 0 ? self
+                    .$values[specName] : self.$specs[specName] && self.$specs[specName]
                     .defaultValue || void 0
                 }
               })
-          }(r.name);
-          let o = t.$specs[r.name];
-          t.$specs[r.name] = r, n !== null ? t.$values[r.name] =
-            n : typeof t.$values[r.name] > "u" && (t.$values[r
-              .name] = r.defaultValue), t.notify(r.name, r, o, !0)
+          }(spec.name);
+          let oldSpec = self.$specs[spec.name];
+          self.$specs[spec.name] = spec, existingValue !== null ? self.$values[spec.name] =
+            existingValue : typeof self.$values[spec.name] > "u" && (self.$values[spec
+              .name] = spec.defaultValue), self.notify(spec.name, spec, oldSpec, !0)
         })
       },
       on: function() {
-        let e = "",
-          t = {},
-          r = 0;
-        typeof arguments[r] == "string" && (e = arguments[r++]),
-          typeof arguments[r] == "object" && (t = arguments[r++]);
-        let i = arguments[r],
-          n = !!t.pack;
-        this.$listeners[e] || (this.$listeners[e] = []);
-        let o = {
-          callback: i,
-          specs: !!t.specs
+        let eventKey = "",
+          options = {},
+          argIndex = 0;
+        typeof arguments[argIndex] == "string" && (eventKey = arguments[argIndex++]),
+          typeof arguments[argIndex] == "object" && (options = arguments[argIndex++]);
+        let callback = arguments[argIndex],
+          isPacked = !!options.pack;
+        this.$listeners[eventKey] || (this.$listeners[eventKey] = []);
+        let listener = {
+          callback: callback,
+          specs: !!options.specs
         };
-        n && (o.pack = {}, o.old = {}), this.$listeners[e].push(o)
+        isPacked && (listener.pack = {}, listener.old = {}), this.$listeners[eventKey].push(listener)
       },
       off: function() {
-        let e = "",
-          t = 0;
-        typeof arguments[t] == "string" && (e = arguments[t++]);
-        let r = arguments[t],
-          i = this.$listeners[e];
-        if (i)
-          for (let n = i.length - 1; n >= 0; n--)(!r || i[n] == r) &&
-            i.splice(n, 1)
+        let eventKey = "",
+          argIndex = 0;
+        typeof arguments[argIndex] == "string" && (eventKey = arguments[argIndex++]);
+        let callback = arguments[argIndex],
+          listeners = this.$listeners[eventKey];
+        if (listeners)
+          for (let index = listeners.length - 1; index >= 0; index--)(!callback || listeners[index] == callback) &&
+            listeners.splice(index, 1)
       },
       getAll: function() {
         return Object.assign({}, this.$values)
@@ -1488,65 +1488,65 @@
       getSpecs: function() {
         return Object.assign({}, this.$specs)
       },
-      assign: function(e) {
-        for (let t in e) e.hasOwnProperty(t) && (this[t] = e[t])
+      assign: function(source) {
+        for (let propName in source) source.hasOwnProperty(propName) && (this[propName] = source[propName])
       },
-      isValid: function(e, t) {
-        let r = this.$specs[e];
-        if (r) {
-          switch (r.type) {
+      isValid: function(key, value) {
+        let spec = this.$specs[key];
+        if (spec) {
+          switch (spec.type) {
             case "string":
-              if (r.regexp && !new RegExp(r.regexp)
-                .test(t)) return !1;
+              if (spec.regexp && !new RegExp(spec.regexp)
+                .test(value)) return !1;
               break;
             case "integer":
-              if (!/^-?[0-9]+$/.test(t) || isNaN(parseInt(t)))
+              if (!/^-?[0-9]+$/.test(value) || isNaN(parseInt(value)))
               return !1;
             case "float":
-              if (r.type == "float" && (!
-                  /^-?[0-9]+(\.[0-9]+)?|(\.[0-9]+)$/.test(t) || isNaN(
-                    parseFloat(t))) || typeof r.minimum < "u" && t < r
-                .minimum || typeof r.maximum < "u" && t > r.maximum)
+              if (spec.type == "float" && (!
+                  /^-?[0-9]+(\.[0-9]+)?|(\.[0-9]+)$/.test(value) || isNaN(
+                    parseFloat(value))) || typeof spec.minimum < "u" && value < spec
+                .minimum || typeof spec.maximum < "u" && value > spec.maximum)
                 return !1;
               break;
             case "choice": {
-              let i = !1;
-              if ((r.choices || [])
-                .forEach(n => {
-                  t == n.value && (i = !0)
-                }), !i) return !1
+              let isMatch = !1;
+              if ((spec.choices || [])
+                .forEach(choice => {
+                  value == choice.value && (isMatch = !0)
+                }), !isMatch) return !1
             }
             break
           }
           return !0
         }
       },
-      reducer: function(e = {}, t) {
-        switch (t.type) {
+      reducer: function(state = {}, action) {
+        switch (action.type) {
           case "weh.SET_PREFS":
-            e = Object.assign({}, e, t.payload);
+            state = Object.assign({}, state, action.payload);
             break
         }
-        return e
+        return state
       },
-      reduxDispatch(e) {
+      reduxDispatch(store) {
         this.on("", {
           pack: !0
-        }, t => {
-          e.dispatch({
+        }, pack => {
+          store.dispatch({
             type: "weh.SET_PREFS",
-            payload: t
+            payload: pack
           })
         })
       }
     };
-    var Aa = new ju;
-    for (let e in Aa) Aa.hasOwnProperty(e) && (Uu[e] = !0);
-    Wu.exports = Aa
+    var prefs = new WehPrefs;
+    for (let propName in prefs) prefs.hasOwnProperty(propName) && (reservedKeys[propName] = !0);
+    prefsModule.exports = prefs
   });
-  var Gu = v((Ux, Xu) => {
+  var requireDefaultPrefs = defineCommonjsModule((defaultPrefsExports, defaultPrefsModule) => {
     "use strict";
-    Xu.exports = [{
+    defaultPrefsModule.exports = [{
       name: "networkProbe",
       type: "boolean",
       defaultValue: !0
@@ -1914,138 +1914,138 @@
       defaultValue: !1
     }]
   });
-  var Y = v((jx, zu) => {
+  var requireWeh = defineCommonjsModule((wehBgExports, wehBgModule) => {
     "use strict";
-    var ee = Lr(),
-      Ta = ee.browser,
-      ke = {},
-      Le = {};
-    ee.rpc = Ft(), ee.rpc.setUseTarget(!0), ee.rpc.setPost((e, t) => {
-        let r = ke[e];
-        r && r.port && r.port.postMessage(t)
-      }), ee.rpc.listen({
-        appStarted: e => {},
-        appReady: e => {},
-        closePanel: e => {
-          ee.ui.close(e)
+    var weh = requireWehCore(),
+      browser = weh.browser,
+      appContents = {},
+      waiters = {};
+    weh.rpc = requireRpc(), weh.rpc.setUseTarget(!0), weh.rpc.setPost((uiName, message) => {
+        let content = appContents[uiName];
+        content && content.port && content.port.postMessage(message)
+      }), weh.rpc.listen({
+        appStarted: arg => {},
+        appReady: arg => {},
+        closePanel: uiName => {
+          weh.ui.close(uiName)
         }
-      }), Ta.runtime.onConnect.addListener(e => {
-        /^weh:(.*?):(.*)/.exec(e.name) && (e.onMessage.addListener(
-        t => {
-          if (typeof t._method < "u" && (t._method ===
-              "appStarted" || t._method === "appReady")) {
-            let r = t._args[0] && t._args[0].uiName || null,
-              i = ke[r] || {
+      }), browser.runtime.onConnect.addListener(port => {
+        /^weh:(.*?):(.*)/.exec(port.name) && (port.onMessage.addListener(
+        message => {
+          if (typeof message._method < "u" && (message._method ===
+              "appStarted" || message._method === "appReady")) {
+            let uiName = message._args[0] && message._args[0].uiName || null,
+              content = appContents[uiName] || {
                 ready: !1
               };
-            if (ke[r] = i, Object.assign(i, t._args[0], {
-                port: e
-              }), t._method == "appReady") {
-              i.ready = !0, i.initData && setTimeout(() => ee.rpc
-                .call(r, "wehInitData", i.initData));
-              let n = Le[r];
-              n && n.timer && clearTimeout(n.timer)
+            if (appContents[uiName] = content, Object.assign(content, message._args[0], {
+                port: port
+              }), message._method == "appReady") {
+              content.ready = !0, content.initData && setTimeout(() => weh.rpc
+                .call(uiName, "wehInitData", content.initData));
+              let waiter = waiters[uiName];
+              waiter && waiter.timer && clearTimeout(waiter.timer)
             }
-            e._weh_app = r
+            port._weh_app = uiName
           }
-          ee.rpc.receive(t, e.postMessage.bind(e), e._weh_app)
-        }), e.onDisconnect.addListener(() => {
-          let t = e._weh_app;
-          if (t) {
-            delete ke[t];
-            let r = Le[t];
-            r && (r.timer && clearTimeout(r.timer), delete Le[t],
-              r.reject(new Error("Disconnected waiting for " +
-                t)))
+          weh.rpc.receive(message, port.postMessage.bind(port), port._weh_app)
+        }), port.onDisconnect.addListener(() => {
+          let uiName = port._weh_app;
+          if (uiName) {
+            delete appContents[uiName];
+            let waiter = waiters[uiName];
+            waiter && (waiter.timer && clearTimeout(waiter.timer), delete waiters[uiName],
+              waiter.reject(new Error("Disconnected waiting for " +
+                uiName)))
           }
         }))
-      }), ee.__declareAppTab = function(e, t) {
-        ke[e] || (ke[e] = {}), Object.assign(ke[e], t)
-      }, ee.__closeByTab = function(e) {
-        Object.keys(ke)
-          .forEach(t => {
-            if (ke[t].tab === e) {
-              delete ke[t];
-              let r = Le[t];
-              r && (r.timer && clearTimeout(r.timer), delete Le[t], r
-                .reject(new Error("Disconnected waiting for " + t)))
+      }), weh.__declareAppTab = function(uiName, data) {
+        appContents[uiName] || (appContents[uiName] = {}), Object.assign(appContents[uiName], data)
+      }, weh.__closeByTab = function(tabId) {
+        Object.keys(appContents)
+          .forEach(uiName => {
+            if (appContents[uiName].tab === tabId) {
+              delete appContents[uiName];
+              let waiter = waiters[uiName];
+              waiter && (waiter.timer && clearTimeout(waiter.timer), delete waiters[uiName], waiter
+                .reject(new Error("Disconnected waiting for " + uiName)))
             }
           })
-      }, ee._ = va()
-      .getMessage, ee.ui = Lu(), ee.openedContents = () => Object.keys(
-      ke);
+      }, weh._ = requireI18n()
+      .getMessage, weh.ui = requireAppTab(), weh.openedContents = () => Object.keys(
+      appContents);
 
-    function r_(e) {
-      let t = 0,
-        r;
-      if (e.length === 0) return t;
-      for (let i = 0; i < e.length; i++) r = e.charCodeAt(i), t = (t <<
-        5) - t + r, t = t & t;
-      return t
+    function hashString(str) {
+      let hash = 0,
+        charCode;
+      if (str.length === 0) return hash;
+      for (let index = 0; index < str.length; index++) charCode = str.charCodeAt(index), hash = (hash <<
+        5) - hash + charCode, hash = hash & hash;
+      return hash
     }
 
-    function i_(e) {
-      return JSON.stringify(Object.keys(e)
+    function serializePrefs(prefsObj) {
+      return JSON.stringify(Object.keys(prefsObj)
         .sort()
-        .map(function(t) {
+        .map(function(key) {
           return {
-            name: t,
-            value: e[t]
+            name: key,
+            value: prefsObj[key]
           }
         }))
     }
-    var Qu = 0;
-    ee.unsafe_prefs = xa(), ee.prefs = Ta.storage.local.get("weh-prefs")
-      .then(e => {
-        let t = ee.unsafe_prefs,
-          r = e["weh-prefs"] || {};
-        return t.assign(r), t.on("", {
+    var lastPrefsHash = 0;
+    weh.unsafe_prefs = requirePrefsLib(), weh.prefs = browser.storage.local.get("weh-prefs")
+      .then(stored => {
+        let prefs = weh.unsafe_prefs,
+          savedPrefs = stored["weh-prefs"] || {};
+        return prefs.assign(savedPrefs), prefs.on("", {
           pack: !0
-        }, function(i, n) {
-          Object.assign(r, i);
-          let o = i_(r),
-            s = r_(o);
-          s != Qu && (Qu = s, Ta.storage.local.set({
-              "weh-prefs": r
-            })), Object.keys(ke)
-            .forEach(a => {
-              ee.rpc.call(a, "setPrefs", i)
+        }, function(pack, previous) {
+          Object.assign(savedPrefs, pack);
+          let serialized = serializePrefs(savedPrefs),
+            hash = hashString(serialized);
+          hash != lastPrefsHash && (lastPrefsHash = hash, browser.storage.local.set({
+              "weh-prefs": savedPrefs
+            })), Object.keys(appContents)
+            .forEach(uiName => {
+              weh.rpc.call(uiName, "setPrefs", pack)
             })
-        }), t.declare(Gu()), t
+        }), prefs.declare(requireDefaultPrefs()), prefs
       })
-      .catch(e => {
-        console.error("web-background error:", e)
-      }), ee.wait = (e, t = {}) => {
-        let r = Le[e];
-        return r && (r.timer && clearTimeout(r.timer), delete Le[e], r
-            .reject(new Error("Waiter for " + e + " overriden"))),
-          new Promise((i, n) => {
-            Le[e] = {
-              resolve: i,
-              reject: n,
+      .catch(error => {
+        console.error("web-background error:", error)
+      }), weh.wait = (uiName, options = {}) => {
+        let existingWaiter = waiters[uiName];
+        return existingWaiter && (existingWaiter.timer && clearTimeout(existingWaiter.timer), delete waiters[uiName], existingWaiter
+            .reject(new Error("Waiter for " + uiName + " overriden"))),
+          new Promise((resolve, reject) => {
+            waiters[uiName] = {
+              resolve: resolve,
+              reject: reject,
               timer: setTimeout(() => {
-                delete Le[e], n(new Error("Waiter for " + e +
+                delete waiters[uiName], reject(new Error("Waiter for " + uiName +
                   " timed out"))
-              }, t.timeout || 6e4)
+              }, options.timeout || 6e4)
             }
           })
-      }, ee.rpc.listen({
-        prefsGetAll: async () => (await ee.prefs)
+      }, weh.rpc.listen({
+        prefsGetAll: async () => (await weh.prefs)
           .getAll(),
-        prefsGetSpecs: async () => (await ee.prefs)
+        prefsGetSpecs: async () => (await weh.prefs)
           .getSpecs(),
-        prefsSet: async e => (await ee.prefs)
-          .assign(e),
-        trigger: (e, t) => {
-          let r = Le[e];
-          if (!r) throw new Error("No waiter for", e);
-          r.timer && (clearTimeout(r.timer), delete r.timer),
-            delete Le[e], r.resolve(t)
+        prefsSet: async newPrefs => (await weh.prefs)
+          .assign(newPrefs),
+        trigger: (uiName, value) => {
+          let waiter = waiters[uiName];
+          if (!waiter) throw new Error("No waiter for", uiName);
+          waiter.timer && (clearTimeout(waiter.timer), delete waiter.timer),
+            delete waiters[uiName], waiter.resolve(value)
         }
-      }), zu.exports = ee
+      }), wehBgModule.exports = weh
   });
-  var lr = v((Wx, n_) => {
-    n_.exports = {
+  var requireBuildInfo = defineCommonjsModule((buildInfoExports, buildInfoModule) => {
+    buildInfoModule.exports = {
       prod: !0,
       channel: "stable",
       buildDate: "2024-10-15",
@@ -2057,525 +2057,525 @@
       }
     }
   });
-  var Yu = v((Xx, Ku) => {
+  var requireInspect = defineCommonjsModule((inspectExports, inspectModule) => {
     "use strict";
-    var o_ = Lr(),
-      $u = Ft(),
-      Ea = xa(),
-      En = o_.browser,
-      Si = null,
-      Ju = null,
-      Di = !1;
-    En.runtime.onMessageExternal && (En.runtime.onMessageExternal
-      .addListener(function(e, t, r) {
-        switch (e.type) {
+    var wehModule = requireWehCore(),
+      rpc = requireRpc(),
+      prefs = requirePrefsLib(),
+      browser = wehModule.browser,
+      inspectorId = null,
+      inspect = null,
+      inspected = !1;
+    browser.runtime.onMessageExternal && (browser.runtime.onMessageExternal
+      .addListener(function(message, sender, sendResponse) {
+        switch (message.type) {
           case "weh#inspect-ping":
-            Si = t.id, r({
+            inspectorId = sender.id, sendResponse({
               type: "weh#inspect-pong",
               version: 1,
-              manifest: En.runtime.getManifest()
+              manifest: browser.runtime.getManifest()
             });
             break;
           case "weh#inspect":
-            Si = t.id, Di = e.inspected, Di ? $u.setHook(i => {
-              Di && Si && En.runtime.sendMessage(Si, {
+            inspectorId = sender.id, inspected = message.inspected, inspected ? rpc.setHook(hookMessage => {
+              inspected && inspectorId && browser.runtime.sendMessage(inspectorId, {
                   type: "weh#inspect-message",
-                  message: i
+                  message: hookMessage
                 })
-                .catch(n => {
-                  console.info("Error sending message", n),
-                    Di = !1
+                .catch(error => {
+                  console.info("Error sending message", error),
+                    inspected = !1
                 })
-            }) : $u.setHook(null), r({
+            }) : rpc.setHook(null), sendResponse({
               type: "weh#inspect",
               version: 1,
-              inspected: Di
+              inspected: inspected
             });
             break;
           case "weh#get-prefs":
-            Si = t.id, r({
+            inspectorId = sender.id, sendResponse({
               type: "weh#prefs",
-              prefs: Ea.getAll(),
-              specs: Ea.getSpecs()
+              prefs: prefs.getAll(),
+              specs: prefs.getSpecs()
             });
             break;
           case "weh#set-pref":
-            Ea[e.pref] = e.value, r(!0);
+            prefs[message.pref] = message.value, sendResponse(!0);
             break
         }
-      }), Ju = {
+      }), inspect = {
         send: () => {
           console.info("TODO implement inspect.send")
         }
-      }), Ku.exports = Ju
+      }), inspectModule.exports = inspect
   });
-  var ed = {};
-  ie(ed, {
-    removeOriginAndReferrerSetterForUrl: () => l_,
-    setOriginAndReferrerSetterForUrl: () => s_
+  var originReferrerNs = {};
+  defineExports(originReferrerNs, {
+    removeOriginAndReferrerSetterForUrl: () => removeOriginAndReferrerSetterForUrl,
+    setOriginAndReferrerSetterForUrl: () => setOriginAndReferrerSetterForUrl
   });
-  async function s_(e, t, r) {
-    if (!(!t && !r))
-      if (Zu) {
-        let i = [];
-        t && i.push({
+  async function setOriginAndReferrerSetterForUrl(url, origin, referer) {
+    if (!(!origin && !referer))
+      if (headerSetterIsMv3) {
+        let headerRules = [];
+        origin && headerRules.push({
           operation: "set",
           header: "origin",
-          value: t
-        }), r && i.push({
+          value: origin
+        }), referer && headerRules.push({
           operation: "set",
           header: "referer",
-          value: r
+          value: referer
         });
-        let n = a_++,
-          o = {
-            id: n,
+        let ruleId = nextHeaderRuleId++,
+          rule = {
+            id: ruleId,
             priority: 1,
             action: {
               type: "modifyHeaders",
-              requestHeaders: i
+              requestHeaders: headerRules
             },
             condition: {
-              urlFilter: e,
+              urlFilter: url,
               resourceTypes: ["xmlhttprequest"]
             }
           };
-        Da.set(e, [n]);
+        headerSessionRuleIds.set(url, [ruleId]);
         try {
-          await Oi.declarativeNetRequest.updateSessionRules({
-            addRules: [o]
+          await headerBrowser.declarativeNetRequest.updateSessionRules({
+            addRules: [rule]
           })
         } catch {}
       } else {
-        let i = n => {
-          let o = n.requestHeaders.filter(s => s.name != "origin" && s
+        let headerListener = details => {
+          let headers = details.requestHeaders.filter(header => header.name != "origin" && header
             .name != "referer");
-          return t && o.push({
+          return origin && headers.push({
             name: "origin",
-            value: t
-          }), r && o.push({
+            value: origin
+          }), referer && headers.push({
             name: "referer",
-            value: r
+            value: referer
           }), {
-            requestHeaders: o
+            requestHeaders: headers
           }
         };
-        Sa.set(e, i), Oi.webRequest.onBeforeSendHeaders.addListener(i, {
-          urls: [e]
+        headerListeners.set(url, headerListener), headerBrowser.webRequest.onBeforeSendHeaders.addListener(headerListener, {
+          urls: [url]
         }, ["blocking", "requestHeaders"])
       }
   }
-  async function l_(e) {
-    if (Zu) {
-      let t = Da.get(e);
-      t && (Da.delete(e), await Oi.declarativeNetRequest
+  async function removeOriginAndReferrerSetterForUrl(url) {
+    if (headerSetterIsMv3) {
+      let ruleIds = headerSessionRuleIds.get(url);
+      ruleIds && (headerSessionRuleIds.delete(url), await headerBrowser.declarativeNetRequest
     .updateSessionRules({
-        removeRuleIds: t
+        removeRuleIds: ruleIds
       }))
     } else {
-      let t = Sa.get(e);
-      t && (Sa.delete(t), Oi.webRequest.onBeforeSendHeaders.removeListener(
-        t))
+      let headerListener = headerListeners.get(url);
+      headerListener && (headerListeners.delete(headerListener), headerBrowser.webRequest.onBeforeSendHeaders.removeListener(
+        headerListener))
     }
   }
-  var Oi, Sa, Da, a_, Zu, td = C(() => {
+  var headerBrowser, headerListeners, headerSessionRuleIds, nextHeaderRuleId, headerSetterIsMv3, initOriginReferrer = defineLazyModule(() => {
     "use strict";
     ({
-      browser: Oi
-    } = Y()), Sa = new Map, Da = new Map, a_ = 1, Zu = Oi.runtime
+      browser: headerBrowser
+    } = requireWeh()), headerListeners = new Map, headerSessionRuleIds = new Map, nextHeaderRuleId = 1, headerSetterIsMv3 = headerBrowser.runtime
       .getManifest()
       .manifest_version >= 3
   });
-  var ge = {};
-  ie(ge, {
-    Cache: () => Oa,
-    Concurrent: () => w_,
-    DetailsError: () => Ra,
-    VDHError: () => Sn,
-    arrayEquals: () => m_,
-    bufferToHex: () => v_,
-    executeScriptWithGlobal: () => x_,
-    fromByteArray: () => h_,
-    generateRandomString: () => nd,
-    gotoOrOpenTab: () => f_,
-    gotoTab: () => id,
-    hash: () => rd,
-    hashHex: () => p_,
-    headerSubsSalt: () => b_,
-    isMinimumVersion: () => A_,
-    request: () => y_,
-    toByteArray: () => g_
+  var coreUtilNs = {};
+  defineExports(coreUtilNs, {
+    Cache: () => Cache,
+    Concurrent: () => Concurrent,
+    DetailsError: () => DetailsError,
+    VDHError: () => VDHError,
+    arrayEquals: () => arrayEquals,
+    bufferToHex: () => bufferToHex,
+    executeScriptWithGlobal: () => executeScriptWithGlobal,
+    fromByteArray: () => fromByteArray,
+    generateRandomString: () => generateRandomString,
+    gotoOrOpenTab: () => gotoOrOpenTab,
+    gotoTab: () => gotoTab,
+    hash: () => hash,
+    hashHex: () => hashHex,
+    headerSubsSalt: () => headerSubsSalt,
+    isMinimumVersion: () => isMinimumVersion,
+    request: () => request,
+    toByteArray: () => toByteArray
   });
 
-  function rd(e) {
-    let t = 0,
-      r, i, n;
-    if (e.length === 0) return t;
-    for (r = 0, n = e.length; r < n; r++) i = e.charCodeAt(r), t = (t << 5) -
-      t + i, t |= 0;
-    return t
+  function hash(str) {
+    let hashValue = 0,
+      index, charCode, length;
+    if (str.length === 0) return hashValue;
+    for (index = 0, length = str.length; index < length; index++) charCode = str.charCodeAt(index), hashValue = (hashValue << 5) -
+      hashValue + charCode, hashValue |= 0;
+    return hashValue
   }
 
-  function p_(e) {
-    return Math.abs(rd(e))
+  function hashHex(str) {
+    return Math.abs(hash(str))
       .toString(16)
   }
 
-  function id(e) {
-    return Ce.tabs.query({
-        url: e
+  function gotoTab(url) {
+    return utilBrowser.tabs.query({
+        url: url
       })
-      .then(t => t.length > 0 ? (Ce.tabs.update(t[0].id, {
+      .then(tabs => tabs.length > 0 ? (utilBrowser.tabs.update(tabs[0].id, {
         active: !0
-      }), Ce.windows.update(t[0].windowId, {
+      }), utilBrowser.windows.update(tabs[0].windowId, {
         focused: !0
       }), !0) : !1)
   }
 
-  function f_(e, t = null) {
-    let r = 0;
+  function gotoOrOpenTab(url, callback = null) {
+    let attempts = 0;
 
-    function i() {
-      return Ce.windows.getLastFocused({
+    function tryOpen() {
+      return utilBrowser.windows.getLastFocused({
           windowTypes: ["normal"]
         })
-        .then(n => n.type != "normal" ? ++r < 20 ? new Promise((o, s) => {
-          setTimeout(() => i(), 100)
-        }) : new Promise((o, s) => {
-          Ce.windows.getAll({
+        .then(lastWindow => lastWindow.type != "normal" ? ++attempts < 20 ? new Promise((resolve, reject) => {
+          setTimeout(() => tryOpen(), 100)
+        }) : new Promise((resolveWin, rejectWin) => {
+          utilBrowser.windows.getAll({
               windowTypes: ["normal"]
             })
-            .then(a => {
-              if (a.every(l => l.type == "normal" ? (o(l.id), !1) : !0))
+            .then(allWindows => {
+              if (allWindows.every(win => win.type == "normal" ? (resolveWin(win.id), !1) : !0))
                 throw new Error("No normal window to open tab")
             })
-        }) : n.id)
-        .then(n => {
-          let o = null;
-          if (n) return Ce.tabs.query({
+        }) : lastWindow.id)
+        .then(windowId => {
+          let activeTabId = null;
+          if (windowId) return utilBrowser.tabs.query({
               active: !0,
               lastFocusedWindow: !0
             })
-            .then(s => (s.length > 0 && (o = s[0].id), new Promise((a,
-                l) => {
-                  let u = null,
-                    d = (c, m, w) => {
-                      c == u && m.status === "complete" && (Ce.tabs
-                        .onUpdated.removeListener(d), a(w))
+            .then(activeTabs => (activeTabs.length > 0 && (activeTabId = activeTabs[0].id), new Promise((resolveNewTab,
+                rejectNewTab) => {
+                  let pendingTabId = null,
+                    onTabUpdated = (tabId, changeInfo, tab) => {
+                      tabId == pendingTabId && changeInfo.status === "complete" && (utilBrowser.tabs
+                        .onUpdated.removeListener(onTabUpdated), resolveNewTab(tab))
                     };
-                  Ce.tabs.onUpdated.addListener(d), Ce.tabs.create({
-                      url: e,
-                      windowId: n
+                  utilBrowser.tabs.onUpdated.addListener(onTabUpdated), utilBrowser.tabs.create({
+                      url: url,
+                      windowId: windowId
                     })
-                    .then(c => {
-                      c.status === "complete" ? (Ce.tabs.onUpdated
-                        .removeListener(d), a(c)) : u = c.id
+                    .then(createdTab => {
+                      createdTab.status === "complete" ? (utilBrowser.tabs.onUpdated
+                        .removeListener(onTabUpdated), resolveNewTab(createdTab)) : pendingTabId = createdTab.id
                     })
                 })
-              .then(a => {
-                o && t && t(a.id, o)
+              .then(completedTab => {
+                activeTabId && callback && callback(completedTab.id, activeTabId)
               })))
         })
     }
-    return id(e)
-      .then(n => n ? Promise.resolve() : i())
+    return gotoTab(url)
+      .then(alreadyOpen => alreadyOpen ? Promise.resolve() : tryOpen())
   }
 
-  function m_(e, t) {
-    if (e.length !== t.length) return !1;
-    for (let r = 0, i = e.length; r < i; r++)
-      if (e[r] !== t[r]) return !1;
+  function arrayEquals(arrayA, arrayB) {
+    if (arrayA.length !== arrayB.length) return !1;
+    for (let index = 0, length = arrayA.length; index < length; index++)
+      if (arrayA[index] !== arrayB[index]) return !1;
     return !0
   }
 
-  function nd(e) {
-    let t = new Uint8Array(e);
-    crypto.getRandomValues(t);
-    let r = "";
-    for (let i = 0; i < t.length; i++) r += ("0" + t[i].toString(16))
+  function generateRandomString(length) {
+    let bytes = new Uint8Array(length);
+    crypto.getRandomValues(bytes);
+    let result = "";
+    for (let index = 0; index < bytes.length; index++) result += ("0" + bytes[index].toString(16))
       .slice(-2);
-    return r.substring(0, e)
+    return result.substring(0, length)
   }
-  async function y_(e) {
-    let t = "include";
-    e.anonymous && (t = "omit");
-    let r = e.url,
-      i = e.method || "GET",
-      n = "",
-      o = new Headers;
-    if (e.headers) {
-      if (e.headers instanceof Array)
-        for (let l of e.headers) o.append(l.name, l.value);
-      else o = new Headers(e.headers);
-      o.has("referer") && (n = o.get("referer")), o.has("referrer") && (n =
-        o.get("referrer"));
-      for (let l of __) o.delete(l)
+  async function request(options) {
+    let credentials = "include";
+    options.anonymous && (credentials = "omit");
+    let url = options.url,
+      method = options.method || "GET",
+      referrer = "",
+      headers = new Headers;
+    if (options.headers) {
+      if (options.headers instanceof Array)
+        for (let header of options.headers) headers.append(header.name, header.value);
+      else headers = new Headers(options.headers);
+      headers.has("referer") && (referrer = headers.get("referer")), headers.has("referrer") && (referrer =
+        headers.get("referrer"));
+      for (let forbidden of forbiddenRequestHeaders) headers.delete(forbidden)
     }
-    let s;
-    e.contentJSON ? s = JSON.stringify(e.contentJSON) : e.content && (s = e
-      .content), await d_(r, o.get("origin"), n);
-    let a;
+    let body;
+    options.contentJSON ? body = JSON.stringify(options.contentJSON) : options.content && (body = options
+      .content), await setHeadersForUrl(url, headers.get("origin"), referrer);
+    let response;
     try {
-      a = await fetch(r, {
-        referrer: n,
-        method: i,
-        headers: o,
-        body: s,
-        credentials: t
+      response = await fetch(url, {
+        referrer: referrer,
+        method: method,
+        headers: headers,
+        body: body,
+        credentials: credentials
       })
     } finally {
-      await c_(r)
+      await clearHeadersForUrl(url)
     }
-    return a
+    return response
   }
 
-  function v_(e) {
-    let t = [],
-      r = new DataView(e);
-    for (let i = 0; i < r.byteLength; i += 4) {
-      let o = r.getUint32(i)
+  function bufferToHex(buffer) {
+    let parts = [],
+      view = new DataView(buffer);
+    for (let offset = 0; offset < view.byteLength; offset += 4) {
+      let hex = view.getUint32(offset)
         .toString(16),
-        s = "00000000",
-        a = (s + o)
-        .slice(-s.length);
-      t.push(a)
+        pad = "00000000",
+        padded = (pad + hex)
+        .slice(-pad.length);
+      parts.push(padded)
     }
-    return t.join("")
+    return parts.join("")
   }
 
-  function w_(...e) {
-    let t = new Ma(...e);
-    return t.callFn()
-      .bind(t)
+  function Concurrent(...args) {
+    let limiter = new ConcurrentLimiter(...args);
+    return limiter.callFn()
+      .bind(limiter)
   }
 
-  function A_(e = "0.0.0", t) {
-    let r = e.split(".")
-      .map(n => parseInt(n)),
-      i = t.split(".")
-      .map(n => parseInt(n));
-    for (let n = 0; n < r.length; n++) {
-      if (typeof i[n] > "u" || r[n] > i[n]) return !0;
-      if (r[n] < i[n]) return !1
+  function isMinimumVersion(current = "0.0.0", minimum) {
+    let currentParts = current.split(".")
+      .map(part => parseInt(part)),
+      minimumParts = minimum.split(".")
+      .map(part => parseInt(part));
+    for (let index = 0; index < currentParts.length; index++) {
+      if (typeof minimumParts[index] > "u" || currentParts[index] > minimumParts[index]) return !0;
+      if (currentParts[index] < minimumParts[index]) return !1
     }
     return !0
   }
-  async function x_(e, t, r) {
-    let i = a => a && typeof a == "object",
-      n = a => JSON.parse(JSON.stringify(a));
-    if (!i(t)) throw new Error("global argument is not an object");
-    t = n(t);
-    let s = {
-      target: e,
-      func: a => {
-        Object.assign(window, a)
+  async function executeScriptWithGlobal(target, globalObj, file) {
+    let isObject = value => value && typeof value == "object",
+      deepClone = value => JSON.parse(JSON.stringify(value));
+    if (!isObject(globalObj)) throw new Error("global argument is not an object");
+    globalObj = deepClone(globalObj);
+    let injection = {
+      target: target,
+      func: value => {
+        Object.assign(window, value)
       },
-      args: [t]
+      args: [globalObj]
     };
-    await Ce.scripting.executeScript(s), s = {
-      target: e,
-      files: [r]
-    }, await Ce.scripting.executeScript(s)
+    await utilBrowser.scripting.executeScript(injection), injection = {
+      target: target,
+      files: [file]
+    }, await utilBrowser.scripting.executeScript(injection)
   }
-  var u_, Ce, d_, c_, g_, h_, __, b_, Oa, Ma, Pa, Sn, Ra, he = C(() => {
+  var wehApi, utilBrowser, setHeadersForUrl, clearHeadersForUrl, toByteArray, fromByteArray, forbiddenRequestHeaders, headerSubsSalt, Cache, ConcurrentLimiter, VdhBaseError, VDHError, DetailsError, initCoreUtil = defineLazyModule(() => {
     "use strict";
-    u_ = Y(), Ce = u_.browser, {
-      setOriginAndReferrerSetterForUrl: d_,
-      removeOriginAndReferrerSetterForUrl: c_
-    } = (td(), R(ed));
+    wehApi = requireWeh(), utilBrowser = wehApi.browser, {
+      setOriginAndReferrerSetterForUrl: setHeadersForUrl,
+      removeOriginAndReferrerSetterForUrl: clearHeadersForUrl
+    } = (initOriginReferrer(), toCommonjs(originReferrerNs));
     ({
-      toByteArray: g_,
-      fromByteArray: h_
+      toByteArray: toByteArray,
+      fromByteArray: fromByteArray
     } = (() => {
-      let e, t =
+      let idx, base64Alphabet =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
-        r = [];
-      for (e = 0; e < t.length; e++) r[e] = t[e];
-      let i = [];
-      for (e = 0; e < t.length; ++e) i[t.charCodeAt(e)] = e;
-      i[45] = 62, i[95] = 63;
-      let n = typeof Uint8Array < "u" ? Uint8Array : Array;
+        base64Chars = [];
+      for (idx = 0; idx < base64Alphabet.length; idx++) base64Chars[idx] = base64Alphabet[idx];
+      let revLookup = [];
+      for (idx = 0; idx < base64Alphabet.length; ++idx) revLookup[base64Alphabet.charCodeAt(idx)] = idx;
+      revLookup[45] = 62, revLookup[95] = 63;
+      let ByteArrayType = typeof Uint8Array < "u" ? Uint8Array : Array;
 
-      function o(c) {
-        let m = i[c.charCodeAt(0)];
-        return m !== void 0 ? m : -1
+      function lookupValue(char) {
+        let value = revLookup[char.charCodeAt(0)];
+        return value !== void 0 ? value : -1
       }
 
-      function s(c) {
-        let m, w, p, _, f, g;
-        if (c.length % 4 > 0) throw new Error(
+      function decodeBase64(b64Str) {
+        let srcIndex, groupIndex, mainChunkLen, chunk, padding, bytes;
+        if (b64Str.length % 4 > 0) throw new Error(
           "Invalid string. Length must be a multiple of 4");
-        let h = c.length;
-        f = c.charAt(h - 2) === "=" ? 2 : c.charAt(h - 1) === "=" ?
-          1 : 0, g = new n(c.length * 3 / 4 - f), p = f > 0 ? c
-          .length - 4 : c.length;
-        let T = 0;
+        let b64Len = b64Str.length;
+        padding = b64Str.charAt(b64Len - 2) === "=" ? 2 : b64Str.charAt(b64Len - 1) === "=" ?
+          1 : 0, bytes = new ByteArrayType(b64Str.length * 3 / 4 - padding), mainChunkLen = padding > 0 ? b64Str
+          .length - 4 : b64Str.length;
+        let writePos = 0;
 
-        function x(b) {
-          g[T++] = b
+        function pushByte(byteVal) {
+          bytes[writePos++] = byteVal
         }
-        for (m = 0, w = 0; m < p; m += 4, w += 3) _ = o(c.charAt(
-          m)) << 18 | o(c.charAt(m + 1)) << 12 | o(c.charAt(m + 2)) <<
-          6 | o(c.charAt(m + 3)), x((_ & 16711680) >>> 16 >>> 0), x((
-            _ & 65280) >>> 8 >>> 0), x((_ & 255) >>> 0);
-        return f === 2 ? (_ = o(c.charAt(m)) << 2 | o(c.charAt(m +
-          1)) >>> 4 >>> 0, x(_ & 255)) : f === 1 && (_ = o(c.charAt(
-            m)) << 10 | o(c.charAt(m + 1)) << 4 | o(c.charAt(m +
-          2)) >>> 2 >>> 0, x(_ >>> 8 >>> 0 & 255), x(_ & 255)), g
+        for (srcIndex = 0, groupIndex = 0; srcIndex < mainChunkLen; srcIndex += 4, groupIndex += 3) chunk = lookupValue(b64Str.charAt(
+          srcIndex)) << 18 | lookupValue(b64Str.charAt(srcIndex + 1)) << 12 | lookupValue(b64Str.charAt(srcIndex + 2)) <<
+          6 | lookupValue(b64Str.charAt(srcIndex + 3)), pushByte((chunk & 16711680) >>> 16 >>> 0), pushByte((
+            chunk & 65280) >>> 8 >>> 0), pushByte((chunk & 255) >>> 0);
+        return padding === 2 ? (chunk = lookupValue(b64Str.charAt(srcIndex)) << 2 | lookupValue(b64Str.charAt(srcIndex +
+          1)) >>> 4 >>> 0, pushByte(chunk & 255)) : padding === 1 && (chunk = lookupValue(b64Str.charAt(
+            srcIndex)) << 10 | lookupValue(b64Str.charAt(srcIndex + 1)) << 4 | lookupValue(b64Str.charAt(srcIndex +
+          2)) >>> 2 >>> 0, pushByte(chunk >>> 8 >>> 0 & 255), pushByte(chunk & 255)), bytes
       }
 
-      function a(c) {
-        return r[c]
+      function encodeByte(index) {
+        return base64Chars[index]
       }
 
-      function l(c) {
-        return a(c >>> 18 >>> 0 & 63) + a(c >>> 12 >>> 0 & 63) + a(
-          c >>> 6 >>> 0 & 63) + a(c & 63)
+      function tripletToBase64(num) {
+        return encodeByte(num >>> 18 >>> 0 & 63) + encodeByte(num >>> 12 >>> 0 & 63) + encodeByte(
+          num >>> 6 >>> 0 & 63) + encodeByte(num & 63)
       }
 
-      function u(c, m, w) {
-        let p, _ = [];
-        for (let f = m; f < w; f += 3) p = (c[f] << 16) + (c[f + 1] <<
-          8) + c[f + 2], _.push(l(p));
-        return _.join("")
+      function encodeChunk(bytes, start, end) {
+        let triplet, output = [];
+        for (let pos = start; pos < end; pos += 3) triplet = (bytes[pos] << 16) + (bytes[pos + 1] <<
+          8) + bytes[pos + 2], output.push(tripletToBase64(triplet));
+        return output.join("")
       }
 
-      function d(c) {
-        let m, w = c.length % 3,
-          p = "",
-          _ = [],
-          f, g, h = 16383;
-        for (m = 0, g = c.length - w; m < g; m += h) _.push(u(c, m,
-          m + h > g ? g : m + h));
-        switch (w) {
+      function encodeBase64(bytes) {
+        let offset, extraBytes = bytes.length % 3,
+          tail = "",
+          parts = [],
+          temp, mainLen, chunkSize = 16383;
+        for (offset = 0, mainLen = bytes.length - extraBytes; offset < mainLen; offset += chunkSize) parts.push(encodeChunk(bytes, offset,
+          offset + chunkSize > mainLen ? mainLen : offset + chunkSize));
+        switch (extraBytes) {
           case 1:
-            f = c[c.length - 1], p += a(f >>> 2 >>> 0), p += a(f <<
-              4 & 63), p += "==";
+            temp = bytes[bytes.length - 1], tail += encodeByte(temp >>> 2 >>> 0), tail += encodeByte(temp <<
+              4 & 63), tail += "==";
             break;
           case 2:
-            f = (c[c.length - 2] << 8) + c[c.length - 1], p += a(f >>>
-              10 >>> 0), p += a(f >>> 4 >>> 0 & 63), p += a(f << 2 &
-              63), p += "=";
+            temp = (bytes[bytes.length - 2] << 8) + bytes[bytes.length - 1], tail += encodeByte(temp >>>
+              10 >>> 0), tail += encodeByte(temp >>> 4 >>> 0 & 63), tail += encodeByte(temp << 2 &
+              63), tail += "=";
             break;
           default:
             break
         }
-        return _.push(p), _.join("")
+        return parts.push(tail), parts.join("")
       }
       return {
-        toByteArray: s,
-        fromByteArray: d
+        toByteArray: decodeBase64,
+        fromByteArray: encodeBase64
       }
-    })()), __ = ["Accept-Charset", "Accept-Encoding",
+    })()), forbiddenRequestHeaders = ["Accept-Charset", "Accept-Encoding",
       "Access-Control-Request-Headers", "Access-Control-Request-Method",
       "Connection", "Content-Length", "Cookie", "Cookie2", "Date",
       "DNT", "Expect", "Host", "Keep-Alive", "Referer", "TE", "Trailer",
       "Transfer-Encoding", "Upgrade", "Via", "x-chrome-uma-enabled",
       "x-client-data"
     ];
-    b_ = nd(8);
-    Oa = class {
-      constructor(t, r) {
-        this.getFn = t, this.setFn = r, this.callbacks = [], this
+    headerSubsSalt = generateRandomString(8);
+    Cache = class {
+      constructor(getFn, setFn) {
+        this.getFn = getFn, this.setFn = setFn, this.callbacks = [], this
           .queried = !1, this.value = void 0
       }
       get() {
-        let t = this;
-        return () => typeof t.value < "u" ? Promise.resolve(t.value) :
-          new Promise((r, i) => {
-            if (t.callbacks.push({
-                resolve: r,
-                reject: i
-              }), !t.queried) {
-              t.queried = !0;
+        let self = this;
+        return () => typeof self.value < "u" ? Promise.resolve(self.value) :
+          new Promise((resolve, reject) => {
+            if (self.callbacks.push({
+                resolve: resolve,
+                reject: reject
+              }), !self.queried) {
+              self.queried = !0;
               try {
-                Promise.resolve(t.getFn())
-                  .then(n => {
-                    for (t.value = n; t.callbacks.length;) t
+                Promise.resolve(self.getFn())
+                  .then(value => {
+                    for (self.value = value; self.callbacks.length;) self
                       .callbacks.shift()
-                      .resolve(n)
+                      .resolve(value)
                   })
-                  .catch(n => {
-                    for (; t.callbacks.length;) t.callbacks
+                  .catch(error => {
+                    for (; self.callbacks.length;) self.callbacks
                       .shift()
-                      .reject(n)
+                      .reject(error)
                   })
-              } catch (n) {
-                for (t.queried = !1; t.callbacks.length;) t
+              } catch (error) {
+                for (self.queried = !1; self.callbacks.length;) self
                   .callbacks.shift()
-                  .reject(n)
+                  .reject(error)
               }
             }
           })
       }
-      set(t) {
+      set(value) {
         if (!this.setFn) return Promise.reject(new Error(
           "Value is read-only"));
-        if (typeof t > "u") return Promise.reject(new Error(
+        if (typeof value > "u") return Promise.reject(new Error(
           "Cannot set undefined value"));
-        for (this.value = t; this.callbacks.length;) this.callbacks
+        for (this.value = value; this.callbacks.length;) this.callbacks
           .shift()
           .resolve();
-        return this.setFn(t), Promise.resolve()
+        return this.setFn(value), Promise.resolve()
       }
-    }, Ma = class {
-      constructor(t = 1) {
-        this.maxFn = t, this.pendings = [], this.count = 0
+    }, ConcurrentLimiter = class {
+      constructor(maxFn = 1) {
+        this.maxFn = maxFn, this.pendings = [], this.count = 0
       }
       async getMax() {
         return typeof this.maxFn == "function" ? this.maxFn() : this
           .maxFn
       }
       callFn() {
-        let t = this;
-        return (r, i) => t.getMax()
-          .then(n => t.count < n ? t.doCall(r) : new Promise((o,
-          s) => {
-            let a = () => Promise.resolve(r())
-              .then(o)
-              .catch(s);
-            t.pendings.push(a), i && i(l => {
-              let u = t.pendings.indexOf(a);
-              u >= 0 && (t.pendings.splice(u, 1), o(l))
-            }, l => {
-              let u = t.pendings.indexOf(a);
-              u >= 0 && (t.pendings.splice(u, 1), s(l))
+        let self = this;
+        return (task, onCancel) => self.getMax()
+          .then(max => self.count < max ? self.doCall(task) : new Promise((resolve,
+          reject) => {
+            let runTask = () => Promise.resolve(task())
+              .then(resolve)
+              .catch(reject);
+            self.pendings.push(runTask), onCancel && onCancel(cancelValue => {
+              let taskIndex = self.pendings.indexOf(runTask);
+              taskIndex >= 0 && (self.pendings.splice(taskIndex, 1), resolve(cancelValue))
+            }, rejectValue => {
+              let taskIndex = self.pendings.indexOf(runTask);
+              taskIndex >= 0 && (self.pendings.splice(taskIndex, 1), reject(rejectValue))
             })
           }))
       }
       attempt() {
         if (this.pendings.length > 0) {
-          let t = this;
-          t.getMax()
-            .then(r => {
-              t.count < r && t.doCall(t.pendings.shift())
+          let self = this;
+          self.getMax()
+            .then(max => {
+              self.count < max && self.doCall(self.pendings.shift())
             })
         }
       }
-      doCall(t) {
-        let r = this;
-        return this.count++, Promise.resolve(t())
-          .then(i => (r.count--, r.attempt(), i))
-          .catch(i => {
-            throw r.count--, r.attempt(), i
+      doCall(task) {
+        let self = this;
+        return this.count++, Promise.resolve(task())
+          .then(result => (self.count--, self.attempt(), result))
+          .catch(error => {
+            throw self.count--, self.attempt(), error
           })
       }
     };
-    Pa = class extends Error {
-      constructor(t) {
-        super(t), this.name = this.constructor.name, typeof Error
+    VdhBaseError = class extends Error {
+      constructor(message) {
+        super(message), this.name = this.constructor.name, typeof Error
           .captureStackTrace == "function" ? Error.captureStackTrace(
-            this, this.constructor) : this.stack = new Error(t)
+            this, this.constructor) : this.stack = new Error(message)
           .stack
       }
-    }, Sn = class extends Pa {
-      constructor(t, r) {
-        super(t), Object.assign(this, r)
+    }, VDHError = class extends VdhBaseError {
+      constructor(message, props) {
+        super(message), Object.assign(this, props)
       }
-    }, Ra = class extends Sn {
-      constructor(t, r) {
-        super(t, {
-          _details: r
+    }, DetailsError = class extends VDHError {
+      constructor(message, details) {
+        super(message, {
+          _details: details
         })
       }
       get details() {
@@ -2586,196 +2586,196 @@
       }
     }
   });
-  var od = {};
-  ie(od, {
-    Downloads: () => Ia
+  var downloadsNs = {};
+  defineExports(downloadsNs, {
+    Downloads: () => Downloads
   });
-  var Ia, ad = C(() => {
+  var Downloads, initDownloadsLib = defineLazyModule(() => {
     "use strict";
-    Ia = class {
-      constructor(t) {
-        this.coapp = t
+    Downloads = class {
+      constructor(coapp) {
+        this.coapp = coapp
       }
-      download(t) {
-        return this.coapp.call("downloads.download", t)
+      download(options) {
+        return this.coapp.call("downloads.download", options)
       }
-      search(t) {
-        return this.coapp.call("downloads.search", t)
+      search(query) {
+        return this.coapp.call("downloads.search", query)
       }
-      cancel(t) {
-        return this.coapp.call("downloads.cancel", t)
+      cancel(downloadId) {
+        return this.coapp.call("downloads.cancel", downloadId)
       }
     }
   });
-  var Ur, rt, sd = C(() => {
-    Ur = e => Object.prototype.toString.call(e)
-      .slice(8, -1), rt = e => typeof e == "string" || e instanceof String
+  var getTypeTag, isString, initTypeTagHelpers = defineLazyModule(() => {
+    getTypeTag = value => Object.prototype.toString.call(value)
+      .slice(8, -1), isString = value => typeof value == "string" || value instanceof String
   });
-  var T_, Dn, cd, ld, E_, ud, S_, pd, dd, Na, ka, jr, ur, Mi, Ca, D_, O_, M_,
-    fd, md = C(() => {
-      sd();
-      T_ = 10, Dn = "0|[1-9]\\d*", cd = "\\d*[A-Z-][A-Z\\d-]*", ld =
-        `(?:${cd}|${Dn})`, E_ = `${ld}(?:\\.${ld})*`, ud = `(?:${cd}|\\d+)`,
-        S_ = `${ud}(?:\\.${ud})*`, pd =
-        `((?:${Dn})(?:\\.(?:${Dn})){2})(?:-(${E_}))?(?:\\+(${S_}))?`, dd =
-        new RegExp(`^(?:${Dn})$`), Na = new RegExp(`^v?${pd}$`, "i"), ka =
-        new RegExp(`^${pd}$`, "i"), jr = (e, t = !1) => {
-          if (!rt(e)) throw new TypeError(
-            `Expected String but got ${Ur(e)}.`);
-          return (t ? ka : Na)
-            .test(e)
-        }, ur = (e, t = !1) => {
-          if (!rt(e)) throw new TypeError(
-            `Expected String but got ${Ur(e)}.`);
-          if (!(t || dd.test(e))) throw new Error(
-            `${e} is not a stringified positive integer.`);
-          let r;
-          if (dd.test(e)) {
-            if (r = parseInt(e, T_), !Number.isSafeInteger(r))
+  var SEMVER_RADIX, numericIdent, alphanumericIdent, preReleaseIdent, preReleasePattern, buildIdent, buildPattern, semverPattern, positiveIntRegex, looseVersionRegex, strictVersionRegex, isValidSemVer, parseIdent, compareSemVer, parseSemVer, compareSemVerAsync, isValidSemVerAsync, parseSemVerAsync,
+    semverPromises, initSemverParser = defineLazyModule(() => {
+      initTypeTagHelpers();
+      SEMVER_RADIX = 10, numericIdent = "0|[1-9]\\d*", alphanumericIdent = "\\d*[A-Z-][A-Z\\d-]*", preReleaseIdent =
+        `(?:${alphanumericIdent}|${numericIdent})`, preReleasePattern = `${preReleaseIdent}(?:\\.${preReleaseIdent})*`, buildIdent = `(?:${alphanumericIdent}|\\d+)`,
+        buildPattern = `${buildIdent}(?:\\.${buildIdent})*`, semverPattern =
+        `((?:${numericIdent})(?:\\.(?:${numericIdent})){2})(?:-(${preReleasePattern}))?(?:\\+(${buildPattern}))?`, positiveIntRegex =
+        new RegExp(`^(?:${numericIdent})$`), looseVersionRegex = new RegExp(`^v?${semverPattern}$`, "i"), strictVersionRegex =
+        new RegExp(`^${semverPattern}$`, "i"), isValidSemVer = (version, loose = !1) => {
+          if (!isString(version)) throw new TypeError(
+            `Expected String but got ${getTypeTag(version)}.`);
+          return (loose ? strictVersionRegex : looseVersionRegex)
+            .test(version)
+        }, parseIdent = (identifier, loose = !1) => {
+          if (!isString(identifier)) throw new TypeError(
+            `Expected String but got ${getTypeTag(identifier)}.`);
+          if (!(loose || positiveIntRegex.test(identifier))) throw new Error(
+            `${identifier} is not a stringified positive integer.`);
+          let parsed;
+          if (positiveIntRegex.test(identifier)) {
+            if (parsed = parseInt(identifier, SEMVER_RADIX), !Number.isSafeInteger(parsed))
             throw new RangeError(
-                `${r} exceeds ${Number.MAX_SAFE_INTEGER}.`)
-          } else r = e;
-          return r
-        }, Mi = (e, t, r = !1) => {
-          if (!rt(e)) throw new TypeError(
-            `Expected String but got ${Ur(e)}.`);
-          if (!rt(t)) throw new TypeError(
-            `Expected String but got ${Ur(t)}.`);
-          if (!jr(e, !!r)) throw new Error(
-            `${e} is not valid version string.`);
-          if (!jr(t, !!r)) throw new Error(
-            `${t} is not valid version string.`);
-          let i;
-          if (e === t) i = 0;
+                `${parsed} exceeds ${Number.MAX_SAFE_INTEGER}.`)
+          } else parsed = identifier;
+          return parsed
+        }, compareSemVer = (versionA, versionB, loose = !1) => {
+          if (!isString(versionA)) throw new TypeError(
+            `Expected String but got ${getTypeTag(versionA)}.`);
+          if (!isString(versionB)) throw new TypeError(
+            `Expected String but got ${getTypeTag(versionB)}.`);
+          if (!isValidSemVer(versionA, !!loose)) throw new Error(
+            `${versionA} is not valid version string.`);
+          if (!isValidSemVer(versionB, !!loose)) throw new Error(
+            `${versionB} is not valid version string.`);
+          let result;
+          if (versionA === versionB) result = 0;
           else {
-            let n = r ? ka : Na,
-              [, o, s] = e.match(n),
-              [, a, l] = t.match(n),
-              [u, d, c] = o.split(".")
-              .map(_ => ur(_)),
-              [m, w, p] = a.split(".")
-              .map(_ => ur(_));
-            if (u > m) i = 1;
-            else if (u < m) i = -1;
-            else if (d > w) i = 1;
-            else if (d < w) i = -1;
-            else if (c > p) i = 1;
-            else if (c < p) i = -1;
-            else if (s === l) i = 0;
-            else if (!s && l) i = 1;
-            else if (s && !l) i = -1;
+            let regex = loose ? strictVersionRegex : looseVersionRegex,
+              [, coreA, preA] = versionA.match(regex),
+              [, coreB, preB] = versionB.match(regex),
+              [majorA, minorA, patchA] = coreA.split(".")
+              .map(part => parseIdent(part)),
+              [majorB, minorB, patchB] = coreB.split(".")
+              .map(part => parseIdent(part));
+            if (majorA > majorB) result = 1;
+            else if (majorA < majorB) result = -1;
+            else if (minorA > minorB) result = 1;
+            else if (minorA < minorB) result = -1;
+            else if (patchA > patchB) result = 1;
+            else if (patchA < patchB) result = -1;
+            else if (preA === preB) result = 0;
+            else if (!preA && preB) result = 1;
+            else if (preA && !preB) result = -1;
             else {
-              let _ = s.split(".")
-                .map(T => ur(T, !0)),
-                f = l.split(".")
-                .map(T => ur(T, !0)),
-                g = Math.max(_.length, f.length),
-                h = 0;
-              for (; h < g;) {
-                let T = _[h],
-                  x = f[h];
-                if (T && !x || rt(T) && Number.isInteger(x) ? i = 1 : !T &&
-                  x || Number.isInteger(T) && rt(x) ? i = -1 : T !== x &&
-                  rt(T) && rt(x) ? i = T.localeCompare(x) : Number
-                  .isInteger(T) && Number.isInteger(x) && (T > x ? i = 1 :
-                    T < x && (i = -1)), Number.isInteger(i)) break;
-                h++
+              let preAParts = preA.split(".")
+                .map(part => parseIdent(part, !0)),
+                preBParts = preB.split(".")
+                .map(part => parseIdent(part, !0)),
+                maxLen = Math.max(preAParts.length, preBParts.length),
+                idx = 0;
+              for (; idx < maxLen;) {
+                let partA = preAParts[idx],
+                  partB = preBParts[idx];
+                if (partA && !partB || isString(partA) && Number.isInteger(partB) ? result = 1 : !partA &&
+                  partB || Number.isInteger(partA) && isString(partB) ? result = -1 : partA !== partB &&
+                  isString(partA) && isString(partB) ? result = partA.localeCompare(partB) : Number
+                  .isInteger(partA) && Number.isInteger(partB) && (partA > partB ? result = 1 :
+                    partA < partB && (result = -1)), Number.isInteger(result)) break;
+                idx++
               }
             }
           }
-          return i
-        }, Ca = (e, t = !1) => {
-          if (!rt(e)) throw new TypeError(
-            `Expected String but got ${Ur(e)}.`);
-          let r = jr(e, !!t),
-            i, n, o, s, a;
-          if (r) {
-            let l = t ? ka : Na,
-              [, u, d, c] = e.match(l);
-            [i, n, o] = u.split(".")
-              .map(m => ur(m)), d && (s = d.split(".")
-                .map(m => ur(m, !0))), c && (a = c.split(".")
-                .map(m => ur(m, !0)))
+          return result
+        }, parseSemVer = (version, loose = !1) => {
+          if (!isString(version)) throw new TypeError(
+            `Expected String but got ${getTypeTag(version)}.`);
+          let matches = isValidSemVer(version, !!loose),
+            major, minor, patch, pre, build;
+          if (matches) {
+            let regex = loose ? strictVersionRegex : looseVersionRegex,
+              [, core, preStr, buildStr] = version.match(regex);
+            [major, minor, patch] = core.split(".")
+              .map(part => parseIdent(part)), preStr && (pre = preStr.split(".")
+                .map(part => parseIdent(part, !0))), buildStr && (build = buildStr.split(".")
+                .map(part => parseIdent(part, !0)))
           }
           return {
-            version: e,
-            matches: r,
-            major: i,
-            minor: n,
-            patch: o,
-            pre: s,
-            build: a
+            version: version,
+            matches: matches,
+            major: major,
+            minor: minor,
+            patch: patch,
+            pre: pre,
+            build: build
           }
-        }, D_ = async (e, t, r = !1) => Mi(e, t, r), O_ = async (e, t = !
-          1) => jr(e, t), M_ = async (e, t = !1) => Ca(e, t), fd = {
-            compareSemVer: D_,
-            isValidSemVer: O_,
-            parseSemVer: M_
+        }, compareSemVerAsync = async (versionA, versionB, loose = !1) => compareSemVer(versionA, versionB, loose), isValidSemVerAsync = async (version, loose = !
+          1) => isValidSemVer(version, loose), parseSemVerAsync = async (version, loose = !1) => parseSemVer(version, loose), semverPromises = {
+            compareSemVer: compareSemVerAsync,
+            isValidSemVer: isValidSemVerAsync,
+            parseSemVer: parseSemVerAsync
           }
     });
-  var gd = {};
-  ie(gd, {
-    compareSemVer: () => Mi,
-    isValidSemVer: () => jr,
-    parseSemVer: () => Ca,
-    promises: () => fd
+  var semverNs = {};
+  defineExports(semverNs, {
+    compareSemVer: () => compareSemVer,
+    isValidSemVer: () => isValidSemVer,
+    parseSemVer: () => parseSemVer,
+    promises: () => semverPromises
   });
-  var qa = C(() => {
-    md();
+  var initSemver = defineLazyModule(() => {
+    initSemverParser();
   });
-  var _d = v((Jx, hd) => {
+  var requireCoappClient = defineCommonjsModule((coappExports, coappModule) => {
     "use strict";
-    var P_ = Lr(),
-      Ba = P_.browser,
-      On = Ft(),
-      Pi = class {
+    var wehModule = requireWehCore(),
+      browser = wehModule.browser,
+      rpc = requireRpc(),
+      EventNotifier = class {
         constructor() {
           this.listeners = []
         }
-        addListener(t) {
-          this.listeners.push(t)
+        addListener(listener) {
+          this.listeners.push(listener)
         }
-        removeListener(t) {
-          this.listeners = this.listeners.filter(r => t !== r)
+        removeListener(listener) {
+          this.listeners = this.listeners.filter(existing => listener !== existing)
         }
         removeAllListeners() {
           this.listeners = []
         }
-        notify(...t) {
-          this.listeners.forEach(r => {
+        notify(...args) {
+          this.listeners.forEach(listener => {
             try {
-              r(...t)
-            } catch (i) {
-              console.warn(i)
+              listener(...args)
+            } catch (error) {
+              console.warn(error)
             }
           })
         }
       },
-      Lt = 1,
-      Mn = 2,
-      Va = class {
-        constructor(t, r = {}) {
-          this.appId = t, this.name = r.name || t, this.appPort = null,
+      CALL_ADDON_TO_APP = 1,
+      CALL_APP_TO_ADDON = 2,
+      CoApp = class {
+        constructor(appId, options = {}) {
+          this.appId = appId, this.name = options.name || appId, this.appPort = null,
             this.pendingCalls = [], this.runningCalls = [], this.state =
             "idle", this.postFn = this.post.bind(this), this
             .postMessageFn = this.postMessage.bind(this), this
-            .onAppNotFound = new Pi, this.onAppNotFoundCheck = new Pi,
-            this.onCallCount = new Pi, this.appStatus = "unknown", this
+            .onAppNotFound = new EventNotifier, this.onAppNotFoundCheck = new EventNotifier,
+            this.onCallCount = new EventNotifier, this.appStatus = "unknown", this
             .app2AddonCallCount = 0, this.addon2AppCallCount = 0
         }
-        post(t, r) {
-          this.appPort.postMessage(r)
+        post(peer, message) {
+          this.appPort.postMessage(message)
         }
-        postMessage(t) {
-          this.appPort.postMessage(t)
+        postMessage(message) {
+          this.appPort.postMessage(message)
         }
-        updateCallCount(t, r) {
-          switch (t) {
-            case Mn:
-              this.app2AddonCallCount += r;
+        updateCallCount(direction, delta) {
+          switch (direction) {
+            case CALL_APP_TO_ADDON:
+              this.app2AddonCallCount += delta;
               break;
-            case Lt:
-              this.addon2AppCallCount += r;
+            case CALL_ADDON_TO_APP:
+              this.addon2AppCallCount += delta;
               break
           }
           this.onCallCount.notify(this.addon2AppCallCount, this
@@ -2786,139 +2786,139 @@
             this.appPort.disconnect(), this.cleanup()
           } catch {}
         }
-        call(...t) {
-          return this.callCatchAppNotFound(null, ...t)
+        call(...params) {
+          return this.callCatchAppNotFound(null, ...params)
         }
-        callCatchAppNotFound(t, ...r) {
-          let i = this;
+        callCatchAppNotFound(onNotFound, ...params) {
+          let self = this;
 
-          function n(o) {
-            let s;
-            for (; s = i.pendingCalls.shift();)
-              if (o) s.reject(o);
+          function flushPending(error) {
+            let pendingCall;
+            for (; pendingCall = self.pendingCalls.shift();)
+              if (error) pendingCall.reject(error);
               else {
-                i.runningCalls.push(s);
-                let a = s;
-                On.call(i.postFn, i.name, ...s.params)
-                  .then(l => (i.runningCalls.splice(i.runningCalls
-                    .indexOf(a), 1), l))
-                  .then(a.resolve)
-                  .catch(l => {
-                    i.runningCalls.splice(i.runningCalls.indexOf(a),
-                      1), a.reject(l)
+                self.runningCalls.push(pendingCall);
+                let call = pendingCall;
+                rpc.call(self.postFn, self.name, ...pendingCall.params)
+                  .then(result => (self.runningCalls.splice(self.runningCalls
+                    .indexOf(call), 1), result))
+                  .then(call.resolve)
+                  .catch(callError => {
+                    self.runningCalls.splice(self.runningCalls.indexOf(call),
+                      1), call.reject(callError)
                   })
               }
           }
-          switch (t && (i.appStatus == "unknown" || i.appStatus ==
-              "checking") && i.onAppNotFoundCheck.addListener(t), i
-            .updateCallCount(Lt, 1), this.state) {
+          switch (onNotFound && (self.appStatus == "unknown" || self.appStatus ==
+              "checking") && self.onAppNotFoundCheck.addListener(onNotFound), self
+            .updateCallCount(CALL_ADDON_TO_APP, 1), this.state) {
             case "running":
-              return new Promise((o, s) => {
-                  let a = {
-                    resolve: o,
-                    reject: s,
-                    params: [...r]
+              return new Promise((resolve, reject) => {
+                  let call = {
+                    resolve: resolve,
+                    reject: reject,
+                    params: [...params]
                   };
-                  i.runningCalls.push(a), On.call(i.postFn, i.name,
-                      ...r)
-                    .then(l => (i.runningCalls.splice(i.runningCalls
-                      .indexOf(a), 1), l))
-                    .then(a.resolve)
-                    .catch(l => {
-                      i.runningCalls.splice(i.runningCalls.indexOf(
-                        a), 1), a.reject(l)
+                  self.runningCalls.push(call), rpc.call(self.postFn, self.name,
+                      ...params)
+                    .then(result => (self.runningCalls.splice(self.runningCalls
+                      .indexOf(call), 1), result))
+                    .then(call.resolve)
+                    .catch(callError => {
+                      self.runningCalls.splice(self.runningCalls.indexOf(
+                        call), 1), call.reject(callError)
                     })
                 })
-                .then(o => (i.updateCallCount(Lt, -1), o))
-                .catch(o => {
-                  throw i.updateCallCount(Lt, -1), o
+                .then(result => (self.updateCallCount(CALL_ADDON_TO_APP, -1), result))
+                .catch(callError => {
+                  throw self.updateCallCount(CALL_ADDON_TO_APP, -1), callError
                 });
             case "idle":
-              return i.state = "pending", new Promise((o, s) => {
-                  i.pendingCalls.push({
-                    resolve: o,
-                    reject: s,
-                    params: [...r]
+              return self.state = "pending", new Promise((resolve, reject) => {
+                  self.pendingCalls.push({
+                    resolve: resolve,
+                    reject: reject,
+                    params: [...params]
                   });
-                  let a = Ba.runtime.connectNative(i.appId);
-                  i.appStatus = "checking", i.appPort = a, a.onMessage
-                    .addListener(l => {
-                      i.appStatus == "checking" && (i.appStatus =
-                        "ok", i.onAppNotFoundCheck
-                        .removeAllListeners()), On.receive(l, i
-                        .postMessageFn, i.name)
-                    }), a.onDisconnect.addListener(() => {
-                      n(new Error("Disconnected")), i.cleanup(), i
-                        .appStatus == "checking" && !t && i
-                        .onAppNotFound.notify(i.appPort && i.appPort
-                          .error || Ba.runtime.lastError)
-                    }), i.state = "running", n()
+                  let port = browser.runtime.connectNative(self.appId);
+                  self.appStatus = "checking", self.appPort = port, port.onMessage
+                    .addListener(message => {
+                      self.appStatus == "checking" && (self.appStatus =
+                        "ok", self.onAppNotFoundCheck
+                        .removeAllListeners()), rpc.receive(message, self
+                        .postMessageFn, self.name)
+                    }), port.onDisconnect.addListener(() => {
+                      flushPending(new Error("Disconnected")), self.cleanup(), self
+                        .appStatus == "checking" && !onNotFound && self
+                        .onAppNotFound.notify(self.appPort && self.appPort
+                          .error || browser.runtime.lastError)
+                    }), self.state = "running", flushPending()
                 })
-                .then(o => (i.updateCallCount(Lt, -1), o))
-                .catch(o => {
-                  throw i.updateCallCount(Lt, -1), o
+                .then(result => (self.updateCallCount(CALL_ADDON_TO_APP, -1), result))
+                .catch(callError => {
+                  throw self.updateCallCount(CALL_ADDON_TO_APP, -1), callError
                 });
             case "pending":
-              return new Promise((o, s) => {
-                  i.pendingCalls.push({
-                    resolve: o,
-                    reject: s,
-                    params: [...r]
+              return new Promise((resolve, reject) => {
+                  self.pendingCalls.push({
+                    resolve: resolve,
+                    reject: reject,
+                    params: [...params]
                   })
                 })
-                .then(o => (i.updateCallCount(Lt, -1), o))
-                .catch(o => {
-                  throw i.updateCallCount(Lt, -1), o
+                .then(result => (self.updateCallCount(CALL_ADDON_TO_APP, -1), result))
+                .catch(callError => {
+                  throw self.updateCallCount(CALL_ADDON_TO_APP, -1), callError
                 })
           }
         }
-        listen(t) {
-          let r = this,
-            i = {};
-          return Object.keys(t)
-            .forEach(n => {
-              i[n] = (...o) => (r.updateCallCount(Mn, 1), Promise
-                .resolve(t[n](...o))
-                .then(s => (r.updateCallCount(Mn, -1), s))
-                .catch(s => {
-                  throw r.updateCallCount(Mn, -1), s
+        listen(handlers) {
+          let self = this,
+            wrapped = {};
+          return Object.keys(handlers)
+            .forEach(method => {
+              wrapped[method] = (...args) => (self.updateCallCount(CALL_APP_TO_ADDON, 1), Promise
+                .resolve(handlers[method](...args))
+                .then(result => (self.updateCallCount(CALL_APP_TO_ADDON, -1), result))
+                .catch(handlerError => {
+                  throw self.updateCallCount(CALL_APP_TO_ADDON, -1), handlerError
                 }))
-            }), On.listen(i)
+            }), rpc.listen(wrapped)
         }
         cleanup() {
-          let t = this;
-          t.appStatus == "checking" && (t.onAppNotFoundCheck.notify(t
-              .appPort && t.appPort.error || Ba.runtime.lastError), t
+          let self = this;
+          self.appStatus == "checking" && (self.onAppNotFoundCheck.notify(self
+              .appPort && self.appPort.error || browser.runtime.lastError), self
             .onAppNotFoundCheck.removeAllListeners());
-          let r;
-          for (; r = t.runningCalls.shift();) r.reject(new Error(
+          let call;
+          for (; call = self.runningCalls.shift();) call.reject(new Error(
             "Native port disconnected"));
-          t.state = "idle", t.appStatus = "unknown", t.appPort = null
+          self.state = "idle", self.appStatus = "unknown", self.appPort = null
         }
       };
-    hd.exports = function(...e) {
-      return new Va(...e)
+    coappModule.exports = function(...args) {
+      return new CoApp(...args)
     }
   });
 
-  function Ut(e) {
-    var t = String(e);
-    if (t === "[object Object]") try {
-      t = JSON.stringify(e)
+  function stringifyValue(value) {
+    var str = String(value);
+    if (str === "[object Object]") try {
+      str = JSON.stringify(value)
     } catch {}
-    return t
+    return str
   }
-  var Ha = C(() => {});
-  var R_, O, I_, q, dr, Fa = C(() => {
-    Ha();
-    Pn();
-    R_ = function() {
-      function e() {}
-      return e.prototype.isSome = function() {
+  var initTsResultsUtils = defineLazyModule(() => {});
+  var NoneImpl, ResultNone, SomeImpl, resultSome, OptionNs, initOption = defineLazyModule(() => {
+    initTsResultsUtils();
+    initResult();
+    NoneImpl = function() {
+      function NoneCtor() {}
+      return NoneCtor.prototype.isSome = function() {
         return !1
-      }, e.prototype.isNone = function() {
+      }, NoneCtor.prototype.isNone = function() {
         return !0
-      }, e.prototype[Symbol.iterator] = function() {
+      }, NoneCtor.prototype[Symbol.iterator] = function() {
         return {
           next: function() {
             return {
@@ -2927,43 +2927,43 @@
             }
           }
         }
-      }, e.prototype.unwrapOr = function(t) {
-        return t
-      }, e.prototype.expect = function(t) {
-        throw new Error("".concat(t))
-      }, e.prototype.unwrap = function() {
+      }, NoneCtor.prototype.unwrapOr = function(defaultValue) {
+        return defaultValue
+      }, NoneCtor.prototype.expect = function(message) {
+        throw new Error("".concat(message))
+      }, NoneCtor.prototype.unwrap = function() {
         throw new Error("Tried to unwrap None")
-      }, e.prototype.map = function(t) {
+      }, NoneCtor.prototype.map = function(mapper) {
         return this
-      }, e.prototype.mapOr = function(t, r) {
-        return t
-      }, e.prototype.mapOrElse = function(t, r) {
-        return t()
-      }, e.prototype.or = function(t) {
-        return t
-      }, e.prototype.orElse = function(t) {
-        return t()
-      }, e.prototype.andThen = function(t) {
+      }, NoneCtor.prototype.mapOr = function(defaultValue, mapper) {
+        return defaultValue
+      }, NoneCtor.prototype.mapOrElse = function(defaultFn, mapper) {
+        return defaultFn()
+      }, NoneCtor.prototype.or = function(other) {
+        return other
+      }, NoneCtor.prototype.orElse = function(alternativeFn) {
+        return alternativeFn()
+      }, NoneCtor.prototype.andThen = function(nextFn) {
         return this
-      }, e.prototype.toResult = function(t) {
-        return U(t)
-      }, e.prototype.toString = function() {
+      }, NoneCtor.prototype.toResult = function(error) {
+        return resultErr(error)
+      }, NoneCtor.prototype.toString = function() {
         return "None"
-      }, e
-    }(), O = new R_;
-    Object.freeze(O);
-    I_ = function() {
-      function e(t) {
-        if (!(this instanceof e)) return new e(t);
-        this.value = t
+      }, NoneCtor
+    }(), ResultNone = new NoneImpl;
+    Object.freeze(ResultNone);
+    SomeImpl = function() {
+      function SomeCtor(value) {
+        if (!(this instanceof SomeCtor)) return new SomeCtor(value);
+        this.value = value
       }
-      return e.prototype.isSome = function() {
+      return SomeCtor.prototype.isSome = function() {
         return !0
-      }, e.prototype.isNone = function() {
+      }, SomeCtor.prototype.isNone = function() {
         return !1
-      }, e.prototype[Symbol.iterator] = function() {
-        var t = Object(this.value);
-        return Symbol.iterator in t ? t[Symbol.iterator]() : {
+      }, SomeCtor.prototype[Symbol.iterator] = function() {
+        var iterable = Object(this.value);
+        return Symbol.iterator in iterable ? iterable[Symbol.iterator]() : {
           next: function() {
             return {
               done: !0,
@@ -2971,83 +2971,83 @@
             }
           }
         }
-      }, e.prototype.unwrapOr = function(t) {
+      }, SomeCtor.prototype.unwrapOr = function(defaultValue) {
         return this.value
-      }, e.prototype.expect = function(t) {
+      }, SomeCtor.prototype.expect = function(message) {
         return this.value
-      }, e.prototype.unwrap = function() {
+      }, SomeCtor.prototype.unwrap = function() {
         return this.value
-      }, e.prototype.map = function(t) {
-        return q(t(this.value))
-      }, e.prototype.mapOr = function(t, r) {
-        return r(this.value)
-      }, e.prototype.mapOrElse = function(t, r) {
-        return r(this.value)
-      }, e.prototype.or = function(t) {
+      }, SomeCtor.prototype.map = function(mapper) {
+        return resultSome(mapper(this.value))
+      }, SomeCtor.prototype.mapOr = function(defaultValue, mapper) {
+        return mapper(this.value)
+      }, SomeCtor.prototype.mapOrElse = function(defaultFn, mapper) {
+        return mapper(this.value)
+      }, SomeCtor.prototype.or = function(other) {
         return this
-      }, e.prototype.orElse = function(t) {
+      }, SomeCtor.prototype.orElse = function(alternativeFn) {
         return this
-      }, e.prototype.andThen = function(t) {
-        return t(this.value)
-      }, e.prototype.toResult = function(t) {
-        return L(this.value)
-      }, e.prototype.safeUnwrap = function() {
+      }, SomeCtor.prototype.andThen = function(nextFn) {
+        return nextFn(this.value)
+      }, SomeCtor.prototype.toResult = function(error) {
+        return resultOk(this.value)
+      }, SomeCtor.prototype.safeUnwrap = function() {
         return this.value
-      }, e.prototype.toString = function() {
-        return "Some(".concat(Ut(this.value), ")")
-      }, e.EMPTY = new e(void 0), e
-    }(), q = I_;
-    (function(e) {
-      function t() {
-        for (var n = [], o = 0; o < arguments.length; o++) n[o] =
-          arguments[o];
-        for (var s = [], a = 0, l = n; a < l.length; a++) {
-          var u = l[a];
-          if (u.isSome()) s.push(u.value);
-          else return u
+      }, SomeCtor.prototype.toString = function() {
+        return "Some(".concat(stringifyValue(this.value), ")")
+      }, SomeCtor.EMPTY = new SomeCtor(void 0), SomeCtor
+    }(), resultSome = SomeImpl;
+    (function(optionNs) {
+      function all() {
+        for (var args = [], argIdx = 0; argIdx < arguments.length; argIdx++) args[argIdx] =
+          arguments[argIdx];
+        for (var values = [], valIdx = 0, argsList = args; valIdx < argsList.length; valIdx++) {
+          var option = argsList[valIdx];
+          if (option.isSome()) values.push(option.value);
+          else return option
         }
-        return q(s)
+        return resultSome(values)
       }
-      e.all = t;
+      optionNs.all = all;
 
-      function r() {
-        for (var n = [], o = 0; o < arguments.length; o++) n[o] =
-          arguments[o];
-        for (var s = 0, a = n; s < a.length; s++) {
-          var l = a[s];
-          return l.isSome(), l
+      function any() {
+        for (var args = [], argIdx = 0; argIdx < arguments.length; argIdx++) args[argIdx] =
+          arguments[argIdx];
+        for (var idx = 0, argsList = args; idx < argsList.length; idx++) {
+          var option = argsList[idx];
+          return option.isSome(), option
         }
-        return O
+        return ResultNone
       }
-      e.any = r;
+      optionNs.any = any;
 
-      function i(n) {
-        return n instanceof q || n === O
+      function isOption(value) {
+        return value instanceof resultSome || value === ResultNone
       }
-      e.isOption = i
-    })(dr || (dr = {}))
+      optionNs.isOption = isOption
+    })(OptionNs || (OptionNs = {}))
   });
-  var N_, U, k_, L, cr, Pn = C(() => {
-    Ha();
-    Fa();
-    Ua();
-    N_ = function() {
-      function e(t) {
-        if (!(this instanceof e)) return new e(t);
-        this.error = t;
-        var r = new Error()
+  var ErrImpl, resultErr, OkImpl, resultOk, ResultNs, initResult = defineLazyModule(() => {
+    initTsResultsUtils();
+    initOption();
+    initAsyncResult();
+    ErrImpl = function() {
+      function ErrCtor(error) {
+        if (!(this instanceof ErrCtor)) return new ErrCtor(error);
+        this.error = error;
+        var stackLines = new Error()
           .stack.split(`
 `)
           .slice(2);
-        r && r.length > 0 && r[0].includes("ErrImpl") && r.shift(), this
-          ._stack = r.join(`
+        stackLines && stackLines.length > 0 && stackLines[0].includes("ErrImpl") && stackLines.shift(), this
+          ._stack = stackLines.join(`
 `)
       }
-      return e.prototype.isOk = function() {
+      return ErrCtor.prototype.isOk = function() {
         return !1
-      }, e.prototype.isErr = function() {
+      }, ErrCtor.prototype.isErr = function() {
         return !0
-      }, e.prototype[Symbol.iterator] = function() {
+      }, ErrCtor.prototype[Symbol.iterator] = function() {
         return {
           next: function() {
             return {
@@ -3056,47 +3056,47 @@
             }
           }
         }
-      }, e.prototype.else = function(t) {
-        return t
-      }, e.prototype.unwrapOr = function(t) {
-        return t
-      }, e.prototype.expect = function(t) {
-        throw new Error("".concat(t, " - Error: ")
-          .concat(Ut(this.error), `
+      }, ErrCtor.prototype.else = function(fallback) {
+        return fallback
+      }, ErrCtor.prototype.unwrapOr = function(defaultValue) {
+        return defaultValue
+      }, ErrCtor.prototype.expect = function(message) {
+        throw new Error("".concat(message, " - Error: ")
+          .concat(stringifyValue(this.error), `
 `)
           .concat(this._stack), {
             cause: this.error
           })
-      }, e.prototype.expectErr = function(t) {
+      }, ErrCtor.prototype.expectErr = function(message) {
         return this.error
-      }, e.prototype.unwrap = function() {
-        throw new Error("Tried to unwrap Error: ".concat(Ut(this
+      }, ErrCtor.prototype.unwrap = function() {
+        throw new Error("Tried to unwrap Error: ".concat(stringifyValue(this
             .error), `
 `)
           .concat(this._stack), {
             cause: this.error
           })
-      }, e.prototype.unwrapErr = function() {
+      }, ErrCtor.prototype.unwrapErr = function() {
         return this.error
-      }, e.prototype.map = function(t) {
+      }, ErrCtor.prototype.map = function(mapper) {
         return this
-      }, e.prototype.andThen = function(t) {
+      }, ErrCtor.prototype.andThen = function(nextFn) {
         return this
-      }, e.prototype.mapErr = function(t) {
-        return new U(t(this.error))
-      }, e.prototype.mapOr = function(t, r) {
-        return t
-      }, e.prototype.mapOrElse = function(t, r) {
-        return t(this.error)
-      }, e.prototype.or = function(t) {
-        return t
-      }, e.prototype.orElse = function(t) {
-        return t(this.error)
-      }, e.prototype.toOption = function() {
-        return O
-      }, e.prototype.toString = function() {
-        return "Err(".concat(Ut(this.error), ")")
-      }, Object.defineProperty(e.prototype, "stack", {
+      }, ErrCtor.prototype.mapErr = function(errorMapper) {
+        return new resultErr(errorMapper(this.error))
+      }, ErrCtor.prototype.mapOr = function(defaultValue, mapper) {
+        return defaultValue
+      }, ErrCtor.prototype.mapOrElse = function(defaultFn, mapper) {
+        return defaultFn(this.error)
+      }, ErrCtor.prototype.or = function(other) {
+        return other
+      }, ErrCtor.prototype.orElse = function(alternativeFn) {
+        return alternativeFn(this.error)
+      }, ErrCtor.prototype.toOption = function() {
+        return ResultNone
+      }, ErrCtor.prototype.toString = function() {
+        return "Err(".concat(stringifyValue(this.error), ")")
+      }, Object.defineProperty(ErrCtor.prototype, "stack", {
         get: function() {
           return "".concat(this, `
 `)
@@ -3104,21 +3104,21 @@
         },
         enumerable: !1,
         configurable: !0
-      }), e.prototype.toAsyncResult = function() {
-        return new La(this)
-      }, e.EMPTY = new e(void 0), e
-    }(), U = N_, k_ = function() {
-      function e(t) {
-        if (!(this instanceof e)) return new e(t);
-        this.value = t
+      }), ErrCtor.prototype.toAsyncResult = function() {
+        return new AsyncResultImpl(this)
+      }, ErrCtor.EMPTY = new ErrCtor(void 0), ErrCtor
+    }(), resultErr = ErrImpl, OkImpl = function() {
+      function OkCtor(value) {
+        if (!(this instanceof OkCtor)) return new OkCtor(value);
+        this.value = value
       }
-      return e.prototype.isOk = function() {
+      return OkCtor.prototype.isOk = function() {
         return !0
-      }, e.prototype.isErr = function() {
+      }, OkCtor.prototype.isErr = function() {
         return !1
-      }, e.prototype[Symbol.iterator] = function() {
-        var t = Object(this.value);
-        return Symbol.iterator in t ? t[Symbol.iterator]() : {
+      }, OkCtor.prototype[Symbol.iterator] = function() {
+        var iterable = Object(this.value);
+        return Symbol.iterator in iterable ? iterable[Symbol.iterator]() : {
           next: function() {
             return {
               done: !0,
@@ -3126,360 +3126,360 @@
             }
           }
         }
-      }, e.prototype.else = function(t) {
+      }, OkCtor.prototype.else = function(fallback) {
         return this.value
-      }, e.prototype.unwrapOr = function(t) {
+      }, OkCtor.prototype.unwrapOr = function(defaultValue) {
         return this.value
-      }, e.prototype.expect = function(t) {
+      }, OkCtor.prototype.expect = function(message) {
         return this.value
-      }, e.prototype.expectErr = function(t) {
-        throw new Error(t)
-      }, e.prototype.unwrap = function() {
+      }, OkCtor.prototype.expectErr = function(message) {
+        throw new Error(message)
+      }, OkCtor.prototype.unwrap = function() {
         return this.value
-      }, e.prototype.unwrapErr = function() {
-        throw new Error("Tried to unwrap Ok: ".concat(Ut(this
+      }, OkCtor.prototype.unwrapErr = function() {
+        throw new Error("Tried to unwrap Ok: ".concat(stringifyValue(this
         .value)), {
           cause: this.value
         })
-      }, e.prototype.map = function(t) {
-        return new L(t(this.value))
-      }, e.prototype.andThen = function(t) {
-        return t(this.value)
-      }, e.prototype.mapErr = function(t) {
+      }, OkCtor.prototype.map = function(mapper) {
+        return new resultOk(mapper(this.value))
+      }, OkCtor.prototype.andThen = function(nextFn) {
+        return nextFn(this.value)
+      }, OkCtor.prototype.mapErr = function(errorMapper) {
         return this
-      }, e.prototype.mapOr = function(t, r) {
-        return r(this.value)
-      }, e.prototype.mapOrElse = function(t, r) {
-        return r(this.value)
-      }, e.prototype.or = function(t) {
+      }, OkCtor.prototype.mapOr = function(defaultValue, mapper) {
+        return mapper(this.value)
+      }, OkCtor.prototype.mapOrElse = function(defaultFn, mapper) {
+        return mapper(this.value)
+      }, OkCtor.prototype.or = function(other) {
         return this
-      }, e.prototype.orElse = function(t) {
+      }, OkCtor.prototype.orElse = function(alternativeFn) {
         return this
-      }, e.prototype.toOption = function() {
-        return q(this.value)
-      }, e.prototype.safeUnwrap = function() {
+      }, OkCtor.prototype.toOption = function() {
+        return resultSome(this.value)
+      }, OkCtor.prototype.safeUnwrap = function() {
         return this.value
-      }, e.prototype.toString = function() {
-        return "Ok(".concat(Ut(this.value), ")")
-      }, e.prototype.toAsyncResult = function() {
-        return new La(this)
-      }, e.EMPTY = new e(void 0), e
-    }(), L = k_;
-    (function(e) {
-      function t() {
-        for (var s = [], a = 0; a < arguments.length; a++) s[a] =
-          arguments[a];
-        for (var l = [], u = 0, d = s; u < d.length; u++) {
-          var c = d[u];
-          if (c.isOk()) l.push(c.value);
-          else return c
+      }, OkCtor.prototype.toString = function() {
+        return "Ok(".concat(stringifyValue(this.value), ")")
+      }, OkCtor.prototype.toAsyncResult = function() {
+        return new AsyncResultImpl(this)
+      }, OkCtor.EMPTY = new OkCtor(void 0), OkCtor
+    }(), resultOk = OkImpl;
+    (function(resultNs) {
+      function all() {
+        for (var args = [], argIdx = 0; argIdx < arguments.length; argIdx++) args[argIdx] =
+          arguments[argIdx];
+        for (var values = [], valIdx = 0, argsList = args; valIdx < argsList.length; valIdx++) {
+          var result = argsList[valIdx];
+          if (result.isOk()) values.push(result.value);
+          else return result
         }
-        return new L(l)
+        return new resultOk(values)
       }
-      e.all = t;
+      resultNs.all = all;
 
-      function r() {
-        for (var s = [], a = 0; a < arguments.length; a++) s[a] =
-          arguments[a];
-        for (var l = [], u = 0, d = s; u < d.length; u++) {
-          var c = d[u];
-          if (c.isOk()) return c;
-          l.push(c.error)
+      function any() {
+        for (var args = [], argIdx = 0; argIdx < arguments.length; argIdx++) args[argIdx] =
+          arguments[argIdx];
+        for (var errors = [], valIdx = 0, argsList = args; valIdx < argsList.length; valIdx++) {
+          var result = argsList[valIdx];
+          if (result.isOk()) return result;
+          errors.push(result.error)
         }
-        return new U(l)
+        return new resultErr(errors)
       }
-      e.any = r;
+      resultNs.any = any;
 
-      function i(s) {
+      function wrap(wrappedFn) {
         try {
-          return new L(s())
-        } catch (a) {
-          return new U(a)
+          return new resultOk(wrappedFn())
+        } catch (error) {
+          return new resultErr(error)
         }
       }
-      e.wrap = i;
+      resultNs.wrap = wrap;
 
-      function n(s) {
+      function wrapAsync(wrappedFn) {
         try {
-          return s()
-            .then(function(a) {
-              return new L(a)
+          return wrappedFn()
+            .then(function(value) {
+              return new resultOk(value)
             })
-            .catch(function(a) {
-              return new U(a)
+            .catch(function(error) {
+              return new resultErr(error)
             })
-        } catch (a) {
-          return Promise.resolve(new U(a))
+        } catch (error) {
+          return Promise.resolve(new resultErr(error))
         }
       }
-      e.wrapAsync = n;
+      resultNs.wrapAsync = wrapAsync;
 
-      function o(s) {
-        return s instanceof U || s instanceof L
+      function isResult(value) {
+        return value instanceof resultErr || value instanceof resultOk
       }
-      e.isResult = o
-    })(cr || (cr = {}))
+      resultNs.isResult = isResult
+    })(ResultNs || (ResultNs = {}))
   });
-  var bd, yd, La, Ua = C(() => {
-    Pn();
-    bd = function(e, t, r, i) {
-      function n(o) {
-        return o instanceof r ? o : new r(function(s) {
-          s(o)
+  var awaiter, generatorHelper, AsyncResultImpl, initAsyncResult = defineLazyModule(() => {
+    initResult();
+    awaiter = function(thisArg, args, PromiseCtor, generator) {
+      function adopt(value) {
+        return value instanceof PromiseCtor ? value : new PromiseCtor(function(resolve) {
+          resolve(value)
         })
       }
-      return new(r || (r = Promise))(function(o, s) {
-        function a(d) {
+      return new(PromiseCtor || (PromiseCtor = Promise))(function(resolve, reject) {
+        function fulfilled(value) {
           try {
-            u(i.next(d))
-          } catch (c) {
-            s(c)
+            step(generator.next(value))
+          } catch (err) {
+            reject(err)
           }
         }
 
-        function l(d) {
+        function rejected(value) {
           try {
-            u(i.throw(d))
-          } catch (c) {
-            s(c)
+            step(generator.throw(value))
+          } catch (err) {
+            reject(err)
           }
         }
 
-        function u(d) {
-          d.done ? o(d.value) : n(d.value)
-            .then(a, l)
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value)
+            .then(fulfilled, rejected)
         }
-        u((i = i.apply(e, t || []))
+        step((generator = generator.apply(thisArg, args || []))
           .next())
       })
-    }, yd = function(e, t) {
-      var r = {
+    }, generatorHelper = function(thisArg, body) {
+      var state = {
           label: 0,
           sent: function() {
-            if (o[0] & 1) throw o[1];
-            return o[1]
+            if (opRecord[0] & 1) throw opRecord[1];
+            return opRecord[1]
           },
           trys: [],
           ops: []
         },
-        i, n, o, s;
-      return s = {
-        next: a(0),
-        throw: a(1),
-        return: a(2)
-      }, typeof Symbol == "function" && (s[Symbol.iterator] =
+        executing, delegated, opRecord, iterator;
+      return iterator = {
+        next: verb(0),
+        throw: verb(1),
+        return: verb(2)
+      }, typeof Symbol == "function" && (iterator[Symbol.iterator] =
         function() {
           return this
-        }), s;
+        }), iterator;
 
-      function a(u) {
-        return function(d) {
-          return l([u, d])
+      function verb(opCode) {
+        return function(value) {
+          return step([opCode, value])
         }
       }
 
-      function l(u) {
-        if (i) throw new TypeError("Generator is already executing.");
-        for (; s && (s = 0, u[0] && (r = 0)), r;) try {
-          if (i = 1, n && (o = u[0] & 2 ? n.return : u[0] ? n.throw ||
-              ((o = n.return) && o.call(n), 0) : n.next) && !(o = o
-              .call(n, u[1]))
-            .done) return o;
-          switch (n = 0, o && (u = [u[0] & 2, o.value]), u[0]) {
+      function step(operation) {
+        if (executing) throw new TypeError("Generator is already executing.");
+        for (; iterator && (iterator = 0, operation[0] && (state = 0)), state;) try {
+          if (executing = 1, delegated && (opRecord = operation[0] & 2 ? delegated.return : operation[0] ? delegated.throw ||
+              ((opRecord = delegated.return) && opRecord.call(delegated), 0) : delegated.next) && !(opRecord = opRecord
+              .call(delegated, operation[1]))
+            .done) return opRecord;
+          switch (delegated = 0, opRecord && (operation = [operation[0] & 2, opRecord.value]), operation[0]) {
             case 0:
             case 1:
-              o = u;
+              opRecord = operation;
               break;
             case 4:
-              return r.label++, {
-                value: u[1],
+              return state.label++, {
+                value: operation[1],
                 done: !1
               };
             case 5:
-              r.label++, n = u[1], u = [0];
+              state.label++, delegated = operation[1], operation = [0];
               continue;
             case 7:
-              u = r.ops.pop(), r.trys.pop();
+              operation = state.ops.pop(), state.trys.pop();
               continue;
             default:
-              if (o = r.trys, !(o = o.length > 0 && o[o.length -
-                1]) && (u[0] === 6 || u[0] === 2)) {
-                r = 0;
+              if (opRecord = state.trys, !(opRecord = opRecord.length > 0 && opRecord[opRecord.length -
+                1]) && (operation[0] === 6 || operation[0] === 2)) {
+                state = 0;
                 continue
               }
-              if (u[0] === 3 && (!o || u[1] > o[0] && u[1] < o[3])) {
-                r.label = u[1];
+              if (operation[0] === 3 && (!opRecord || operation[1] > opRecord[0] && operation[1] < opRecord[3])) {
+                state.label = operation[1];
                 break
               }
-              if (u[0] === 6 && r.label < o[1]) {
-                r.label = o[1], o = u;
+              if (operation[0] === 6 && state.label < opRecord[1]) {
+                state.label = opRecord[1], opRecord = operation;
                 break
               }
-              if (o && r.label < o[2]) {
-                r.label = o[2], r.ops.push(u);
+              if (opRecord && state.label < opRecord[2]) {
+                state.label = opRecord[2], state.ops.push(operation);
                 break
               }
-              o[2] && r.ops.pop(), r.trys.pop();
+              opRecord[2] && state.ops.pop(), state.trys.pop();
               continue
           }
-          u = t.call(e, r)
-        } catch (d) {
-          u = [6, d], n = 0
+          operation = body.call(thisArg, state)
+        } catch (err) {
+          operation = [6, err], delegated = 0
         } finally {
-          i = o = 0
+          executing = opRecord = 0
         }
-        if (u[0] & 5) throw u[1];
+        if (operation[0] & 5) throw operation[1];
         return {
-          value: u[0] ? u[1] : void 0,
+          value: operation[0] ? operation[1] : void 0,
           done: !0
         }
       }
-    }, La = function() {
-      function e(t) {
-        this.promise = Promise.resolve(t)
+    }, AsyncResultImpl = function() {
+      function AsyncResultCtor(value) {
+        this.promise = Promise.resolve(value)
       }
-      return e.prototype.andThen = function(t) {
-        var r = this;
-        return this.thenInternal(function(i) {
-          return bd(r, void 0, void 0, function() {
-            var n;
-            return yd(this, function(o) {
-              return i.isErr() ? [2, i] : (n = t(i.value),
-                [2, n instanceof e ? n.promise : n])
+      return AsyncResultCtor.prototype.andThen = function(nextFn) {
+        var self = this;
+        return this.thenInternal(function(result) {
+          return awaiter(self, void 0, void 0, function() {
+            var mapped;
+            return generatorHelper(this, function(gen) {
+              return result.isErr() ? [2, result] : (mapped = nextFn(result.value),
+                [2, mapped instanceof AsyncResultCtor ? mapped.promise : mapped])
             })
           })
         })
-      }, e.prototype.map = function(t) {
-        var r = this;
-        return this.thenInternal(function(i) {
-          return bd(r, void 0, void 0, function() {
-            var n;
-            return yd(this, function(o) {
-              switch (o.label) {
+      }, AsyncResultCtor.prototype.map = function(mapper) {
+        var self = this;
+        return this.thenInternal(function(result) {
+          return awaiter(self, void 0, void 0, function() {
+            var okCtor;
+            return generatorHelper(this, function(gen) {
+              switch (gen.label) {
                 case 0:
-                  return i.isErr() ? [2, i] : (n = L, [4,
-                    t(i.value)
+                  return result.isErr() ? [2, result] : (okCtor = resultOk, [4,
+                    mapper(result.value)
                   ]);
                 case 1:
-                  return [2, n.apply(void 0, [o.sent()])]
+                  return [2, okCtor.apply(void 0, [gen.sent()])]
               }
             })
           })
         })
-      }, e.prototype.thenInternal = function(t) {
-        return new e(this.promise.then(t))
-      }, e
+      }, AsyncResultCtor.prototype.thenInternal = function(resolver) {
+        return new AsyncResultCtor(this.promise.then(resolver))
+      }, AsyncResultCtor
     }()
   });
-  var vd = C(() => {
-    Ua();
-    Pn();
-    Fa()
+  var initTsResults = defineLazyModule(() => {
+    initAsyncResult();
+    initResult();
+    initOption()
   });
-  var oe = C(() => {
+  var initTsResultsIndex = defineLazyModule(() => {
     "use strict";
-    vd()
+    initTsResults()
   });
-  var Ue = C(() => {
+  var initIterTools = defineLazyModule(() => {
     "use strict";
-    oe()
+    initTsResultsIndex()
   });
 
-  function ye(e) {
-    return Object.assign(e.prototype, {
-      find: function(t) {
-        for (let r of this)
-          if (t(r)) return q(r);
-        return O
+  function mixinIteratorMethods(generatorClass) {
+    return Object.assign(generatorClass.prototype, {
+      find: function(predicate) {
+        for (let item of this)
+          if (predicate(item)) return resultSome(item);
+        return ResultNone
       },
-      count: function(t) {
-        return this.reduce((r, i) => (t(i) && r++, r), 0)
+      count: function(predicate) {
+        return this.reduce((acc, item) => (predicate(item) && acc++, acc), 0)
       },
-      reduce: function(t, r) {
-        let i = r;
-        for (let n of this) i = t(i, n);
-        return i
+      reduce: function(reducer, initial) {
+        let acc = initial;
+        for (let item of this) acc = reducer(acc, item);
+        return acc
       },
-      every: function(t) {
-        return !this.any(r => !t(r))
+      every: function(predicate) {
+        return !this.any(item => !predicate(item))
       },
-      any: function(t) {
-        for (let r of this)
-          if (t(r)) return !0;
+      any: function(predicate) {
+        for (let item of this)
+          if (predicate(item)) return !0;
         return !1
       },
-      map: function(t) {
-        return this.filterMap(r => q(t(r)))
+      map: function(mapper) {
+        return this.filterMap(item => resultSome(mapper(item)))
       },
-      filter: function(t) {
-        return this.filterMap(r => t(r) ? q(r) : O)
+      filter: function(predicate) {
+        return this.filterMap(item => predicate(item) ? resultSome(item) : ResultNone)
       },
       enumerate: function() {
-        let t = this;
-        return ye(function*() {
-          let r = 0;
-          for (let i of t) yield [r, i], r++
+        let self = this;
+        return mixinIteratorMethods(function*() {
+          let index = 0;
+          for (let item of self) yield [index, item], index++
         })()
       },
-      filterMap: function(t) {
-        let r = this;
-        return ye(function*() {
-          for (let i of r) {
-            let n = t(i);
-            n.isSome() && (yield n.unwrap())
+      filterMap: function(mapper) {
+        let self = this;
+        return mixinIteratorMethods(function*() {
+          for (let item of self) {
+            let mapped = mapper(item);
+            mapped.isSome() && (yield mapped.unwrap())
           }
         })()
       },
-      sort: function(t) {
-        let r = this.toArray();
-        return r.sort(t), r
+      sort: function(comparator) {
+        let array = this.toArray();
+        return array.sort(comparator), array
       },
       toArray: function() {
         return [...this]
       }
-    }), e
+    }), generatorClass
   }
-  var Ri = C(() => {
+  var initAsIterPolyfill = defineLazyModule(() => {
     "use strict";
-    oe();
-    Ue();
+    initTsResultsIndex();
+    initIterTools();
     Array.prototype.as_iter || (Array.prototype.as_iter = function() {
-      let e = this;
-      return ye(function*() {
-        for (let t of e) yield t
+      let self = this;
+      return mixinIteratorMethods(function*() {
+        for (let item of self) yield item
       })()
     });
     Set.prototype.as_iter || (Set.prototype.as_iter = function() {
-      let e = this;
-      return ye(function*() {
-        for (let t of e) yield t
+      let self = this;
+      return mixinIteratorMethods(function*() {
+        for (let item of self) yield item
       })()
     });
     Map.prototype.as_iter || (Map.prototype.as_iter = function() {
-      let e = this;
-      return ye(function*() {
-        for (let t of e) yield t
+      let self = this;
+      return mixinIteratorMethods(function*() {
+        for (let item of self) yield item
       })()
     })
   });
 
-  function je(e) {
-    return Rn[e]
+  function makeVideoCodec(codecName) {
+    return videoCodecTable[codecName]
   }
 
-  function We(e) {
-    return ja[e]
+  function makeAudioCodec(codecName) {
+    return audioCodecTable[codecName]
   }
 
-  function Wa(e) {
-    return typeof e == "string" && e in Rn ? q(e) : O
+  function videoCodecByName(value) {
+    return typeof value == "string" && value in videoCodecTable ? resultSome(value) : ResultNone
   }
-  var Wr, Rn, ja, Xr, Gr, xt = C(() => {
+  var neverMatchRegex, videoCodecTable, audioCodecTable, iterVideoCodecs, iterAudioCodecs, initCodecs = defineLazyModule(() => {
     "use strict";
-    oe();
-    Ri();
-    Ue();
-    Wr = /.^/, Rn = {
+    initTsResultsIndex();
+    initAsIterPolyfill();
+    initIterTools();
+    neverMatchRegex = /.^/, videoCodecTable = {
       Av1: {
         name: "Av1",
         type: "video",
@@ -3495,7 +3495,7 @@
       H263: {
         name: "H263",
         type: "video",
-        mimetype: Wr,
+        mimetype: neverMatchRegex,
         defacto_container: "3gp"
       },
       H265: {
@@ -3513,13 +3513,13 @@
       MPEG1: {
         name: "MPEG1",
         type: "video",
-        mimetype: Wr,
+        mimetype: neverMatchRegex,
         defacto_container: "Mpeg"
       },
       MPEG2: {
         name: "MPEG2",
         type: "video",
-        mimetype: Wr,
+        mimetype: neverMatchRegex,
         defacto_container: "Mpeg"
       },
       Theora: {
@@ -3543,10 +3543,10 @@
       unknown: {
         name: "unknown",
         type: "video",
-        mimetype: Wr,
+        mimetype: neverMatchRegex,
         defacto_container: "Mp4"
       }
-    }, ja = {
+    }, audioCodecTable = {
       AAC: {
         name: "AAC",
         type: "audio",
@@ -3586,58 +3586,58 @@
       Wav: {
         name: "Wav",
         type: "audio",
-        mimetype: Wr,
+        mimetype: neverMatchRegex,
         defacto_container: "Wav"
       },
       unknown: {
         name: "unknown",
         type: "audio",
-        mimetype: Wr,
+        mimetype: neverMatchRegex,
         defacto_container: "Mp4"
       }
-    }, Xr = ye(function*() {
-      for (let e of Object.keys(Rn)) yield Rn[e]
-    }), Gr = ye(function*() {
-      for (let e of Object.keys(ja)) yield ja[e]
+    }, iterVideoCodecs = mixinIteratorMethods(function*() {
+      for (let key of Object.keys(videoCodecTable)) yield videoCodecTable[key]
+    }), iterAudioCodecs = mixinIteratorMethods(function*() {
+      for (let key of Object.keys(audioCodecTable)) yield audioCodecTable[key]
     })
   });
 
-  function Ga(e) {
-    return typeof e == "string" && e in In ? q(e) : O
+  function tryContainerByName(value) {
+    return typeof value == "string" && value in containerTable ? resultSome(value) : ResultNone
   }
 
-  function Ii(e) {
-    for (let t of Xa()) {
-      let i = t.supported_video_codecs.length == 0 ? "audio_only" : "whole";
-      if (t.extension === e) return q([t, i]);
-      if (t.audio_only_extension && t.audio_only_extension === e) return q([t,
+  function containerForExtension(extension) {
+    for (let container of iterContainers()) {
+      let scope = container.supported_video_codecs.length == 0 ? "audio_only" : "whole";
+      if (container.extension === extension) return resultSome([container, scope]);
+      if (container.audio_only_extension && container.audio_only_extension === extension) return resultSome([container,
         "audio_only"
       ]);
-      if (t.other_extensions) {
-        for (let n of t.other_extensions)
-          if (n == e) return q([t, i])
+      if (container.other_extensions) {
+        for (let otherExt of container.other_extensions)
+          if (otherExt == extension) return resultSome([container, scope])
       }
     }
-    return O
+    return ResultNone
   }
 
-  function ue(e) {
-    return In[e]
+  function containerByName(name) {
+    return containerTable[name]
   }
-  var In, C_, Xa, Xe = C(() => {
+  var containerTable, iterContainerNames, iterContainers, initContainers = defineLazyModule(() => {
     "use strict";
-    oe();
-    Ri();
-    xt();
-    Ue();
-    In = {
+    initTsResultsIndex();
+    initAsIterPolyfill();
+    initCodecs();
+    initIterTools();
+    containerTable = {
       Mp4: {
         name: "Mp4",
         extension: "mp4",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: O,
-          video: O
+          audio: ResultNone,
+          video: ResultNone
         },
         supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2",
           "unknown"
@@ -3651,16 +3651,16 @@
         extension: "mkv",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: O,
-          video: O
+          audio: ResultNone,
+          video: ResultNone
         },
-        supported_video_codecs: Xr()
-          .filter(e => e.name != "unknown")
-          .map(e => e.name)
+        supported_video_codecs: iterVideoCodecs()
+          .filter(codec => codec.name != "unknown")
+          .map(codec => codec.name)
           .toArray(),
-        supported_audio_codecs: Gr()
-          .filter(e => e.name != "unknown")
-          .map(e => e.name)
+        supported_audio_codecs: iterAudioCodecs()
+          .filter(codec => codec.name != "unknown")
+          .map(codec => codec.name)
           .toArray(),
         mimetype: /(?:x-)?matroska/i
       },
@@ -3669,8 +3669,8 @@
         extension: "webm",
         audio_only_extension: "oga",
         defacto_codecs: {
-          audio: O,
-          video: O
+          audio: ResultNone,
+          video: ResultNone
         },
         supported_video_codecs: ["H264", "VP8", "VP9", "Av1"],
         supported_audio_codecs: ["Opus", "Vorbis"],
@@ -3681,8 +3681,8 @@
         extension: "mt2s",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: O,
-          video: O
+          audio: ResultNone,
+          video: ResultNone
         },
         supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2",
           "VP9", "unknown"
@@ -3695,8 +3695,8 @@
         extension: "mp2t",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: q("MP3"),
-          video: q("H264")
+          audio: resultSome("MP3"),
+          video: resultSome("H264")
         },
         supported_video_codecs: ["MPEG2", "MPEG1"],
         supported_audio_codecs: ["MP3"],
@@ -3707,8 +3707,8 @@
         extension: "flv",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: O,
-          video: O
+          audio: ResultNone,
+          video: ResultNone
         },
         supported_video_codecs: ["H264"],
         supported_audio_codecs: ["AAC"],
@@ -3719,8 +3719,8 @@
         extension: "m4v",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: O,
-          video: O
+          audio: ResultNone,
+          video: ResultNone
         },
         supported_video_codecs: ["H264", "H265", "Av1", "MP4V",
           "MPEG2"],
@@ -3733,8 +3733,8 @@
         other_extensions: ["aac"],
         audio_only_extension: "m4a",
         defacto_codecs: {
-          audio: q("AAC"),
-          video: O
+          audio: resultSome("AAC"),
+          video: ResultNone
         },
         supported_video_codecs: [],
         supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC",
@@ -3746,8 +3746,8 @@
         extension: "flac",
         audio_only_extension: "flac",
         defacto_codecs: {
-          audio: q("FLAC"),
-          video: O
+          audio: resultSome("FLAC"),
+          video: ResultNone
         },
         supported_video_codecs: [],
         supported_audio_codecs: ["FLAC"],
@@ -3758,8 +3758,8 @@
         extension: "mpeg",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: q("MP3"),
-          video: q("H264")
+          audio: resultSome("MP3"),
+          video: resultSome("H264")
         },
         supported_video_codecs: ["MPEG2", "MPEG1"],
         supported_audio_codecs: ["MP3"],
@@ -3770,8 +3770,8 @@
         extension: "ogv",
         audio_only_extension: "oga",
         defacto_codecs: {
-          audio: O,
-          video: O
+          audio: ResultNone,
+          video: ResultNone
         },
         supported_video_codecs: ["VP9", "VP8", "Theora"],
         supported_audio_codecs: ["Opus", "Vorbis", "FLAC"],
@@ -3782,8 +3782,8 @@
         extension: "wav",
         audio_only_extension: "wav",
         defacto_codecs: {
-          audio: q("Wav"),
-          video: O
+          audio: resultSome("Wav"),
+          video: ResultNone
         },
         supported_video_codecs: [],
         supported_audio_codecs: ["Wav", "PCM"],
@@ -3794,8 +3794,8 @@
         extension: "3gpp",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: O,
-          video: O
+          audio: ResultNone,
+          video: ResultNone
         },
         supported_video_codecs: ["H264", "H263", "MP4V", "VP8"],
         supported_audio_codecs: ["MP3", "AAC"],
@@ -3806,90 +3806,90 @@
         extension: "mov",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: O,
-          video: O
+          audio: ResultNone,
+          video: ResultNone
         },
         supported_video_codecs: ["MPEG1", "MPEG2"],
         supported_audio_codecs: [],
         mimetype: /(?:x-)?mov/i
       }
-    }, C_ = ye(function*() {
-      for (let e of Object.keys(In)) yield e
-    }), Xa = ye(function*() {
-      for (let e of C_()) yield In[e]
+    }, iterContainerNames = mixinIteratorMethods(function*() {
+      for (let key of Object.keys(containerTable)) yield key
+    }), iterContainers = mixinIteratorMethods(function*() {
+      for (let name of iterContainerNames()) yield containerTable[name]
     })
   });
 
-  function wd(e, t) {
-    let r = !!e.audio,
-      i = !!t.audio,
-      n = !!e.video,
-      o = !!t.video;
-    return r === i && n && o
+  function compareAvCodecs(codecsA, codecsB) {
+    let hasAudioA = !!codecsA.audio,
+      hasAudioB = !!codecsB.audio,
+      hasVideoA = !!codecsA.video,
+      hasVideoB = !!codecsB.video;
+    return hasAudioA === hasAudioB && hasVideoA && hasVideoB
   }
 
-  function Ge(e, t, r) {
-    if (e.audio && e.video) return {
-      audio: t(e.audio),
-      video: r(e.video)
+  function matchAudioVideo(codecs, audioFn, videoFn) {
+    if (codecs.audio && codecs.video) return {
+      audio: audioFn(codecs.audio),
+      video: videoFn(codecs.video)
     };
-    if (e.video) return {
-      video: r(e.video),
+    if (codecs.video) return {
+      video: videoFn(codecs.video),
       audio: !1
     };
-    if (e.audio) return {
-      audio: t(e.audio),
+    if (codecs.audio) return {
+      audio: audioFn(codecs.audio),
       video: !1
     };
     throw "unreachable"
   }
-  var pr = C(() => {
+  var initProtocolTypes = defineLazyModule(() => {
     "use strict"
   });
 
-  function xd(e, t) {
-    let r = parseInt(e),
-      i = parseInt(t);
-    return r < i
+  function qualityLessThan(qualityA, qualityB) {
+    let numA = parseInt(qualityA),
+      numB = parseInt(qualityB);
+    return numA < numB
   }
 
-  function Nn(e, t) {
-    let r = parseInt(e),
-      i = parseInt(t);
-    return r > i
+  function qualityGreaterThan(qualityA, qualityB) {
+    let numA = parseInt(qualityA),
+      numB = parseInt(qualityB);
+    return numA > numB
   }
 
-  function Td(e) {
-    for (let t of kn())
-      if (e.includes(t)) return q(t);
-    return O
+  function preferredQualityFrom(list) {
+    for (let quality of iterQualityIds())
+      if (list.includes(quality)) return resultSome(quality);
+    return ResultNone
   }
 
-  function Qr(e) {
-    let t = kn()
-      .map(r => parseInt(r))
+  function qualityLabelForHeight(height) {
+    let heights = iterQualityIds()
+      .map(quality => parseInt(quality))
       .toArray();
-    t.sort((r, i) => r - i), t.reverse();
-    for (let r of t)
-      if (e >= r) return r.toString();
-    return q_
+    heights.sort((heightA, heightB) => heightA - heightB), heights.reverse();
+    for (let threshold of heights)
+      if (height >= threshold) return threshold.toString();
+    return DEFAULT_QUALITY_ID
   }
 
-  function Ni(e) {
-    if (typeof e == "string") return kn()
-      .find(t => t == e);
-    if (typeof e == "number") {
-      let t = e.toString();
-      return Ni(t)
+  function qualityById(value) {
+    if (typeof value == "string") return iterQualityIds()
+      .find(quality => quality == value);
+    if (typeof value == "number") {
+      let str = value.toString();
+      return qualityById(str)
     }
-    return O
+    return ResultNone
   }
-  var q_, Ad, kn, q3, zr = C(() => {
+  var DEFAULT_QUALITY_ID, qualityTable, iterQualityIds, iterQualities, initQualities = defineLazyModule(() => {
     "use strict";
-    oe();
-    Ri();
-    Ue();
-    q_ = "240", Ad = {
+    initTsResultsIndex();
+    initAsIterPolyfill();
+    initIterTools();
+    DEFAULT_QUALITY_ID = "240", qualityTable = {
       240: {
         id: "240",
         loose_name: "Small"
@@ -3923,138 +3923,138 @@
         loose_name: "8K"
       }
     };
-    kn = ye(function*() {
-      for (let e of Object.keys(Ad)) yield e
-    }), q3 = ye(function*() {
-      for (let e of kn()) yield Ad[e]
+    iterQualityIds = mixinIteratorMethods(function*() {
+      for (let key of Object.keys(qualityTable)) yield key
+    }), iterQualities = mixinIteratorMethods(function*() {
+      for (let key of iterQualityIds()) yield qualityTable[key]
     })
   });
 
-  function jt() {
+  function unknownVideoTrack() {
     return {
-      codec: je("unknown"),
-      fps: O,
-      dimensions: O,
-      quality: O,
-      bitrate: O
+      codec: makeVideoCodec("unknown"),
+      fps: ResultNone,
+      dimensions: ResultNone,
+      quality: ResultNone,
+      bitrate: ResultNone
     }
   }
 
-  function Ed() {
+  function unknownAudioTrack() {
     return {
-      codec: We("unknown"),
-      bitrate: O
+      codec: makeAudioCodec("unknown"),
+      bitrate: ResultNone
     }
   }
 
-  function ki(e, t, r) {
-    if (e.protocol === "hls" && t.protocol != "hls") return -1;
-    if (t.protocol === "hls" && e.protocol != "hls" || e.protocol ===
-      "non-adaptative" && t.protocol != "non-adaptative") return 1;
-    if (t.protocol === "non-adaptative" && e.protocol != "non-adaptative")
+  function compareFormats(formatA, formatB, config) {
+    if (formatA.protocol === "hls" && formatB.protocol != "hls") return -1;
+    if (formatB.protocol === "hls" && formatA.protocol != "hls" || formatA.protocol ===
+      "non-adaptative" && formatB.protocol != "non-adaptative") return 1;
+    if (formatB.protocol === "non-adaptative" && formatA.protocol != "non-adaptative")
       return -1;
-    if (e.container.name != t.container.name) {
-      if (e.container.name == r.container) return -1;
-      if (t.container.name == r.container) return 1;
-      let s = r.ignored_containers.includes(e.container.name),
-        a = r.ignored_containers.includes(t.container.name);
-      if (!s && a) return -1;
-      if (s && !a) return 1
+    if (formatA.container.name != formatB.container.name) {
+      if (formatA.container.name == config.container) return -1;
+      if (formatB.container.name == config.container) return 1;
+      let ignoredA = config.ignored_containers.includes(formatA.container.name),
+        ignoredB = config.ignored_containers.includes(formatB.container.name);
+      if (!ignoredA && ignoredB) return -1;
+      if (ignoredA && !ignoredB) return 1
     }
-    if (!wd(e.av, t.av)) {
-      if (e.av.audio && e.av.video) return -1;
-      if (t.av.audio && t.av.video) return 1;
-      if (e.av.video) return -1;
-      if (t.av.video) return 1
+    if (!compareAvCodecs(formatA.av, formatB.av)) {
+      if (formatA.av.audio && formatA.av.video) return -1;
+      if (formatB.av.audio && formatB.av.video) return 1;
+      if (formatA.av.video) return -1;
+      if (formatB.av.video) return 1
     }
-    if (e.duration && t.duration) {
-      if (e.duration > t.duration) return -1;
-      if (t.duration > e.duration) return 1
+    if (formatA.duration && formatB.duration) {
+      if (formatA.duration > formatB.duration) return -1;
+      if (formatB.duration > formatA.duration) return 1
     }
-    if (e.av.video && t.av.video) {
-      let s = e.av.video,
-        a = t.av.video;
-      if (s.codec.name != a.codec.name) {
-        if (s.codec.name == r.video_codec) return -1;
-        if (a.codec.name == r.video_codec) return 1;
-        let l = r.ignored_video_codecs.includes(s.codec.name),
-          u = r.ignored_video_codecs.includes(a.codec.name);
-        if (!l && u) return -1;
-        if (l && !u) return 1
+    if (formatA.av.video && formatB.av.video) {
+      let videoA = formatA.av.video,
+        videoB = formatB.av.video;
+      if (videoA.codec.name != videoB.codec.name) {
+        if (videoA.codec.name == config.video_codec) return -1;
+        if (videoB.codec.name == config.video_codec) return 1;
+        let ignoredCodecA = config.ignored_video_codecs.includes(videoA.codec.name),
+          ignoredCodecB = config.ignored_video_codecs.includes(videoB.codec.name);
+        if (!ignoredCodecA && ignoredCodecB) return -1;
+        if (ignoredCodecA && !ignoredCodecB) return 1
       }
-      if (s.quality.isSome()) {
-        if (a.quality.isNone()) return -1;
-        let l = s.quality.unwrap(),
-          u = a.quality.unwrap();
-        if (l != u) {
-          if (l == r.prefered_video_quality) return -1;
-          if (u == r.prefered_video_quality) return 1;
-          let d = w => Nn(w, r.best_video_quality) || xd(w, r
+      if (videoA.quality.isSome()) {
+        if (videoB.quality.isNone()) return -1;
+        let qualityA = videoA.quality.unwrap(),
+          qualityB = videoB.quality.unwrap();
+        if (qualityA != qualityB) {
+          if (qualityA == config.prefered_video_quality) return -1;
+          if (qualityB == config.prefered_video_quality) return 1;
+          let isOutOfRange = quality => qualityGreaterThan(quality, config.best_video_quality) || qualityLessThan(quality, config
               .lowest_video_quality),
-            c = d(l),
-            m = d(u);
-          if (!c && m) return -1;
-          if (c && !m) return 1;
-          if (Nn(l, u)) return -1;
-          if (Nn(u, l)) return 1
+            outA = isOutOfRange(qualityA),
+            outB = isOutOfRange(qualityB);
+          if (!outA && outB) return -1;
+          if (outA && !outB) return 1;
+          if (qualityGreaterThan(qualityA, qualityB)) return -1;
+          if (qualityGreaterThan(qualityB, qualityA)) return 1
         }
       }
-      if (s.dimensions.isSome()) {
-        if (a.dimensions.isNone()) return -1;
-        let l = s.dimensions.unwrap(),
-          u = a.dimensions.unwrap();
-        if (l.height > u.height) return -1;
-        if (u.height > l.height) return 1
+      if (videoA.dimensions.isSome()) {
+        if (videoB.dimensions.isNone()) return -1;
+        let dimsA = videoA.dimensions.unwrap(),
+          dimsB = videoB.dimensions.unwrap();
+        if (dimsA.height > dimsB.height) return -1;
+        if (dimsB.height > dimsA.height) return 1
       }
-      if (s.bitrate.isSome()) {
-        if (a.bitrate.isNone()) return -1;
-        let l = s.bitrate.unwrap(),
-          u = a.bitrate.unwrap();
-        if (l > u) return -1;
-        if (u > l) return 1
+      if (videoA.bitrate.isSome()) {
+        if (videoB.bitrate.isNone()) return -1;
+        let bitrateA = videoA.bitrate.unwrap(),
+          bitrateB = videoB.bitrate.unwrap();
+        if (bitrateA > bitrateB) return -1;
+        if (bitrateB > bitrateA) return 1
       }
-      if (s.fps.isSome()) {
-        if (a.fps.isNone()) return -1;
-        let l = s.fps.unwrap(),
-          u = a.fps.unwrap();
-        if (l != u) {
-          if (l == 60 && r.prefer_60fps || u == 60 && r.prefer_60fps || l > u)
+      if (videoA.fps.isSome()) {
+        if (videoB.fps.isNone()) return -1;
+        let fpsA = videoA.fps.unwrap(),
+          fpsB = videoB.fps.unwrap();
+        if (fpsA != fpsB) {
+          if (fpsA == 60 && config.prefer_60fps || fpsB == 60 && config.prefer_60fps || fpsA > fpsB)
             return -1;
-          if (u > l) return 1
+          if (fpsB > fpsA) return 1
         }
       }
     }
     return 0
   }
 
-  function Sd(e, t) {
-    let r = {
-      ...t
+  function mergeCoreMedia(source, override) {
+    let merged = {
+      ...override
     };
-    return r.duration === "unknown" && (r.duration = e.duration), r.av
-      .audio || (r.av.audio = e.av.audio), r.av.video || (r.av.video = e.av
-        .video), e.av.audio && r.av.audio && (r.av.audio.codec.name ==
-        "unknown" && (r.av.audio.codec = e.av.audio.codec), r.av.audio.bitrate
-        .isNone() && (r.av.audio.bitrate = e.av.audio.bitrate)), e.av.video &&
-      r.av.video && (r.av.video.codec.name == "unknown" && (r.av.video.codec =
-          e.av.video.codec), r.av.video.quality.isNone() && (r.av.video
-          .quality = e.av.video.quality), r.av.video.dimensions.isNone() && (r
-          .av.video.dimensions = e.av.video.dimensions), r.av.video.fps
-        .isNone() && (r.av.video.fps = e.av.video.fps), r.av.video.bitrate
-        .isNone() && (r.av.video.bitrate = e.av.video.bitrate)), r
+    return merged.duration === "unknown" && (merged.duration = source.duration), merged.av
+      .audio || (merged.av.audio = source.av.audio), merged.av.video || (merged.av.video = source.av
+        .video), source.av.audio && merged.av.audio && (merged.av.audio.codec.name ==
+        "unknown" && (merged.av.audio.codec = source.av.audio.codec), merged.av.audio.bitrate
+        .isNone() && (merged.av.audio.bitrate = source.av.audio.bitrate)), source.av.video &&
+      merged.av.video && (merged.av.video.codec.name == "unknown" && (merged.av.video.codec =
+          source.av.video.codec), merged.av.video.quality.isNone() && (merged.av.video
+          .quality = source.av.video.quality), merged.av.video.dimensions.isNone() && (merged
+          .av.video.dimensions = source.av.video.dimensions), merged.av.video.fps
+        .isNone() && (merged.av.video.fps = source.av.video.fps), merged.av.video.bitrate
+        .isNone() && (merged.av.video.bitrate = source.av.video.bitrate)), merged
   }
-  var fr = C(() => {
+  var initMediaCommon = defineLazyModule(() => {
     "use strict";
-    oe();
-    Xe();
-    xt();
-    pr();
-    zr();
-    Ue()
+    initTsResultsIndex();
+    initContainers();
+    initCodecs();
+    initProtocolTypes();
+    initQualities();
+    initIterTools()
   });
-  var Dd, Od, Md, Pd, Rd = C(() => {
+  var hitSerializeKeys, hitCoreKeys, hitGroupKeys, hitUrlKeys, initHitSerializerTables = defineLazyModule(() => {
     "use strict";
-    Dd = Object.keys({
+    hitSerializeKeys = Object.keys({
       // TODO(thumbnails): Static review of changes after 01f84f4 found no edits in the
       // active `content2/panel.js` renderer, but this legacy serialized-hit whitelist still
       // exposes only `thumbnail` / `thumbnailUrl`. The background hit model also uses
@@ -4082,7 +4082,7 @@
       type: 1,
       extension: 1,
       originalExt: 1
-    }), Od = Object.keys({
+    }), hitCoreKeys = Object.keys({
       id: 1,
       type: 1,
       originalExt: 1,
@@ -4112,260 +4112,260 @@
       bulk_ids: 1,
       bulk: 1,
       tabId: 1
-    }), Md = Object.keys({
+    }), hitGroupKeys = Object.keys({
       group: 1
-    }), Pd = ["url", "videoUrl", "audioUrl", "topUrl", "pageUrl",
+    }), hitUrlKeys = ["url", "videoUrl", "audioUrl", "topUrl", "pageUrl",
       "mediaManifest", "mediaDomain"
     ]
   });
 
-  function Id(e, t, r) {
-    return new Map([...e.entries()].filter(([, i]) => !t.some(o => Pd.some(
-        s => {
-          if (s in i) {
-            let a = i[s];
-            if (typeof a == "string") try {
-              let u = new URL(a)
+  function filterHitsForDisplay(hits, domains, minLength) {
+    return new Map([...hits.entries()].filter(([, hit]) => !domains.some(domain => hitUrlKeys.some(
+        field => {
+          if (field in hit) {
+            let value = hit[field];
+            if (typeof value == "string") try {
+              let hostParts = new URL(value)
                 .hostname.split(".")
                 .reverse();
-              for (let d = 0; d < u.length; d++)
-                if (u[d] != o[d]) return !1;
+              for (let partIdx = 0; partIdx < hostParts.length; partIdx++)
+                if (hostParts[partIdx] != domain[partIdx]) return !1;
               return !0
             } catch {}
           }
           return !1
         })))
-      .filter(([, i]) => i.status == "running" ? !0 : !(typeof i.length ==
-        "number" && i.length < r)))
+      .filter(([, hit]) => hit.status == "running" ? !0 : !(typeof hit.length ==
+        "number" && hit.length < minLength)))
   }
 
-  function Nd(e, t) {
-    let r = new Map;
-    for (let s of e.values()) {
-      let a = s.group ?? s.id;
-      r.has(a) || r.set(a, []), r.get(a)
-        .push(s)
+  function groupHitsForDisplay(hits, config) {
+    let groups = new Map;
+    for (let hit of hits.values()) {
+      let groupKey = hit.group ?? hit.id;
+      groups.has(groupKey) || groups.set(groupKey, []), groups.get(groupKey)
+        .push(hit)
     }
-    let i = [...r.values()];
-    for (let s of i) s.sort((a, l) => !a.core_media || !l.core_media ? (
-      console.warn("No core_media for hit"), 0) : ki(a.core_media, l
-      .core_media, t));
-    i.sort((s, a) => {
-      let c = s[0]?.core_media?.builder,
-        m = a[0]?.core_media?.builder;
-      return c === m ? 0 : c === "HTTPMedia" ? 1 : m === "HTTPMedia" ? -
-        1 : c === "RawHls" ? 1 : m === "RawHls" || c === "Hls" ? -1 :
-        m === "Hls" ? 1 : c === "MPD" ? -1 : m === "MPD" ? 1 : 0
+    let groupList = [...groups.values()];
+    for (let group of groupList) group.sort((hitA, hitB) => !hitA.core_media || !hitB.core_media ? (
+      console.warn("No core_media for hit"), 0) : compareFormats(hitA.core_media, hitB
+      .core_media, config));
+    groupList.sort((groupA, groupB) => {
+      let builderA = groupA[0]?.core_media?.builder,
+        builderB = groupB[0]?.core_media?.builder;
+      return builderA === builderB ? 0 : builderA === "HTTPMedia" ? 1 : builderB === "HTTPMedia" ? -
+        1 : builderA === "RawHls" ? 1 : builderB === "RawHls" || builderA === "Hls" ? -1 :
+        builderB === "Hls" ? 1 : builderA === "MPD" ? -1 : builderB === "MPD" ? 1 : 0
     });
-    let n = s => {
-        let a = s[0]?.status == "active",
-          l = s[0]?.core_media?.builder === "Hls" || s[0]?.core_media
-          ?.builder === "JsonMPD" || s[0]?.core_media?.builder === "MPD";
-        return a && l
+    let isLowQuality = group => {
+        let isActive = group[0]?.status == "active",
+          isAdaptive = group[0]?.core_media?.builder === "Hls" || group[0]?.core_media
+          ?.builder === "JsonMPD" || group[0]?.core_media?.builder === "MPD";
+        return isActive && isAdaptive
       },
-      o = s => s.every(a => a.status == "active");
-    return t.ignore_low_quality_hits && i.some(n) && (i = i.filter(s => {
-      let a = o(s),
-        l = n(s);
-      return !(a && !l)
-    })), i.map(s => s.map(a => {
-        let l = {};
-        for (let u of Dd) l[u] = a[u];
-        for (let u of Od) l[u] = a[u];
-        for (let u of Md) l[u] = a[u];
-        return l
+      allActive = group => group.every(hit => hit.status == "active");
+    return config.ignore_low_quality_hits && groupList.some(isLowQuality) && (groupList = groupList.filter(group => {
+      let all = allActive(group),
+        low = isLowQuality(group);
+      return !(all && !low)
+    })), groupList.map(group => group.map(hit => {
+        let serialized = {};
+        for (let field of hitSerializeKeys) serialized[field] = hit[field];
+        for (let field of hitCoreKeys) serialized[field] = hit[field];
+        for (let field of hitGroupKeys) serialized[field] = hit[field];
+        return serialized
       })
-      .slice(0, t.max_variants))
+      .slice(0, config.max_variants))
   }
-  var kd = C(() => {
+  var initHitSerializer = defineLazyModule(() => {
     "use strict";
-    fr();
-    Rd()
+    initMediaCommon();
+    initHitSerializerTables()
   });
-  var mr, $r, Cn = C(() => {
+  var isStringProp, isNumberProp, initObjGuards = defineLazyModule(() => {
     "use strict";
-    mr = (e, t) => typeof e[t] == "string", $r = (e, t) => typeof e[t] ==
+    isStringProp = (obj, key) => typeof obj[key] == "string", isNumberProp = (obj, key) => typeof obj[key] ==
       "number"
   });
 
-  function ve(e) {
+  function serializeHitValue(value) {
     try {
-      if (mr(e, "__serializer_tag")) {
-        if (e.__serializer_tag === "primitive") return L(e
+      if (isStringProp(value, "__serializer_tag")) {
+        if (value.__serializer_tag === "primitive") return resultOk(value
         .__serializer_value);
-        if (e.__serializer_tag === "regex") {
-          let i = new RegExp(e.__serializer_value);
-          return L(i)
-        } else if (e.__serializer_tag === "array") {
-          let i = [];
-          for (let n of e.__serializer_value) {
-            let o = ve(n);
-            if (o.isErr()) return o;
-            i.push(o.unwrap())
+        if (value.__serializer_tag === "regex") {
+          let regex = new RegExp(value.__serializer_value);
+          return resultOk(regex)
+        } else if (value.__serializer_tag === "array") {
+          let items = [];
+          for (let element of value.__serializer_value) {
+            let decoded = serializeHitValue(element);
+            if (decoded.isErr()) return decoded;
+            items.push(decoded.unwrap())
           }
-          return L(i)
-        } else if (e.__serializer_tag === "map") {
-          let i = [];
-          for (let n of e.__serializer_value) {
-            let o = ve(n);
-            if (o.isErr()) return o;
-            i.push(o.unwrap())
+          return resultOk(items)
+        } else if (value.__serializer_tag === "map") {
+          let entries = [];
+          for (let element of value.__serializer_value) {
+            let decoded = serializeHitValue(element);
+            if (decoded.isErr()) return decoded;
+            entries.push(decoded.unwrap())
           }
-          return L(new Map(i))
-        } else if (e.__serializer_tag === "set") {
-          let i = [];
-          for (let n of e.__serializer_value) {
-            let o = ve(n);
-            if (o.isErr()) return o;
-            i.push(o.unwrap())
+          return resultOk(new Map(entries))
+        } else if (value.__serializer_tag === "set") {
+          let items = [];
+          for (let element of value.__serializer_value) {
+            let decoded = serializeHitValue(element);
+            if (decoded.isErr()) return decoded;
+            items.push(decoded.unwrap())
           }
-          return L(new Set(i))
-        } else if (e.__serializer_tag === "result_ok") {
-          let i = e.__serializer_value,
-            n = ve(i);
-          return n.isErr() ? n : L(L(n.unwrap()))
-        } else if (e.__serializer_tag === "result_err") {
-          let i = e.__serializer_value,
-            n = ve(i);
-          return n.isErr() ? n : L(U(n.unwrap()))
-        } else if (e.__serializer_tag === "option_some") {
-          let i = e.__serializer_value,
-            n = ve(i);
-          return n.isErr() ? n : L(q(n.unwrap()))
-        } else if (e.__serializer_tag === "option_none") return L(O)
+          return resultOk(new Set(items))
+        } else if (value.__serializer_tag === "result_ok") {
+          let inner = value.__serializer_value,
+            decoded = serializeHitValue(inner);
+          return decoded.isErr() ? decoded : resultOk(resultOk(decoded.unwrap()))
+        } else if (value.__serializer_tag === "result_err") {
+          let inner = value.__serializer_value,
+            decoded = serializeHitValue(inner);
+          return decoded.isErr() ? decoded : resultOk(resultErr(decoded.unwrap()))
+        } else if (value.__serializer_tag === "option_some") {
+          let inner = value.__serializer_value,
+            decoded = serializeHitValue(inner);
+          return decoded.isErr() ? decoded : resultOk(resultSome(decoded.unwrap()))
+        } else if (value.__serializer_tag === "option_none") return resultOk(ResultNone)
       }
-      let t = typeof e;
-      if (t === "string" || t === "number" || t === "boolean" || t ===
-        "undefined" || Array.isArray(e) || e == null) return U(
+      let type = typeof value;
+      if (type === "string" || type === "number" || type === "boolean" || type ===
+        "undefined" || Array.isArray(value) || value == null) return resultErr(
         "This object was not serialized with Serialize");
-      let r = {};
-      for (let i of Object.keys(e))
-        if (typeof i == "string") {
-          let n = ve(e[i]);
-          if (n.isErr()) return n;
-          r[i] = n.unwrap()
-        } return L(r)
+      let result = {};
+      for (let key of Object.keys(value))
+        if (typeof key == "string") {
+          let decoded = serializeHitValue(value[key]);
+          if (decoded.isErr()) return decoded;
+          result[key] = decoded.unwrap()
+        } return resultOk(result)
     } catch {
-      return U("Failed to inspect object. Not JSON?")
+      return resultErr("Failed to inspect object. Not JSON?")
     }
   }
 
-  function we(e) {
-    let t = typeof e;
-    if (t === "string" || t === "number" || t === "boolean" || t ===
-      "undefined" || e == null) return L({
+  function serializePrimitiveValue(value) {
+    let type = typeof value;
+    if (type === "string" || type === "number" || type === "boolean" || type ===
+      "undefined" || value == null) return resultOk({
       __serializer_tag: "primitive",
-      __serializer_value: e
+      __serializer_value: value
     });
-    if (e instanceof RegExp) return L({
+    if (value instanceof RegExp) return resultOk({
       __serializer_tag: "regex",
-      __serializer_value: e.source
+      __serializer_value: value.source
     });
-    if (Array.isArray(e)) {
-      let r = e.map(o => we(o)),
-        i = r.as_iter()
-        .find(o => o.isErr());
-      if (i.isSome()) return i.unwrap();
-      let n = r.as_iter()
-        .map(o => o.unwrap())
+    if (Array.isArray(value)) {
+      let encoded = value.map(item => serializePrimitiveValue(item)),
+        firstErr = encoded.as_iter()
+        .find(res => res.isErr());
+      if (firstErr.isSome()) return firstErr.unwrap();
+      let values = encoded.as_iter()
+        .map(res => res.unwrap())
         .toArray();
-      return L({
+      return resultOk({
         __serializer_tag: "array",
-        __serializer_value: n
+        __serializer_value: values
       })
-    } else if (e instanceof Map) {
-      let r = [...e.entries()].map(o => we(o)),
-        i = r.as_iter()
-        .find(o => o.isErr());
-      if (i.isSome()) return i.unwrap();
-      let n = r.as_iter()
-        .map(o => o.unwrap())
+    } else if (value instanceof Map) {
+      let encoded = [...value.entries()].map(item => serializePrimitiveValue(item)),
+        firstErr = encoded.as_iter()
+        .find(res => res.isErr());
+      if (firstErr.isSome()) return firstErr.unwrap();
+      let values = encoded.as_iter()
+        .map(res => res.unwrap())
         .toArray();
-      return L({
+      return resultOk({
         __serializer_tag: "map",
-        __serializer_value: n
+        __serializer_value: values
       })
-    } else if (e instanceof Set) {
-      let r = [...e.values()].map(o => we(o)),
-        i = r.as_iter()
-        .find(o => o.isErr());
-      if (i.isSome()) return i.unwrap();
-      let n = r.as_iter()
-        .map(o => o.unwrap())
+    } else if (value instanceof Set) {
+      let encoded = [...value.values()].map(item => serializePrimitiveValue(item)),
+        firstErr = encoded.as_iter()
+        .find(res => res.isErr());
+      if (firstErr.isSome()) return firstErr.unwrap();
+      let values = encoded.as_iter()
+        .map(res => res.unwrap())
         .toArray();
-      return L({
+      return resultOk({
         __serializer_tag: "set",
-        __serializer_value: n
+        __serializer_value: values
       })
-    } else if (cr.isResult(e))
-      if (e.isOk()) {
-        let r = e.unwrap(),
-          i = we(r);
-        return i.isErr() ? i : L({
+    } else if (ResultNs.isResult(value))
+      if (value.isOk()) {
+        let inner = value.unwrap(),
+          encoded = serializePrimitiveValue(inner);
+        return encoded.isErr() ? encoded : resultOk({
           __serializer_tag: "result_ok",
-          __serializer_value: i.unwrap()
+          __serializer_value: encoded.unwrap()
         })
       } else {
-        let r = e.unwrapErr(),
-          i = we(r);
-        return i.isErr() ? i : L({
+        let inner = value.unwrapErr(),
+          encoded = serializePrimitiveValue(inner);
+        return encoded.isErr() ? encoded : resultOk({
           __serializer_tag: "result_err",
-          __serializer_value: i.unwrap()
+          __serializer_value: encoded.unwrap()
         })
       }
-    else if (dr.isOption(e))
-      if (e.isSome()) {
-        let r = e.unwrap(),
-          i = we(r);
-        return i.isErr() ? i : L({
+    else if (OptionNs.isOption(value))
+      if (value.isSome()) {
+        let inner = value.unwrap(),
+          encoded = serializePrimitiveValue(inner);
+        return encoded.isErr() ? encoded : resultOk({
           __serializer_tag: "option_some",
-          __serializer_value: i.unwrap()
+          __serializer_value: encoded.unwrap()
         })
-      } else return L({
+      } else return resultOk({
         __serializer_tag: "option_none"
       });
-    else if (t === "object") {
-      let r = {},
-        i = e;
-      for (let n of Object.keys(e)) {
-        let o = i[n],
-          s = we(o);
-        if (s.isErr()) continue;
-        let a = s.unwrap();
-        r[n] = a
+    else if (type === "object") {
+      let result = {},
+        obj = value;
+      for (let key of Object.keys(value)) {
+        let val = obj[key],
+          encoded = serializePrimitiveValue(val);
+        if (encoded.isErr()) continue;
+        let unwrapped = encoded.unwrap();
+        result[key] = unwrapped
       }
-      return L(r)
-    } else return U("Unsupported value")
+      return resultOk(result)
+    } else return resultErr("Unsupported value")
   }
 
-  function it(e) {
-    if (typeof e > "u") return "undef";
-    if (typeof e == "string" || typeof e == "number" || typeof e ==
-      "boolean" || e == null) return e;
-    if (e instanceof RegExp) return e.source;
-    if (Array.isArray(e)) return e.map(it);
-    if (e instanceof Map) return [...e.values()].map(it);
-    if (e instanceof Set) return [...e.values()].map(it);
-    if (cr.isResult(e)) return e.isOk() ? it(e.unwrap()) : it(e.unwrapErr());
-    if (dr.isOption(e)) return e.isSome() ? it(e.unwrap()) : "None";
-    if (typeof e == "object") {
-      let t = {},
-        r = e;
-      for (let i of Object.keys(e)) {
-        let n = r[i];
-        t[i] = it(n)
+  function typeTagOf(value) {
+    if (typeof value > "u") return "undef";
+    if (typeof value == "string" || typeof value == "number" || typeof value ==
+      "boolean" || value == null) return value;
+    if (value instanceof RegExp) return value.source;
+    if (Array.isArray(value)) return value.map(typeTagOf);
+    if (value instanceof Map) return [...value.values()].map(typeTagOf);
+    if (value instanceof Set) return [...value.values()].map(typeTagOf);
+    if (ResultNs.isResult(value)) return value.isOk() ? typeTagOf(value.unwrap()) : typeTagOf(value.unwrapErr());
+    if (OptionNs.isOption(value)) return value.isSome() ? typeTagOf(value.unwrap()) : "None";
+    if (typeof value == "object") {
+      let result = {},
+        obj = value;
+      for (let key of Object.keys(value)) {
+        let val = obj[key];
+        result[key] = typeTagOf(val)
       }
-      return t
+      return result
     } else return "???"
   }
-  var qn = C(() => {
+  var initMediaUserPrefsDefaults = defineLazyModule(() => {
     "use strict";
-    oe();
-    Cn();
-    Ue()
+    initTsResultsIndex();
+    initObjGuards();
+    initIterTools()
   });
 
-  function Qa() {
+  function defaultMediaUserPrefs() {
     return {
       prefer_60fps: !0,
       ignore_low_quality_hits: !0,
@@ -4379,74 +4379,74 @@
     }
   }
 
-  function Cd(e) {
-    return we(e)
+  function serializeSettingValue(value) {
+    return serializePrimitiveValue(value)
       .unwrap()
   }
 
-  function qd(e) {
-    let t = ve(e)
+  function deserializeSettingValue(serialized) {
+    let parsed = serializeHitValue(serialized)
       .unwrapOr({}),
-      r = Qa(),
-      i = Ga(t.container)
-      .unwrapOr(r.container),
-      n = Wa(t.video_codec)
-      .unwrapOr(r.video_codec),
-      o = Ni(t.best_video_quality)
-      .unwrapOr(r.best_video_quality),
-      s = Ni(t.lowest_video_quality)
-      .unwrapOr(r.lowest_video_quality),
-      a;
-    if ("prefered_video_quality" in t) {
-      let p = Ni(t.prefered_video_quality);
-      p.isSome() && (a = p.unwrap())
+      defaults = defaultMediaUserPrefs(),
+      container = tryContainerByName(parsed.container)
+      .unwrapOr(defaults.container),
+      videoCodec = videoCodecByName(parsed.video_codec)
+      .unwrapOr(defaults.video_codec),
+      bestQuality = qualityById(parsed.best_video_quality)
+      .unwrapOr(defaults.best_video_quality),
+      lowestQuality = qualityById(parsed.lowest_video_quality)
+      .unwrapOr(defaults.lowest_video_quality),
+      preferredQuality;
+    if ("prefered_video_quality" in parsed) {
+      let parsedQuality = qualityById(parsed.prefered_video_quality);
+      parsedQuality.isSome() && (preferredQuality = parsedQuality.unwrap())
     }
-    let l = r.max_variants;
-    if (typeof t.max_variants == "number") {
-      let p = t.max_variants;
-      Number.isInteger(p) && p <= 11 && p > 0 && (l = p)
+    let maxVariants = defaults.max_variants;
+    if (typeof parsed.max_variants == "number") {
+      let value = parsed.max_variants;
+      Number.isInteger(value) && value <= 11 && value > 0 && (maxVariants = value)
     }
-    let u = r.prefer_60fps;
-    typeof t.prefer_60fps == "boolean" && (u = t.prefer_60fps);
-    let d = r.ignore_low_quality_hits;
-    typeof t.ignore_low_quality_hits == "boolean" && (d = t
+    let prefer60fps = defaults.prefer_60fps;
+    typeof parsed.prefer_60fps == "boolean" && (prefer60fps = parsed.prefer_60fps);
+    let ignoreLowQuality = defaults.ignore_low_quality_hits;
+    typeof parsed.ignore_low_quality_hits == "boolean" && (ignoreLowQuality = parsed
       .ignore_low_quality_hits);
-    let c = [];
-    if (Array.isArray(t.ignored_containers))
-      for (let p of t.ignored_containers) {
-        let _ = Ga(p);
-        _.isSome() && c.push(_.unwrap())
+    let ignoredContainers = [];
+    if (Array.isArray(parsed.ignored_containers))
+      for (let name of parsed.ignored_containers) {
+        let matchedContainer = tryContainerByName(name);
+        matchedContainer.isSome() && ignoredContainers.push(matchedContainer.unwrap())
       }
-    let m = [];
-    if (Array.isArray(t.ignored_video_codecs))
-      for (let p of t.ignored_video_codecs) {
-        let _ = Wa(p);
-        _.isSome() && m.push(_.unwrap())
+    let ignoredCodecs = [];
+    if (Array.isArray(parsed.ignored_video_codecs))
+      for (let name of parsed.ignored_video_codecs) {
+        let matchedCodec = videoCodecByName(name);
+        matchedCodec.isSome() && ignoredCodecs.push(matchedCodec.unwrap())
       }
-    let w = {
-      prefer_60fps: u,
-      ignore_low_quality_hits: d,
-      container: i,
-      max_variants: l,
-      video_codec: n,
-      lowest_video_quality: s,
-      best_video_quality: o,
-      ignored_containers: c,
-      ignored_video_codecs: m
+    let config = {
+      prefer_60fps: prefer60fps,
+      ignore_low_quality_hits: ignoreLowQuality,
+      container: container,
+      max_variants: maxVariants,
+      video_codec: videoCodec,
+      lowest_video_quality: lowestQuality,
+      best_video_quality: bestQuality,
+      ignored_containers: ignoredContainers,
+      ignored_video_codecs: ignoredCodecs
     };
-    return typeof a < "u" && (w.prefered_video_quality = a), w
+    return typeof preferredQuality < "u" && (config.prefered_video_quality = preferredQuality), config
   }
-  var Bd = C(() => {
+  var initMediaUserPrefsStore = defineLazyModule(() => {
     "use strict";
-    qn();
-    Xe();
-    xt();
-    zr();
-    Ue()
+    initMediaUserPrefsDefaults();
+    initContainers();
+    initCodecs();
+    initQualities();
+    initIterTools()
   });
-  var Vd, Hd = C(() => {
+  var defaultViewOptions, initPanelDefaults = defineLazyModule(() => {
     "use strict";
-    Vd = {
+    defaultViewOptions = {
       all_tabs: !1,
       low_quality: !1,
       sort_by_status: !0,
@@ -4458,244 +4458,244 @@
     }
   });
 
-  function $a() {
+  function defaultNamingConfig() {
     return {
       template: "%title",
       max_length: 64
     }
   }
-  async function Fd(e, t) {
-    let r = e.variants.values()
+  async function selectVariantByRule(info, rule) {
+    let firstVariant = info.variants.values()
       .next()
       .value,
-      i = e.page_title,
-      n = new URL(e.page_url)
+      title = info.page_title,
+      hostname = new URL(info.page_url)
       .hostname,
-      o = n.replace(/\.com$|\.net$|\.org$/, ""),
-      s = new URL(r.manifest_url)
+      domain = hostname.replace(/\.com$|\.net$|\.org$/, ""),
+      filename = new URL(firstVariant.manifest_url)
       .pathname.split("/")
       .pop() || "none",
-      a = "";
-    if (i.length < 4 ? i = o : i.length < 8 && (i += "-" + o), s.includes(
+      selectorText = "";
+    if (title.length < 4 ? title = domain : title.length < 8 && (title += "-" + domain), filename.includes(
         ".")) {
-      let u = s.split(".");
-      u.pop(), s = u.join(".")
+      let parts = filename.split(".");
+      parts.pop(), filename = parts.join(".")
     }
-    if (!t) {
-      let u = await B(Ld);
-      t = u.get(n) || u.get("*"), t || (console.error("Missing '*' rule"),
-        t = $a())
+    if (!rule) {
+      let rules = await getSetting(settingSmartnaming);
+      rule = rules.get(hostname) || rules.get("*"), rule || (console.error("Missing '*' rule"),
+        rule = defaultNamingConfig())
     }
     try {
-      if (t.selector && e.tab_id != "none") {
-        let u = {
-          tabId: e.tab_id
+      if (rule.selector && info.tab_id != "none") {
+        let target = {
+          tabId: info.tab_id
         };
-        a = (await za.default.scripting.executeScript({
-          target: u,
-          world: za.default.scripting.ExecutionWorld.MAIN,
-          args: [t.selector],
-          func: c => document.querySelector(c)
+        selectorText = (await storagePolyfill.default.scripting.executeScript({
+          target: target,
+          world: storagePolyfill.default.scripting.ExecutionWorld.MAIN,
+          args: [rule.selector],
+          func: sel => document.querySelector(sel)
             ?.textContent
         }))[0]?.result
       }
     } catch {}
-    let l = t.template.replaceAll("%title", i)
-      .replaceAll("%hostname", o)
-      .replaceAll("%pathname", s)
-      .replaceAll("%selector", a);
-    return l.length < 3 && (l = o), l.trim()
+    let result = rule.template.replaceAll("%title", title)
+      .replaceAll("%hostname", domain)
+      .replaceAll("%pathname", filename)
+      .replaceAll("%selector", selectorText);
+    return result.length < 3 && (result = domain), result.trim()
       .normalize("NFD")
       .replace(/\./gu, " ")
       .replace(/[^\p{L}\p{N}\-\s]/ug, "")
       .replace(/-+/gu, "-")
       .replace(/\s+/gu, " ")
-      .substring(0, t.max_length)
+      .substring(0, rule.max_length)
   }
-  var za, Ja = C(() => {
+  var storagePolyfill, initSettingsBrowser = defineLazyModule(() => {
     "use strict";
-    za = yt(Ht(), 1);
-    Jr()
+    storagePolyfill = toEsm(requirePolyfill(), 1);
+    initSettings()
   });
 
-  function Ka(e, t) {
-    if (e == null || t === null || t === void 0) return e === t;
-    if (e.constructor !== t.constructor) return !1;
-    if (e instanceof Function || e instanceof RegExp) return e === t;
-    if (e === t || e.valueOf() === t.valueOf()) return !0;
-    if (Array.isArray(e) && e.length !== t.length || e instanceof Date || !(
-        e instanceof Object) || !(t instanceof Object)) return !1;
-    let r = Object.keys(e),
-      i = Object.keys(t)
-      .every(o => r.indexOf(o) !== -1),
-      n = r.every(o => Ka(e[o], t[o]));
-    return i && n
+  function looseEquals(valueA, valueB) {
+    if (valueA == null || valueB === null || valueB === void 0) return valueA === valueB;
+    if (valueA.constructor !== valueB.constructor) return !1;
+    if (valueA instanceof Function || valueA instanceof RegExp) return valueA === valueB;
+    if (valueA === valueB || valueA.valueOf() === valueB.valueOf()) return !0;
+    if (Array.isArray(valueA) && valueA.length !== valueB.length || valueA instanceof Date || !(
+        valueA instanceof Object) || !(valueB instanceof Object)) return !1;
+    let keysA = Object.keys(valueA),
+      sameKeys = Object.keys(valueB)
+      .every(key => keysA.indexOf(key) !== -1),
+      sameValues = keysA.every(key => looseEquals(valueA[key], valueB[key]));
+    return sameKeys && sameValues
   }
-  var Ud = C(() => {
+  var initSettingsHooks = defineLazyModule(() => {
     "use strict"
   });
-  async function Z(e, t) {
-    let r = t;
-    e.hooks && (r = e.hooks.setter(t)), await Ci.storage[e.where].set({
-      [e.name]: r
+  async function setSetting(setting, value) {
+    let stored = value;
+    setting.hooks && (stored = setting.hooks.setter(value)), await settingsStorage.storage[setting.where].set({
+      [setting.name]: stored
     })
   }
-  async function B(e) {
-    let t = await Ci.storage[e.where].get(e.name);
-    if (e.name in t) {
-      let r = t[e.name];
-      return e.hooks ? e.hooks.getter(r, e) : r
+  async function getSetting(setting) {
+    let stored = await settingsStorage.storage[setting.where].get(setting.name);
+    if (setting.name in stored) {
+      let value = stored[setting.name];
+      return setting.hooks ? setting.hooks.getter(value, setting) : value
     }
-    return e.default()
+    return setting.default()
   }
 
-  function Wd(e, t) {
-    gr(e, r => {
-      e.delayed_on_change ? console.warn(
-        "on_changed triggered too often") : e.delayed_on_change =
+  function onSettingChangedDebounced(setting, callback) {
+    onSettingChanged(setting, change => {
+      setting.delayed_on_change ? console.warn(
+        "on_changed triggered too often") : setting.delayed_on_change =
         setTimeout(async () => {
-          delete e.delayed_on_change;
-          let i = await B(e);
-          t(i)
+          delete setting.delayed_on_change;
+          let value = await getSetting(setting);
+          callback(value)
         }, 400)
     })
   }
 
-  function gr(e, t) {
-    Ci.storage[e.where].onChanged.addListener(r => {
-      let i = r[e.name];
-      if (i) {
-        if (Ka(i.oldValue, i.newValue)) return;
-        typeof i.newValue > "u" ? t(e.default()) : e.hooks ? t(e.hooks
-          .getter(i.newValue, e)) : t(i.newValue)
+  function onSettingChanged(setting, callback) {
+    settingsStorage.storage[setting.where].onChanged.addListener(changes => {
+      let change = changes[setting.name];
+      if (change) {
+        if (looseEquals(change.oldValue, change.newValue)) return;
+        typeof change.newValue > "u" ? callback(setting.default()) : setting.hooks ? callback(setting.hooks
+          .getter(change.newValue, setting)) : callback(change.newValue)
       }
     })
   }
-  async function tc() {
-    if (!await B(jd)) {
-      await Z(jd, !0);
-      let e = await Ci.storage.local.get("weh-prefs");
-      if ("weh-prefs" in e) {
-        let t = e["weh-prefs"];
-        if ("default-action-0" in t && t["default-action-0"] == "copyurl" &&
-          await Z(es, "copy"), "lastDownloadDirectory" in t) {
-          let r = t.lastDownloadDirectory;
-          await Z(Bi, r)
+  async function firstRunInit() {
+    if (!await getSetting(settingHasMigratedFromV8)) {
+      await setSetting(settingHasMigratedFromV8, !0);
+      let prefs = await settingsStorage.storage.local.get("weh-prefs");
+      if ("weh-prefs" in prefs) {
+        let wehPrefs = prefs["weh-prefs"];
+        if ("default-action-0" in wehPrefs && wehPrefs["default-action-0"] == "copyurl" &&
+          await setSetting(settingDefaultAction, "copy"), "lastDownloadDirectory" in wehPrefs) {
+          let dir = wehPrefs.lastDownloadDirectory;
+          await setSetting(settingDownloadDirectory, dir)
         }
       }
     }
   }
-  var Ci, jd, Xd, qi, Bn, Ya, Wt, Bi, Gd, Qd, zd, $d, hr, Za, Jd, es, Kd, Vi,
-    ts, rs, is, Vn, ns, Yd, Zd, Kr, ec, os, as, Hi, Fi, Ld, ss, Jr = C(() => {
+  var settingsStorage, settingHasMigratedFromV8, settingHttpMediaDownloadStrategy, settingDebuggerEnabled, settingDebuggerLogs, settingUseSidebar, settingLastAdvancedDownload, settingDownloadDirectory, settingConcurrentDownloadsMax, settingShowThumbnailInNotification, settingShowSuccessNotification, settingShowSuccessNotificationForIncognito, settingViewOptions, settingShowContextMenu, settingForgetMediaOnTabClose, settingDefaultAction, settingYtWarning, settingUseLegacyUi,
+    settingNeverShowNoIncognitoMsgAgain, settingAutoHideDownloadedMessageShown, settingValidLicenseMessageShown, settingSuccessfulDl, settingNeverShowSuccessfulDlMessage, settingRecordDownloadHistory, settingHistoryLimitInDays, settingSessionViewOptions, settingLicense, settingBlacklist, settingLastDownloadDirectory, settingMediaUserPref, settingDownloadHistory, settingSmartnaming, settingServiceDatabase, initSettings = defineLazyModule(() => {
       "use strict";
-      Ci = yt(Ht(), 1);
-      Bd();
-      qn();
-      Hd();
-      Ja();
-      Ud();
-      oe();
-      jd = {
+      settingsStorage = toEsm(requirePolyfill(), 1);
+      initMediaUserPrefsStore();
+      initMediaUserPrefsDefaults();
+      initPanelDefaults();
+      initSettingsBrowser();
+      initSettingsHooks();
+      initTsResultsIndex();
+      settingHasMigratedFromV8 = {
         name: "has_migrated_from_v8",
         default: () => !1,
         where: "local"
-      }, Xd = {
+      }, settingHttpMediaDownloadStrategy = {
         name: "http_media_download_strategy",
         default: () => "coapp",
         where: "local"
-      }, qi = {
+      }, settingDebuggerEnabled = {
         name: "debugger_enabled",
         default: () => !1,
         where: "local"
-      }, Bn = {
+      }, settingDebuggerLogs = {
         name: "debugger_logs",
         default: () => [],
         where: "session"
-      }, Ya = {
+      }, settingUseSidebar = {
         name: "use_sidebar",
         default: () => !1,
         where: "local"
-      }, Wt = {
+      }, settingLastAdvancedDownload = {
         name: "last_advanced_download",
         default: () => 0,
         where: "local"
-      }, Bi = {
+      }, settingDownloadDirectory = {
         name: "download_directory",
         default: () => "dwhelper",
         where: "local"
-      }, Gd = {
+      }, settingConcurrentDownloadsMax = {
         name: "concurrent_downloads_max",
         default: () => 6,
         where: "local"
-      }, Qd = {
+      }, settingShowThumbnailInNotification = {
         name: "show_thumbnail_in_notification",
         default: () => !0,
         where: "local"
-      }, zd = {
+      }, settingShowSuccessNotification = {
         name: "show_success_notification",
         default: () => !0,
         where: "local"
-      }, $d = {
+      }, settingShowSuccessNotificationForIncognito = {
         name: "show_success_notification_for_icognito",
         default: () => !1,
         where: "local"
-      }, hr = {
+      }, settingViewOptions = {
         name: "view_options",
-        default: () => structuredClone(Vd),
+        default: () => structuredClone(defaultViewOptions),
         where: "local"
-      }, Za = {
+      }, settingShowContextMenu = {
         name: "show_context_menu",
         default: () => !0,
         where: "local"
-      }, Jd = {
+      }, settingForgetMediaOnTabClose = {
         name: "forget_media_on_tab_close",
         default: () => !0,
         where: "local"
-      }, es = {
+      }, settingDefaultAction = {
         name: "default_action",
         default: () => "download",
         where: "local"
-      }, Kd = {
+      }, settingYtWarning = {
         name: "yt_warning",
         default: () => !0,
         where: "local"
-      }, Vi = {
+      }, settingUseLegacyUi = {
         name: "use_legacy_ui",
         default: () => !0,
         where: "local"
-      }, ts = {
+      }, settingNeverShowNoIncognitoMsgAgain = {
         name: "never_show_no_incognito_msg_again",
         default: () => !1,
         where: "local"
-      }, rs = {
+      }, settingAutoHideDownloadedMessageShown = {
         name: "auto_hide_downloaded_message_has_been_displayed",
         default: () => !0,
         where: "local"
-      }, is = {
+      }, settingValidLicenseMessageShown = {
         name: "valid_license_message_has_been_displayed",
         default: () => !1,
         where: "local"
-      }, Vn = {
+      }, settingSuccessfulDl = {
         name: "successfull_dl",
         default: () => 0,
         where: "local"
-      }, ns = {
+      }, settingNeverShowSuccessfulDlMessage = {
         name: "never_show_successfull_dl_message",
         default: () => !1,
         where: "local"
-      }, Yd = {
+      }, settingRecordDownloadHistory = {
         name: "record_download_history",
         default: () => !1,
         where: "local"
-      }, Zd = {
+      }, settingHistoryLimitInDays = {
         name: "history_limit_in_days",
         default: () => 30,
         where: "local"
-      }, Kr = {
+      }, settingSessionViewOptions = {
         name: "view_options",
         default: () => ({}),
         where: "session"
-      }, ec = {
+      }, settingLicense = {
         name: "license",
         default: () => "",
         where: "local",
@@ -4703,61 +4703,61 @@
           setter: () => {
             throw "License handled by V8 but setter called"
           },
-          getter: e => e
+          getter: value => value
         }
-      }, os = {
+      }, settingBlacklist = {
         name: "blacklist",
         default: () => [],
         where: "local",
         hooks: {
-          setter: e => e.filter(t => t.length > 0),
-          getter: e => e
+          setter: value => value.filter(item => item.length > 0),
+          getter: value => value
         }
-      }, as = {
+      }, settingLastDownloadDirectory = {
         name: "last_download_directory",
-        default: () => O,
+        default: () => ResultNone,
         where: "local",
         hooks: {
-          setter: e => we(e)
+          setter: value => serializePrimitiveValue(value)
             .unwrap(),
-          getter: (e, t) => ve(e)
-            .unwrapOr(t.default())
+          getter: (value, setting) => serializeHitValue(value)
+            .unwrapOr(setting.default())
         }
-      }, Hi = {
+      }, settingMediaUserPref = {
         name: "media_user_pref",
         where: "local",
-        default: () => Qa(),
+        default: () => defaultMediaUserPrefs(),
         hooks: {
-          setter: e => Cd(e),
-          getter: e => qd(e)
+          setter: value => serializeSettingValue(value),
+          getter: value => deserializeSettingValue(value)
         }
-      }, Fi = {
+      }, settingDownloadHistory = {
         name: "download_history",
         where: "local",
         default: () => new Map,
         hooks: {
-          setter: e => we(e)
+          setter: value => serializePrimitiveValue(value)
             .unwrap(),
-          getter: (e, t) => ve(e)
-            .unwrapOr(t.default())
+          getter: (value, setting) => serializeHitValue(value)
+            .unwrapOr(setting.default())
         }
-      }, Ld = {
+      }, settingSmartnaming = {
         name: "smartnaming",
         where: "local",
         default: () => new Map([
-          ["*", $a()]
+          ["*", defaultNamingConfig()]
         ]),
         hooks: {
-          setter: e => we(e)
+          setter: value => serializePrimitiveValue(value)
             .unwrap(),
-          getter: (e, t) => ve(e)
-            .unwrapOr(t.default())
+          getter: (value, setting) => serializeHitValue(value)
+            .unwrapOr(setting.default())
         }
-      }, ss = {
+      }, settingServiceDatabase = {
         name: "database",
         where: "session",
         default: () => ({
-          yt_bulk: O,
+          yt_bulk: ResultNone,
           user_messages: new Set,
           coapp_status: "checking",
           license_status: {
@@ -4771,484 +4771,484 @@
           download_errors: new Map
         }),
         hooks: {
-          setter: e => we(e)
+          setter: value => serializePrimitiveValue(value)
             .unwrap(),
-          getter: (e, t) => ve(e)
-            .unwrapOr(t.default())
+          getter: (value, setting) => serializeHitValue(value)
+            .unwrapOr(setting.default())
         }
       }
     });
-  var ic = v((C2, rc) => {
-    var B_ = typeof global == "object" && global && global.Object ===
+  var requireFreeGlobal = defineCommonjsModule((freeGlobalExports, freeGlobalModule) => {
+    var freeGlobal = typeof global == "object" && global && global.Object ===
       Object && global;
-    rc.exports = B_
+    freeGlobalModule.exports = freeGlobal
   });
-  var oc = v((q2, nc) => {
-    var V_ = ic(),
-      H_ = typeof self == "object" && self && self.Object === Object &&
+  var requireRoot = defineCommonjsModule((rootExports, rootModule) => {
+    var freeGlobal = requireFreeGlobal(),
+      freeSelf = typeof self == "object" && self && self.Object === Object &&
       self,
-      F_ = V_ || H_ || Function("return this")();
-    nc.exports = F_
+      root = freeGlobal || freeSelf || Function("return this")();
+    rootModule.exports = root
   });
-  var ls = v((B2, ac) => {
-    var L_ = oc(),
-      U_ = L_.Symbol;
-    ac.exports = U_
+  var requireSymbolRef = defineCommonjsModule((symbolExports, symbolModule) => {
+    var root = requireRoot(),
+      rootSymbol = root.Symbol;
+    symbolModule.exports = rootSymbol
   });
-  var dc = v((V2, uc) => {
-    var sc = ls(),
-      lc = Object.prototype,
-      j_ = lc.hasOwnProperty,
-      W_ = lc.toString,
-      Li = sc ? sc.toStringTag : void 0;
+  var requireGetRawTag = defineCommonjsModule((getRawTagExports, getRawTagModule) => {
+    var symbolRef = requireSymbolRef(),
+      objectProto = Object.prototype,
+      hasOwnProperty = objectProto.hasOwnProperty,
+      nativeObjectToString = objectProto.toString,
+      symToStringTag = symbolRef ? symbolRef.toStringTag : void 0;
 
-    function X_(e) {
-      var t = j_.call(e, Li),
-        r = e[Li];
+    function getRawTag(value) {
+      var isOwn = hasOwnProperty.call(value, symToStringTag),
+        tag = value[symToStringTag];
       try {
-        e[Li] = void 0;
-        var i = !0
+        value[symToStringTag] = void 0;
+        var unmasked = !0
       } catch {}
-      var n = W_.call(e);
-      return i && (t ? e[Li] = r : delete e[Li]), n
+      var result = nativeObjectToString.call(value);
+      return unmasked && (isOwn ? value[symToStringTag] = tag : delete value[symToStringTag]), result
     }
-    uc.exports = X_
+    getRawTagModule.exports = getRawTag
   });
-  var pc = v((H2, cc) => {
-    var G_ = Object.prototype,
-      Q_ = G_.toString;
+  var requireObjectToString = defineCommonjsModule((objectToStringExports, objectToStringModule) => {
+    var objectProto = Object.prototype,
+      nativeObjectToString = objectProto.toString;
 
-    function z_(e) {
-      return Q_.call(e)
+    function objectToString(value) {
+      return nativeObjectToString.call(value)
     }
-    cc.exports = z_
+    objectToStringModule.exports = objectToString
   });
-  var hc = v((F2, gc) => {
-    var fc = ls(),
-      $_ = dc(),
-      J_ = pc(),
-      K_ = "[object Null]",
-      Y_ = "[object Undefined]",
-      mc = fc ? fc.toStringTag : void 0;
+  var requireBaseGetTag = defineCommonjsModule((baseGetTagExports, baseGetTagModule) => {
+    var symbolRef = requireSymbolRef(),
+      getRawTag = requireGetRawTag(),
+      objectToString = requireObjectToString(),
+      nullTag = "[object Null]",
+      undefinedTag = "[object Undefined]",
+      symToStringTag = symbolRef ? symbolRef.toStringTag : void 0;
 
-    function Z_(e) {
-      return e == null ? e === void 0 ? Y_ : K_ : mc && mc in Object(e) ?
-        $_(e) : J_(e)
+    function baseGetTag(value) {
+      return value == null ? value === void 0 ? undefinedTag : nullTag : symToStringTag && symToStringTag in Object(value) ?
+        getRawTag(value) : objectToString(value)
     }
-    gc.exports = Z_
+    baseGetTagModule.exports = baseGetTag
   });
-  var bc = v((L2, _c) => {
-    function eb(e, t) {
-      return function(r) {
-        return e(t(r))
+  var requireOverArg = defineCommonjsModule((overArgExports, overArgModule) => {
+    function overArg(func, transform) {
+      return function(arg) {
+        return func(transform(arg))
       }
     }
-    _c.exports = eb
+    overArgModule.exports = overArg
   });
-  var vc = v((U2, yc) => {
-    var tb = bc(),
-      rb = tb(Object.getPrototypeOf, Object);
-    yc.exports = rb
+  var requireGetPrototype = defineCommonjsModule((getPrototypeExports, getPrototypeModule) => {
+    var overArg = requireOverArg(),
+      getPrototype = overArg(Object.getPrototypeOf, Object);
+    getPrototypeModule.exports = getPrototype
   });
-  var Ac = v((j2, wc) => {
-    function ib(e) {
-      return e != null && typeof e == "object"
+  var requireIsObjectLike = defineCommonjsModule((isObjectLikeExports, isObjectLikeModule) => {
+    function isObjectLike(value) {
+      return value != null && typeof value == "object"
     }
-    wc.exports = ib
+    isObjectLikeModule.exports = isObjectLike
   });
-  var us = v((W2, Tc) => {
-    var nb = hc(),
-      ob = vc(),
-      ab = Ac(),
-      sb = "[object Object]",
-      lb = Function.prototype,
-      ub = Object.prototype,
-      xc = lb.toString,
-      db = ub.hasOwnProperty,
-      cb = xc.call(Object);
+  var requireIsPlainObject = defineCommonjsModule((isPlainObjectExports, isPlainObjectModule) => {
+    var baseGetTag = requireBaseGetTag(),
+      getPrototype = requireGetPrototype(),
+      isObjectLike = requireIsObjectLike(),
+      objectTag = "[object Object]",
+      funcProto = Function.prototype,
+      objectProto = Object.prototype,
+      funcToString = funcProto.toString,
+      hasOwnProperty = objectProto.hasOwnProperty,
+      objectCtorString = funcToString.call(Object);
 
-    function pb(e) {
-      if (!ab(e) || nb(e) != sb) return !1;
-      var t = ob(e);
-      if (t === null) return !0;
-      var r = db.call(t, "constructor") && t.constructor;
-      return typeof r == "function" && r instanceof r && xc.call(r) == cb
+    function isPlainObject(value) {
+      if (!isObjectLike(value) || baseGetTag(value) != objectTag) return !1;
+      var proto = getPrototype(value);
+      if (proto === null) return !0;
+      var Ctor = hasOwnProperty.call(proto, "constructor") && proto.constructor;
+      return typeof Ctor == "function" && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString
     }
-    Tc.exports = pb
+    isPlainObjectModule.exports = isPlainObject
   });
-  var Ec = v(ds => {
+  var requireObservablePonyfill = defineCommonjsModule(observableExports => {
     "use strict";
-    Object.defineProperty(ds, "__esModule", {
+    Object.defineProperty(observableExports, "__esModule", {
       value: !0
     });
-    ds.default = fb;
+    observableExports.default = symbolObservablePonyfill;
 
-    function fb(e) {
-      var t, r = e.Symbol;
-      return typeof r == "function" ? r.observable ? t = r.observable : (
-        t = r("observable"), r.observable = t) : t = "@@observable", t
+    function symbolObservablePonyfill(root) {
+      var result, SymbolCtor = root.Symbol;
+      return typeof SymbolCtor == "function" ? SymbolCtor.observable ? result = SymbolCtor.observable : (
+        result = SymbolCtor("observable"), SymbolCtor.observable = result) : result = "@@observable", result
     }
   });
-  var Sc = v((ps, cs) => {
+  var requireSymbolObservable = defineCommonjsModule((observableDefaultExports, observableDefaultModule) => {
     "use strict";
-    Object.defineProperty(ps, "__esModule", {
+    Object.defineProperty(observableDefaultExports, "__esModule", {
       value: !0
     });
-    var mb = Ec(),
-      gb = hb(mb);
+    var ponyfillModule = requireObservablePonyfill(),
+      ponyfill = interopRequireDefault(ponyfillModule);
 
-    function hb(e) {
-      return e && e.__esModule ? e : {
-        default: e
+    function interopRequireDefault(mod) {
+      return mod && mod.__esModule ? mod : {
+        default: mod
       }
     }
-    var Yr;
-    typeof self < "u" ? Yr = self : typeof window < "u" ? Yr = window :
-      typeof global < "u" ? Yr = global : typeof cs < "u" ? Yr = cs : Yr =
+    var root;
+    typeof self < "u" ? root = self : typeof window < "u" ? root = window :
+      typeof global < "u" ? root = global : typeof observableDefaultModule < "u" ? root = observableDefaultModule : root =
       Function("return this")();
-    var _b = (0, gb.default)(Yr);
-    ps.default = _b
+    var result = (0, ponyfill.default)(root);
+    observableDefaultExports.default = result
   });
-  var fs = v(Ui => {
+  var requireCreateStore = defineCommonjsModule(reduxExports => {
     "use strict";
-    Ui.__esModule = !0;
-    Ui.ActionTypes = void 0;
-    Ui.default = Pc;
-    var bb = us(),
-      yb = Mc(bb),
-      vb = Sc(),
-      Dc = Mc(vb);
+    reduxExports.__esModule = !0;
+    reduxExports.ActionTypes = void 0;
+    reduxExports.default = createStore;
+    var isPlainObjectModule = requireIsPlainObject(),
+      isPlainObject = interopRequireDefault(isPlainObjectModule),
+      symbolObservableModule = requireSymbolObservable(),
+      symbolObservable = interopRequireDefault(symbolObservableModule);
 
-    function Mc(e) {
-      return e && e.__esModule ? e : {
-        default: e
+    function interopRequireDefault(mod) {
+      return mod && mod.__esModule ? mod : {
+        default: mod
       }
     }
-    var Oc = Ui.ActionTypes = {
+    var ActionTypes = reduxExports.ActionTypes = {
       INIT: "@@redux/INIT"
     };
 
-    function Pc(e, t, r) {
-      var i;
-      if (typeof t == "function" && typeof r > "u" && (r = t, t = void 0),
-        typeof r < "u") {
-        if (typeof r != "function") throw new Error(
+    function createStore(reducer, preloadedState, enhancer) {
+      var store;
+      if (typeof preloadedState == "function" && typeof enhancer > "u" && (enhancer = preloadedState, preloadedState = void 0),
+        typeof enhancer < "u") {
+        if (typeof enhancer != "function") throw new Error(
           "Expected the enhancer to be a function.");
-        return r(Pc)(e, t)
+        return enhancer(createStore)(reducer, preloadedState)
       }
-      if (typeof e != "function") throw new Error(
+      if (typeof reducer != "function") throw new Error(
         "Expected the reducer to be a function.");
-      var n = e,
-        o = t,
-        s = [],
-        a = s,
-        l = !1;
+      var currentReducer = reducer,
+        currentState = preloadedState,
+        currentListeners = [],
+        nextListeners = currentListeners,
+        isDispatching = !1;
 
-      function u() {
-        a === s && (a = s.slice())
+      function ensureCanMutateNextListeners() {
+        nextListeners === currentListeners && (nextListeners = currentListeners.slice())
       }
 
-      function d() {
-        return o
+      function getState() {
+        return currentState
       }
 
-      function c(_) {
-        if (typeof _ != "function") throw new Error(
+      function subscribe(listener) {
+        if (typeof listener != "function") throw new Error(
           "Expected listener to be a function.");
-        var f = !0;
-        return u(), a.push(_),
+        var isSubscribed = !0;
+        return ensureCanMutateNextListeners(), nextListeners.push(listener),
           function() {
-            if (f) {
-              f = !1, u();
-              var h = a.indexOf(_);
-              a.splice(h, 1)
+            if (isSubscribed) {
+              isSubscribed = !1, ensureCanMutateNextListeners();
+              var index = nextListeners.indexOf(listener);
+              nextListeners.splice(index, 1)
             }
           }
       }
 
-      function m(_) {
-        if (!(0, yb.default)(_)) throw new Error(
+      function dispatch(action) {
+        if (!(0, isPlainObject.default)(action)) throw new Error(
           "Actions must be plain objects. Use custom middleware for async actions."
           );
-        if (typeof _.type > "u") throw new Error(
+        if (typeof action.type > "u") throw new Error(
           'Actions may not have an undefined "type" property. Have you misspelled a constant?'
           );
-        if (l) throw new Error("Reducers may not dispatch actions.");
+        if (isDispatching) throw new Error("Reducers may not dispatch actions.");
         try {
-          l = !0, o = n(o, _)
+          isDispatching = !0, currentState = currentReducer(currentState, action)
         } finally {
-          l = !1
+          isDispatching = !1
         }
-        for (var f = s = a, g = 0; g < f.length; g++) {
-          var h = f[g];
-          h()
+        for (var listeners = currentListeners = nextListeners, listenerIndex = 0; listenerIndex < listeners.length; listenerIndex++) {
+          var listener = listeners[listenerIndex];
+          listener()
         }
-        return _
+        return action
       }
 
-      function w(_) {
-        if (typeof _ != "function") throw new Error(
+      function replaceReducer(nextReducer) {
+        if (typeof nextReducer != "function") throw new Error(
           "Expected the nextReducer to be a function.");
-        n = _, m({
-          type: Oc.INIT
+        currentReducer = nextReducer, dispatch({
+          type: ActionTypes.INIT
         })
       }
 
-      function p() {
-        var _, f = c;
-        return _ = {
-          subscribe: function(h) {
-            if (typeof h != "object") throw new TypeError(
+      function observable() {
+        var outerObservable, outerSubscribe = subscribe;
+        return outerObservable = {
+          subscribe: function(observer) {
+            if (typeof observer != "object") throw new TypeError(
               "Expected the observer to be an object.");
 
-            function T() {
-              h.next && h.next(d())
+            function observeState() {
+              observer.next && observer.next(getState())
             }
-            T();
-            var x = f(T);
+            observeState();
+            var unsubscribe = outerSubscribe(observeState);
             return {
-              unsubscribe: x
+              unsubscribe: unsubscribe
             }
           }
-        }, _[Dc.default] = function() {
+        }, outerObservable[symbolObservable.default] = function() {
           return this
-        }, _
+        }, outerObservable
       }
-      return m({
-        type: Oc.INIT
-      }), i = {
-        dispatch: m,
-        subscribe: c,
-        getState: d,
-        replaceReducer: w
-      }, i[Dc.default] = p, i
+      return dispatch({
+        type: ActionTypes.INIT
+      }), store = {
+        dispatch: dispatch,
+        subscribe: subscribe,
+        getState: getState,
+        replaceReducer: replaceReducer
+      }, store[symbolObservable.default] = observable, store
     }
   });
-  var gs = v(ms => {
+  var requireReduxWarning = defineCommonjsModule(warningExports => {
     "use strict";
-    ms.__esModule = !0;
-    ms.default = wb;
+    warningExports.__esModule = !0;
+    warningExports.default = warning;
 
-    function wb(e) {
+    function warning(message) {
       typeof console < "u" && typeof console.error == "function" &&
-        console.error(e);
+        console.error(message);
       try {
-        throw new Error(e)
+        throw new Error(message)
       } catch {}
     }
   });
-  var Nc = v(hs => {
+  var requireCombineReducers = defineCommonjsModule(combineReducersExports => {
     "use strict";
-    hs.__esModule = !0;
-    hs.default = Sb;
-    var Rc = fs(),
-      Ab = us(),
-      z2 = Ic(Ab),
-      xb = gs(),
-      $2 = Ic(xb);
+    combineReducersExports.__esModule = !0;
+    combineReducersExports.default = combineReducers;
+    var reduxModule = requireCreateStore(),
+      isPlainObjectModule = requireIsPlainObject(),
+      isPlainObject = interopRequireDefault(isPlainObjectModule),
+      warningModule = requireReduxWarning(),
+      warning = interopRequireDefault(warningModule);
 
-    function Ic(e) {
-      return e && e.__esModule ? e : {
-        default: e
+    function interopRequireDefault(mod) {
+      return mod && mod.__esModule ? mod : {
+        default: mod
       }
     }
 
-    function Tb(e, t) {
-      var r = t && t.type,
-        i = r && '"' + r.toString() + '"' || "an action";
-      return "Given action " + i + ', reducer "' + e +
+    function getUndefinedStateErrorMessage(key, action) {
+      var actionType = action && action.type,
+        actionDescription = actionType && '"' + actionType.toString() + '"' || "an action";
+      return "Given action " + actionDescription + ', reducer "' + key +
         '" returned undefined. To ignore an action, you must explicitly return the previous state. If you want this reducer to hold no value, you can return null instead of undefined.'
     }
 
-    function Eb(e) {
-      Object.keys(e)
-        .forEach(function(t) {
-          var r = e[t],
-            i = r(void 0, {
-              type: Rc.ActionTypes.INIT
+    function assertReducerShape(reducers) {
+      Object.keys(reducers)
+        .forEach(function(key) {
+          var reducer = reducers[key],
+            initialState = reducer(void 0, {
+              type: reduxModule.ActionTypes.INIT
             });
-          if (typeof i > "u") throw new Error('Reducer "' + t +
+          if (typeof initialState > "u") throw new Error('Reducer "' + key +
             `" returned undefined during initialization. If the state passed to the reducer is undefined, you must explicitly return the initial state. The initial state may not be undefined. If you don't want to set a value for this reducer, you can use null instead of undefined.`
             );
-          var n = "@@redux/PROBE_UNKNOWN_ACTION_" + Math.random()
+          var randomType = "@@redux/PROBE_UNKNOWN_ACTION_" + Math.random()
             .toString(36)
             .substring(7)
             .split("")
             .join(".");
-          if (typeof r(void 0, {
-              type: n
-            }) > "u") throw new Error('Reducer "' + t +
+          if (typeof reducer(void 0, {
+              type: randomType
+            }) > "u") throw new Error('Reducer "' + key +
             '" returned undefined when probed with a random type. ' +
-            ("Don't try to handle " + Rc.ActionTypes.INIT +
+            ("Don't try to handle " + reduxModule.ActionTypes.INIT +
               ' or other actions in "redux/*" ') +
             "namespace. They are considered private. Instead, you must return the current state for any unknown actions, unless it is undefined, in which case you must return the initial state, regardless of the action type. The initial state may not be undefined, but can be null."
             )
         })
     }
 
-    function Sb(e) {
-      for (var t = Object.keys(e), r = {}, i = 0; i < t.length; i++) {
-        var n = t[i];
-        typeof e[n] == "function" && (r[n] = e[n])
+    function combineReducers(reducers) {
+      for (var reducerKeys = Object.keys(reducers), finalReducers = {}, index = 0; index < reducerKeys.length; index++) {
+        var key = reducerKeys[index];
+        typeof reducers[key] == "function" && (finalReducers[key] = reducers[key])
       }
-      var o = Object.keys(r),
-        s = void 0,
-        a = void 0;
+      var finalReducerKeys = Object.keys(finalReducers),
+        unexpectedKeyCache = void 0,
+        shapeAssertionError = void 0;
       try {
-        Eb(r)
-      } catch (l) {
-        a = l
+        assertReducerShape(finalReducers)
+      } catch (assertError) {
+        shapeAssertionError = assertError
       }
       return function() {
-        var u = arguments.length > 0 && arguments[0] !== void 0 ?
+        var state = arguments.length > 0 && arguments[0] !== void 0 ?
           arguments[0] : {},
-          d = arguments[1];
-        if (a) throw a;
-        if (0) var c;
-        for (var m = !1, w = {}, p = 0; p < o.length; p++) {
-          var _ = o[p],
-            f = r[_],
-            g = u[_],
-            h = f(g, d);
-          if (typeof h > "u") {
-            var T = Tb(_, d);
-            throw new Error(T)
+          action = arguments[1];
+        if (shapeAssertionError) throw shapeAssertionError;
+        if (0) var warningMessage;
+        for (var hasChanged = !1, nextState = {}, keyIndex = 0; keyIndex < finalReducerKeys.length; keyIndex++) {
+          var key = finalReducerKeys[keyIndex],
+            reducer = finalReducers[key],
+            previousStateForKey = state[key],
+            nextStateForKey = reducer(previousStateForKey, action);
+          if (typeof nextStateForKey > "u") {
+            var errorMessage = getUndefinedStateErrorMessage(key, action);
+            throw new Error(errorMessage)
           }
-          w[_] = h, m = m || h !== g
+          nextState[key] = nextStateForKey, hasChanged = hasChanged || nextStateForKey !== previousStateForKey
         }
-        return m ? w : u
+        return hasChanged ? nextState : state
       }
     }
   });
-  var Cc = v(_s => {
+  var requireBindActionCreators = defineCommonjsModule(bindActionCreatorsExports => {
     "use strict";
-    _s.__esModule = !0;
-    _s.default = Db;
+    bindActionCreatorsExports.__esModule = !0;
+    bindActionCreatorsExports.default = bindActionCreators;
 
-    function kc(e, t) {
+    function bindActionCreator(actionCreator, dispatch) {
       return function() {
-        return t(e.apply(void 0, arguments))
+        return dispatch(actionCreator.apply(void 0, arguments))
       }
     }
 
-    function Db(e, t) {
-      if (typeof e == "function") return kc(e, t);
-      if (typeof e != "object" || e === null) throw new Error(
+    function bindActionCreators(actionCreators, dispatch) {
+      if (typeof actionCreators == "function") return bindActionCreator(actionCreators, dispatch);
+      if (typeof actionCreators != "object" || actionCreators === null) throw new Error(
         "bindActionCreators expected an object or a function, instead received " +
-        (e === null ? "null" : typeof e) +
+        (actionCreators === null ? "null" : typeof actionCreators) +
         '. Did you write "import ActionCreators from" instead of "import * as ActionCreators from"?'
         );
-      for (var r = Object.keys(e), i = {}, n = 0; n < r.length; n++) {
-        var o = r[n],
-          s = e[o];
-        typeof s == "function" && (i[o] = kc(s, t))
+      for (var keys = Object.keys(actionCreators), boundActionCreators = {}, index = 0; index < keys.length; index++) {
+        var key = keys[index],
+          actionCreator = actionCreators[key];
+        typeof actionCreator == "function" && (boundActionCreators[key] = bindActionCreator(actionCreator, dispatch))
       }
-      return i
+      return boundActionCreators
     }
   });
-  var ys = v(bs => {
+  var requireCompose = defineCommonjsModule(composeExports => {
     "use strict";
-    bs.__esModule = !0;
-    bs.default = Ob;
+    composeExports.__esModule = !0;
+    composeExports.default = compose;
 
-    function Ob() {
-      for (var e = arguments.length, t = Array(e), r = 0; r < e; r++) t[
-        r] = arguments[r];
-      return t.length === 0 ? function(i) {
-        return i
-      } : t.length === 1 ? t[0] : t.reduce(function(i, n) {
+    function compose() {
+      for (var argCount = arguments.length, funcs = Array(argCount), argIndex = 0; argIndex < argCount; argIndex++) funcs[
+        argIndex] = arguments[argIndex];
+      return funcs.length === 0 ? function(arg) {
+        return arg
+      } : funcs.length === 1 ? funcs[0] : funcs.reduce(function(outerFn, innerFn) {
         return function() {
-          return i(n.apply(void 0, arguments))
+          return outerFn(innerFn.apply(void 0, arguments))
         }
       })
     }
   });
-  var qc = v(vs => {
+  var requireApplyMiddleware = defineCommonjsModule(applyMiddlewareExports => {
     "use strict";
-    vs.__esModule = !0;
-    var Mb = Object.assign || function(e) {
-      for (var t = 1; t < arguments.length; t++) {
-        var r = arguments[t];
-        for (var i in r) Object.prototype.hasOwnProperty.call(r, i) && (
-          e[i] = r[i])
+    applyMiddlewareExports.__esModule = !0;
+    var objectAssign = Object.assign || function(target) {
+      for (var argIndex = 1; argIndex < arguments.length; argIndex++) {
+        var source = arguments[argIndex];
+        for (var key in source) Object.prototype.hasOwnProperty.call(source, key) && (
+          target[key] = source[key])
       }
-      return e
+      return target
     };
-    vs.default = Nb;
-    var Pb = ys(),
-      Rb = Ib(Pb);
+    applyMiddlewareExports.default = applyMiddleware;
+    var composeModule = requireCompose(),
+      compose = interopRequireDefault(composeModule);
 
-    function Ib(e) {
-      return e && e.__esModule ? e : {
-        default: e
+    function interopRequireDefault(mod) {
+      return mod && mod.__esModule ? mod : {
+        default: mod
       }
     }
 
-    function Nb() {
-      for (var e = arguments.length, t = Array(e), r = 0; r < e; r++) t[
-        r] = arguments[r];
-      return function(i) {
-        return function(n, o, s) {
-          var a = i(n, o, s),
-            l = a.dispatch,
-            u = [],
-            d = {
-              getState: a.getState,
-              dispatch: function(m) {
-                return l(m)
+    function applyMiddleware() {
+      for (var argCount = arguments.length, middlewares = Array(argCount), argIndex = 0; argIndex < argCount; argIndex++) middlewares[
+        argIndex] = arguments[argIndex];
+      return function(createStore) {
+        return function(reducer, preloadedState, enhancer) {
+          var store = createStore(reducer, preloadedState, enhancer),
+            dispatch = store.dispatch,
+            chain = [],
+            middlewareAPI = {
+              getState: store.getState,
+              dispatch: function(action) {
+                return dispatch(action)
               }
             };
-          return u = t.map(function(c) {
-            return c(d)
-          }), l = Rb.default.apply(void 0, u)(a.dispatch), Mb({},
-          a, {
-            dispatch: l
+          return chain = middlewares.map(function(middleware) {
+            return middleware(middlewareAPI)
+          }), dispatch = compose.default.apply(void 0, chain)(store.dispatch), objectAssign({},
+          store, {
+            dispatch: dispatch
           })
         }
       }
     }
   });
-  var Bc = v(qe => {
+  var requireRedux = defineCommonjsModule(reduxIndexExports => {
     "use strict";
-    qe.__esModule = !0;
-    qe.compose = qe.applyMiddleware = qe.bindActionCreators = qe
-      .combineReducers = qe.createStore = void 0;
-    var kb = fs(),
-      Cb = Zr(kb),
-      qb = Nc(),
-      Bb = Zr(qb),
-      Vb = Cc(),
-      Hb = Zr(Vb),
-      Fb = qc(),
-      Lb = Zr(Fb),
-      Ub = ys(),
-      jb = Zr(Ub),
-      Wb = gs(),
-      eT = Zr(Wb);
+    reduxIndexExports.__esModule = !0;
+    reduxIndexExports.compose = reduxIndexExports.applyMiddleware = reduxIndexExports.bindActionCreators = reduxIndexExports
+      .combineReducers = reduxIndexExports.createStore = void 0;
+    var createStoreModule = requireCreateStore(),
+      createStore = interopRequireDefault(createStoreModule),
+      combineReducersModule = requireCombineReducers(),
+      combineReducers = interopRequireDefault(combineReducersModule),
+      bindActionCreatorsModule = requireBindActionCreators(),
+      bindActionCreators = interopRequireDefault(bindActionCreatorsModule),
+      applyMiddlewareModule = requireApplyMiddleware(),
+      applyMiddleware = interopRequireDefault(applyMiddlewareModule),
+      composeModule = requireCompose(),
+      compose = interopRequireDefault(composeModule),
+      warningModule = requireReduxWarning(),
+      warning = interopRequireDefault(warningModule);
 
-    function Zr(e) {
-      return e && e.__esModule ? e : {
-        default: e
+    function interopRequireDefault(mod) {
+      return mod && mod.__esModule ? mod : {
+        default: mod
       }
     }
-    qe.createStore = Cb.default;
-    qe.combineReducers = Bb.default;
-    qe.bindActionCreators = Hb.default;
-    qe.applyMiddleware = Lb.default;
-    qe.compose = jb.default
+    reduxIndexExports.createStore = createStore.default;
+    reduxIndexExports.combineReducers = combineReducers.default;
+    reduxIndexExports.bindActionCreators = bindActionCreators.default;
+    reduxIndexExports.applyMiddleware = applyMiddleware.default;
+    reduxIndexExports.compose = compose.default
   });
-  var Hc = v((Hn, Vc) => {
-    (function(e, t) {
-      typeof Hn == "object" && typeof Vc < "u" ? t(Hn) :
+  var requireReduxLogger = defineCommonjsModule((reduxLoggerCjsExports, reduxLoggerCjsModule) => {
+    (function(globalScope, factory) {
+      typeof reduxLoggerCjsExports == "object" && typeof reduxLoggerCjsModule < "u" ? factory(reduxLoggerCjsExports) :
         typeof define == "function" && define.amd ? define(["exports"],
-          t) : t(e.reduxLogger = e.reduxLogger || {})
-    })(Hn, function(e) {
+          factory) : factory(globalScope.reduxLogger = globalScope.reduxLogger || {})
+    })(reduxLoggerCjsExports, function(reduxLoggerExports) {
       "use strict";
 
-      function t(y, E) {
-        y.super_ = E, y.prototype = Object.create(E.prototype, {
+      function inherits(ctor, superCtor) {
+        ctor.super_ = superCtor, ctor.prototype = Object.create(superCtor.prototype, {
           constructor: {
-            value: y,
+            value: ctor,
             enumerable: !1,
             writable: !0,
             configurable: !0
@@ -5256,411 +5256,411 @@
         })
       }
 
-      function r(y, E) {
+      function Diff(kind, path) {
         Object.defineProperty(this, "kind", {
-          value: y,
+          value: kind,
           enumerable: !0
-        }), E && E.length && Object.defineProperty(this, "path", {
-          value: E,
+        }), path && path.length && Object.defineProperty(this, "path", {
+          value: path,
           enumerable: !0
         })
       }
 
-      function i(y, E, A) {
-        i.super_.call(this, "E", y), Object.defineProperty(this,
+      function DiffEdit(path, origin, value) {
+        DiffEdit.super_.call(this, "E", path), Object.defineProperty(this,
         "lhs", {
-          value: E,
+          value: origin,
           enumerable: !0
         }), Object.defineProperty(this, "rhs", {
-          value: A,
+          value: value,
           enumerable: !0
         })
       }
 
-      function n(y, E) {
-        n.super_.call(this, "N", y), Object.defineProperty(this,
+      function DiffNew(path, value) {
+        DiffNew.super_.call(this, "N", path), Object.defineProperty(this,
         "rhs", {
-          value: E,
+          value: value,
           enumerable: !0
         })
       }
 
-      function o(y, E) {
-        o.super_.call(this, "D", y), Object.defineProperty(this,
+      function DiffDeleted(path, value) {
+        DiffDeleted.super_.call(this, "D", path), Object.defineProperty(this,
         "lhs", {
-          value: E,
+          value: value,
           enumerable: !0
         })
       }
 
-      function s(y, E, A) {
-        s.super_.call(this, "A", y), Object.defineProperty(this,
+      function DiffArray(path, index, item) {
+        DiffArray.super_.call(this, "A", path), Object.defineProperty(this,
           "index", {
-            value: E,
+            value: index,
             enumerable: !0
           }), Object.defineProperty(this, "item", {
-          value: A,
+          value: item,
           enumerable: !0
         })
       }
 
-      function a(y, E, A) {
-        var I = y.slice((A || E) + 1 || y.length);
-        return y.length = E < 0 ? y.length + E : E, y.push.apply(y, I),
-          y
+      function arrayRemove(arr, from, endIndex) {
+        var rest = arr.slice((endIndex || from) + 1 || arr.length);
+        return arr.length = from < 0 ? arr.length + from : from, arr.push.apply(arr, rest),
+          arr
       }
 
-      function l(y) {
-        var E = typeof y > "u" ? "undefined" : W(y);
-        return E !== "object" ? E : y === Math ? "math" : y === null ?
-          "null" : Array.isArray(y) ? "array" : Object.prototype
-          .toString.call(y) === "[object Date]" ? "date" : typeof y
-          .toString == "function" && /^\/.*\//.test(y.toString()) ?
+      function realTypeOf(subject) {
+        var type = typeof subject > "u" ? "undefined" : getTypeof(subject);
+        return type !== "object" ? type : subject === Math ? "math" : subject === null ?
+          "null" : Array.isArray(subject) ? "array" : Object.prototype
+          .toString.call(subject) === "[object Date]" ? "date" : typeof subject
+          .toString == "function" && /^\/.*\//.test(subject.toString()) ?
           "regexp" : "object"
       }
 
-      function u(y, E, A, I, F, X, G) {
-        F = F || [], G = G || [];
-        var Q = F.slice(0);
-        if (typeof X < "u") {
-          if (I) {
-            if (typeof I == "function" && I(Q, X)) return;
-            if ((typeof I > "u" ? "undefined" : W(I)) === "object") {
-              if (I.prefilter && I.prefilter(Q, X)) return;
-              if (I.normalize) {
-                var Ne = I.normalize(Q, X, y, E);
-                Ne && (y = Ne[0], E = Ne[1])
+      function deepDiff(lhs, rhs, changes, prefilter, path, key, stack) {
+        path = path || [], stack = stack || [];
+        var currentPath = path.slice(0);
+        if (typeof key < "u") {
+          if (prefilter) {
+            if (typeof prefilter == "function" && prefilter(currentPath, key)) return;
+            if ((typeof prefilter > "u" ? "undefined" : getTypeof(prefilter)) === "object") {
+              if (prefilter.prefilter && prefilter.prefilter(currentPath, key)) return;
+              if (prefilter.normalize) {
+                var normalized = prefilter.normalize(currentPath, key, lhs, rhs);
+                normalized && (lhs = normalized[0], rhs = normalized[1])
               }
             }
           }
-          Q.push(X)
+          currentPath.push(key)
         }
-        l(y) === "regexp" && l(E) === "regexp" && (y = y.toString(), E =
-          E.toString());
-        var He = typeof y > "u" ? "undefined" : W(y),
-          Me = typeof E > "u" ? "undefined" : W(E),
-          me = He !== "undefined" || G && G[G.length - 1].lhs && G[G
-            .length - 1].lhs.hasOwnProperty(X),
-          Fe = Me !== "undefined" || G && G[G.length - 1].rhs && G[G
-            .length - 1].rhs.hasOwnProperty(X);
-        if (!me && Fe) A(new n(Q, E));
-        else if (!Fe && me) A(new o(Q, y));
-        else if (l(y) !== l(E)) A(new i(Q, y, E));
-        else if (l(y) === "date" && y - E !== 0) A(new i(Q, y, E));
-        else if (He === "object" && y !== null && E !== null)
-          if (G.filter(function(re) {
-              return re.lhs === y
+        realTypeOf(lhs) === "regexp" && realTypeOf(rhs) === "regexp" && (lhs = lhs.toString(), rhs =
+          rhs.toString());
+        var ltype = typeof lhs > "u" ? "undefined" : getTypeof(lhs),
+          rtype = typeof rhs > "u" ? "undefined" : getTypeof(rhs),
+          ldefined = ltype !== "undefined" || stack && stack[stack
+            .length - 1].lhs && stack[stack.length - 1].lhs.hasOwnProperty(key),
+          rdefined = rtype !== "undefined" || stack && stack[stack.length - 1].rhs && stack[stack
+            .length - 1].rhs.hasOwnProperty(key);
+        if (!ldefined && rdefined) changes(new DiffNew(currentPath, rhs));
+        else if (!rdefined && ldefined) changes(new DiffDeleted(currentPath, lhs));
+        else if (realTypeOf(lhs) !== realTypeOf(rhs)) changes(new DiffEdit(currentPath, lhs, rhs));
+        else if (realTypeOf(lhs) === "date" && lhs - rhs !== 0) changes(new DiffEdit(currentPath, lhs, rhs));
+        else if (ltype === "object" && lhs !== null && rhs !== null)
+          if (stack.filter(function(stackItem) {
+              return stackItem.lhs === lhs
             })
-            .length) y !== E && A(new i(Q, y, E));
+            .length) lhs !== rhs && changes(new DiffEdit(currentPath, lhs, rhs));
           else {
-            if (G.push({
-                lhs: y,
-                rhs: E
-              }), Array.isArray(y)) {
-              var K;
-              for (y.length, K = 0; K < y.length; K++) K >= E.length ?
-                A(new s(Q, K, new o(void 0, y[K]))) : u(y[K], E[K], A,
-                  I, Q, K, G);
-              for (; K < E.length;) A(new s(Q, K, new n(void 0, E[
-                K++])))
+            if (stack.push({
+                lhs: lhs,
+                rhs: rhs
+              }), Array.isArray(lhs)) {
+              var index;
+              for (lhs.length, index = 0; index < lhs.length; index++) index >= rhs.length ?
+                changes(new DiffArray(currentPath, index, new DiffDeleted(void 0, lhs[index]))) : deepDiff(lhs[index], rhs[index], changes,
+                  prefilter, currentPath, index, stack);
+              for (; index < rhs.length;) changes(new DiffArray(currentPath, index, new DiffNew(void 0, rhs[
+                index++])))
             } else {
-              var ar = Object.keys(y),
-                bt = Object.keys(E);
-              ar.forEach(function(re, Fr) {
-                var vi = bt.indexOf(re);
-                vi >= 0 ? (u(y[re], E[re], A, I, Q, re, G), bt = a(
-                  bt, vi)) : u(y[re], void 0, A, I, Q, re, G)
-              }), bt.forEach(function(re) {
-                u(void 0, E[re], A, I, Q, re, G)
+              var leftKeys = Object.keys(lhs),
+                rightKeys = Object.keys(rhs);
+              leftKeys.forEach(function(leftKey, keyIndex) {
+                var rightIndex = rightKeys.indexOf(leftKey);
+                rightIndex >= 0 ? (deepDiff(lhs[leftKey], rhs[leftKey], changes, prefilter, currentPath, leftKey, stack), rightKeys = arrayRemove(
+                  rightKeys, rightIndex)) : deepDiff(lhs[leftKey], void 0, changes, prefilter, currentPath, leftKey, stack)
+              }), rightKeys.forEach(function(rightKey) {
+                deepDiff(void 0, rhs[rightKey], changes, prefilter, currentPath, rightKey, stack)
               })
             }
-            G.length = G.length - 1
+            stack.length = stack.length - 1
           }
-        else y !== E && (He === "number" && isNaN(y) && isNaN(E) || A(
-          new i(Q, y, E)))
+        else lhs !== rhs && (ltype === "number" && isNaN(lhs) && isNaN(rhs) || changes(
+          new DiffEdit(currentPath, lhs, rhs)))
       }
 
-      function d(y, E, A, I) {
-        return I = I || [], u(y, E, function(F) {
-          F && I.push(F)
-        }, A), I.length ? I : void 0
+      function accumulateDiff(lhs, rhs, prefilter, accum) {
+        return accum = accum || [], deepDiff(lhs, rhs, function(diff) {
+          diff && accum.push(diff)
+        }, prefilter), accum.length ? accum : void 0
       }
 
-      function c(y, E, A) {
-        if (A.path && A.path.length) {
-          var I, F = y[E],
-            X = A.path.length - 1;
-          for (I = 0; I < X; I++) F = F[A.path[I]];
-          switch (A.kind) {
+      function applyArrayChange(arr, index, change) {
+        if (change.path && change.path.length) {
+          var itemIndex, node = arr[index],
+            last = change.path.length - 1;
+          for (itemIndex = 0; itemIndex < last; itemIndex++) node = node[change.path[itemIndex]];
+          switch (change.kind) {
             case "A":
-              c(F[A.path[I]], A.index, A.item);
+              applyArrayChange(node[change.path[itemIndex]], change.index, change.item);
               break;
             case "D":
-              delete F[A.path[I]];
+              delete node[change.path[itemIndex]];
               break;
             case "E":
             case "N":
-              F[A.path[I]] = A.rhs
+              node[change.path[itemIndex]] = change.rhs
           }
-        } else switch (A.kind) {
+        } else switch (change.kind) {
           case "A":
-            c(y[E], A.index, A.item);
+            applyArrayChange(arr[index], change.index, change.item);
             break;
           case "D":
-            y = a(y, E);
+            arr = arrayRemove(arr, index);
             break;
           case "E":
           case "N":
-            y[E] = A.rhs
+            arr[index] = change.rhs
         }
-        return y
+        return arr
       }
 
-      function m(y, E, A) {
-        if (y && E && A && A.kind) {
-          for (var I = y, F = -1, X = A.path ? A.path.length - 1 : 0; ++
-            F < X;) typeof I[A.path[F]] > "u" && (I[A.path[F]] =
-            typeof A.path[F] == "number" ? [] : {}), I = I[A.path[F]];
-          switch (A.kind) {
+      function applyChange(target, source, change) {
+        if (target && source && change && change.kind) {
+          for (var node = target, pathIndex = -1, last = change.path ? change.path.length - 1 : 0; ++
+            pathIndex < last;) typeof node[change.path[pathIndex]] > "u" && (node[change.path[pathIndex]] =
+            typeof change.path[pathIndex] == "number" ? [] : {}), node = node[change.path[pathIndex]];
+          switch (change.kind) {
             case "A":
-              c(A.path ? I[A.path[F]] : I, A.index, A.item);
+              applyArrayChange(change.path ? node[change.path[pathIndex]] : node, change.index, change.item);
               break;
             case "D":
-              delete I[A.path[F]];
+              delete node[change.path[pathIndex]];
               break;
             case "E":
             case "N":
-              I[A.path[F]] = A.rhs
+              node[change.path[pathIndex]] = change.rhs
           }
         }
       }
 
-      function w(y, E, A) {
-        if (A.path && A.path.length) {
-          var I, F = y[E],
-            X = A.path.length - 1;
-          for (I = 0; I < X; I++) F = F[A.path[I]];
-          switch (A.kind) {
+      function revertArrayChange(arr, index, change) {
+        if (change.path && change.path.length) {
+          var itemIndex, node = arr[index],
+            last = change.path.length - 1;
+          for (itemIndex = 0; itemIndex < last; itemIndex++) node = node[change.path[itemIndex]];
+          switch (change.kind) {
             case "A":
-              w(F[A.path[I]], A.index, A.item);
+              revertArrayChange(node[change.path[itemIndex]], change.index, change.item);
               break;
             case "D":
-              F[A.path[I]] = A.lhs;
+              node[change.path[itemIndex]] = change.lhs;
               break;
             case "E":
-              F[A.path[I]] = A.lhs;
+              node[change.path[itemIndex]] = change.lhs;
               break;
             case "N":
-              delete F[A.path[I]]
+              delete node[change.path[itemIndex]]
           }
-        } else switch (A.kind) {
+        } else switch (change.kind) {
           case "A":
-            w(y[E], A.index, A.item);
+            revertArrayChange(arr[index], change.index, change.item);
             break;
           case "D":
-            y[E] = A.lhs;
+            arr[index] = change.lhs;
             break;
           case "E":
-            y[E] = A.lhs;
+            arr[index] = change.lhs;
             break;
           case "N":
-            y = a(y, E)
+            arr = arrayRemove(arr, index)
         }
-        return y
+        return arr
       }
 
-      function p(y, E, A) {
-        if (y && E && A && A.kind) {
-          var I, F, X = y;
-          for (F = A.path.length - 1, I = 0; I < F; I++) typeof X[A
-            .path[I]] > "u" && (X[A.path[I]] = {}), X = X[A.path[I]];
-          switch (A.kind) {
+      function revertChange(target, source, change) {
+        if (target && source && change && change.kind) {
+          var pathIndex, last, node = target;
+          for (last = change.path.length - 1, pathIndex = 0; pathIndex < last; pathIndex++) typeof node[change
+            .path[pathIndex]] > "u" && (node[change.path[pathIndex]] = {}), node = node[change.path[pathIndex]];
+          switch (change.kind) {
             case "A":
-              w(X[A.path[I]], A.index, A.item);
+              revertArrayChange(node[change.path[pathIndex]], change.index, change.item);
               break;
             case "D":
-              X[A.path[I]] = A.lhs;
+              node[change.path[pathIndex]] = change.lhs;
               break;
             case "E":
-              X[A.path[I]] = A.lhs;
+              node[change.path[pathIndex]] = change.lhs;
               break;
             case "N":
-              delete X[A.path[I]]
+              delete node[change.path[pathIndex]]
           }
         }
       }
 
-      function _(y, E, A) {
-        if (y && E) {
-          var I = function(F) {
-            A && !A(y, E, F) || m(y, E, F)
+      function applyDiff(target, source, filter) {
+        if (target && source) {
+          var onChange = function(change) {
+            filter && !filter(target, source, change) || applyChange(target, source, change)
           };
-          u(y, E, I)
+          deepDiff(target, source, onChange)
         }
       }
 
-      function f(y) {
-        return "color: " + te[y].color + "; font-weight: bold"
+      function diffStyle(kind) {
+        return "color: " + diffDictionary[kind].color + "; font-weight: bold"
       }
 
-      function g(y) {
-        var E = y.kind,
-          A = y.path,
-          I = y.lhs,
-          F = y.rhs,
-          X = y.index,
-          G = y.item;
-        switch (E) {
+      function renderDiff(diff) {
+        var kind = diff.kind,
+          path = diff.path,
+          lhs = diff.lhs,
+          rhs = diff.rhs,
+          index = diff.index,
+          item = diff.item;
+        switch (kind) {
           case "E":
-            return [A.join("."), I, "\u2192", F];
+            return [path.join("."), lhs, "\u2192", rhs];
           case "N":
-            return [A.join("."), F];
+            return [path.join("."), rhs];
           case "D":
-            return [A.join(".")];
+            return [path.join(".")];
           case "A":
-            return [A.join(".") + "[" + X + "]", G];
+            return [path.join(".") + "[" + index + "]", item];
           default:
             return []
         }
       }
 
-      function h(y, E, A, I) {
-        var F = d(y, E);
+      function diffLogger(prevState, newState, logger, isCollapsed) {
+        var diffs = accumulateDiff(prevState, newState);
         try {
-          I ? A.groupCollapsed("diff") : A.group("diff")
+          isCollapsed ? logger.groupCollapsed("diff") : logger.group("diff")
         } catch {
-          A.log("diff")
+          logger.log("diff")
         }
-        F ? F.forEach(function(X) {
-          var G = X.kind,
-            Q = g(X);
-          A.log.apply(A, ["%c " + te[G].text, f(G)].concat($(Q)))
-        }) : A.log("\u2014\u2014 no diff \u2014\u2014");
+        diffs ? diffs.forEach(function(diff) {
+          var kind = diff.kind,
+            output = renderDiff(diff);
+          logger.log.apply(logger, ["%c " + diffDictionary[kind].text, diffStyle(kind)].concat(toArray(output)))
+        }) : logger.log("\u2014\u2014 no diff \u2014\u2014");
         try {
-          A.groupEnd()
+          logger.groupEnd()
         } catch {
-          A.log("\u2014\u2014 diff end \u2014\u2014 ")
+          logger.log("\u2014\u2014 diff end \u2014\u2014 ")
         }
       }
 
-      function T(y, E, A, I) {
-        switch (typeof y > "u" ? "undefined" : W(y)) {
+      function resolveTransform(transform, action, args, key) {
+        switch (typeof transform > "u" ? "undefined" : getTypeof(transform)) {
           case "object":
-            return typeof y[I] == "function" ? y[I].apply(y, $(A)) : y[
-              I];
+            return typeof transform[key] == "function" ? transform[key].apply(transform, toArray(args)) : transform[
+              key];
           case "function":
-            return y(E);
+            return transform(action);
           default:
-            return y
+            return transform
         }
       }
 
-      function x(y) {
-        var E = y.timestamp,
-          A = y.duration;
-        return function(I, F, X) {
-          var G = ["action"];
-          return G.push("%c" + String(I.type)), E && G.push("%c@ " +
-              F), A && G.push("%c(in " + X.toFixed(2) + " ms)"), G
+      function defaultTitleFormatter(options) {
+        var timestamp = options.timestamp,
+          duration = options.duration;
+        return function(action, time, took) {
+          var parts = ["action"];
+          return parts.push("%c" + String(action.type)), timestamp && parts.push("%c@ " +
+              time), duration && parts.push("%c(in " + took.toFixed(2) + " ms)"), parts
             .join(" ")
         }
       }
 
-      function b(y, E) {
-        var A = E.logger,
-          I = E.actionTransformer,
-          F = E.titleFormatter,
-          X = F === void 0 ? x(E) : F,
-          G = E.collapsed,
-          Q = E.colors,
-          Ne = E.level,
-          He = E.diff,
-          Me = typeof E.titleFormatter > "u";
-        y.forEach(function(me, Fe) {
-          var K = me.started,
-            ar = me.startedTime,
-            bt = me.action,
-            re = me.prevState,
-            Fr = me.error,
-            vi = me.took,
-            sr = me.nextState,
-            pa = y[Fe + 1];
-          pa && (sr = pa.prevState, vi = pa.started - K);
-          var tt = I(bt),
-            Pu = typeof G == "function" ? G(function() {
-              return sr
-            }, bt, me) : G,
-            Ch = N(ar),
-            qh = Q.title ? "color: " + Q.title(tt) + ";" : "",
-            wi = ["color: gray; font-weight: lighter;"];
-          wi.push(qh), E.timestamp && wi.push(
-              "color: gray; font-weight: lighter;"), E.duration &&
-            wi.push("color: gray; font-weight: lighter;");
-          var Ai = X(tt, Ch, vi);
+      function printBuffer(buffer, options) {
+        var logger = options.logger,
+          actionTransformer = options.actionTransformer,
+          titleFormatterOption = options.titleFormatter,
+          titleFormatterFn = titleFormatterOption === void 0 ? defaultTitleFormatter(options) : titleFormatterOption,
+          collapsed = options.collapsed,
+          colors = options.colors,
+          level = options.level,
+          diff = options.diff,
+          isUsingDefaultFormatter = typeof options.titleFormatter > "u";
+        buffer.forEach(function(logEntry, index) {
+          var started = logEntry.started,
+            startedTime = logEntry.startedTime,
+            action = logEntry.action,
+            prevState = logEntry.prevState,
+            error = logEntry.error,
+            took = logEntry.took,
+            nextState = logEntry.nextState,
+            nextEntry = buffer[index + 1];
+          nextEntry && (nextState = nextEntry.prevState, took = nextEntry.started - started);
+          var formattedAction = actionTransformer(action),
+            isCollapsed = typeof collapsed == "function" ? collapsed(function() {
+              return nextState
+            }, action, logEntry) : collapsed,
+            formattedTime = formatTime(startedTime),
+            titleCSS = colors.title ? "color: " + colors.title(formattedAction) + ";" : "",
+            headerCSS = ["color: gray; font-weight: lighter;"];
+          headerCSS.push(titleCSS), options.timestamp && headerCSS.push(
+              "color: gray; font-weight: lighter;"), options.duration &&
+            headerCSS.push("color: gray; font-weight: lighter;");
+          var titleText = titleFormatterFn(formattedAction, formattedTime, took);
           try {
-            Pu ? Q.title && Me ? A.groupCollapsed.apply(A, ["%c " +
-                Ai
-              ].concat(wi)) : A.groupCollapsed(Ai) : Q.title && Me ?
-              A.group.apply(A, ["%c " + Ai].concat(wi)) : A.group(
-                Ai)
+            isCollapsed ? colors.title && isUsingDefaultFormatter ? logger.groupCollapsed.apply(logger, ["%c " +
+                titleText
+              ].concat(headerCSS)) : logger.groupCollapsed(titleText) : colors.title && isUsingDefaultFormatter ?
+              logger.group.apply(logger, ["%c " + titleText].concat(headerCSS)) : logger.group(
+                titleText)
           } catch {
-            A.log(Ai)
+            logger.log(titleText)
           }
-          var fa = T(Ne, tt, [re], "prevState"),
-            ma = T(Ne, tt, [tt], "action"),
-            ga = T(Ne, tt, [Fr, re], "error"),
-            ha = T(Ne, tt, [sr], "nextState");
-          if (fa)
-            if (Q.prevState) {
-              var Bh = "color: " + Q.prevState(re) +
+          var prevStateLevel = resolveTransform(level, formattedAction, [prevState], "prevState"),
+            actionLevel = resolveTransform(level, formattedAction, [formattedAction], "action"),
+            errorLevel = resolveTransform(level, formattedAction, [error, prevState], "error"),
+            nextStateLevel = resolveTransform(level, formattedAction, [nextState], "nextState");
+          if (prevStateLevel)
+            if (colors.prevState) {
+              var prevStateCSS = "color: " + colors.prevState(prevState) +
                 "; font-weight: bold";
-              A[fa]("%c prev state", Bh, re)
-            } else A[fa]("prev state", re);
-          if (ma)
-            if (Q.action) {
-              var Vh = "color: " + Q.action(tt) +
+              logger[prevStateLevel]("%c prev state", prevStateCSS, prevState)
+            } else logger[prevStateLevel]("prev state", prevState);
+          if (actionLevel)
+            if (colors.action) {
+              var actionCSS = "color: " + colors.action(formattedAction) +
                 "; font-weight: bold";
-              A[ma]("%c action    ", Vh, tt)
-            } else A[ma]("action    ", tt);
-          if (Fr && ga)
-            if (Q.error) {
-              var Hh = "color: " + Q.error(Fr, re) +
+              logger[actionLevel]("%c action    ", actionCSS, formattedAction)
+            } else logger[actionLevel]("action    ", formattedAction);
+          if (error && errorLevel)
+            if (colors.error) {
+              var errorCSS = "color: " + colors.error(error, prevState) +
                 "; font-weight: bold;";
-              A[ga]("%c error     ", Hh, Fr)
-            } else A[ga]("error     ", Fr);
-          if (ha)
-            if (Q.nextState) {
-              var Fh = "color: " + Q.nextState(sr) +
+              logger[errorLevel]("%c error     ", errorCSS, error)
+            } else logger[errorLevel]("error     ", error);
+          if (nextStateLevel)
+            if (colors.nextState) {
+              var nextStateCSS = "color: " + colors.nextState(nextState) +
                 "; font-weight: bold";
-              A[ha]("%c next state", Fh, sr)
-            } else A[ha]("next state", sr);
-          He && h(re, sr, A, Pu);
+              logger[nextStateLevel]("%c next state", nextStateCSS, nextState)
+            } else logger[nextStateLevel]("next state", nextState);
+          diff && diffLogger(prevState, nextState, logger, isCollapsed);
           try {
-            A.groupEnd()
+            logger.groupEnd()
           } catch {
-            A.log("\u2014\u2014 log end \u2014\u2014")
+            logger.log("\u2014\u2014 log end \u2014\u2014")
           }
         })
       }
 
-      function D() {
-        var y = arguments.length > 0 && arguments[0] !== void 0 ?
+      function createLogger() {
+        var inOptions = arguments.length > 0 && arguments[0] !== void 0 ?
           arguments[0] : {},
-          E = Object.assign({}, Oe, y),
-          A = E.logger,
-          I = E.stateTransformer,
-          F = E.errorTransformer,
-          X = E.predicate,
-          G = E.logErrors,
-          Q = E.diffPredicate;
-        if (typeof A > "u") return function() {
-          return function(He) {
-            return function(Me) {
-              return He(Me)
+          options = Object.assign({}, defaultOptions, inOptions),
+          logger = options.logger,
+          stateTransformer = options.stateTransformer,
+          errorTransformer = options.errorTransformer,
+          predicate = options.predicate,
+          logErrors = options.logErrors,
+          diffPredicate = options.diffPredicate;
+        if (typeof logger > "u") return function() {
+          return function(next) {
+            return function(action) {
+              return next(action)
             }
           }
         };
-        if (y.getState && y.dispatch) return console.error(`[redux-logger] redux-logger not installed. Make sure to pass logger instance as middleware:
+        if (inOptions.getState && inOptions.dispatch) return console.error(`[redux-logger] redux-logger not installed. Make sure to pass logger instance as middleware:
 // Logger with default options
 import { logger } from 'redux-logger'
 const store = createStore(
@@ -5678,112 +5678,112 @@ const store = createStore(
 )
 `),
           function() {
-            return function(He) {
-              return function(Me) {
-                return He(Me)
+            return function(next) {
+              return function(action) {
+                return next(action)
               }
             }
           };
-        var Ne = [];
-        return function(He) {
-          var Me = He.getState;
-          return function(me) {
-            return function(Fe) {
-              if (typeof X == "function" && !X(Me, Fe)) return me(
-                Fe);
-              var K = {};
-              Ne.push(K), K.started = j.now(), K.startedTime =
-                new Date, K.prevState = I(Me()), K.action = Fe;
-              var ar = void 0;
-              if (G) try {
-                ar = me(Fe)
-              } catch (re) {
-                K.error = F(re)
-              } else ar = me(Fe);
-              K.took = j.now() - K.started, K.nextState = I(Me());
-              var bt = E.diff && typeof Q == "function" ? Q(Me,
-                Fe) : E.diff;
-              if (b(Ne, Object.assign({}, E, {
-                  diff: bt
-                })), Ne.length = 0, K.error) throw K.error;
-              return ar
+        var logBuffer = [];
+        return function(store) {
+          var getState = store.getState;
+          return function(next) {
+            return function(action) {
+              if (typeof predicate == "function" && !predicate(getState, action)) return next(
+                action);
+              var logEntry = {};
+              logBuffer.push(logEntry), logEntry.started = timer.now(), logEntry.startedTime =
+                new Date, logEntry.prevState = stateTransformer(getState()), logEntry.action = action;
+              var returnedValue = void 0;
+              if (logErrors) try {
+                returnedValue = next(action)
+              } catch (error) {
+                logEntry.error = errorTransformer(error)
+              } else returnedValue = next(action);
+              logEntry.took = timer.now() - logEntry.started, logEntry.nextState = stateTransformer(getState());
+              var shouldDiff = options.diff && typeof diffPredicate == "function" ? diffPredicate(getState,
+                action) : options.diff;
+              if (printBuffer(logBuffer, Object.assign({}, options, {
+                  diff: shouldDiff
+                })), logBuffer.length = 0, logEntry.error) throw logEntry.error;
+              return returnedValue
             }
           }
         }
       }
-      var P, k, S = function(y, E) {
-          return new Array(E + 1)
-            .join(y)
+      var root, previousDeepDiff, repeat = function(char, times) {
+          return new Array(times + 1)
+            .join(char)
         },
-        M = function(y, E) {
-          return S("0", E - y.toString()
-            .length) + y
+        padZero = function(num, length) {
+          return repeat("0", length - num.toString()
+            .length) + num
         },
-        N = function(y) {
-          return M(y.getHours(), 2) + ":" + M(y.getMinutes(), 2) + ":" +
-            M(y.getSeconds(), 2) + "." + M(y.getMilliseconds(), 3)
+        formatTime = function(date) {
+          return padZero(date.getHours(), 2) + ":" + padZero(date.getMinutes(), 2) + ":" +
+            padZero(date.getSeconds(), 2) + "." + padZero(date.getMilliseconds(), 3)
         },
-        j = typeof performance < "u" && performance !== null &&
+        timer = typeof performance < "u" && performance !== null &&
         typeof performance.now == "function" ? performance : Date,
-        W = typeof Symbol == "function" && typeof Symbol.iterator ==
-        "symbol" ? function(y) {
-          return typeof y
-        } : function(y) {
-          return y && typeof Symbol == "function" && y.constructor ===
-            Symbol && y !== Symbol.prototype ? "symbol" : typeof y
+        getTypeof = typeof Symbol == "function" && typeof Symbol.iterator ==
+        "symbol" ? function(subject) {
+          return typeof subject
+        } : function(subject) {
+          return subject && typeof Symbol == "function" && subject.constructor ===
+            Symbol && subject !== Symbol.prototype ? "symbol" : typeof subject
         },
-        $ = function(y) {
-          if (Array.isArray(y)) {
-            for (var E = 0, A = Array(y.length); E < y.length; E++) A[
-              E] = y[E];
-            return A
+        toArray = function(iterable) {
+          if (Array.isArray(iterable)) {
+            for (var itemIndex = 0, arr = Array(iterable.length); itemIndex < iterable.length; itemIndex++) arr[
+              itemIndex] = iterable[itemIndex];
+            return arr
           }
-          return Array.from(y)
+          return Array.from(iterable)
         },
-        pe = [];
-      P = (typeof global > "u" ? "undefined" : W(global)) ===
+        conflictResolvers = [];
+      root = (typeof global > "u" ? "undefined" : getTypeof(global)) ===
         "object" && global ? global : typeof window < "u" ? window : {},
-        k = P.DeepDiff, k && pe.push(function() {
-          typeof k < "u" && P.DeepDiff === d && (P.DeepDiff = k, k =
+        previousDeepDiff = root.DeepDiff, previousDeepDiff && conflictResolvers.push(function() {
+          typeof previousDeepDiff < "u" && root.DeepDiff === accumulateDiff && (root.DeepDiff = previousDeepDiff, previousDeepDiff =
             void 0)
-        }), t(i, r), t(n, r), t(o, r), t(s, r), Object.defineProperties(
-          d, {
+        }), inherits(DiffEdit, Diff), inherits(DiffNew, Diff), inherits(DiffDeleted, Diff), inherits(DiffArray, Diff), Object.defineProperties(
+          accumulateDiff, {
             diff: {
-              value: d,
+              value: accumulateDiff,
               enumerable: !0
             },
             observableDiff: {
-              value: u,
+              value: deepDiff,
               enumerable: !0
             },
             applyDiff: {
-              value: _,
+              value: applyDiff,
               enumerable: !0
             },
             applyChange: {
-              value: m,
+              value: applyChange,
               enumerable: !0
             },
             revertChange: {
-              value: p,
+              value: revertChange,
               enumerable: !0
             },
             isConflict: {
               value: function() {
-                return typeof k < "u"
+                return typeof previousDeepDiff < "u"
               },
               enumerable: !0
             },
             noConflict: {
               value: function() {
-                return pe && (pe.forEach(function(y) {
-                  y()
-                }), pe = null), d
+                return conflictResolvers && (conflictResolvers.forEach(function(resolver) {
+                  resolver()
+                }), conflictResolvers = null), accumulateDiff
               },
               enumerable: !0
             }
           });
-      var te = {
+      var diffDictionary = {
           E: {
             color: "#2196F3",
             text: "CHANGED:"
@@ -5801,7 +5801,7 @@ const store = createStore(
             text: "ARRAY:"
           }
         },
-        Oe = {
+        defaultOptions = {
           level: "log",
           logger: console,
           logErrors: !0,
@@ -5809,14 +5809,14 @@ const store = createStore(
           predicate: void 0,
           duration: !1,
           timestamp: !0,
-          stateTransformer: function(y) {
-            return y
+          stateTransformer: function(state) {
+            return state
           },
-          actionTransformer: function(y) {
-            return y
+          actionTransformer: function(action) {
+            return action
           },
-          errorTransformer: function(y) {
-            return y
+          errorTransformer: function(error) {
+            return error
           },
           colors: {
             title: function() {
@@ -5839,15 +5839,15 @@ const store = createStore(
           diffPredicate: void 0,
           transformer: void 0
         },
-        Mu = function() {
-          var y = arguments.length > 0 && arguments[0] !== void 0 ?
+        defaultLogger = function() {
+          var inOptions = arguments.length > 0 && arguments[0] !== void 0 ?
             arguments[0] : {},
-            E = y.dispatch,
-            A = y.getState;
-          return typeof E == "function" || typeof A == "function" ? D()
+            dispatch = inOptions.dispatch,
+            getState = inOptions.getState;
+          return typeof dispatch == "function" || typeof getState == "function" ? createLogger()
         ({
-            dispatch: E,
-            getState: A
+            dispatch: dispatch,
+            getState: getState
           }) : void console.error(`
 [redux-logger v3] BREAKING CHANGE
 [redux-logger v3] Since 3.0.0 redux-logger exports by default logger with default settings.
@@ -5857,353 +5857,353 @@ const store = createStore(
 [redux-logger v3] import { createLogger } from 'redux-logger'
 `)
         };
-      e.defaults = Oe, e.createLogger = D, e.logger = Mu, e.default =
-        Mu, Object.defineProperty(e, "__esModule", {
+      reduxLoggerExports.defaults = defaultOptions, reduxLoggerExports.createLogger = createLogger, reduxLoggerExports.logger = defaultLogger, reduxLoggerExports.default =
+        defaultLogger, Object.defineProperty(reduxLoggerExports, "__esModule", {
           value: !0
         })
     })
   });
-  var Lc = v((Fc, Fn) => {
-    (function(e, t) {
+  var requireObjectPath = defineCommonjsModule((objectPathCjsExports, objectPathCjsModule) => {
+    (function(globalScope, moduleFactory) {
       "use strict";
-      typeof Fn == "object" && typeof Fn.exports == "object" ? Fn
-        .exports = t() : typeof define == "function" && define.amd ?
-        define([], t) : e.objectPath = t()
-    })(Fc, function() {
+      typeof objectPathCjsModule == "object" && typeof objectPathCjsModule.exports == "object" ? objectPathCjsModule
+        .exports = moduleFactory() : typeof define == "function" && define.amd ?
+        define([], moduleFactory) : globalScope.objectPath = moduleFactory()
+    })(objectPathCjsExports, function() {
       "use strict";
-      var e = Object.prototype.toString;
+      var objectToString = Object.prototype.toString;
 
-      function t(d, c) {
-        return d == null ? !1 : Object.prototype.hasOwnProperty.call(d,
-          c)
+      function hasOwnProperty(obj, key) {
+        return obj == null ? !1 : Object.prototype.hasOwnProperty.call(obj,
+          key)
       }
 
-      function r(d) {
-        if (!d || o(d) && d.length === 0) return !0;
-        if (typeof d != "string") {
-          for (var c in d)
-            if (t(d, c)) return !1;
+      function isEmpty(value) {
+        if (!value || isArray(value) && value.length === 0) return !0;
+        if (typeof value != "string") {
+          for (var key in value)
+            if (hasOwnProperty(value, key)) return !1;
           return !0
         }
         return !1
       }
 
-      function i(d) {
-        return e.call(d)
+      function toStr(obj) {
+        return objectToString.call(obj)
       }
 
-      function n(d) {
-        return typeof d == "object" && i(d) === "[object Object]"
+      function isObject(value) {
+        return typeof value == "object" && toStr(value) === "[object Object]"
       }
-      var o = Array.isArray || function(d) {
-        return e.call(d) === "[object Array]"
+      var isArray = Array.isArray || function(value) {
+        return objectToString.call(value) === "[object Array]"
       };
 
-      function s(d) {
-        return typeof d == "boolean" || i(d) === "[object Boolean]"
+      function isBoolean(value) {
+        return typeof value == "boolean" || toStr(value) === "[object Boolean]"
       }
 
-      function a(d) {
-        var c = parseInt(d);
-        return c.toString() === d ? c : d
+      function getKey(key) {
+        var parsed = parseInt(key);
+        return parsed.toString() === key ? parsed : key
       }
 
-      function l(d) {
-        d = d || {};
-        var c = function(f) {
-            return Object.keys(c)
-              .reduce(function(g, h) {
-                return h === "create" || typeof c[h] == "function" &&
-                  (g[h] = c[h].bind(c, f)), g
+      function factory(options) {
+        options = options || {};
+        var objectPath = function(obj) {
+            return Object.keys(objectPath)
+              .reduce(function(bound, key) {
+                return key === "create" || typeof objectPath[key] == "function" &&
+                  (bound[key] = objectPath[key].bind(objectPath, obj)), bound
               }, {})
           },
-          m;
-        d.includeInheritedProps ? m = function() {
+          hasShallowProperty;
+        options.includeInheritedProps ? hasShallowProperty = function() {
           return !0
-        } : m = function(f, g) {
-          return typeof g == "number" && Array.isArray(f) || t(f, g)
+        } : hasShallowProperty = function(obj, key) {
+          return typeof key == "number" && Array.isArray(obj) || hasOwnProperty(obj, key)
         };
 
-        function w(f, g) {
-          if (m(f, g)) return f[g]
+        function getShallowProperty(obj, key) {
+          if (hasShallowProperty(obj, key)) return obj[key]
         }
-        var p;
-        d.includeInheritedProps ? p = function(f, g) {
-          typeof g != "string" && typeof g != "number" && (g = String(
-            g));
-          var h = w(f, g);
-          if (g === "__proto__" || g === "prototype" || g ===
-            "constructor" && typeof h == "function") throw new Error(
+        var getProperty;
+        options.includeInheritedProps ? getProperty = function(obj, key) {
+          typeof key != "string" && typeof key != "number" && (key = String(
+            key));
+          var value = getShallowProperty(obj, key);
+          if (key === "__proto__" || key === "prototype" || key ===
+            "constructor" && typeof value == "function") throw new Error(
             "For security reasons, object's magic properties cannot be set"
             );
-          return h
-        } : p = function(f, g) {
-          return w(f, g)
+          return value
+        } : getProperty = function(obj, key) {
+          return getShallowProperty(obj, key)
         };
 
-        function _(f, g, h, T) {
-          if (typeof g == "number" && (g = [g]), !g || g.length === 0)
-            return f;
-          if (typeof g == "string") return _(f, g.split(".")
-            .map(a), h, T);
-          var x = g[0],
-            b = p(f, x);
-          return g.length === 1 ? ((b === void 0 || !T) && (f[x] = h),
-            b) : (b === void 0 && (typeof g[1] == "number" ? f[
-          x] = [] : f[x] = {}), _(f[x], g.slice(1), h, T))
+        function set(obj, path, value, doNotReplace) {
+          if (typeof path == "number" && (path = [path]), !path || path.length === 0)
+            return obj;
+          if (typeof path == "string") return set(obj, path.split(".")
+            .map(getKey), value, doNotReplace);
+          var key = path[0],
+            currentValue = getProperty(obj, key);
+          return path.length === 1 ? ((currentValue === void 0 || !doNotReplace) && (obj[key] = value),
+            currentValue) : (currentValue === void 0 && (typeof path[1] == "number" ? obj[
+          key] = [] : obj[key] = {}), set(obj[key], path.slice(1), value, doNotReplace))
         }
-        return c.has = function(f, g) {
-          if (typeof g == "number" ? g = [g] : typeof g == "string" &&
-            (g = g.split(".")), !g || g.length === 0) return !!f;
-          for (var h = 0; h < g.length; h++) {
-            var T = a(g[h]);
-            if (typeof T == "number" && o(f) && T < f.length || (d
-                .includeInheritedProps ? T in Object(f) : t(f, T)))
-              f = f[T];
+        return objectPath.has = function(obj, path) {
+          if (typeof path == "number" ? path = [path] : typeof path == "string" &&
+            (path = path.split(".")), !path || path.length === 0) return !!obj;
+          for (var keyIndex = 0; keyIndex < path.length; keyIndex++) {
+            var key = getKey(path[keyIndex]);
+            if (typeof key == "number" && isArray(obj) && key < obj.length || (options
+                .includeInheritedProps ? key in Object(obj) : hasOwnProperty(obj, key)))
+              obj = obj[key];
             else return !1
           }
           return !0
-        }, c.ensureExists = function(f, g, h) {
-          return _(f, g, h, !0)
-        }, c.set = function(f, g, h, T) {
-          return _(f, g, h, T)
-        }, c.insert = function(f, g, h, T) {
-          var x = c.get(f, g);
-          T = ~~T, o(x) || (x = [], c.set(f, g, x)), x.splice(T, 0, h)
-        }, c.empty = function(f, g) {
-          if (!r(g) && f != null) {
-            var h, T;
-            if (h = c.get(f, g)) {
-              if (typeof h == "string") return c.set(f, g, "");
-              if (s(h)) return c.set(f, g, !1);
-              if (typeof h == "number") return c.set(f, g, 0);
-              if (o(h)) h.length = 0;
-              else if (n(h))
-                for (T in h) m(h, T) && delete h[T];
-              else return c.set(f, g, null)
+        }, objectPath.ensureExists = function(obj, path, value) {
+          return set(obj, path, value, !0)
+        }, objectPath.set = function(obj, path, value, doNotReplace) {
+          return set(obj, path, value, doNotReplace)
+        }, objectPath.insert = function(obj, path, value, insertIndex) {
+          var arr = objectPath.get(obj, path);
+          insertIndex = ~~insertIndex, isArray(arr) || (arr = [], objectPath.set(obj, path, arr)), arr.splice(insertIndex, 0, value)
+        }, objectPath.empty = function(obj, path) {
+          if (!isEmpty(path) && obj != null) {
+            var value, key;
+            if (value = objectPath.get(obj, path)) {
+              if (typeof value == "string") return objectPath.set(obj, path, "");
+              if (isBoolean(value)) return objectPath.set(obj, path, !1);
+              if (typeof value == "number") return objectPath.set(obj, path, 0);
+              if (isArray(value)) value.length = 0;
+              else if (isObject(value))
+                for (key in value) hasShallowProperty(value, key) && delete value[key];
+              else return objectPath.set(obj, path, null)
             }
           }
-        }, c.push = function(f, g) {
-          var h = c.get(f, g);
-          o(h) || (h = [], c.set(f, g, h)), h.push.apply(h, Array
+        }, objectPath.push = function(obj, path) {
+          var arr = objectPath.get(obj, path);
+          isArray(arr) || (arr = [], objectPath.set(obj, path, arr)), arr.push.apply(arr, Array
             .prototype.slice.call(arguments, 2))
-        }, c.coalesce = function(f, g, h) {
-          for (var T, x = 0, b = g.length; x < b; x++)
-            if ((T = c.get(f, g[x])) !== void 0) return T;
-          return h
-        }, c.get = function(f, g, h) {
-          if (typeof g == "number" && (g = [g]), !g || g.length === 0)
-            return f;
-          if (f == null) return h;
-          if (typeof g == "string") return c.get(f, g.split("."), h);
-          var T = a(g[0]),
-            x = p(f, T);
-          return x === void 0 ? h : g.length === 1 ? x : c.get(f[T], g
-            .slice(1), h)
-        }, c.del = function(g, h) {
-          if (typeof h == "number" && (h = [h]), g == null || r(h))
-            return g;
-          if (typeof h == "string") return c.del(g, h.split("."));
-          var T = a(h[0]);
-          if (p(g, T), !m(g, T)) return g;
-          if (h.length === 1) o(g) ? g.splice(T, 1) : delete g[T];
-          else return c.del(g[T], h.slice(1));
-          return g
-        }, c
+        }, objectPath.coalesce = function(obj, paths, defaultValue) {
+          for (var value, pathIndex = 0, len = paths.length; pathIndex < len; pathIndex++)
+            if ((value = objectPath.get(obj, paths[pathIndex])) !== void 0) return value;
+          return defaultValue
+        }, objectPath.get = function(obj, path, defaultValue) {
+          if (typeof path == "number" && (path = [path]), !path || path.length === 0)
+            return obj;
+          if (obj == null) return defaultValue;
+          if (typeof path == "string") return objectPath.get(obj, path.split("."), defaultValue);
+          var key = getKey(path[0]),
+            value = getProperty(obj, key);
+          return value === void 0 ? defaultValue : path.length === 1 ? value : objectPath.get(obj[key], path
+            .slice(1), defaultValue)
+        }, objectPath.del = function(obj, path) {
+          if (typeof path == "number" && (path = [path]), obj == null || isEmpty(path))
+            return obj;
+          if (typeof path == "string") return objectPath.del(obj, path.split("."));
+          var key = getKey(path[0]);
+          if (getProperty(obj, key), !hasShallowProperty(obj, key)) return obj;
+          if (path.length === 1) isArray(obj) ? obj.splice(key, 1) : delete obj[key];
+          else return objectPath.del(obj[key], path.slice(1));
+          return obj
+        }, objectPath
       }
-      var u = l();
-      return u.create = l, u.withInheritedProps = l({
+      var objectPathInstance = factory();
+      return objectPathInstance.create = factory, objectPathInstance.withInheritedProps = factory({
         includeInheritedProps: !0
-      }), u
+      }), objectPathInstance
     })
   });
-  var Wc = v((rT, jc) => {
+  var requireReduxWatch = defineCommonjsModule((watchExports, watchModule) => {
     "use strict";
-    var Uc = Lc()
+    var objectPathGet = requireObjectPath()
       .get;
 
-    function Xb(e, t) {
-      return e === t
+    function defaultCompare(valueA, valueB) {
+      return valueA === valueB
     }
 
-    function Gb(e, t, r) {
-      r = r || Xb;
-      var i = Uc(e(), t);
-      return function(o) {
+    function watch(getObject, path, compare) {
+      compare = compare || defaultCompare;
+      var currentValue = objectPathGet(getObject(), path);
+      return function(callback) {
         return function() {
-          var s = Uc(e(), t);
-          if (!r(i, s)) {
-            var a = i;
-            i = s, o(s, a, t)
+          var newValue = objectPathGet(getObject(), path);
+          if (!compare(currentValue, newValue)) {
+            var oldValue = currentValue;
+            currentValue = newValue, callback(newValue, oldValue, path)
           }
         }
       }
     }
-    jc.exports = Gb
+    watchModule.exports = watch
   });
-  var Ln = {};
-  ie(Ln, {
-    clear: () => Gc,
-    error: () => Jb,
-    getEntry: () => zc,
-    log: () => Xc,
-    logDetails: () => Qc,
-    reducer: () => $b
+  var errorReportingNs = {};
+  defineExports(errorReportingNs, {
+    clear: () => clear,
+    error: () => error,
+    getEntry: () => getEntry,
+    log: () => appLog,
+    logDetails: () => logDetails,
+    reducer: () => reducer
   });
 
-  function $b(e = [], t) {
-    switch (t.type) {
+  function reducer(state = [], action) {
+    switch (action.type) {
       case "log.new":
-        e = e.concat([Object.assign({
-          key: ++zb
-        }, t.payload)]);
+        state = state.concat([Object.assign({
+          key: ++logKeyCounter
+        }, action.payload)]);
         break;
       case "log.clear":
-        e = [];
+        state = [];
         break
     }
-    return e
+    return state
   }
 
-  function Xc(e, t = "log") {
-    if (e instanceof Error) {
-      let r = "";
-      e.fileName && e.lineNumber && (r = e.fileName + ":" + e.lineNumber, r
-        .columnNumber && (r += ":" + e.columnNumber), r += `
-`), e.stack && (r += e.stack), e = {
-        message: e.message,
-        details: e.details || r || void 0,
-        videoTitle: e.videoTitle || void 0
+  function appLog(entry, type = "log") {
+    if (entry instanceof Error) {
+      let location = "";
+      entry.fileName && entry.lineNumber && (location = entry.fileName + ":" + entry.lineNumber, location
+        .columnNumber && (location += ":" + entry.columnNumber), location += `
+`), entry.stack && (location += entry.stack), entry = {
+        message: entry.message,
+        details: entry.details || location || void 0,
+        videoTitle: entry.videoTitle || void 0
       }
-    } else typeof e == "string" ? e = {
-      message: e
-    } : e = {
-      message: e.message || "" + e,
-      details: e.details || void 0
+    } else typeof entry == "string" ? entry = {
+      message: entry
+    } : entry = {
+      message: entry.message || "" + entry,
+      details: entry.details || void 0
     };
-    As.dispatch("log.new", Object.assign(e, {
-      type: t
+    logStore.dispatch("log.new", Object.assign(entry, {
+      type: type
     }))
   }
 
-  function Jb(e) {
-    Xc(e, "error")
+  function error(entry) {
+    appLog(entry, "error")
   }
 
-  function Gc() {
-    As.dispatch("log.clear")
+  function clear() {
+    logStore.dispatch("log.clear")
   }
 
-  function Qc(e) {
-    ws.rpc.call("main", "embed", Qb.runtime.getURL(
+  function logDetails(key) {
+    logWeh.rpc.call("main", "embed", logBrowser.runtime.getURL(
       "content/logdetails-embed.html?panel=logdetails#" +
-      encodeURIComponent(e)))
+      encodeURIComponent(key)))
   }
 
-  function zc(e) {
-    let t = null;
-    if (As.getLogs()
-      .forEach(i => {
-        i.key == e && (t = i)
-      }), t) return t;
+  function getEntry(key) {
+    let found = null;
+    if (logStore.getLogs()
+      .forEach(entry => {
+        entry.key == key && (found = entry)
+      }), found) return found;
     throw new Error("Log entry not found")
   }
-  var ws, Qb, As, zb, Un = C(() => {
+  var logWeh, logBrowser, logStore, logKeyCounter, initAppLog = defineLazyModule(() => {
     "use strict";
-    ws = Y(), Qb = ws.browser, As = (ze(), R(Qe)), zb = 0;
-    ws.rpc.listen({
-      clearLogs: Gc,
-      logDetails: Qc,
-      getLogEntry: zc
+    logWeh = requireWeh(), logBrowser = logWeh.browser, logStore = (initStore(), toCommonjs(storeNs)), logKeyCounter = 0;
+    logWeh.rpc.listen({
+      clearLogs: clear,
+      logDetails: logDetails,
+      getLogEntry: getEntry
     })
   });
-  var Jc = v($c => {
+  var requireHttpStatusCodeType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty($c, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var ji = v(jn => {
+  var requireOnError = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(jn, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    jn.THROW_THE_ERROR = void 0;
-    jn.THROW_THE_ERROR = e => {
-      throw e
+    exports.THROW_THE_ERROR = void 0;
+    exports.THROW_THE_ERROR = error => {
+      throw error
     }
   });
-  var Wi = v(_r => {
+  var requireOnErrorIndex = defineCommonjsModule(exports => {
     "use strict";
-    var Kb = _r && _r.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Yb = _r && _r.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Kb(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(_r, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Yb(ji(), _r)
+    exportStar(requireOnError(), exports)
   });
-  var Kc = v(Wn => {
+  var requireHttpStatusCodeFrom = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Wn, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Wn.httpStatusCodeFrom = void 0;
-    var Zb = Xn(),
-      ey = Wi();
+    exports.httpStatusCodeFrom = void 0;
+    var numericAssertions = requireHttpStatusCodeIndex(),
+      throwModule = requireOnErrorIndex();
 
-    function ty(e, t = ey.THROW_THE_ERROR) {
-      return Zb.mustBeHttpStatusCode(e, t), e
+    function httpStatusCodeFrom(value, onError = throwModule.THROW_THE_ERROR) {
+      return numericAssertions.mustBeHttpStatusCode(value, onError), value
     }
-    Wn.httpStatusCodeFrom = ty
+    exports.httpStatusCodeFrom = httpStatusCodeFrom
   });
-  var Yc = v(Gn => {
+  var requireIsHttpStatusCode = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Gn, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Gn.isHttpStatusCode = void 0;
+    exports.isHttpStatusCode = void 0;
 
-    function ry(e) {
-      return e >= 100 && e <= 599
+    function isHttpStatusCode(value) {
+      return value >= 100 && value <= 599
     }
-    Gn.isHttpStatusCode = ry
+    exports.isHttpStatusCode = isHttpStatusCode
   });
-  var br = v(Qn => {
+  var requireAppErrorClass = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Qn, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Qn.AppError = void 0;
-    var xs = class extends Error {
-      constructor(t) {
-        super(t.detail), this.details = t, this.name = this.details
+    exports.AppError = void 0;
+    var AppError = class extends Error {
+      constructor(details) {
+        super(details.detail), this.details = details, this.name = this.details
           .packageName + "/" + this.details.errorName
       }
     };
-    Qn.AppError = xs
+    exports.AppError = AppError
   });
-  var Es = v(zn => {
+  var requireErValueObject = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(zn, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    zn.ValueObject = void 0;
-    var Ts = class {
-      constructor(t) {
-        this.value = t
+    exports.ValueObject = void 0;
+    var ValueObject = class {
+      constructor(value) {
+        this.value = value
       }
       valueOf() {
         return this.value
@@ -6212,25 +6212,25 @@ const store = createStore(
         return !0
       }
     };
-    zn.ValueObject = Ts
+    exports.ValueObject = ValueObject
   });
-  var yr = v($n => {
+  var requireStructuredProblemReport = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty($n, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    $n.StructuredProblemReport = void 0;
-    var iy = Es(),
-      Ss = class e extends iy.ValueObject {
-        static from(t) {
-          return new e(t)
+    exports.StructuredProblemReport = void 0;
+    var valueObjectModule = requireErValueObject(),
+      StructuredProblemReport = class StructuredProblemReport extends valueObjectModule.ValueObject {
+        static from(value) {
+          return new StructuredProblemReport(value)
         }
         get detail() {
           return this.value.template.detail
         }
         get errorId() {
-          var t;
-          return (t = this.value.errorId) !== null && t !== void 0 ? t :
+          var errorId;
+          return (errorId = this.value.errorId) !== null && errorId !== void 0 ? errorId :
             null
         }
         get errorName() {
@@ -6252,1167 +6252,1167 @@ const store = createStore(
           return this.value.template
         }
       };
-    $n.StructuredProblemReport = Ss
+    exports.StructuredProblemReport = StructuredProblemReport
   });
-  var vr = v(Pe => {
+  var requirePackageErrorTable = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Pe, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Pe.ERROR_TABLE = Pe.PackageErrorTable = Pe.PACKAGE_NAME = void 0;
-    Pe.PACKAGE_NAME = "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-    var Jn = class {
+    exports.ERROR_TABLE = exports.PackageErrorTable = exports.PACKAGE_NAME = void 0;
+    exports.PACKAGE_NAME = "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+    var PackageErrorTable = class {
       constructor() {
         this["http-status-code-out-of-range"] = {
-          packageName: Pe.PACKAGE_NAME,
+          packageName: exports.PACKAGE_NAME,
           errorName: "http-status-code-out-of-range",
           detail: "input falls outside the range of a valid HTTP status code",
           status: 422
         }, this["invalid-package-name"] = {
-          packageName: Pe.PACKAGE_NAME,
+          packageName: exports.PACKAGE_NAME,
           errorName: "invalid-package-name",
           detail: "package name does not meet spec 'isPackageName()'",
           status: 422
         }, this["not-an-integer"] = {
-          packageName: Pe.PACKAGE_NAME,
+          packageName: exports.PACKAGE_NAME,
           errorName: "not-an-integer",
           detail: "input must be an integer; was a float",
           status: 422
         }, this["not-implemented"] = {
-          packageName: Pe.PACKAGE_NAME,
+          packageName: exports.PACKAGE_NAME,
           errorName: "not-implemented",
           detail: "this function or feature has not been implemented",
           status: 500
         }, this["unreachable-code"] = {
-          packageName: Pe.PACKAGE_NAME,
+          packageName: exports.PACKAGE_NAME,
           errorName: "unreachable-code",
           status: 500,
           detail: "this code should never execute"
         }
       }
     };
-    Pe.PackageErrorTable = Jn;
-    Pe.ERROR_TABLE = new Jn
+    exports.PackageErrorTable = PackageErrorTable;
+    exports.ERROR_TABLE = new PackageErrorTable
   });
-  var Os = v(Kn => {
+  var requireHttpStatusCodeOutOfRange = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Kn, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Kn.HttpStatusCodeOutOfRangeError = void 0;
-    var ny = br(),
-      oy = yr(),
-      ay = vr(),
-      Ds = class extends ny.AppError {
-        constructor(t) {
-          let r = {
-            template: ay.ERROR_TABLE["http-status-code-out-of-range"],
-            errorId: t.errorId,
+    exports.HttpStatusCodeOutOfRangeError = void 0;
+    var appErrorModule = requireAppErrorClass(),
+      sprModule = requireStructuredProblemReport(),
+      errorTableModule = requirePackageErrorTable(),
+      HttpStatusCodeOutOfRangeError = class extends appErrorModule.AppError {
+        constructor(params) {
+          let report = {
+            template: errorTableModule.ERROR_TABLE["http-status-code-out-of-range"],
+            errorId: params.errorId,
             extra: {
-              public: t.public
+              public: params.public
             }
           };
-          super(oy.StructuredProblemReport.from(r))
+          super(sprModule.StructuredProblemReport.from(report))
         }
       };
-    Kn.HttpStatusCodeOutOfRangeError = Ds
+    exports.HttpStatusCodeOutOfRangeError = HttpStatusCodeOutOfRangeError
   });
-  var Ps = v(Yn => {
+  var requireNotAnInteger = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Yn, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Yn.NotAnIntegerError = void 0;
-    var sy = br(),
-      ly = yr(),
-      uy = vr(),
-      Ms = class extends sy.AppError {
-        constructor(t) {
-          let r = {
-            template: uy.ERROR_TABLE["not-an-integer"],
-            errorId: t.errorId,
+    exports.NotAnIntegerError = void 0;
+    var appErrorModule = requireAppErrorClass(),
+      sprModule = requireStructuredProblemReport(),
+      errorTableModule = requirePackageErrorTable(),
+      NotAnIntegerError = class extends appErrorModule.AppError {
+        constructor(params) {
+          let report = {
+            template: errorTableModule.ERROR_TABLE["not-an-integer"],
+            errorId: params.errorId,
             extra: {
-              public: t.public
+              public: params.public
             }
           };
-          super(ly.StructuredProblemReport.from(r))
+          super(sprModule.StructuredProblemReport.from(report))
         }
       };
-    Yn.NotAnIntegerError = Ms
+    exports.NotAnIntegerError = NotAnIntegerError
   });
-  var Zc = v(Zn => {
+  var requireMustBeHttpStatusCode = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Zn, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Zn.mustBeHttpStatusCode = void 0;
-    var dy = Xn(),
-      cy = Os(),
-      py = Ps(),
-      fy = Wi();
+    exports.mustBeHttpStatusCode = void 0;
+    var httpStatusModule = requireHttpStatusCodeIndex(),
+      outOfRangeModule = requireHttpStatusCodeOutOfRange(),
+      notIntegerModule = requireNotAnInteger(),
+      throwModule = requireOnErrorIndex();
 
-    function my(e, t = fy.THROW_THE_ERROR) {
-      e >>> 0 !== e && t(new py.NotAnIntegerError({
+    function mustBeHttpStatusCode(value, onError = throwModule.THROW_THE_ERROR) {
+      value >>> 0 !== value && onError(new notIntegerModule.NotAnIntegerError({
         public: {
-          input: e
+          input: value
         }
-      })), dy.isHttpStatusCode(e) || t(new cy
+      })), httpStatusModule.isHttpStatusCode(value) || onError(new outOfRangeModule
         .HttpStatusCodeOutOfRangeError({
           public: {
-            input: e
+            input: value
           }
         }))
     }
-    Zn.mustBeHttpStatusCode = my
+    exports.mustBeHttpStatusCode = mustBeHttpStatusCode
   });
-  var Xn = v(nt => {
+  var requireHttpStatusCodeIndex = defineCommonjsModule(exports => {
     "use strict";
-    var gy = nt && nt.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      eo = nt && nt.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && gy(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(nt, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    eo(Jc(), nt);
-    eo(Kc(), nt);
-    eo(Yc(), nt);
-    eo(Zc(), nt)
+    exportStar(requireHttpStatusCodeType(), exports);
+    exportStar(requireHttpStatusCodeFrom(), exports);
+    exportStar(requireIsHttpStatusCode(), exports);
+    exportStar(requireMustBeHttpStatusCode(), exports)
   });
-  var ep = v(Xi => {
+  var requireErHttpStatusCodes = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Xi, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    var Rs = Xn();
-    Object.defineProperty(Xi, "isHttpStatusCode", {
+    var httpStatusModule = requireHttpStatusCodeIndex();
+    Object.defineProperty(exports, "isHttpStatusCode", {
       enumerable: !0,
       get: function() {
-        return Rs.isHttpStatusCode
+        return httpStatusModule.isHttpStatusCode
       }
     });
-    Object.defineProperty(Xi, "mustBeHttpStatusCode", {
+    Object.defineProperty(exports, "mustBeHttpStatusCode", {
       enumerable: !0,
       get: function() {
-        return Rs.mustBeHttpStatusCode
+        return httpStatusModule.mustBeHttpStatusCode
       }
     });
-    Object.defineProperty(Xi, "httpStatusCodeFrom", {
+    Object.defineProperty(exports, "httpStatusCodeFrom", {
       enumerable: !0,
       get: function() {
-        return Rs.httpStatusCodeFrom
+        return httpStatusModule.httpStatusCodeFrom
       }
     })
   });
-  var tp = v(wr => {
+  var requireErHttpStatusCodesIndex = defineCommonjsModule(exports => {
     "use strict";
-    var hy = wr && wr.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      _y = wr && wr.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && hy(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(wr, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    _y(ep(), wr)
+    exportStar(requireErHttpStatusCodes(), exports)
   });
-  var ip = v(rp => {
+  var requireAnyAppError = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(rp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var op = v(np => {
+  var requireAppErrorParams = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(np, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var ap = v(Tt => {
+  var requireAppErrorIndex = defineCommonjsModule(exports => {
     "use strict";
-    var by = Tt && Tt.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Is = Tt && Tt.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && by(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Tt, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Is(br(), Tt);
-    Is(ip(), Tt);
-    Is(op(), Tt)
+    exportStar(requireAppErrorClass(), exports);
+    exportStar(requireAnyAppError(), exports);
+    exportStar(requireAppErrorParams(), exports)
   });
-  var lp = v(sp => {
+  var requireErrorTableType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(sp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var up = v(Ar => {
+  var requireErrorTableIndex = defineCommonjsModule(exports => {
     "use strict";
-    var yy = Ar && Ar.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      vy = Ar && Ar.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && yy(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Ar, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    vy(lp(), Ar)
+    exportStar(requireErrorTableType(), exports)
   });
-  var cp = v(dp => {
+  var requireErrorTableTemplateType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(dp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var pp = v(xr => {
+  var requireErrorTableTemplateIndex = defineCommonjsModule(exports => {
     "use strict";
-    var wy = xr && xr.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Ay = xr && xr.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && wy(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(xr, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Ay(cp(), xr)
+    exportStar(requireErrorTableTemplateType(), exports)
   });
-  var fp = v(to => {
+  var requireInvalidPackageName = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(to, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    to.InvalidPackageNameError = void 0;
-    var xy = br(),
-      Ty = yr(),
-      Ey = vr(),
-      Ns = class extends xy.AppError {
-        constructor(t) {
-          let r = {
-            template: Ey.ERROR_TABLE["invalid-package-name"],
-            errorId: t.errorId,
+    exports.InvalidPackageNameError = void 0;
+    var appErrorModule = requireAppErrorClass(),
+      sprModule = requireStructuredProblemReport(),
+      errorTableModule = requirePackageErrorTable(),
+      InvalidPackageNameError = class extends appErrorModule.AppError {
+        constructor(params) {
+          let report = {
+            template: errorTableModule.ERROR_TABLE["invalid-package-name"],
+            errorId: params.errorId,
             extra: {
-              public: t.public
+              public: params.public
             }
           };
-          super(Ty.StructuredProblemReport.from(r))
+          super(sprModule.StructuredProblemReport.from(report))
         }
       };
-    to.InvalidPackageNameError = Ns
+    exports.InvalidPackageNameError = InvalidPackageNameError
   });
-  var mp = v(ro => {
+  var requireNotImplemented = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(ro, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    ro.NotImplementedError = void 0;
-    var Sy = br(),
-      Dy = yr(),
-      Oy = vr(),
-      ks = class extends Sy.AppError {
-        constructor(t = {}) {
-          let r = {
-            template: Oy.ERROR_TABLE["not-implemented"],
-            errorId: t.errorId
+    exports.NotImplementedError = void 0;
+    var appErrorModule = requireAppErrorClass(),
+      sprModule = requireStructuredProblemReport(),
+      errorTableModule = requirePackageErrorTable(),
+      NotImplementedError = class extends appErrorModule.AppError {
+        constructor(params = {}) {
+          let report = {
+            template: errorTableModule.ERROR_TABLE["not-implemented"],
+            errorId: params.errorId
           };
-          super(Dy.StructuredProblemReport.from(r))
+          super(sprModule.StructuredProblemReport.from(report))
         }
       };
-    ro.NotImplementedError = ks
+    exports.NotImplementedError = NotImplementedError
   });
-  var gp = v(io => {
+  var requireUnreachableCode = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(io, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    io.UnreachableCodeError = void 0;
-    var My = br(),
-      Py = yr(),
-      Ry = vr(),
-      Cs = class extends My.AppError {
-        constructor(t) {
-          let r = {
-            template: Ry.ERROR_TABLE["unreachable-code"],
-            errorId: t.errorId,
+    exports.UnreachableCodeError = void 0;
+    var appErrorModule = requireAppErrorClass(),
+      sprModule = requireStructuredProblemReport(),
+      errorTableModule = requirePackageErrorTable(),
+      UnreachableCodeError = class extends appErrorModule.AppError {
+        constructor(params) {
+          let report = {
+            template: errorTableModule.ERROR_TABLE["unreachable-code"],
+            errorId: params.errorId,
             extra: {
-              logsOnly: t.logsOnly
+              logsOnly: params.logsOnly
             }
           };
-          super(Py.StructuredProblemReport.from(r))
+          super(sprModule.StructuredProblemReport.from(report))
         }
       };
-    io.UnreachableCodeError = Cs
+    exports.UnreachableCodeError = UnreachableCodeError
   });
-  var qs = v(Tr => {
+  var requireErrorsIndex = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Tr, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    var Iy = Os();
-    Object.defineProperty(Tr, "HttpStatusCodeOutOfRangeError", {
+    var outOfRangeModule = requireHttpStatusCodeOutOfRange();
+    Object.defineProperty(exports, "HttpStatusCodeOutOfRangeError", {
       enumerable: !0,
       get: function() {
-        return Iy.HttpStatusCodeOutOfRangeError
+        return outOfRangeModule.HttpStatusCodeOutOfRangeError
       }
     });
-    var Ny = fp();
-    Object.defineProperty(Tr, "InvalidPackageNameError", {
+    var invalidPackageNameModule = requireInvalidPackageName();
+    Object.defineProperty(exports, "InvalidPackageNameError", {
       enumerable: !0,
       get: function() {
-        return Ny.InvalidPackageNameError
+        return invalidPackageNameModule.InvalidPackageNameError
       }
     });
-    var ky = Ps();
-    Object.defineProperty(Tr, "NotAnIntegerError", {
+    var notIntegerModule = requireNotAnInteger();
+    Object.defineProperty(exports, "NotAnIntegerError", {
       enumerable: !0,
       get: function() {
-        return ky.NotAnIntegerError
+        return notIntegerModule.NotAnIntegerError
       }
     });
-    var Cy = mp();
-    Object.defineProperty(Tr, "NotImplementedError", {
+    var notImplementedModule = requireNotImplemented();
+    Object.defineProperty(exports, "NotImplementedError", {
       enumerable: !0,
       get: function() {
-        return Cy.NotImplementedError
+        return notImplementedModule.NotImplementedError
       }
     });
-    var qy = gp();
-    Object.defineProperty(Tr, "UnreachableCodeError", {
+    var unreachableCodeModule = requireUnreachableCode();
+    Object.defineProperty(exports, "UnreachableCodeError", {
       enumerable: !0,
       get: function() {
-        return qy.UnreachableCodeError
+        return unreachableCodeModule.UnreachableCodeError
       }
     })
   });
-  var _p = v(hp => {
+  var requireAllExtraData = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(hp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var yp = v(bp => {
+  var requireExtraDataTemplate = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(bp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var wp = v(vp => {
+  var requireExtraLogsOnlyData = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(vp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var xp = v(Ap => {
+  var requireExtraPublicData = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Ap, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var Ep = v(Tp => {
+  var requireNoExtraDataTemplate = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Tp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var Sp = v($e => {
+  var requireExtraDataIndex = defineCommonjsModule(exports => {
     "use strict";
-    var By = $e && $e.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Gi = $e && $e.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && By(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty($e, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Gi(_p(), $e);
-    Gi(yp(), $e);
-    Gi(wp(), $e);
-    Gi(xp(), $e);
-    Gi(Ep(), $e)
+    exportStar(requireAllExtraData(), exports);
+    exportStar(requireExtraDataTemplate(), exports);
+    exportStar(requireExtraLogsOnlyData(), exports);
+    exportStar(requireExtraPublicData(), exports);
+    exportStar(requireNoExtraDataTemplate(), exports)
   });
-  var Dp = v(Er => {
+  var requireExtractReasonFromCaught = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Er, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Er.extractReasonFromCaught = Er.DEFAULT_ERROR_REASON = void 0;
-    Er.DEFAULT_ERROR_REASON = "no error information available";
+    exports.extractReasonFromCaught = exports.DEFAULT_ERROR_REASON = void 0;
+    exports.DEFAULT_ERROR_REASON = "no error information available";
 
-    function Vy(e, {
-      stackTrace: t = !1
+    function extractReasonFromCaught(caught, {
+      stackTrace = !1
     } = {}) {
-      let r = Er.DEFAULT_ERROR_REASON;
-      return e instanceof Error ? (t && e.stack ? r = e.stack : r = e
-        .toString(), r) : (e === null || e === void 0 || typeof e ==
-        "number" && isNaN(e) || typeof e == "boolean" || e.toString !==
-        void 0 && typeof e.toString == "function" && e.toString !==
-        Object.prototype.toString && (r = e.toString()), r)
+      let reason = exports.DEFAULT_ERROR_REASON;
+      return caught instanceof Error ? (stackTrace && caught.stack ? reason = caught.stack : reason = caught
+        .toString(), reason) : (caught === null || caught === void 0 || typeof caught ==
+        "number" && isNaN(caught) || typeof caught == "boolean" || caught.toString !==
+        void 0 && typeof caught.toString == "function" && caught.toString !==
+        Object.prototype.toString && (reason = caught.toString()), reason)
     }
-    Er.extractReasonFromCaught = Vy
+    exports.extractReasonFromCaught = extractReasonFromCaught
   });
-  var Op = v(no => {
+  var requireExtractStackFromCaught = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(no, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    no.extractStackFromCaught = void 0;
+    exports.extractStackFromCaught = void 0;
 
-    function Hy(e) {
-      return e instanceof Error ? e.stack.substring(e.stack.indexOf(`
+    function extractStackFromCaught(caught) {
+      return caught instanceof Error ? caught.stack.substring(caught.stack.indexOf(`
 `) + 1) : ""
     }
-    no.extractStackFromCaught = Hy
+    exports.extractStackFromCaught = extractStackFromCaught
   });
-  var Pp = v(Xt => {
+  var requireHelpersIndex = defineCommonjsModule(exports => {
     "use strict";
-    var Fy = Xt && Xt.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Mp = Xt && Xt.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Fy(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Xt, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Mp(Dp(), Xt);
-    Mp(Op(), Xt)
+    exportStar(requireExtractReasonFromCaught(), exports);
+    exportStar(requireExtractStackFromCaught(), exports)
   });
-  var Ip = v(Rp => {
+  var requireSprDataWithExtra = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Rp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var kp = v(Np => {
+  var requireSprDataNoExtra = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Np, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var Cp = v(Et => {
+  var requireSprIndex = defineCommonjsModule(exports => {
     "use strict";
-    var Ly = Et && Et.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Bs = Et && Et.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Ly(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Et, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Bs(yr(), Et);
-    Bs(Ip(), Et);
-    Bs(kp(), Et)
+    exportStar(requireStructuredProblemReport(), exports);
+    exportStar(requireSprDataWithExtra(), exports);
+    exportStar(requireSprDataNoExtra(), exports)
   });
-  var xe = v(Ae => {
+  var requireErrorReporting = defineCommonjsModule(exports => {
     "use strict";
-    var Uy = Ae && Ae.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Gt = Ae && Ae.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Uy(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Ae, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Gt(ap(), Ae);
-    Gt(up(), Ae);
-    Gt(pp(), Ae);
-    Gt(qs(), Ae);
-    Gt(Sp(), Ae);
-    Gt(Pp(), Ae);
-    Gt(Wi(), Ae);
-    Gt(Cp(), Ae)
+    exportStar(requireAppErrorIndex(), exports);
+    exportStar(requireErrorTableIndex(), exports);
+    exportStar(requireErrorTableTemplateIndex(), exports);
+    exportStar(requireErrorsIndex(), exports);
+    exportStar(requireExtraDataIndex(), exports);
+    exportStar(requireHelpersIndex(), exports);
+    exportStar(requireOnErrorIndex(), exports);
+    exportStar(requireSprIndex(), exports)
   });
-  var qp = v(oo => {
+  var requirePackagenameErrorTable = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(oo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    var jy = vr();
-    Object.defineProperty(oo, "PackageErrorTable", {
+    var errorTableModule = requirePackageErrorTable();
+    Object.defineProperty(exports, "PackageErrorTable", {
       enumerable: !0,
       get: function() {
-        return jy.PackageErrorTable
+        return errorTableModule.PackageErrorTable
       }
     });
-    var Wy = xe();
-    Object.defineProperty(oo, "InvalidPackageNameError", {
+    var errorsModule = requireErrorReporting();
+    Object.defineProperty(exports, "InvalidPackageNameError", {
       enumerable: !0,
       get: function() {
-        return Wy.InvalidPackageNameError
+        return errorsModule.InvalidPackageNameError
       }
     })
   });
-  var Vp = v(Bp => {
+  var requirePackageNameType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Bp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var Vs = v(Sr => {
+  var requireIsPackageNameData = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Sr, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Sr.isPackageNameData = Sr.PackageNameDataRegex = void 0;
-    Sr.PackageNameDataRegex = new RegExp(
+    exports.isPackageNameData = exports.PackageNameDataRegex = void 0;
+    exports.PackageNameDataRegex = new RegExp(
       "^(?:@[a-z0-9-*~][a-z0-9-*._~]*/)?[a-z0-9-~][a-z0-9-._~]+(/[A-Za-z0-9-~][A-Za-z0-9-._~]+)*$"
       );
 
-    function Xy(e) {
-      return Sr.PackageNameDataRegex.test(e)
+    function isPackageNameData(value) {
+      return exports.PackageNameDataRegex.test(value)
     }
-    Sr.isPackageNameData = Xy
+    exports.isPackageNameData = isPackageNameData
   });
-  var Hs = v(ao => {
+  var requireMustBePackageNameData = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(ao, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    ao.mustBePackageNameData = void 0;
-    var Gy = qs(),
-      Qy = ji(),
-      zy = Vs();
+    exports.mustBePackageNameData = void 0;
+    var errorsModule = requireErrorsIndex(),
+      throwModule = requireOnError(),
+      packageNameDataModule = requireIsPackageNameData();
 
-    function $y(e, t = Qy.THROW_THE_ERROR) {
-      zy.isPackageNameData(e) || t(new Gy.InvalidPackageNameError({
+    function mustBePackageNameData(value, onError = throwModule.THROW_THE_ERROR) {
+      packageNameDataModule.isPackageNameData(value) || onError(new errorsModule.InvalidPackageNameError({
         public: {
-          packageName: e
+          packageName: value
         }
       }))
     }
-    ao.mustBePackageNameData = $y
+    exports.mustBePackageNameData = mustBePackageNameData
   });
-  var Hp = v(so => {
+  var requirePackageNameFrom = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(so, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    so.packageNameFrom = void 0;
-    var Jy = Wi(),
-      Ky = Hs();
+    exports.packageNameFrom = void 0;
+    var throwModule = requireOnErrorIndex(),
+      mustBeModule = requireMustBePackageNameData();
 
-    function Yy(e, t = Jy.THROW_THE_ERROR) {
-      return Ky.mustBePackageNameData(e, t), e
+    function packageNameFrom(value, onError = throwModule.THROW_THE_ERROR) {
+      return mustBeModule.mustBePackageNameData(value, onError), value
     }
-    so.packageNameFrom = Yy
+    exports.packageNameFrom = packageNameFrom
   });
-  var Fp = v(ot => {
+  var requirePackageNameIndex = defineCommonjsModule(exports => {
     "use strict";
-    var Zy = ot && ot.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      lo = ot && ot.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Zy(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(ot, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    lo(Vp(), ot);
-    lo(Vs(), ot);
-    lo(Hs(), ot);
-    lo(Hp(), ot)
+    exportStar(requirePackageNameType(), exports);
+    exportStar(requireIsPackageNameData(), exports);
+    exportStar(requireMustBePackageNameData(), exports);
+    exportStar(requirePackageNameFrom(), exports)
   });
-  var Lp = v(Dr => {
+  var requirePackagenamePkg = defineCommonjsModule(exports => {
     "use strict";
-    var ev = Dr && Dr.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      tv = Dr && Dr.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && ev(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Dr, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    tv(Fp(), Dr)
+    exportStar(requirePackageNameIndex(), exports)
   });
-  var jp = v(Qt => {
+  var requirePackagename = defineCommonjsModule(exports => {
     "use strict";
-    var rv = Qt && Qt.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Up = Qt && Qt.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && rv(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Qt, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Up(qp(), Qt);
-    Up(Lp(), Qt)
+    exportStar(requirePackagenameErrorTable(), exports);
+    exportStar(requirePackagenamePkg(), exports)
   });
-  var Fs = v(ei => {
+  var requireMtErrorTable = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(ei, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    ei.ERROR_TABLE = ei.PackageErrorTable = void 0;
-    var uo = tp(),
-      iv = jp(),
-      co = iv.packageNameFrom("@ganbarodigital/ts-lib-mediatypes"),
-      po = class {
+    exports.ERROR_TABLE = exports.PackageErrorTable = void 0;
+    var httpStatusModule = requireErHttpStatusCodesIndex(),
+      packageNameModule = requirePackagename(),
+      packageName = packageNameModule.packageNameFrom("@ganbarodigital/ts-lib-mediatypes"),
+      PackageErrorTable = class {
         constructor() {
           this["mediatypematchregex-is-broken"] = {
-            packageName: co,
+            packageName: packageName,
             errorName: "mediatypematchregex-is-broken",
             detail: "the MediaTypeMatchRegex no longer returns the expected named groups",
-            status: uo.httpStatusCodeFrom(500)
+            status: httpStatusModule.httpStatusCodeFrom(500)
           }, this["not-a-content-type"] = {
-            packageName: co,
+            packageName: packageName,
             errorName: "not-a-content-type",
             detail: "the given string does not have the structure of a ContentType",
-            status: uo.httpStatusCodeFrom(422)
+            status: httpStatusModule.httpStatusCodeFrom(422)
           }, this["not-a-media-type"] = {
-            packageName: co,
+            packageName: packageName,
             errorName: "not-a-media-type",
             detail: "the given string does not have the structure of a MediaType",
-            status: uo.httpStatusCodeFrom(422)
+            status: httpStatusModule.httpStatusCodeFrom(422)
           }, this["unexpected-content-type"] = {
-            packageName: co,
+            packageName: packageName,
             errorName: "unexpected-content-type",
             detail: "the given MediaType does not match any of the expected content types",
-            status: uo.httpStatusCodeFrom(422)
+            status: httpStatusModule.httpStatusCodeFrom(422)
           }
         }
       };
-    ei.PackageErrorTable = po;
-    ei.ERROR_TABLE = new po
+    exports.PackageErrorTable = PackageErrorTable;
+    exports.ERROR_TABLE = new PackageErrorTable
   });
-  var Xp = v(fo => {
+  var requireNotAContentType = defineCommonjsModule(notAContentTypeExports => {
     "use strict";
-    Object.defineProperty(fo, "__esModule", {
+    Object.defineProperty(notAContentTypeExports, "__esModule", {
       value: !0
     });
-    fo.NotAContentTypeError = void 0;
-    var Wp = xe(),
-      nv = at(),
-      Ls = class extends Wp.AppError {
-        constructor(t) {
-          let r = {
-            template: nv.ERROR_TABLE["not-a-content-type"],
-            errorId: t.errorId,
+    notAContentTypeExports.NotAContentTypeError = void 0;
+    var errorReportingModule = requireErrorReporting(),
+      mtErrorsModule = requireMtErrors(),
+      NotAContentTypeErrorClass = class extends errorReportingModule.AppError {
+        constructor(errorParams) {
+          let reportData = {
+            template: mtErrorsModule.ERROR_TABLE["not-a-content-type"],
+            errorId: errorParams.errorId,
             extra: {
-              public: t.public
+              public: errorParams.public
             }
           };
-          super(Wp.StructuredProblemReport.from(r))
+          super(errorReportingModule.StructuredProblemReport.from(reportData))
         }
       };
-    fo.NotAContentTypeError = Ls
+    notAContentTypeExports.NotAContentTypeError = NotAContentTypeErrorClass
   });
-  var Qp = v(mo => {
+  var requireNotAMediaType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(mo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    mo.NotAMediaTypeError = void 0;
-    var Gp = xe(),
-      ov = at(),
-      Us = class extends Gp.AppError {
-        constructor(t) {
-          let r = {
-            template: ov.ERROR_TABLE["not-a-media-type"],
-            errorId: t.errorId,
+    exports.NotAMediaTypeError = void 0;
+    var errorsModule = requireErrorReporting(),
+      errorTableModule = requireMtErrors(),
+      NotAMediaTypeError = class extends errorsModule.AppError {
+        constructor(params) {
+          let report = {
+            template: errorTableModule.ERROR_TABLE["not-a-media-type"],
+            errorId: params.errorId,
             extra: {
-              public: t.public
+              public: params.public
             }
           };
-          super(Gp.StructuredProblemReport.from(r))
+          super(errorsModule.StructuredProblemReport.from(report))
         }
       };
-    mo.NotAMediaTypeError = Us
+    exports.NotAMediaTypeError = NotAMediaTypeError
   });
-  var ho = v(go => {
+  var requireMediaTypeMatchRegexIsBroken = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(go, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    go.MediaTypeMatchRegexIsBrokenError = void 0;
-    var zp = xe(),
-      av = Fs(),
-      js = class extends zp.AppError {
-        constructor(t) {
-          let r = {
-            template: av.ERROR_TABLE["mediatypematchregex-is-broken"],
-            errorId: t.errorId,
+    exports.MediaTypeMatchRegexIsBrokenError = void 0;
+    var errorsModule = requireErrorReporting(),
+      errorTableModule = requireMtErrorTable(),
+      MediaTypeMatchRegexIsBrokenError = class extends errorsModule.AppError {
+        constructor(params) {
+          let report = {
+            template: errorTableModule.ERROR_TABLE["mediatypematchregex-is-broken"],
+            errorId: params.errorId,
             extra: null
           };
-          super(zp.StructuredProblemReport.from(r))
+          super(errorsModule.StructuredProblemReport.from(report))
         }
       };
-    go.MediaTypeMatchRegexIsBrokenError = js
+    exports.MediaTypeMatchRegexIsBrokenError = MediaTypeMatchRegexIsBrokenError
   });
-  var Xs = v(_o => {
+  var requireUnexpectedContentType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(_o, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    _o.UnexpectedContentTypeError = void 0;
-    var $p = xe(),
-      sv = at(),
-      Ws = class extends $p.AppError {
-        constructor(t) {
-          let r = {
-            template: sv.ERROR_TABLE["unexpected-content-type"],
-            errorId: t.errorId,
+    exports.UnexpectedContentTypeError = void 0;
+    var errorsModule = requireErrorReporting(),
+      errorTableModule = requireMtErrors(),
+      UnexpectedContentTypeError = class extends errorsModule.AppError {
+        constructor(params) {
+          let report = {
+            template: errorTableModule.ERROR_TABLE["unexpected-content-type"],
+            errorId: params.errorId,
             extra: {
-              public: t.public
+              public: params.public
             }
           };
-          super($p.StructuredProblemReport.from(r))
+          super(errorsModule.StructuredProblemReport.from(report))
         }
       };
-    _o.UnexpectedContentTypeError = Ws
+    exports.UnexpectedContentTypeError = UnexpectedContentTypeError
   });
-  var at = v(Or => {
+  var requireMtErrors = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Or, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    var lv = Fs();
-    Object.defineProperty(Or, "ERROR_TABLE", {
+    var errorTableModule = requireMtErrorTable();
+    Object.defineProperty(exports, "ERROR_TABLE", {
       enumerable: !0,
       get: function() {
-        return lv.ERROR_TABLE
+        return errorTableModule.ERROR_TABLE
       }
     });
-    var uv = Xp();
-    Object.defineProperty(Or, "NotAContentTypeError", {
+    var notAContentTypeModule = requireNotAContentType();
+    Object.defineProperty(exports, "NotAContentTypeError", {
       enumerable: !0,
       get: function() {
-        return uv.NotAContentTypeError
+        return notAContentTypeModule.NotAContentTypeError
       }
     });
-    var dv = Qp();
-    Object.defineProperty(Or, "NotAMediaTypeError", {
+    var notAMediaTypeModule = requireNotAMediaType();
+    Object.defineProperty(exports, "NotAMediaTypeError", {
       enumerable: !0,
       get: function() {
-        return dv.NotAMediaTypeError
+        return notAMediaTypeModule.NotAMediaTypeError
       }
     });
-    var cv = ho();
-    Object.defineProperty(Or, "MediaTypeMatchRegexIsBrokenError", {
+    var regexBrokenModule = requireMediaTypeMatchRegexIsBroken();
+    Object.defineProperty(exports, "MediaTypeMatchRegexIsBrokenError", {
       enumerable: !0,
       get: function() {
-        return cv.MediaTypeMatchRegexIsBrokenError
+        return regexBrokenModule.MediaTypeMatchRegexIsBrokenError
       }
     });
-    var pv = Xs();
-    Object.defineProperty(Or, "UnexpectedContentTypeError", {
+    var unexpectedContentTypeModule = requireUnexpectedContentType();
+    Object.defineProperty(exports, "UnexpectedContentTypeError", {
       enumerable: !0,
       get: function() {
-        return pv.UnexpectedContentTypeError
+        return unexpectedContentTypeModule.UnexpectedContentTypeError
       }
     })
   });
-  var Kp = v(Jp => {
+  var requireMediaTypeParts = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Jp, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var ti = v(zt => {
+  var requireMtRegexes = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(zt, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    zt.MediaTypeParamRegex = zt.MediaTypeMatchRegex = zt
+    exports.MediaTypeParamRegex = exports.MediaTypeMatchRegex = exports
       .ContentTypeMatchRegex = void 0;
-    zt.ContentTypeMatchRegex =
+    exports.ContentTypeMatchRegex =
       /^(?<contentType>(?<type>[A-Za-z0-9][-\w!#$&^]*)\/((?<tree>[A-Za-z0-9][\w\d-!#$&^]*)\.){0,1}(?<subtype>[^+()<>@,;:\\/"[\]?=+]+)(\+(?<suffix>[\w\d]+)){0,1})$/;
-    zt.MediaTypeMatchRegex =
+    exports.MediaTypeMatchRegex =
       /^(?<contentType>(?<type>[A-Za-z0-9][-\w!#$&^]*)\/((?<tree>[A-Za-z0-9][\w\d-!#$&^]*)\.){0,1}(?<subtype>[^+()<>@,;:\\/"[\]?=+]+)(\+(?<suffix>[\w\d]+)){0,1})(;[\s]+(?<parameter>[\w\d]+=([^+()<>@,;:\\/"[\]?=]+|"[^"]*\")))*$/;
-    zt.MediaTypeParamRegex =
+    exports.MediaTypeParamRegex =
       /(;[\s]+((?<parameterName>[\w\d]+)=((?<parameterValueA>[^+()<>@,;:\\/"[\]?=+]+)|"(?<parameterValueB>[^"]*)")))/g
   });
-  var Gs = v(bo => {
+  var requireIsContentType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(bo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    bo.isContentType = void 0;
-    var fv = ti();
+    exports.isContentType = void 0;
+    var regexModule = requireMtRegexes();
 
-    function mv(e) {
-      return fv.ContentTypeMatchRegex.test(e)
+    function isContentType(value) {
+      return regexModule.ContentTypeMatchRegex.test(value)
     }
-    bo.isContentType = mv
+    exports.isContentType = isContentType
   });
-  var Qs = v(yo => {
+  var requireMustBeContentType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(yo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    yo.mustBeContentType = void 0;
-    var gv = xe(),
-      hv = at(),
-      _v = Gs();
+    exports.mustBeContentType = void 0;
+    var throwModule = requireErrorReporting(),
+      errorsModule = requireMtErrors(),
+      isContentTypeModule = requireIsContentType();
 
-    function bv(e, t = gv.THROW_THE_ERROR) {
-      _v.isContentType(e) || t(new hv.NotAContentTypeError({
+    function mustBeContentType(value, onError = throwModule.THROW_THE_ERROR) {
+      isContentTypeModule.isContentType(value) || onError(new errorsModule.NotAContentTypeError({
         public: {
-          input: e
+          input: value
         }
       }))
     }
-    yo.mustBeContentType = bv
+    exports.mustBeContentType = mustBeContentType
   });
-  var vo = v(ri => {
+  var requireContentTypeFrom = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(ri, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    ri._contentTypeFrom = ri.contentTypeFrom = void 0;
-    var yv = xe(),
-      vv = Qs();
-    ri.contentTypeFrom = Yp.bind(null, e => e.toLowerCase());
+    exports._contentTypeFrom = exports.contentTypeFrom = void 0;
+    var throwModule = requireErrorReporting(),
+      mustBeModule = requireMustBeContentType();
+    exports.contentTypeFrom = _contentTypeFrom.bind(null, value => value.toLowerCase());
 
-    function Yp(e, t, r = yv.THROW_THE_ERROR) {
-      return vv.mustBeContentType(t, r), e(t)
+    function _contentTypeFrom(transform, input, onError = throwModule.THROW_THE_ERROR) {
+      return mustBeModule.mustBeContentType(input, onError), transform(input)
     }
-    ri._contentTypeFrom = Yp
+    exports._contentTypeFrom = _contentTypeFrom
   });
-  var ef = v(ii => {
+  var requireContentTypeFromMediaType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(ii, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    ii._contentTypeFromMediaType = ii.contentTypeFromMediaType = void 0;
-    var wv = xe(),
-      Av = at(),
-      xv = ti(),
-      Tv = ho(),
-      Ev = vo();
-    ii.contentTypeFromMediaType = Zp.bind(null, xv.MediaTypeMatchRegex,
-      e => e.toLowerCase());
+    exports._contentTypeFromMediaType = exports.contentTypeFromMediaType = void 0;
+    var throwModule = requireErrorReporting(),
+      errorsModule = requireMtErrors(),
+      regexModule = requireMtRegexes(),
+      regexBrokenModule = requireMediaTypeMatchRegexIsBroken(),
+      contentTypeModule = requireContentTypeFrom();
+    exports.contentTypeFromMediaType = _contentTypeFromMediaType.bind(null, regexModule.MediaTypeMatchRegex,
+      value => value.toLowerCase());
 
-    function Zp(e, t, r, i = wv.THROW_THE_ERROR) {
-      let n = r.valueOf(),
-        o = e.exec(n);
-      if (o === null) throw i(new Av.NotAMediaTypeError({
+    function _contentTypeFromMediaType(regex, transform, input, onError = throwModule.THROW_THE_ERROR) {
+      let inputStr = input.valueOf(),
+        match = regex.exec(inputStr);
+      if (match === null) throw onError(new errorsModule.NotAMediaTypeError({
         public: {
-          input: n
+          input: inputStr
         }
       }));
-      if (o.groups === void 0) throw i(new Tv
+      if (match.groups === void 0) throw onError(new regexBrokenModule
         .MediaTypeMatchRegexIsBrokenError({}));
-      return Ev._contentTypeFrom(t, o.groups.contentType)
+      return contentTypeModule._contentTypeFrom(transform, match.groups.contentType)
     }
-    ii._contentTypeFromMediaType = Zp
+    exports._contentTypeFromMediaType = _contentTypeFromMediaType
   });
-  var $s = v(Je => {
+  var requireContentTypeIndex = defineCommonjsModule(exports => {
     "use strict";
-    var Sv = Je && Je.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      zs = Je && Je.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Sv(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Je, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    zs(Kp(), Je);
-    var Dv = vo();
-    Object.defineProperty(Je, "contentTypeFrom", {
+    exportStar(requireMediaTypeParts(), exports);
+    var contentTypeFromModule = requireContentTypeFrom();
+    Object.defineProperty(exports, "contentTypeFrom", {
       enumerable: !0,
       get: function() {
-        return Dv.contentTypeFrom
+        return contentTypeFromModule.contentTypeFrom
       }
     });
-    var Ov = ef();
-    Object.defineProperty(Je, "contentTypeFromMediaType", {
+    var contentTypeFromMediaTypeModule = requireContentTypeFromMediaType();
+    Object.defineProperty(exports, "contentTypeFromMediaType", {
       enumerable: !0,
       get: function() {
-        return Ov.contentTypeFromMediaType
+        return contentTypeFromMediaTypeModule.contentTypeFromMediaType
       }
     });
-    zs(Gs(), Je);
-    zs(Qs(), Je)
+    exportStar(requireIsContentType(), exports);
+    exportStar(requireMustBeContentType(), exports)
   });
-  var Js = v(wo => {
+  var requireIsMediaType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(wo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    wo.isMediaType = void 0;
-    var Mv = ti();
+    exports.isMediaType = void 0;
+    var regexModule = requireMtRegexes();
 
-    function Pv(e) {
-      return Mv.MediaTypeMatchRegex.test(e)
+    function isMediaType(value) {
+      return regexModule.MediaTypeMatchRegex.test(value)
     }
-    wo.isMediaType = Pv
+    exports.isMediaType = isMediaType
   });
-  var rf = v(tf => {
+  var requireMediaTypeData = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(tf, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var nf = v(Ao => {
+  var requireResolveToContentType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Ao, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Ao.resolveToContentType = void 0;
-    var Rv = xo(),
-      Iv = $s();
+    exports.resolveToContentType = void 0;
+    var mediaTypeModule = requireMediaTypeIndex(),
+      contentTypeModule = requireContentTypeIndex();
 
-    function Nv(e) {
-      return e instanceof Rv.MediaType ? Iv.contentTypeFromMediaType(e) :
-        e
+    function resolveToContentType(value) {
+      return value instanceof mediaTypeModule.MediaType ? contentTypeModule.contentTypeFromMediaType(value) :
+        value
     }
-    Ao.resolveToContentType = Nv
+    exports.resolveToContentType = resolveToContentType
   });
-  var af = v(To => {
+  var requireResolveToMediaType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(To, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    To.resolveToMediaType = void 0;
-    var of = xo();
+    exports.resolveToMediaType = void 0;
+    var mediaTypeModule = requireMediaTypeIndex();
 
-    function kv(e) {
-      return e instanceof of .MediaType ? e : new of.MediaType(e)
+    function resolveToMediaType(value) {
+      return value instanceof mediaTypeModule.MediaType ? value : new mediaTypeModule.MediaType(value)
     }
-    To.resolveToMediaType = kv
+    exports.resolveToMediaType = resolveToMediaType
   });
-  var Eo = v(St => {
+  var requireContentTypePkg = defineCommonjsModule(exports => {
     "use strict";
-    var Cv = St && St.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Ks = St && St.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Cv(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(St, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Ks(rf(), St);
-    Ks(nf(), St);
-    Ks(af(), St)
+    exportStar(requireMediaTypeData(), exports);
+    exportStar(requireResolveToContentType(), exports);
+    exportStar(requireResolveToMediaType(), exports)
   });
-  var Ys = v(So => {
+  var requireMatchesContentType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(So, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    So.matchesContentType = void 0;
-    var sf = Eo();
+    exports.matchesContentType = void 0;
+    var contentTypeModule = requireContentTypePkg();
 
-    function qv(e, t) {
-      let r = sf.resolveToContentType(e);
-      return t.some(i => {
-        let n = sf.resolveToContentType(i);
-        return r === n
+    function matchesContentType(value, list) {
+      let resolved = contentTypeModule.resolveToContentType(value);
+      return list.some(item => {
+        let itemResolved = contentTypeModule.resolveToContentType(item);
+        return resolved === itemResolved
       })
     }
-    So.matchesContentType = qv
+    exports.matchesContentType = matchesContentType
   });
-  var Zs = v(Do => {
+  var requireMustBeMediaType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Do, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Do.mustBeMediaType = void 0;
-    var Bv = xe(),
-      Vv = at(),
-      Hv = Js();
+    exports.mustBeMediaType = void 0;
+    var throwModule = requireErrorReporting(),
+      errorsModule = requireMtErrors(),
+      isMediaTypeModule = requireIsMediaType();
 
-    function Fv(e, t = Bv.THROW_THE_ERROR) {
-      Hv.isMediaType(e) || t(new Vv.NotAMediaTypeError({
+    function mustBeMediaType(value, onError = throwModule.THROW_THE_ERROR) {
+      isMediaTypeModule.isMediaType(value) || onError(new errorsModule.NotAMediaTypeError({
         public: {
-          input: e
+          input: value
         }
       }))
     }
-    Do.mustBeMediaType = Fv
+    exports.mustBeMediaType = mustBeMediaType
   });
-  var uf = v(Oo => {
+  var requireMustMatchContentType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Oo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Oo.mustMatchContentType = void 0;
-    var Lv = xe(),
-      Uv = Xs(),
-      jv = Ys(),
-      lf = Eo();
+    exports.mustMatchContentType = void 0;
+    var throwModule = requireErrorReporting(),
+      errorsModule = requireUnexpectedContentType(),
+      matchesModule = requireMatchesContentType(),
+      contentTypeModule = requireContentTypePkg();
 
-    function Wv(e, t, r = Lv.THROW_THE_ERROR) {
-      if (jv.matchesContentType(e, t)) return;
-      let i = t.map(n => lf.resolveToContentType(n));
-      r(new Uv.UnexpectedContentTypeError({
+    function mustMatchContentType(value, list, onError = throwModule.THROW_THE_ERROR) {
+      if (matchesModule.matchesContentType(value, list)) return;
+      let resolvedList = list.map(item => contentTypeModule.resolveToContentType(item));
+      onError(new errorsModule.UnexpectedContentTypeError({
         public: {
-          input: lf.resolveToContentType(e),
+          input: contentTypeModule.resolveToContentType(value),
           required: {
-            anyOf: i
+            anyOf: resolvedList
           }
         }
       }))
     }
-    Oo.mustMatchContentType = Wv
+    exports.mustMatchContentType = mustMatchContentType
   });
-  var cf = v(df => {
+  var requireDataCoercion = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(df, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var ff = v(pf => {
+  var requireDataGuard = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(pf, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var gf = v(mf => {
+  var requireEntityType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(mf, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var hf = v(Mo => {
+  var requireEntityObject = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Mo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Mo.EntityObject = void 0;
-    var el = class {
-      constructor(t) {
-        this.value = t
+    exports.EntityObject = void 0;
+    var EntityObject = class {
+      constructor(value) {
+        this.value = value
       }
       valueOf() {
         return this.value
@@ -7421,675 +7421,675 @@ const store = createStore(
         return !0
       }
     };
-    Mo.EntityObject = el
+    exports.EntityObject = EntityObject
   });
-  var bf = v(_f => {
+  var requireTypeGuard = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(_f, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var vf = v(yf => {
+  var requireValueType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(yf, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var Af = v(wf => {
+  var requireValueObjectType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(wf, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var xf = v(Dt => {
+  var requireErInternalTypes = defineCommonjsModule(exports => {
     "use strict";
-    var Xv = Dt && Dt.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      tl = Dt && Dt.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Xv(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Dt, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    tl(vf(), Dt);
-    tl(Af(), Dt);
-    tl(Es(), Dt)
+    exportStar(requireValueType(), exports);
+    exportStar(requireValueObjectType(), exports);
+    exportStar(requireErValueObject(), exports)
   });
-  var rl = v(Be => {
+  var requireVoTypesIndex = defineCommonjsModule(exports => {
     "use strict";
-    var Gv = Be && Be.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Qi = Be && Be.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Gv(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Be, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Qi(cf(), Be);
-    Qi(ff(), Be);
-    Qi(gf(), Be);
-    Qi(hf(), Be);
-    Qi(bf(), Be);
-    var Qv = xf();
-    Object.defineProperty(Be, "ValueObject", {
+    exportStar(requireDataCoercion(), exports);
+    exportStar(requireDataGuard(), exports);
+    exportStar(requireEntityType(), exports);
+    exportStar(requireEntityObject(), exports);
+    exportStar(requireTypeGuard(), exports);
+    var valueObjectModule = requireErInternalTypes();
+    Object.defineProperty(exports, "ValueObject", {
       enumerable: !0,
       get: function() {
-        return Qv.ValueObject
+        return valueObjectModule.ValueObject
       }
     })
   });
-  var nl = v(Po => {
+  var requireRefinedType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Po, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Po.RefinedType = void 0;
-    var zv = rl(),
-      il = class extends zv.ValueObject {
-        constructor(t, r, i) {
-          r(t, i), super(t)
+    exports.RefinedType = void 0;
+    var valueObjectModule = requireVoTypesIndex(),
+      RefinedType = class extends valueObjectModule.ValueObject {
+        constructor(value, mustBe, onError) {
+          mustBe(value, onError), super(value)
         }
       };
-    Po.RefinedType = il
+    exports.RefinedType = RefinedType
   });
-  var Io = v(Ro => {
+  var requireRefinedPrimitive = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Ro, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Ro.RefinedPrimitive = void 0;
-    var $v = nl(),
-      ol = class extends $v.RefinedType {};
-    Ro.RefinedPrimitive = ol
+    exports.RefinedPrimitive = void 0;
+    var refinedTypeModule = requireRefinedType(),
+      RefinedPrimitive = class extends refinedTypeModule.RefinedType {};
+    exports.RefinedPrimitive = RefinedPrimitive
   });
-  var Tf = v(No => {
+  var requireRefinedNumber = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(No, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    No.RefinedNumber = void 0;
-    var Jv = Io(),
-      al = class extends Jv.RefinedPrimitive {
-        [Symbol.toPrimitive](t) {
-          return t === "string" ? this.value.toString() : this.value
+    exports.RefinedNumber = void 0;
+    var refinedPrimitiveModule = requireRefinedPrimitive(),
+      RefinedNumber = class extends refinedPrimitiveModule.RefinedPrimitive {
+        [Symbol.toPrimitive](hint) {
+          return hint === "string" ? this.value.toString() : this.value
         }
       };
-    No.RefinedNumber = al
+    exports.RefinedNumber = RefinedNumber
   });
-  var Ef = v(ko => {
+  var requireRefinedString = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(ko, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    ko.RefinedString = void 0;
-    var Kv = Io(),
-      sl = class extends Kv.RefinedPrimitive {
-        [Symbol.toPrimitive](t) {
-          return t === "number" ? null : this.value
+    exports.RefinedString = void 0;
+    var refinedPrimitiveModule = requireRefinedPrimitive(),
+      RefinedString = class extends refinedPrimitiveModule.RefinedPrimitive {
+        [Symbol.toPrimitive](hint) {
+          return hint === "number" ? null : this.value
         }
       };
-    ko.RefinedString = sl
+    exports.RefinedString = RefinedString
   });
-  var Sf = v(st => {
+  var requireVoRefinement = defineCommonjsModule(exports => {
     "use strict";
-    var Yv = st && st.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Co = st && st.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && Yv(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(st, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Co(Tf(), st);
-    Co(Io(), st);
-    Co(Ef(), st);
-    Co(nl(), st)
+    exportStar(requireRefinedNumber(), exports);
+    exportStar(requireRefinedPrimitive(), exports);
+    exportStar(requireRefinedString(), exports);
+    exportStar(requireRefinedType(), exports)
   });
-  var Of = v(Df => {
+  var requireRefinedFactoryTypes = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Df, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var Mf = v(qo => {
+  var requireMakeRefinedTypeFactory = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(qo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    qo.makeRefinedTypeFactory = void 0;
-    var Zv = ji();
-    qo.makeRefinedTypeFactory = (e, t = Zv.THROW_THE_ERROR) => (r, i =
-      t) => (e(r, i), r)
+    exports.makeRefinedTypeFactory = void 0;
+    var throwModule = requireOnError();
+    exports.makeRefinedTypeFactory = (mustBe, onError = throwModule.THROW_THE_ERROR) => (value, onErrorArg =
+      onError) => (mustBe(value, onErrorArg), value)
   });
-  var Pf = v(Bo => {
+  var requireMakeRefinedTypeFactoryWithFormatter = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Bo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Bo.makeRefinedTypeFactoryWithFormatter = void 0;
-    var ew = ji();
-    Bo.makeRefinedTypeFactoryWithFormatter = (e, t, r = ew
-      .THROW_THE_ERROR) => (i, n = r) => (e(i, n), t(i))
+    exports.makeRefinedTypeFactoryWithFormatter = void 0;
+    var throwModule = requireOnError();
+    exports.makeRefinedTypeFactoryWithFormatter = (mustBe, format, onError = throwModule
+      .THROW_THE_ERROR) => (value, onErrorArg = onError) => (mustBe(value, onErrorArg), format(value))
   });
-  var If = v(Rf => {
+  var requireRefinedFormatterTypes = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Rf, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var Nf = v(lt => {
+  var requireVoFactories = defineCommonjsModule(exports => {
     "use strict";
-    var tw = lt && lt.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Vo = lt && lt.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && tw(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(lt, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Vo(Of(), lt);
-    Vo(Mf(), lt);
-    Vo(Pf(), lt);
-    Vo(If(), lt)
+    exportStar(requireRefinedFactoryTypes(), exports);
+    exportStar(requireMakeRefinedTypeFactory(), exports);
+    exportStar(requireMakeRefinedTypeFactoryWithFormatter(), exports);
+    exportStar(requireRefinedFormatterTypes(), exports)
   });
-  var kf = v(Mr => {
+  var requireVoNominals = defineCommonjsModule(exports => {
     "use strict";
-    var rw = Mr && Mr.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      iw = Mr && Mr.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && rw(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Mr, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    iw(Nf(), Mr)
+    exportStar(requireVoFactories(), exports)
   });
-  var Cf = v(Ot => {
+  var requireValueObjects = defineCommonjsModule(exports => {
     "use strict";
-    var nw = Ot && Ot.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      ll = Ot && Ot.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && nw(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(Ot, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    ll(Sf(), Ot);
-    ll(kf(), Ot);
-    ll(rl(), Ot)
+    exportStar(requireVoRefinement(), exports);
+    exportStar(requireVoNominals(), exports);
+    exportStar(requireVoTypesIndex(), exports)
   });
-  var ul = v(ni => {
+  var requireParseContentType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(ni, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    ni._parseContentType = ni.parseContentType = void 0;
-    var ow = xe(),
-      qf = at(),
-      aw = ti(),
-      sw = vo();
-    ni.parseContentType = Bf.bind(null, aw.MediaTypeMatchRegex, e => e
+    exports._parseContentType = exports.parseContentType = void 0;
+    var throwModule = requireErrorReporting(),
+      errorsModule = requireMtErrors(),
+      regexModule = requireMtRegexes(),
+      contentTypeModule = requireContentTypeFrom();
+    exports.parseContentType = _parseContentType.bind(null, regexModule.MediaTypeMatchRegex, value => value
       .toLowerCase());
 
-    function Bf(e, t, r, i = ow.THROW_THE_ERROR) {
-      let n = e.exec(r);
-      if (n === null) throw i(new qf.NotAMediaTypeError({
+    function _parseContentType(regex, transform, input, onError = throwModule.THROW_THE_ERROR) {
+      let match = regex.exec(input);
+      if (match === null) throw onError(new errorsModule.NotAMediaTypeError({
         public: {
-          input: r
+          input: input
         }
       }));
-      if (n.groups === void 0) throw i(new qf
+      if (match.groups === void 0) throw onError(new errorsModule
         .MediaTypeMatchRegexIsBrokenError({}));
-      return sw._contentTypeFrom(t, n.groups.contentType)
+      return contentTypeModule._contentTypeFrom(transform, match.groups.contentType)
     }
-    ni._parseContentType = Bf
+    exports._parseContentType = _parseContentType
   });
-  var dl = v(oi => {
+  var requireParseMediaType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(oi, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    oi.parseMediaTypeUnbound = oi.parseMediaType = void 0;
-    var lw = xe(),
-      uw = at(),
-      dw = ho(),
-      Vf = ti();
-    oi.parseMediaType = Hf.bind(null, Vf.MediaTypeMatchRegex, Vf
+    exports.parseMediaTypeUnbound = exports.parseMediaType = void 0;
+    var throwModule = requireErrorReporting(),
+      errorsModule = requireMtErrors(),
+      regexBrokenModule = requireMediaTypeMatchRegexIsBroken(),
+      regexModule = requireMtRegexes();
+    exports.parseMediaType = parseMediaTypeUnbound.bind(null, regexModule.MediaTypeMatchRegex, regexModule
       .MediaTypeParamRegex);
 
-    function Hf(e, t, r, i = lw.THROW_THE_ERROR, n = o => o
+    function parseMediaTypeUnbound(regex, paramRegex, input, onError = throwModule.THROW_THE_ERROR, normalize = value => value
       .toLocaleLowerCase()) {
-      let o = e.exec(r);
-      if (o === null) throw i(new uw.NotAMediaTypeError({
+      let match = regex.exec(input);
+      if (match === null) throw onError(new errorsModule.NotAMediaTypeError({
         public: {
-          input: r
+          input: input
         }
       }));
-      if (o.groups === void 0) throw i(new dw
+      if (match.groups === void 0) throw onError(new regexBrokenModule
         .MediaTypeMatchRegexIsBrokenError({}));
-      let s = {
-        type: n(o.groups.type),
-        subtype: n(o.groups.subtype)
+      let result = {
+        type: normalize(match.groups.type),
+        subtype: normalize(match.groups.subtype)
       };
-      o.groups.tree && (s.tree = n(o.groups.tree)), o.groups.suffix && (s
-        .suffix = n(o.groups.suffix));
-      let a = t.exec(r);
-      if (a !== null)
-        for (s.parameters = {}; a !== null && a.groups !== void 0;) {
-          let l = n(a.groups.parameterName);
-          s.parameters[l] = a.groups.parameterValueA || a.groups
-            .parameterValueB, a = t.exec(r)
+      match.groups.tree && (result.tree = normalize(match.groups.tree)), match.groups.suffix && (result
+        .suffix = normalize(match.groups.suffix));
+      let paramMatch = paramRegex.exec(input);
+      if (paramMatch !== null)
+        for (result.parameters = {}; paramMatch !== null && paramMatch.groups !== void 0;) {
+          let paramName = normalize(paramMatch.groups.parameterName);
+          result.parameters[paramName] = paramMatch.groups.parameterValueA || paramMatch.groups
+            .parameterValueB, paramMatch = paramRegex.exec(input)
         }
-      return s
+      return result
     }
-    oi.parseMediaTypeUnbound = Hf
+    exports.parseMediaTypeUnbound = parseMediaTypeUnbound
   });
-  var fl = v($t => {
+  var requireMediaTypeClass = defineCommonjsModule(exports => {
     "use strict";
-    var Ho = $t && $t.__classPrivateFieldGet || function(e, t) {
-        if (!t.has(e)) throw new TypeError(
+    var classPrivateFieldGet = exports && exports.__classPrivateFieldGet || function(receiver, privateMap) {
+        if (!privateMap.has(receiver)) throw new TypeError(
           "attempted to get private field on non-instance");
-        return t.get(e)
+        return privateMap.get(receiver)
       },
-      Ff = $t && $t.__classPrivateFieldSet || function(e, t, r) {
-        if (!t.has(e)) throw new TypeError(
+      classPrivateFieldSet = exports && exports.__classPrivateFieldSet || function(receiver, privateMap, value) {
+        if (!privateMap.has(receiver)) throw new TypeError(
           "attempted to set private field on non-instance");
-        return t.set(e, r), r
+        return privateMap.set(receiver, value), value
       },
-      zi, $i;
-    Object.defineProperty($t, "__esModule", {
+      contentTypeCache, parsedCache;
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    $t.MediaType = void 0;
-    var cl = xe(),
-      cw = Cf(),
-      pw = Zs(),
-      fw = ul(),
-      mw = dl(),
-      pl = class e extends cw.RefinedString {
-        constructor(t, r = cl.THROW_THE_ERROR) {
-          super(t, pw.mustBeMediaType, r), zi.set(this, void 0), $i.set(
+    exports.MediaType = void 0;
+    var throwModule = requireErrorReporting(),
+      refinedStringModule = requireValueObjects(),
+      mustBeModule = requireMustBeMediaType(),
+      parseContentTypeModule = requireParseContentType(),
+      parseMediaTypeModule = requireParseMediaType(),
+      MediaType = class MediaType extends refinedStringModule.RefinedString {
+        constructor(value, onError = throwModule.THROW_THE_ERROR) {
+          super(value, mustBeModule.mustBeMediaType, onError), contentTypeCache.set(this, void 0), parsedCache.set(
             this, void 0)
         }
-        static from(t, r = cl.THROW_THE_ERROR) {
-          return new e(t, r)
+        static from(value, onError = throwModule.THROW_THE_ERROR) {
+          return new MediaType(value, onError)
         }
         getContentType() {
-          return Ho(this, zi) || Ff(this, zi, fw.parseContentType(this
-            .valueOf())), Ho(this, zi)
+          return classPrivateFieldGet(this, contentTypeCache) || classPrivateFieldSet(this, contentTypeCache, parseContentTypeModule.parseContentType(this
+            .valueOf())), classPrivateFieldGet(this, contentTypeCache)
         }
         parse() {
-          return Ho(this, $i) || Ff(this, $i, mw.parseMediaType(this
-            .value, cl.THROW_THE_ERROR)), Ho(this, $i)
+          return classPrivateFieldGet(this, parsedCache) || classPrivateFieldSet(this, parsedCache, parseMediaTypeModule.parseMediaType(this
+            .value, throwModule.THROW_THE_ERROR)), classPrivateFieldGet(this, parsedCache)
         }
       };
-    $t.MediaType = pl;
-    zi = new WeakMap, $i = new WeakMap
+    exports.MediaType = MediaType;
+    contentTypeCache = new WeakMap, parsedCache = new WeakMap
   });
-  var Lf = v(Fo => {
+  var requireMediaTypeFrom = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Fo, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Fo.mediaTypeFrom = void 0;
-    var gw = fl();
-    Fo.mediaTypeFrom = gw.MediaType.from
+    exports.mediaTypeFrom = void 0;
+    var mediaTypeModule = requireMediaTypeClass();
+    exports.mediaTypeFrom = mediaTypeModule.MediaType.from
   });
-  var jf = v(Uf => {
+  var requireMediaTypeType = defineCommonjsModule(exports => {
     "use strict";
-    Object.defineProperty(Uf, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     })
   });
-  var xo = v(_e => {
+  var requireMediaTypeIndex = defineCommonjsModule(exports => {
     "use strict";
-    var hw = _e && _e.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Mt = _e && _e.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && hw(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(_e, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Mt(Js(), _e);
-    Mt(Ys(), _e);
-    Mt(Zs(), _e);
-    Mt(uf(), _e);
-    Mt(Lf(), _e);
-    Mt(fl(), _e);
-    Mt(jf(), _e);
-    Mt(ul(), _e);
-    Mt(dl(), _e)
+    exportStar(requireIsMediaType(), exports);
+    exportStar(requireMatchesContentType(), exports);
+    exportStar(requireMustBeMediaType(), exports);
+    exportStar(requireMustMatchContentType(), exports);
+    exportStar(requireMediaTypeFrom(), exports);
+    exportStar(requireMediaTypeClass(), exports);
+    exportStar(requireMediaTypeType(), exports);
+    exportStar(requireParseContentType(), exports);
+    exportStar(requireParseMediaType(), exports)
   });
-  var Wf = v(ut => {
+  var requireMediatypes = defineCommonjsModule(exports => {
     "use strict";
-    var _w = ut && ut.__createBinding || (Object.create ? function(e, t,
-        r, i) {
-        i === void 0 && (i = r), Object.defineProperty(e, i, {
+    var createBinding = exports && exports.__createBinding || (Object.create ? function(target, source,
+        key, destKey) {
+        destKey === void 0 && (destKey = key), Object.defineProperty(target, destKey, {
           enumerable: !0,
           get: function() {
-            return t[r]
+            return source[key]
           }
         })
-      } : function(e, t, r, i) {
-        i === void 0 && (i = r), e[i] = t[r]
+      } : function(target, source, key, destKey) {
+        destKey === void 0 && (destKey = key), target[destKey] = source[key]
       }),
-      Lo = ut && ut.__exportStar || function(e, t) {
-        for (var r in e) r !== "default" && !t.hasOwnProperty(r) && _w(t,
-          e, r)
+      exportStar = exports && exports.__exportStar || function(source, target) {
+        for (var key in source) key !== "default" && !target.hasOwnProperty(key) && createBinding(target,
+          source, key)
       };
-    Object.defineProperty(ut, "__esModule", {
+    Object.defineProperty(exports, "__esModule", {
       value: !0
     });
-    Lo(at(), ut);
-    Lo($s(), ut);
-    Lo(xo(), ut);
-    Lo(Eo(), ut)
+    exportStar(requireMtErrors(), exports);
+    exportStar(requireContentTypeIndex(), exports);
+    exportStar(requireMediaTypeIndex(), exports);
+    exportStar(requireContentTypePkg(), exports)
   });
 
-  function ml(e, t, r) {
-    let i = t.andThen(s => s.defacto_codecs.audio),
-      n = t.andThen(s => s.defacto_codecs.video),
-      o = e.split(",");
-    if (o.length > 1) {
-      let s = Xr()
-        .find(m => m.mimetype.test(o[0])),
-        a = Xr()
-        .find(m => m.mimetype.test(o[1])),
-        l = Gr()
-        .find(m => m.mimetype.test(o[0])),
-        u = Gr()
-        .find(m => m.mimetype.test(o[1])),
-        d = i.unwrapOr("unknown"),
-        c = n.unwrapOr("unknown");
+  function parseCodecs(codecStr, container, hint) {
+    let defaultAudio = container.andThen(cont => cont.defacto_codecs.audio),
+      defaultVideo = container.andThen(cont => cont.defacto_codecs.video),
+      codecParts = codecStr.split(",");
+    if (codecParts.length > 1) {
+      let videoA = iterVideoCodecs()
+        .find(codec => codec.mimetype.test(codecParts[0])),
+        videoB = iterVideoCodecs()
+        .find(codec => codec.mimetype.test(codecParts[1])),
+        audioA = iterAudioCodecs()
+        .find(codec => codec.mimetype.test(codecParts[0])),
+        audioB = iterAudioCodecs()
+        .find(codec => codec.mimetype.test(codecParts[1])),
+        audioFallback = defaultAudio.unwrapOr("unknown"),
+        videoFallback = defaultVideo.unwrapOr("unknown");
       return {
-        audio: l.or(u)
-          .map(m => m.name)
-          .unwrapOr(d),
-        video: s.or(a)
-          .map(m => m.name)
-          .unwrapOr(c)
+        audio: audioA.or(audioB)
+          .map(codec => codec.name)
+          .unwrapOr(audioFallback),
+        video: videoA.or(videoB)
+          .map(codec => codec.name)
+          .unwrapOr(videoFallback)
       }
     } else {
-      let s = Xr()
-        .find(u => u.mimetype.test(o[0]))
-        .map(u => u.name),
-        a = Gr()
-        .find(u => u.mimetype.test(o[0]))
-        .map(u => u.name);
-      return a.isSome() ? {
+      let videoCodec = iterVideoCodecs()
+        .find(codec => codec.mimetype.test(codecParts[0]))
+        .map(codec => codec.name),
+        audioCodec = iterAudioCodecs()
+        .find(codec => codec.mimetype.test(codecParts[0]))
+        .map(codec => codec.name);
+      return audioCodec.isSome() ? {
           video: !1,
-          audio: a.unwrap()
-        } : s.isSome() ? {
-          video: s.unwrap(),
+          audio: audioCodec.unwrap()
+        } : videoCodec.isSome() ? {
+          video: videoCodec.unwrap(),
           audio: !1
-        } : r.map(u => u === "audio")
+        } : hint.map(kind => kind === "audio")
         .unwrapOr(!1) ? {
           video: !1,
-          audio: a.or(i)
+          audio: audioCodec.or(defaultAudio)
             .unwrapOr("unknown")
         } : {
-          video: s.or(n)
+          video: videoCodec.or(defaultVideo)
             .unwrapOr("unknown"),
           audio: !1
         }
     }
   }
 
-  function ai(e) {
-    let t;
+  function parseMimeType(mimeType) {
+    let parsed;
     try {
-      t = (0, Xf.mediaTypeFrom)(e)
+      parsed = (0, mediatypesEsm.mediaTypeFrom)(mimeType)
         .parse()
-    } catch (a) {
-      return U("parse error:" + a)
+    } catch (err) {
+      return resultErr("parse error:" + err)
     }
-    let r = O;
-    t.type == "video" && (r = q("video")), t.type == "audio" && (r = q(
+    let typeHint = ResultNone;
+    parsed.type == "video" && (typeHint = resultSome("video")), parsed.type == "audio" && (typeHint = resultSome(
       "audio"));
-    let i = Xa()
-      .find(a => a.mimetype.test(t.subtype));
-    if (i.isNone()) return U(`Unknown container (parsed from ${t.subtype})`);
-    let n = t.parameters?.codecs ?? "",
-      o = ml(n, i, r),
-      s = i.unwrap();
-    return L({
-      container: s.name,
-      av_codecs: o
+    let container = iterContainers()
+      .find(cont => cont.mimetype.test(parsed.subtype));
+    if (container.isNone()) return resultErr(`Unknown container (parsed from ${parsed.subtype})`);
+    let codecs = parsed.parameters?.codecs ?? "",
+      avCodecs = parseCodecs(codecs, container, typeHint),
+      containerObj = container.unwrap();
+    return resultOk({
+      container: containerObj.name,
+      av_codecs: avCodecs
     })
   }
-  var Xf, Ji = C(() => {
+  var mediatypesEsm, initMediaTypeSupport = defineLazyModule(() => {
     "use strict";
-    Xf = yt(Wf(), 1);
-    oe();
-    Xe();
-    xt();
-    Ue()
+    mediatypesEsm = toEsm(requireMediatypes(), 1);
+    initTsResultsIndex();
+    initContainers();
+    initCodecs();
+    initIterTools()
   });
 
-  function gl(e, t) {
-    if (!mr(e, "mimeType")) return U("Missing mimeType");
-    let r = ai(e.mimeType);
-    if (r.isErr()) return r;
-    let i = r.unwrap(),
-      n = ue(i.container),
-      o = "unknown";
-    if (mr(e, "approxDurationMs")) {
-      let l = parseInt(e.approxDurationMs) / 1e3;
-      l && (o = l)
+  function parseYoutubeFormat(format, protocol) {
+    if (!isStringProp(format, "mimeType")) return resultErr("Missing mimeType");
+    let parseResult = parseMimeType(format.mimeType);
+    if (parseResult.isErr()) return parseResult;
+    let parsed = parseResult.unwrap(),
+      container = containerByName(parsed.container),
+      duration = "unknown";
+    if (isStringProp(format, "approxDurationMs")) {
+      let durationSec = parseInt(format.approxDurationMs) / 1e3;
+      durationSec && (duration = durationSec)
     }
-    let s = O;
-    $r(e, "bitrate") && (s = q(e.bitrate));
-    let a = Ge(i.av_codecs, l => ({
-      codec: We(l),
-      bitrate: s
-    }), l => {
-      let u = je(l),
-        d = O,
-        c = O,
-        m = O;
-      return $r(e, "fps") && (d = q(e.fps)), $r(e, "width") && $r(e,
-          "height") && (c = q({
-          height: e.height,
-          width: e.width
-        })), mr(e, "qualityLabel") && (m = Td(e.qualityLabel)), m
-      .isNone() && c.isSome() && (m = q(Qr(c.unwrap()
+    let bitrate = ResultNone;
+    isNumberProp(format, "bitrate") && (bitrate = resultSome(format.bitrate));
+    let avTracks = matchAudioVideo(parsed.av_codecs, audioCodecName => ({
+      codec: makeAudioCodec(audioCodecName),
+      bitrate: bitrate
+    }), videoCodecName => {
+      let codec = makeVideoCodec(videoCodecName),
+        fps = ResultNone,
+        dimensions = ResultNone,
+        quality = ResultNone;
+      return isNumberProp(format, "fps") && (fps = resultSome(format.fps)), isNumberProp(format, "width") && isNumberProp(format,
+          "height") && (dimensions = resultSome({
+          height: format.height,
+          width: format.width
+        })), isStringProp(format, "qualityLabel") && (quality = preferredQualityFrom(format.qualityLabel)), quality
+      .isNone() && dimensions.isSome() && (quality = resultSome(qualityLabelForHeight(dimensions.unwrap()
           .height))), {
-          codec: u,
-          bitrate: s,
-          fps: d,
-          dimensions: c,
-          quality: m
+          codec: codec,
+          bitrate: bitrate,
+          fps: fps,
+          dimensions: dimensions,
+          quality: quality
         }
     });
-    return L({
+    return resultOk({
       builder: "YoutubeFormat",
-      protocol: t,
-      content_length: O,
-      duration: o,
-      container: n,
-      av: a
+      protocol: protocol,
+      content_length: ResultNone,
+      duration: duration,
+      container: container,
+      av: avTracks
     })
   }
-  var Gf = C(() => {
+  var initFormatParsing = defineLazyModule(() => {
     "use strict";
-    oe();
-    Ji();
-    xt();
-    Xe();
-    Cn();
-    pr();
-    zr()
+    initTsResultsIndex();
+    initMediaTypeSupport();
+    initCodecs();
+    initContainers();
+    initObjGuards();
+    initProtocolTypes();
+    initQualities()
   });
 
-  function Qf(e) {
-    return e ? e.replaceAll("&", "&amp;")
+  function escapeHtml(text) {
+    return text ? text.replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;") : ""
   }
-  var zf = C(() => {
+  var initMessageFormattingTypes = defineLazyModule(() => {
     "use strict"
   });
 
-  function Pt(e, t, r) {
-    let i = () => (console.error(`Requesting unknown i18n string ${e}`), e);
-    t = t.map(n => n.toString())
-      .map(Qf);
+  function formatI18nMessage(key, substitutions, customStrings) {
+    let fallback = () => (console.error(`Requesting unknown i18n string ${key}`), key);
+    substitutions = substitutions.map(sub => sub.toString())
+      .map(escapeHtml);
     try {
-      if (e in r) {
-        let n = r[e],
-          o = 1;
-        for (let s = 0; s < t.length; s++) n = n.replace(`$${o}`, t[s]);
-        return n
+      if (key in customStrings) {
+        let message = customStrings[key],
+          index = 1;
+        for (let substitutionIndex = 0; substitutionIndex < substitutions.length; substitutionIndex++) message = message.replace(`$${index}`, substitutions[substitutionIndex]);
+        return message
       } else {
-        let n = $f.default.i18n.getMessage(e, t);
-        return n || i()
+        let message = messagePolyfill.default.i18n.getMessage(key, substitutions);
+        return message || fallback()
       }
     } catch {
-      return i()
+      return fallback()
     }
   }
-  var $f, Uo = C(() => {
+  var messagePolyfill, initMessageFormatting = defineLazyModule(() => {
     "use strict";
-    $f = yt(Ht(), 1);
-    zf()
+    messagePolyfill = toEsm(requirePolyfill(), 1);
+    initMessageFormattingTypes()
   });
 
-  function Jf(e, t) {
+  function renderIconImage(instructions, cache) {
     let {
-      size: r,
-      spread: i,
-      radius: n,
-      greyed: o,
-      channel: s
-    } = e, a = JSON.stringify({
-      instructions: e
-    }), l = t.get(a);
-    if (l) return l;
-    let d = new OffscreenCanvas(r, r)
+      size,
+      spread,
+      radius,
+      greyed,
+      channel
+    } = instructions, cacheKey = JSON.stringify({
+      instructions: instructions
+    }), cached = cache.get(cacheKey);
+    if (cached) return cached;
+    let ctx = new OffscreenCanvas(size, size)
       .getContext("2d");
-    d.lineCap = "round";
-    let c = r / 2 - 5,
-      m = r / 2,
-      w = i * Math.sin(Math.PI / 6),
-      p = i * Math.cos(Math.PI / 6),
-      _ = (D, P, k, S, M) => {
-        d.save(), d.globalAlpha = D, d.beginPath(), d.arc(P, k, M, 0, 2 * Math
-          .PI, !1), d.fillStyle = S, d.fill(), d.closePath(), d.restore()
+    ctx.lineCap = "round";
+    let centerX = size / 2 - 5,
+      centerY = size / 2,
+      offsetX = spread * Math.sin(Math.PI / 6),
+      offsetY = spread * Math.cos(Math.PI / 6),
+      drawCircle = (alpha, circleX, circleY, fillStyle, circleRadius) => {
+        ctx.save(), ctx.globalAlpha = alpha, ctx.beginPath(), ctx.arc(circleX, circleY, circleRadius, 0, 2 * Math
+          .PI, !1), ctx.fillStyle = fillStyle, ctx.fill(), ctx.closePath(), ctx.restore()
       },
-      f = d.createLinearGradient(r, r * .5, r * .5, r * .5);
-    f.addColorStop(.1652, "#A6DEEF"), f.addColorStop(.3949, "#6CC5F0"), f
+      gradientBlue = ctx.createLinearGradient(size, size * .5, size * .5, size * .5);
+    gradientBlue.addColorStop(.1652, "#A6DEEF"), gradientBlue.addColorStop(.3949, "#6CC5F0"), gradientBlue
       .addColorStop(.8805, "#355BAA");
-    let g = d.createLinearGradient(r * .3, r * .25, r * .6, r * .6);
-    g.addColorStop(0, "#FFF200"), g.addColorStop(1, "#FFCE07");
-    let h = d.createLinearGradient(r * .5, r * .5, r * .5, r);
-    h.addColorStop(0, "#EC223B"), h.addColorStop(.2577, "#E42339"), h
-      .addColorStop(.492, "#D42634"), h.addColorStop(.7172, "#BD292C"), h
-      .addColorStop(.9354, "#9E2B22"), h.addColorStop(1, "#942B1F");
-    let T = .2,
-      x = "#666";
-    if (s == "beta" && (x = "green"), s == "dev" && (x = "#F06"), _(1, c + i,
-        m, x, n * (1 + T)), _(1, c - w, m - p, x, n * (1 + T)), _(1, c - w,
-        m + p, x, n * (1 + T)), d.globalCompositeOperation =
-      "destination-out", _(1, c + i, m, "#FFF", n * (1 - T)), _(1, c - w, m -
-        p, "#FFF", n * (1 - T)), _(1, c - w, m + p, "#FFF", n * (1 - T)), d
-      .globalCompositeOperation = "source-over", !o) _(1, c + i, m, "white",
-      n), _(1, c - w, m - p, "white", n), _(1, c - w, m + p, "white", n), _(
-      1, c + i, m, f, n), _(.9, c - w, m - p, g, n), _(.85, c - w, m + p, h,
-      n);
+    let gradientYellow = ctx.createLinearGradient(size * .3, size * .25, size * .6, size * .6);
+    gradientYellow.addColorStop(0, "#FFF200"), gradientYellow.addColorStop(1, "#FFCE07");
+    let gradientRed = ctx.createLinearGradient(size * .5, size * .5, size * .5, size);
+    gradientRed.addColorStop(0, "#EC223B"), gradientRed.addColorStop(.2577, "#E42339"), gradientRed
+      .addColorStop(.492, "#D42634"), gradientRed.addColorStop(.7172, "#BD292C"), gradientRed
+      .addColorStop(.9354, "#9E2B22"), gradientRed.addColorStop(1, "#942B1F");
+    let ringDelta = .2,
+      outlineColor = "#666";
+    if (channel == "beta" && (outlineColor = "green"), channel == "dev" && (outlineColor = "#F06"), drawCircle(1, centerX + spread,
+        centerY, outlineColor, radius * (1 + ringDelta)), drawCircle(1, centerX - offsetX, centerY - offsetY, outlineColor, radius * (1 + ringDelta)), drawCircle(1, centerX - offsetX,
+        centerY + offsetY, outlineColor, radius * (1 + ringDelta)), ctx.globalCompositeOperation =
+      "destination-out", drawCircle(1, centerX + spread, centerY, "#FFF", radius * (1 - ringDelta)), drawCircle(1, centerX - offsetX, centerY -
+        offsetY, "#FFF", radius * (1 - ringDelta)), drawCircle(1, centerX - offsetX, centerY + offsetY, "#FFF", radius * (1 - ringDelta)), ctx
+      .globalCompositeOperation = "source-over", !greyed) drawCircle(1, centerX + spread, centerY, "white",
+      radius), drawCircle(1, centerX - offsetX, centerY - offsetY, "white", radius), drawCircle(1, centerX - offsetX, centerY + offsetY, "white", radius), drawCircle(
+      1, centerX + spread, centerY, gradientBlue, radius), drawCircle(.9, centerX - offsetX, centerY - offsetY, gradientYellow, radius), drawCircle(.85, centerX - offsetX, centerY + offsetY, gradientRed,
+      radius);
     else {
-      let D = d.createLinearGradient(0, 0, r, r);
-      D.addColorStop(0, "#333"), D.addColorStop(1, "#CCC"), _(1, c + i, m,
-        "white", n), _(1, c - w, m - p, "white", n), _(1, c - w, m + p,
-        "white", n), _(.2, c + i, m, D, n), _(.2, c - w, m - p, D, n), _(.2,
-        c - w, m + p, D, n)
+      let greyGradient = ctx.createLinearGradient(0, 0, size, size);
+      greyGradient.addColorStop(0, "#333"), greyGradient.addColorStop(1, "#CCC"), drawCircle(1, centerX + spread, centerY,
+        "white", radius), drawCircle(1, centerX - offsetX, centerY - offsetY, "white", radius), drawCircle(1, centerX - offsetX, centerY + offsetY,
+        "white", radius), drawCircle(.2, centerX + spread, centerY, greyGradient, radius), drawCircle(.2, centerX - offsetX, centerY - offsetY, greyGradient, radius), drawCircle(.2,
+        centerX - offsetX, centerY + offsetY, greyGradient, radius)
     }
-    let b = d.getImageData(0, 0, r, r);
-    return t.set(a, b), b
+    let imageData = ctx.getImageData(0, 0, size, size);
+    return cache.set(cacheKey, imageData), imageData
   }
-  var Kf = C(() => {
+  var initIconRendering = defineLazyModule(() => {
     "use strict"
   });
-  var hl, de, jo = C(() => {
-    hl = "stable", de = "google"
+  var BUILD_CHANNEL, BUILD_TARGET, initBuildTarget = defineLazyModule(() => {
+    BUILD_CHANNEL = "stable", BUILD_TARGET = "google"
   });
 
-  function Zf() {
-    de == "mozilla" ? (dt.default.browserAction.setPopup({
+  function resetBrowserAction() {
+    BUILD_TARGET == "mozilla" ? (actionPolyfill.default.browserAction.setPopup({
       popup: "/content/popup.html?panel=main"
-    }), dt.default.sidebarAction.setPanel({
+    }), actionPolyfill.default.sidebarAction.setPanel({
       panel: null
     })) : (chrome.action.setPopup({
       popup: "/content/popup.html?panel=main"
@@ -8101,167 +8101,167 @@ const store = createStore(
       })))
   }
 
-  function _l(e) {
-    de == "mozilla" ? dt.default.browserAction.setPopup({
+  function setPopupEnabled(enabled) {
+    BUILD_TARGET == "mozilla" ? actionPolyfill.default.browserAction.setPopup({
       popup: "/content2/popup.html"
     }) : chrome.action.setPopup({
       popup: "/content2/popup.html"
-    }), bl(e, 0, !1)
+    }), applySidebarMode(enabled, 0, !1)
   }
 
-  function bl(e, t, r) {
-    let i = de == "mozilla";
-    if (!i && (chrome.sidePanel && chrome.sidePanel.setPanelBehavior ? (chrome
+  function applySidebarMode(enabled, windowId, doOpen) {
+    let isMozilla = BUILD_TARGET == "mozilla";
+    if (!isMozilla && (chrome.sidePanel && chrome.sidePanel.setPanelBehavior ? (chrome
         .sidePanel.setOptions({
-          enabled: e
+          enabled: enabled
         }), chrome.sidePanel.setPanelBehavior({
-          openPanelOnActionClick: e
-        })) : e = !1, r))
-      if (e) t != 0 && chrome.sidePanel?.open?.({
-        windowId: t
+          openPanelOnActionClick: enabled
+        })) : enabled = !1, doOpen))
+      if (enabled) windowId != 0 && chrome.sidePanel?.open?.({
+        windowId: windowId
       });
       else try {
         chrome.action.openPopup()
       } catch {}
-    i && !e && (dt.default.browserAction.setPopup({
+    isMozilla && !enabled && (actionPolyfill.default.browserAction.setPopup({
       popup: "/content2/popup.html"
-    }), dt.default.sidebarAction.setPanel({
+    }), actionPolyfill.default.sidebarAction.setPanel({
       panel: null
-    }), r && dt.default.sidebarAction.close()), i && e && (dt.default
+    }), doOpen && actionPolyfill.default.sidebarAction.close()), isMozilla && enabled && (actionPolyfill.default
       .browserAction.setPopup({
         popup: null
-      }), dt.default.sidebarAction.setPanel({
+      }), actionPolyfill.default.sidebarAction.setPanel({
         panel: "/content2/sidebar.html"
-      }), r && dt.default.sidebarAction.open())
+      }), doOpen && actionPolyfill.default.sidebarAction.open())
   }
-  var dt, em = C(() => {
+  var actionPolyfill, initBrowserAction = defineLazyModule(() => {
     "use strict";
-    dt = yt(Ht(), 1);
-    jo()
+    actionPolyfill = toEsm(requirePolyfill(), 1);
+    initBuildTarget()
   });
 
-  function tm(e) {
-    let t = Math.floor(e / 3600);
-    e -= t * 3600;
-    let r = Math.floor(e / 60);
-    e -= r * 60;
-    let i = Math.round(e),
-      n = ("0" + t + ":")
+  function formatDuration(seconds) {
+    let hours = Math.floor(seconds / 3600);
+    seconds -= hours * 3600;
+    let minutes = Math.floor(seconds / 60);
+    seconds -= minutes * 60;
+    let secs = Math.round(seconds),
+      hoursStr = ("0" + hours + ":")
       .slice(-3),
-      o = ("0" + r + ":")
+      minutesStr = ("0" + minutes + ":")
       .slice(-3),
-      s = ("0" + i)
+      secsStr = ("0" + secs)
       .slice(-2);
-    return n == "00:" && (n = ""), n + o + s
+    return hoursStr == "00:" && (hoursStr = ""), hoursStr + minutesStr + secsStr
   }
-  var rm = C(() => {
+  var initMessageFormattingIndex = defineLazyModule(() => {
     "use strict";
-    Uo()
+    initMessageFormatting()
   });
 
-  function ct(e, t = 0) {
-    let r = 3735928559 ^ t,
-      i = 1103547991 ^ t;
-    for (let n = 0, o; n < e.length; n++) o = e.charCodeAt(n), r = Math.imul(
-      r ^ o, 2654435761), i = Math.imul(i ^ o, 1597334677);
-    return r = Math.imul(r ^ r >>> 16, 2246822507), r ^= Math.imul(i ^ i >>>
-        13, 3266489909), i = Math.imul(i ^ i >>> 16, 2246822507), i ^= Math
-      .imul(r ^ r >>> 13, 3266489909), 4294967296 * (2097151 & i) + (r >>> 0)
+  function hashToHex(str, seed = 0) {
+    let hashLow = 3735928559 ^ seed,
+      hashHigh = 1103547991 ^ seed;
+    for (let charIndex = 0, charCode; charIndex < str.length; charIndex++) charCode = str.charCodeAt(charIndex), hashLow = Math.imul(
+      hashLow ^ charCode, 2654435761), hashHigh = Math.imul(hashHigh ^ charCode, 1597334677);
+    return hashLow = Math.imul(hashLow ^ hashLow >>> 16, 2246822507), hashLow ^= Math.imul(hashHigh ^ hashHigh >>>
+        13, 3266489909), hashHigh = Math.imul(hashHigh ^ hashHigh >>> 16, 2246822507), hashHigh ^= Math
+      .imul(hashLow ^ hashLow >>> 13, 3266489909), 4294967296 * (2097151 & hashHigh) + (hashLow >>> 0)
   }
-  var Wo = C(() => {
+  var initHitTypes = defineLazyModule(() => {
     "use strict"
   });
-  var Xo, yl = C(() => {
+  var siteHandlers, initSiteHandlers = defineLazyModule(() => {
     "use strict";
-    fr();
-    Xo = [{
-      mutateDownloadable: e => {
-        e.page_url.includes("missav.com") && e.headers.push({
+    initMediaCommon();
+    siteHandlers = [{
+      mutateDownloadable: downloadable => {
+        downloadable.page_url.includes("missav.com") && downloadable.headers.push({
           name: "Pragma",
           value: "no-cache"
         })
       }
     }, {
-      mutateDownloadable: e => {
-        if (e.page_url.includes("://himado.in/"))
-          for (let t of e.variants.values()) t.manifest_url
-            .endsWith("audio.mp3") && (t.core_media.av.video = jt(),
-              e.is_low_quality = !1)
+      mutateDownloadable: downloadable => {
+        if (downloadable.page_url.includes("://himado.in/"))
+          for (let variant of downloadable.variants.values()) variant.manifest_url
+            .endsWith("audio.mp3") && (variant.core_media.av.video = unknownVideoTrack(),
+              downloadable.is_low_quality = !1)
       }
     }, {
-      canHandleHLS: (e, t, r) => !!(e.includes(
-        "/api/playlist/master/") && t.includes("text"))
+      canHandleHLS: (url, contentType, extra) => !!(url.includes(
+        "/api/playlist/master/") && contentType.includes("text"))
     }, {
-      canHandleHLS: (e, t, r) => !!(e.includes("hls2.vcdnx.com") && !e
-        .includes("?ts=") && t.includes("text"))
+      canHandleHLS: (url, contentType, extra) => !!(url.includes("hls2.vcdnx.com") && !url
+        .includes("?ts=") && contentType.includes("text"))
     }]
   });
-  var Ki = {};
-  ie(Ki, {
-    alert: () => nm,
-    dialog: () => wl,
-    fileDialog: () => si,
-    saveAs: () => Aw,
-    selectConvertFiles: () => xw,
-    selectDirectory: () => om,
-    selectMergeAudioFile: () => Ew,
-    selectMergeVideoFile: () => Tw
+  var dialogNs = {};
+  defineExports(dialogNs, {
+    alert: () => alert,
+    dialog: () => dialog,
+    fileDialog: () => fileDialog,
+    saveAs: () => saveAs,
+    selectConvertFiles: () => selectConvertFiles,
+    selectDirectory: () => selectDirectory,
+    selectMergeAudioFile: () => selectMergeAudioFile,
+    selectMergeVideoFile: () => selectMergeVideoFile
   });
-  async function im() {
-    let e = "2.0.17";
-    if ((await ae.prefs)
+  async function checkNativeFilepicker() {
+    let minVersion = "2.0.17";
+    if ((await dialogWeh.prefs)
       .use_native_filepicker) {
       let {
-        status: r,
-        info: i
-      } = await vl.check();
-      if (r) {
-        let n = i.version;
-        if (vw.isMinimumVersion(n, e)) return !0
+        status,
+        info
+      } = await dialogCoapp.check();
+      if (status) {
+        let version = info.version;
+        if (dialogUtil.isMinimumVersion(version, minVersion)) return !0
       }
     }
     return !1
   }
 
-  function wl(e) {
-    let t = Promise.resolve();
-    e.type === "tab" && (t = t.then(() => bw.tabs.query({
+  function dialog(options) {
+    let chain = Promise.resolve();
+    options.type === "tab" && (chain = chain.then(() => dialogBrowser.tabs.query({
         active: !0,
         lastFocusedWindow: !0
       })
-      .then(i => {
-        i.length > 0 && yw.setTransientTab("<next-tab>", i[0].id)
+      .then(tabs => {
+        tabs.length > 0 && dialogTransientTab.setTransientTab("<next-tab>", tabs[0].id)
       })));
-    let r = "dialog" + ++ww;
-    return t = t.then(() => {
-        ae.ui.open(r, e)
+    let dialogName = "dialog" + ++dialogCounter;
+    return chain = chain.then(() => {
+        dialogWeh.ui.open(dialogName, options)
       })
-      .then(() => ae.wait(r)), t.__dialogName = r, t
+      .then(() => dialogWeh.wait(dialogName)), chain.__dialogName = dialogName, chain
   }
-  async function nm(e) {
-    let t = {
+  async function alert(options) {
+    let initData = {
         autoResize: !0
       },
-      r = await ae.prefs;
-    return r.alertDialogType == "tab" && (t = {
+      prefs = await dialogWeh.prefs;
+    return prefs.alertDialogType == "tab" && (initData = {
       bodyClass: "dialog-in-tab",
       autoResize: !1
-    }), wl({
+    }), dialog({
       url: "content/alert.html",
-      type: r.alertDialogType,
-      height: e.height || 200,
-      autoClose: r.dialogAutoClose,
-      initData: Object.assign(t, e)
+      type: prefs.alertDialogType,
+      height: options.height || 200,
+      autoClose: prefs.dialogAutoClose,
+      initData: Object.assign(initData, options)
     })
   }
-  async function si(e) {
-    let t = await ae.prefs,
-      r = wl({
-        type: t.fileDialogType,
+  async function fileDialog(options) {
+    let prefs = await dialogWeh.prefs,
+      dialogPromise = dialog({
+        type: prefs.fileDialogType,
         url: "content/file-dialog.html",
         height: 500,
         width: 750,
-        autoClose: t.dialogAutoClose,
+        autoClose: prefs.dialogAutoClose,
         initData: Object.assign({
           filename: null,
           directory: null,
@@ -8277,164 +8277,164 @@ const store = createStore(
           confirmOverwrite: !1,
           newDir: !1,
           createDir: !0
-        }, e)
+        }, options)
       });
-    return r.then(i => (ae.ui.close(r.__dialogName), i))
-      .catch(i => (ae.ui.close(r.__dialogName), null))
+    return dialogPromise.then(result => (dialogWeh.ui.close(dialogPromise.__dialogName), result))
+      .catch(result => (dialogWeh.ui.close(dialogPromise.__dialogName), null))
   }
-  async function Aw(e, t, r = {}) {
-    let i = ae._("save_file_as");
-    if (await im()) {
-      let o = (await vl.call("filepicker", "save_file", t, i, e))
+  async function saveAs(filename, directory, extra = {}) {
+    let title = dialogWeh._("save_file_as");
+    if (await checkNativeFilepicker()) {
+      let lines = (await dialogCoapp.call("filepicker", "save_file", directory, title, filename))
         .split(`
 `),
-        s = o[0],
-        a = o[1];
-      return s && t ? {
-        filePath: s,
-        directory: a
+        savedPath = lines[0],
+        savedDir = lines[1];
+      return savedPath && directory ? {
+        filePath: savedPath,
+        directory: savedDir
       } : null
     }
-    return si(Object.assign({
-      filename: e,
-      directory: t,
+    return fileDialog(Object.assign({
+      filename: filename,
+      directory: directory,
       uniqueFilename: !0,
-      titleText: i,
+      titleText: title,
       noSizeColumn: !1,
       dirOnly: !1,
       upDir: !0,
       editFileInput: !0,
       readonlyDir: !1,
       showDir: !0,
-      okText: ae._("save"),
+      okText: dialogWeh._("save"),
       confirmOverwrite: !0,
       newDir: !0,
       createDir: !0
-    }, r))
+    }, extra))
   }
-  async function om(e, t = {}) {
-    let r = ae._("weh_prefs_label_lastDownloadDirectory");
-    return await im() ? {
-      directory: (await vl.call("filepicker", "pick_folder", "~", r))
+  async function selectDirectory(directory, extra = {}) {
+    let title = dialogWeh._("weh_prefs_label_lastDownloadDirectory");
+    return await checkNativeFilepicker() ? {
+      directory: (await dialogCoapp.call("filepicker", "pick_folder", "~", title))
         .split(`
 `)[0]
-    } : si(Object.assign({
-      directory: e,
+    } : fileDialog(Object.assign({
+      directory: directory,
       uniqueFilename: !1,
-      titleText: r,
+      titleText: title,
       noSizeColumn: !0,
       dirOnly: !0,
       upDir: !0,
       editFileInput: !1,
       readonlyDir: !0,
       showDir: !1,
-      okText: ae._("ok"),
+      okText: dialogWeh._("ok"),
       confirmOverwrite: !1,
       newDir: !0,
       createDir: !1
-    }, t))
+    }, extra))
   }
 
-  function xw(e, t = {}) {
-    return si(Object.assign({
-      directory: e,
+  function selectConvertFiles(directory, extra = {}) {
+    return fileDialog(Object.assign({
+      directory: directory,
       uniqueFilename: !1,
-      titleText: ae._("select_files_to_convert"),
+      titleText: dialogWeh._("select_files_to_convert"),
       noSizeColumn: !1,
       dirOnly: !1,
       upDir: !0,
       readonlyDir: !0,
       editFileInput: !1,
       showDir: !1,
-      okText: ae._("convert"),
+      okText: dialogWeh._("convert"),
       confirmOverwrite: !1,
       newDir: !1,
       createDir: !1,
       selectMultiple: !0,
       outputConfigs: !0
-    }, t))
+    }, extra))
   }
 
-  function Tw(e, t = {}) {
-    return si(Object.assign({
-      directory: e,
+  function selectMergeVideoFile(directory, extra = {}) {
+    return fileDialog(Object.assign({
+      directory: directory,
       uniqueFilename: !1,
-      titleText: ae._("select_video_file_to_merge"),
+      titleText: dialogWeh._("select_video_file_to_merge"),
       noSizeColumn: !1,
       dirOnly: !1,
       upDir: !0,
       readonlyDir: !0,
       editFileInput: !1,
       showDir: !1,
-      okText: ae._("next"),
+      okText: dialogWeh._("next"),
       confirmOverwrite: !1,
       newDir: !1,
       createDir: !1,
       selectMultiple: !1,
       outputConfigs: !1
-    }, t))
+    }, extra))
   }
 
-  function Ew(e, t = {}) {
-    return si(Object.assign({
-      directory: e,
+  function selectMergeAudioFile(directory, extra = {}) {
+    return fileDialog(Object.assign({
+      directory: directory,
       uniqueFilename: !1,
-      titleText: ae._("select_audio_file_to_merge"),
+      titleText: dialogWeh._("select_audio_file_to_merge"),
       noSizeColumn: !1,
       dirOnly: !1,
       upDir: !0,
       readonlyDir: !0,
       editFileInput: !1,
       showDir: !1,
-      okText: ae._("next"),
+      okText: dialogWeh._("next"),
       confirmOverwrite: !1,
       newDir: !1,
       createDir: !1,
       selectMultiple: !1,
       outputConfigs: !1
-    }, t))
+    }, extra))
   }
-  var ae, bw, yw, vl, vw, ww, Yi = C(() => {
+  var dialogWeh, dialogBrowser, dialogTransientTab, dialogCoapp, dialogUtil, dialogCounter, initDialogs = defineLazyModule(() => {
     "use strict";
-    ae = Y(), bw = ae.browser, yw = (Rr(), R(Pr)), vl = (ft(), R(pt)),
-      vw = (he(), R(ge)), ww = 0;
-    ae.rpc.listen({
-      alert: nm,
-      selectDirectory: om
+    dialogWeh = requireWeh(), dialogBrowser = dialogWeh.browser, dialogTransientTab = (initTabTracker(), toCommonjs(tabTrackerNs)), dialogCoapp = (initCoapp(), toCommonjs(coappNs)),
+      dialogUtil = (initCoreUtil(), toCommonjs(coreUtilNs)), dialogCounter = 0;
+    dialogWeh.rpc.listen({
+      alert: alert,
+      selectDirectory: selectDirectory
     })
   });
-  var Jt = {};
-  ie(Jt, {
-    alertAudioNeedsReg: () => Pw,
-    checkLicense: () => lm,
-    setLicense: () => um,
-    validateLicense: () => El
+  var licenseNs = {};
+  defineExports(licenseNs, {
+    alertAudioNeedsReg: () => alertAudioNeedsReg,
+    checkLicense: () => checkLicense,
+    setLicense: () => setLicense,
+    validateLicense: () => validateLicense
   });
 
-  function Ow(e) {
-    return e && e.substring(0, 1)
-      .toUpperCase() + e.substring(1) || ""
+  function capitalize(str) {
+    return str && str.substring(0, 1)
+      .toUpperCase() + str.substring(1) || ""
   }
 
-  function sm(e, t) {
-    let r = new TextEncoder("utf-8")
-      .encode(t + e.key + e.email);
-    return crypto.subtle.digest("SHA-256", r)
-      .then(i => xl.bufferToHex(i))
+  function computeSignature(license, salt) {
+    let data = new TextEncoder("utf-8")
+      .encode(salt + license.key + license.email);
+    return crypto.subtle.digest("SHA-256", data)
+      .then(hash => licenseUtil.bufferToHex(hash))
   }
-  async function El(e) {
-    let t = await am.check();
-    if (!t.status) return {
-      key: e,
+  async function validateLicense(key) {
+    let coappStatus = await licenseCoapp.check();
+    if (!coappStatus.status) return {
+      key: key,
       last: Date.now(),
       status: "nocoapp"
     };
-    let r = t.info.home,
-      i;
+    let home = coappStatus.info.home,
+      response;
     try {
-      i = await xl.request({
+      response = await licenseUtil.request({
         url: "https://www.downloadhelper.net/license-check.json",
-        content: "key=" + encodeURIComponent(e) +
+        content: "key=" + encodeURIComponent(key) +
           "&product=converthelper",
         headers: {
           "Content-type": "application/x-www-form-urlencoded"
@@ -8442,67 +8442,67 @@ const store = createStore(
         method: "POST"
       })
     } catch {
-      throw new Error(Ir._("network_error_no_response"))
+      throw new Error(licenseWeh._("network_error_no_response"))
     }
-    if (!i.ok) throw new Error(Ir._("network_error_status", i.status + " " +
-      i.statusText));
-    let n = await i.json(),
-      o = {
-        key: e,
+    if (!response.ok) throw new Error(licenseWeh._("network_error_status", response.status + " " +
+      response.statusText));
+    let json = await response.json(),
+      result = {
+        key: key,
         last: Date.now(),
-        remoteStatus: n.status,
-        status: n.status,
-        name: n.name,
-        email: n.email
+        remoteStatus: json.status,
+        status: json.status,
+        name: json.name,
+        email: json.email
       },
-      s = Ow(li);
-    if ((n.target == "fx" || n.target == "firefox") && li != "firefox" ? (o
-        .status = "mismatch", o.brExt = s, o.brLicense = "Firefox") : n
-      .target == "edge" && li != "edge" ? (o.status = "mismatch", o.brExt =
-        s, o.brLicense = "Edge") : (n.target == "crx" || n.target ==
-        "chrome") && li != "chrome" && (o.status = "mismatch", o.brExt = s,
-        o.brLicense = "Chrome"), (o.status = "accepted",true)) {
-      let a = await sm(o, r);
-      o.sign = a
+      browserExt = capitalize(browserTarget);
+    if ((json.target == "fx" || json.target == "firefox") && browserTarget != "firefox" ? (result
+        .status = "mismatch", result.brExt = browserExt, result.brLicense = "Firefox") : json
+      .target == "edge" && browserTarget != "edge" ? (result.status = "mismatch", result.brExt =
+        browserExt, result.brLicense = "Edge") : (json.target == "crx" || json.target ==
+        "chrome") && browserTarget != "chrome" && (result.status = "mismatch", result.brExt = browserExt,
+        result.brLicense = "Chrome"), (result.status = "accepted",true)) {
+      let signature = await computeSignature(result, home);
+      result.sign = signature
     }
-    return await Tl.set(o), o
+    return await licenseCache.set(result), result
   }
 
-  function lm() {
-    return new Promise((e, t) => {
-      Al.runtime.getPlatformInfo()
-        .then(r => {
-          if (r.os == "linux" && !Dw) return e({
+  function checkLicense() {
+    return new Promise((resolve, reject) => {
+      licenseBrowser.runtime.getPlatformInfo()
+        .then(platformInfo => {
+          if (platformInfo.os == "linux" && !linuxLicense) return resolve({
             status: "unneeded"
           });
-          Mw()
-            .then(i => {
-              if (i === null) return e({
+          licensePromise()
+            .then(license => {
+              if (license === null) return resolve({
                 status: "unset"
               });
-              let n = {
+              let result = {
                 status: "unset"
               };
-              if (i.email && (n.email = i.email), i.key && (n.key = i
-                  .key), i.name && (n.name = i.name), i.status ==
-                "mismatch") return n.status = "mismatch", n
-                .brLicense = i.brLicense, n.brExt = i.brExt, e(n);
-              am.check()
-                .then(o => o.status ? sm(i, o.info.home) : (n.status =
-                  "nocoapp", e(n), null))
-                .then(o => {
-                  if (o) return !i.remoteStatus && n.key ?
-                    new Promise((s, a) => {
-                      El(n.key)
-                        .then(l => {
-                          i = l, s(o)
+              if (license.email && (result.email = license.email), license.key && (result.key = license
+                  .key), license.name && (result.name = license.name), license.status ==
+                "mismatch") return result.status = "mismatch", result
+                .brLicense = license.brLicense, result.brExt = license.brExt, resolve(result);
+              licenseCoapp.check()
+                .then(coappStatus => coappStatus.status ? computeSignature(license, coappStatus.info.home) : (result.status =
+                  "nocoapp", resolve(result), null))
+                .then(signature => {
+                  if (signature) return !license.remoteStatus && result.key ?
+                    new Promise((innerResolve, innerReject) => {
+                      validateLicense(result.key)
+                        .then(validated => {
+                          license = validated, innerResolve(signature)
                         })
-                        .catch(l => {
-                          a(l)
+                        .catch(err => {
+                          innerReject(err)
                         })
-                    }) : o
+                    }) : signature
                 })
-                .then(o => {
+                .then(signature => {
                   // Was:
                   // ```
                   // o && (
@@ -8516,332 +8516,332 @@ const store = createStore(
                   //   , e(n)
                   // )
                   // ```
-                  if (t) {
-                    n.status = "accepted"
-                    e(n)
+                  if (reject) {
+                    result.status = "accepted"
+                    resolve(result)
                   }
                 })
-                .catch(t)
+                .catch(reject)
             })
-            .catch(t)
+            .catch(reject)
         })
-        .catch(t)
+        .catch(reject)
     })
   }
 
-  function um(e) {
-    return Tl.set(e)
+  function setLicense(license) {
+    return licenseCache.set(license)
   }
 
-  function Pw() {
-    Sw.alert({
-      title: Ir._("converter_needs_reg"),
-      text: Ir._("converter_reg_audio"),
+  function alertAudioNeedsReg() {
+    dialogModule.alert({
+      title: licenseWeh._("converter_needs_reg"),
+      text: licenseWeh._("converter_reg_audio"),
       buttons: [{
-        text: Ir._("get_conversion_license"),
+        text: licenseWeh._("get_conversion_license"),
         className: "btn-success",
         rpcMethod: "goto",
-        rpcArgs: ["https://www.downloadhelper.net/convert" + (li ?
-          "?browser=" + encodeURIComponent(li) : "")]
+        rpcArgs: ["https://www.downloadhelper.net/convert" + (browserTarget ?
+          "?browser=" + encodeURIComponent(browserTarget) : "")]
       }]
     })
   }
-  var Ir, Al, am, xl, Sw, li, Dw, Tl, Mw, Kt = C(() => {
+  var licenseWeh, licenseBrowser, licenseCoapp, licenseUtil, dialogModule, browserTarget, linuxLicense, licenseCache, licensePromise, initLicense = defineLazyModule(() => {
     "use strict";
-    Ir = Y(), Al = Ir.browser, am = (ft(), R(pt)), xl = (he(), R(ge)),
-      Sw = (Yi(), R(Ki)), {
-        browser: li,
-        linuxlic: Dw
-      } = lr()
+    licenseWeh = requireWeh(), licenseBrowser = licenseWeh.browser, licenseCoapp = (initCoapp(), toCommonjs(coappNs)), licenseUtil = (initCoreUtil(), toCommonjs(coreUtilNs)),
+      dialogModule = (initDialogs(), toCommonjs(dialogNs)), {
+        browser: browserTarget,
+        linuxlic: linuxLicense
+      } = requireBuildInfo()
       .buildOptions;
-    Tl = new xl.Cache(() => Al.storage.local.get("license")
-      .then(e => e.license || null), e => Al.storage.local.set({
-        license: e
+    licenseCache = new licenseUtil.Cache(() => licenseBrowser.storage.local.get("license")
+      .then(stored => stored.license || null), license => licenseBrowser.storage.local.set({
+        license: license
       }));
-    Mw = Tl.get();
-    Ir.rpc.listen({
-      checkLicense: lm,
-      validateLicense: El,
-      setLicense: um
+    licensePromise = licenseCache.get();
+    licenseWeh.rpc.listen({
+      checkLicense: checkLicense,
+      validateLicense: validateLicense,
+      setLicense: setLicense
     })
   });
-  var dm, cm = C(() => {
+  var converterPlaceholderGif, initConverterAssets = defineLazyModule(() => {
     "use strict";
-    dm =
+    converterPlaceholderGif =
       "R0lGODlhNgE2AaEAAAAAAP///wAAAAAAACH5BAEKAAIALAAAAAA2ATYBAAL+jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1KrVAshqt9yu9wsOi8dZCDncO4PN6rb7Td7A5/Q5m56u3+v8/lfuFygIsAeXh/cwqMgHuOjoVvh2aJf4aHnWeKn5V4m4w9i5KbqVOToaCckD6mDaSqjhaoraNmkYGntZivs4q1YrebvrqCus2IupqhdcPEjMHHgcl+zZ8MwLa70YPfabypptjL3WTXr1IuaDLs45zW7Oot7u5ayVjvbeEv95n6Gv448PBUAcAykUtHEw4IiENBhGszdOYQqHMih+i7gPo0T+ExZhdGTw0UXIjRhGwuNXEuU/lSQXsiT40mBMhDNbejC5AucBnRNr2uTAU6DPh+Tq/SQR9ERQh7mWlbvo7oImp76olrHah2i/oU2hzsNKD5pXYGO5bFNW9mlKjQu6VuM6FGvWtFXpXrU7F2/YV3hXvWWrYKnbtmj/RiV8Te+6r30Lg4QLWKYluUwhDwO7uMtZao8jIxA8ubFlxoa1Yd7qeWdoxazXJu5MqTVs07KxjA5XO3Bc0Zx19/Z9GDjt0pozm6X8O0Hl1BGm8g6u/Haz065Jz8ZN/Hhuya8Rx86u9vr07ROWXyavmvnm5Om/iw/vffh7o6ihf14Nnn5+ZPv+71bHPp9/AebV317r2YKeAX7FZ51t3TGoXX8LQghfBebJR6F+A3LT114TClfcc2QVaFyF0T0IYoQbMsRhfRimaOJ9KJ5onwQXApihgDlKI6GHju144IgDGoice0AWWWMALf43HokieuMkkzG29yKNDcJY14Y+skdliBL+iKWOFkoniFZf+rSkVPgNiaSQR7ro5YpcKkhmljvyJaVYCSq55pt5imkljmHiKSdzaTp4XpSFIqgoolcG2iSbT6o4KKGOCgrplHTOKGOSZi7q5qBBxlnplkaK2iaUkv5paaVgZqrhnYNdGqmfoKpqK62a8slpl5S62ueYvW7q6ayowvn+K6x+fCprsNxV2emj0WI6bbLl1bksdbfWKmyiq25rZ67dSutrmdo2O+yotJwL7KnKtvosqe0y+i263uqqZ6PzhvoukZOGe+yZ6aa67p7G9ltirPviGjC4+aqZ7o3cIozsrgdXa7EwptIr7rsfUsyqugCD7HC2FT/cMcYoN4wvoCqbrK/HF9vo7Mvw2vyxzf5m5KlcO9fLctA3gNZzDEQXHbPO7JKcw9HyDr1bjwm7XK7CTAtNk3pLZ420llPfXDXVxJI79tNck80sTFp3+HXaV799ttk0r+1R1F6fLDavxWILdkN2p1yD03I3x7fbSsszuOGB/11q21uH3bfeaFf+xDjci9N9d8iPl20t5BB1DbjfmN/5c+iSJ54UR5UfzvPkbOMducQZj57P6p4XlbfPjhtcOO6REwxO77yrJ7vVOAdfMKvIJw+05ZzPvjfxy8MM8fSvst489qYXb/3I13Y/5+mdP2/87cNHDz7H46bP/PbCJ22+wOyPLzL7ipOfN/ex8z0/6Av3fz/xQQ9t+qtf+jbWv/y9L3vxYyD+Eug6+UEwgAXcnADL90AI0g949rNgBc9HQA3yR3kiVKD0Toi+EKKwhLQ7CuHQlDqpuXCGqoOh7V7YQhrqEIdJOhQIfLjDIMKub0C8SQyFGMQiZrCGOUSiE5f4Opfc8IlCVOL+BTHoISpqMV6Ds2IWtwhG3clQik0MIw2t6MWv/c6MT0TjEUnHxjhCjohvbJwc/7UyLg4wcZQr4xVzh0cewY+Hrigd1i7nP48hkGHOMyCBqqfCROZkimkMpBcFJ4vdDXIGmNwVBwXpQEfmbG4p5KPRKNlJ6pnuk49s2f78qBRUyvJehyRkKwzZyD5Kco6LbF8tRXk9UkYygueY5S4zGMwH9tJcsAugLokJxyEm84/LzOP3SrnBU/qxkhJkpPbWd0tNhvKZphwjJKnVQFe6sWbInCYToSVMaIIzmyS04bCcU7eBRVEE3DynN9s5J3wWU5/mDEE/1cmimf2xlSchaOb++FlHmdmTlsdzZwkUuo13ylOP3gOou+Y4SqE4NJpkPKYjWbnOkRqUnbakpz9ditCJwnOhIY2lShV50YhW1FAKFahIWJrRnE6RlShNKFA1OrFrmlSMJeUXSJPp09rdFGdIhek8O0pTqGK0qtaMZzlf6snWOTWdQzjoL2taxWnqVAVmbSRak6jWoWpzm/xbqxVqaleR0nWFY3UiXuWaz71i05da/Css52pS/bX1KIZdKmI3+k2JHlYijYUsIhNbV8AqpLJfbVoqX/nRNsZ1sgMV7DD7ikTOWhVqxkSdRaOwWLJyFItqLAZRi0paiLZ2tVQV6vRua8m8frGZauSqNYD+203CXtayyiyub5eH3JLFVq+YNS1zgclS1TJzJbsNa0F/2L3o2gu1j+3sL5mq299aEruORcpnh9vU4In3f1glp3lzuc+VWm++klVf3O4bWaVeF7f3HC1Flwtg2Qo4wS3NBn936l8E81bBXp1wg4+7XgIPWJzpnWlWearZn/KVflvdUzVBOd4uCte4oD1tUitM29qGL6TT5eQCU6xcGANSmjPWaoilOlgslniTJ76kj3MLZBfv8cUXXiOPQ+tRstXYvkuuclebbNMDPxXESG5okE2oZSyzWLtYnXJ5rQxmD1uwyIo1apcnOWI0M3S2Tq4nlD/cwxU/17VxvrIzZXz+Zxrr2b19TjM6bSxTBuN5pmR+RpY3TGguVxcXD95yLB6t6DGjN6YF7rF692xhTKu4u6fIcHCPymHWSvq6tjV1cksNau+KeNWKbvWrhbxfFvuOjqQWRaWjHM5Yx7i0ee71Jn696GBHGtLxHV+NbS1d9qo51f919mej2l8lY1jYO551sa2rbBzLGdrNHra3pXztnhoYeaKWNaeh3OgW8/nLdRY3rguNYjh3OtA3PquxjYxvM9sZ3uuet7YNHep4nzSwYVa4B/tNZ4DTW+BgvbLDQWjwWhecxK/tMKM3LmcK/vuDt+62fvcdYQo3F+MJB/m978xtVWY74xzH959LLu/+msN82R/3NL1FDu4crxznZ96uvREe8ocHvb5t/nHEBe3zg+c86U/+ObKpDeGeU/rqJs4vTokLdpxDfeuurni97fhQV+Iy64cm99HPjt/v9jbsZpd2X91OX3Ov0utz1xzd3z72S3OdyHznJdZ1PHVYSzfez/73pq9qcn/vQsOofSvh5W74v0M+8b4+ddTJ23XMQ1HzdLb7P5PNZNS7+7yFH73fX7/4Iwu+7Gp3rujFTHq2MxnvM2/50jHY+N9z/tie53f41tz6ha69J28OsMqDynMWFrLokd/8zdMOXulPnvpwLz3yb89m7R8/5u1+OavzKv7tMzzTSp90e2OfftD+R3/11v8+9j8Q/9kTm/0sp3/fPZ5/2KZvzBZK1zZmAZh6uqaAoXd/RoSAnbd+oQZ07keAefeAp1d+1ed9DEhSAHiB0wZXEdNxe5d7Dvh+mwVUljdOh9cBgwZbKTiCrFeCLeh074BRKkiCsOeBendGMDh+l6eDJ1eB+HCDMRh3QZh9JxgQRfiDKziDQFGD5sCEOweEdbeAbDSFKYd788eD9RdHWSh/ToiE+BeFVwCGGGh/Vkh+cnSGQnd9asiFGmhpE3SATQiHBZhrVUeHMYeDtdd/2zZwexiHc0aGNkd5CVh87FaHVDiGzxdegKZBGUiIJih1pmd07yaI5SZzSVj+iYd4iZsnfZLYh164SY+ohwkkika4gaWYh4GIiouohVBoiIl4aJYIiJo4iTQ4i2KHarz4aYM4iquIh794h57VfJTIf1Xoh8pzhdylhEKYjGJYjKDYjMb4jJwYjTk4jRFXjWpzjYX4jc+3fE3WfYj3OUOIjRKYhstoduW4hc6IjuAYj+LIgtCHi+eYjdCojhzIjurUjao2j7oYjkN3j7ZXkIizj4MoiQtpkDsoh8w3kLIYkcJlgGuIkP7HVmVIkA7pjspnkWKVkAepkP+4YCEpeWFGTdyXi7a4iSWJke8IeBCXkb0Ifyj5ePJIc594hBy5kp7oZzeJjDrnYS4YkyP+p37M+JE12YkRiIi+aJPJN46qN0LSqI9NqZS1CJQCKXUXt39YSYtW2YFVaX61SJQWmG9Pd5TtSJJziIFl2Xtu6JMtiXgd2X5DqZEs+ZBSSXxDtJbA5oZuqXtw+ZU66ZJdWJjDx5VUCYrq9nlC6ZWsKIK7iIsCyJaOaZmEaY5xOXxviIlt53JI95N/KJcbKYOuuHufiZiq6Ig+aHV8yJjGN3GqSZpvOZXuc4x+iZl6uZmaGZVtOJYmaZaBV3mZxYi2iZIkN5mvGYtNV5wnaZeSyZPKOZwBJ5spOZi/SXXAKJ1tSZyxWJdkKZNBmUlE951g6ZzgCZ1iCYHRVp65OYH+zxmbrViUF9iXuomc86l/+ImA9emboNlBTvmA/MmaW2mKVxmAAhqZ8UmMwfmBdCmaK8mc0HWd6Yegx9mdigig+5mU+nmZ2Dk/mql9FQqfBCqfDPqBIoqeCiqhGXqgG2qircmi42mg+VefVOah/umgTPmS1qmM6bijDPmgSRB8MHpuwOmjN7qbRzCkS9mVP4qiHZqXNmqYq3mbnOllTKqY1baj93ml+XikOGqlWjqls+l81OWlOAmlSWoES5qTYyqRAfmmbQqmSMCmaSqlOTqSQUqn77WOX4qnIjmMEalp9QiY9Kijc8qPAHl+6TmAZyqeSBqmEral4WmmNNqnwqimjWjHoTLajiwUqZmZqP/3ovnZmQB0qYf5qR4Zo4rXqSWUqu+pcYlmqqc4qz2KqaUZlrTpaJCYiZlKilmaeTPKqqX6oacKqrYarJs6rIvpqsYKk7iqqaM6fbRarKGKqs6aUpHIq69orccKrK6nrOvZqiL0qu3pptnaq3ekruvKru3qru8Kr/Eqr/NKr/Vqr/eKr/mqr/vKr/3qr/8KsAErsANLsPZaAAA7"
   });
-  var ui = {};
-  ie(ui, {
-    convert2: () => Bw,
-    convert3: () => qw,
-    defaultOutputConfigs: () => en,
-    getCodecs: () => hm,
-    getFormats: () => gm,
-    getOutputConfigs: () => Ml,
-    info: () => Iw,
-    makeUniqueFileName: () => Cw,
-    open: () => kw,
-    play: () => Nw,
-    resetOutputConfigs: () => mm,
-    setOutputConfigs: () => fm,
-    sideDownload: () => _m,
-    sideDownloadAbort: () => Hw,
-    sideDownloadMPD: () => Fw,
-    updateHit: () => Rw
+  var coappSideNs = {};
+  defineExports(coappSideNs, {
+    convert2: () => convert2,
+    convert3: () => convert3,
+    defaultOutputConfigs: () => defaultOutputConfigs,
+    getCodecs: () => getCodecs,
+    getFormats: () => getFormats,
+    getOutputConfigs: () => getOutputConfigs,
+    info: () => info,
+    makeUniqueFileName: () => makeUniqueFileName,
+    open: () => open,
+    play: () => play,
+    resetOutputConfigs: () => resetOutputConfigs,
+    setOutputConfigs: () => setOutputConfigs,
+    sideDownload: () => sideDownload,
+    sideDownloadAbort: () => sideDownloadAbort,
+    sideDownloadMPD: () => sideDownloadMPD,
+    updateHit: () => updateHit
   });
 
-  function Rw(e) {
+  function updateHit(hit) {
     console.warn("TODO converter.updateHit")
   }
 
-  function Dl(e) {
-    (e || [])
-    .forEach(t => {
-      t.name == "Accept-Encoding" && (t.value = t.value.split(",")
-        .map(r => r.trim())
-        .filter(r => r != "br")
+  function stripBrotliEncoding(headers) {
+    (headers || [])
+    .forEach(header => {
+      header.name == "Accept-Encoding" && (header.value = header.value.split(",")
+        .map(enc => enc.trim())
+        .filter(enc => enc != "br")
         .join(", "))
     })
   }
 
-  function Iw(e, t = !1, r = []) {
-    Dl(r), Nr && console.log("probe", e, t, r);
-    let i = fe.call("probe", e, t, r);
-    return t ? i.then(n => JSON.parse(n)) : i
+  function info(url, parse = !1, headers = []) {
+    stripBrotliEncoding(headers), converterDebug && console.log("probe", url, parse, headers);
+    let result = converterCoapp.call("probe", url, parse, headers);
+    return parse ? result.then(text => JSON.parse(text)) : result
   }
 
-  function Nw(e) {
-    return fe.call("play", e)
+  function play(url) {
+    return converterCoapp.call("play", url)
   }
 
-  function kw(e) {
-    return fe.call("open", e)
+  function open(path) {
+    return converterCoapp.call("open", path)
   }
 
-  function Cw(e) {
-    return fe.call("makeUniqueFileName", e)
+  function makeUniqueFileName(name) {
+    return converterCoapp.call("makeUniqueFileName", name)
   }
-  async function qw(e, t, r, i) {
-    let n = ["-i", e, "-y", t],
-      o = ++Go;
-    tn[o] = r;
-    let s = ++Qo;
-    Rt[s] = i;
+  async function convert3(input, output, onProgress, onStart) {
+    let args = ["-i", input, "-y", output],
+      progressId = ++progressIdCounter;
+    convertProgressHandlers[progressId] = onProgress;
+    let startId = ++startIdCounter;
+    convertStartHandlers[startId] = onStart;
     try {
-      let a = await fe.call("convert", n, {
-        progressTime: "" + o,
-        startHandler: "" + s
+      let result = await converterCoapp.call("convert", args, {
+        progressTime: "" + progressId,
+        startHandler: "" + startId
       });
-      if (a.exitCode != 0) throw Nr && (console.warn("exitCode|convert3", a
-        .exitCode), console.warn(a.stderr)), new Zi.DetailsError(
-        "Convert3 error: ", a.stderr);
-      return t
+      if (result.exitCode != 0) throw converterDebug && (console.warn("exitCode|convert3", result
+        .exitCode), console.warn(result.stderr)), new converterUtil.DetailsError(
+        "Convert3 error: ", result.stderr);
+      return output
     } finally {
-      delete o[o], delete Rt[s]
+      delete progressId[progressId], delete convertStartHandlers[startId]
     }
   }
-  async function Bw(e, t, r, i, n) {
-    let o = [];
-    o.push("-i", e);
-    let s = en[r];
-    for (let u in s.params) {
-      let d = s.params[u];
-      d !== null && (typeof d != "string" || d.length > 0) && (o.push("-" +
-        u), o.push("" + d))
+  async function convert2(input, output, configName, onProgress, onStart) {
+    let args = [];
+    args.push("-i", input);
+    let config = defaultOutputConfigs[configName];
+    for (let paramName in config.params) {
+      let paramValue = config.params[paramName];
+      paramValue !== null && (typeof paramValue != "string" || paramValue.length > 0) && (args.push("-" +
+        paramName), args.push("" + paramValue))
     }
-    if (s.extra) {
-      let u = /^\s*(.*?)\s*$/.exec(s.extra)[1].split(/\s+/);
-      for (let d of u) o.push(d)
+    if (config.extra) {
+      let extraArgs = /^\s*(.*?)\s*$/.exec(config.extra)[1].split(/\s+/);
+      for (let part of extraArgs) args.push(part)
     }
-    if (s.audioonly && o.push("-vn"), !t) {
-      let u = e.split(".");
-      u[u.length - 1] == s.ext && (u[u.length - 2] += "-converted"), u[u
-        .length - 1] = s.ext, t = u.join(".")
+    if (config.audioonly && args.push("-vn"), !output) {
+      let parts = input.split(".");
+      parts[parts.length - 1] == config.ext && (parts[parts.length - 2] += "-converted"), parts[parts
+        .length - 1] = config.ext, output = parts.join(".")
     }
-    o.push("-y", t);
-    let a = ++Go;
-    tn[a] = i;
-    let l = ++Qo;
-    Rt[l] = n;
+    args.push("-y", output);
+    let progressId = ++progressIdCounter;
+    convertProgressHandlers[progressId] = onProgress;
+    let startId = ++startIdCounter;
+    convertStartHandlers[startId] = onStart;
     try {
-      let u = await fe.call("convert", o, {
-        progressTime: "" + a,
-        startHandler: "" + l
+      let result = await converterCoapp.call("convert", args, {
+        progressTime: "" + progressId,
+        startHandler: "" + startId
       });
-      if (u.exitCode != 0) throw Nr && (console.warn("exitCode|convert2", u
-        .exitCode), console.warn(u.stderr)), new Zi.DetailsError(
-        "Convert2 error: ", u.stderr);
-      return t
+      if (result.exitCode != 0) throw converterDebug && (console.warn("exitCode|convert2", result
+        .exitCode), console.warn(result.stderr)), new converterUtil.DetailsError(
+        "Convert2 error: ", result.stderr);
+      return output
     } finally {
-      delete a[a], delete Rt[l]
+      delete progressId[progressId], delete convertStartHandlers[startId]
     }
   }
 
-  function fm(e) {
-    return Ol.set(Object.assign({}, en, e))
+  function setOutputConfigs(configs) {
+    return outputConfigsCache.set(Object.assign({}, defaultOutputConfigs, configs))
   }
 
-  function mm() {
-    return Ml()
-      .then(e => {
-        let t = Object.assign({}, e);
-        return Object.keys(t)
-          .forEach(r => {
-            t[r].readonly || delete t[r]
-          }), Ol.set(t)
+  function resetOutputConfigs() {
+    return getOutputConfigs()
+      .then(configs => {
+        let copy = Object.assign({}, configs);
+        return Object.keys(copy)
+          .forEach(key => {
+            copy[key].readonly || delete copy[key]
+          }), outputConfigsCache.set(copy)
       })
   }
 
-  function gm() {
-    return fe.call("formats")
+  function getFormats() {
+    return converterCoapp.call("formats")
   }
 
-  function hm() {
-    return fe.call("codecs")
+  function getCodecs() {
+    return converterCoapp.call("codecs")
   }
 
-  function Vw(e, t, r) {
-    let i = tn[e];
-    i && i(t, r)
+  function dispatchConvertProgress(progressId, time, extra) {
+    let handler = convertProgressHandlers[progressId];
+    handler && handler(time, extra)
   }
 
-  function Hw(e) {
-    return fe.call("abortConvert", e)
+  function sideDownloadAbort(ffmpegPid) {
+    return converterCoapp.call("abortConvert", ffmpegPid)
   }
-  async function Fw(e, t, r, i) {
-    let n = [],
-      o = [];
-    Dl(i.headers), i.headers && i.headers.length && (n.push("-headers"), n
-        .push(i.headers.map(l => l.name + ": " + l.value)
+  async function sideDownloadMPD(url, videoTrack, audioTrack, options) {
+    let ffmpegArgs = [],
+      shellArgs = [];
+    stripBrotliEncoding(options.headers), options.headers && options.headers.length && (ffmpegArgs.push("-headers"), ffmpegArgs
+        .push(options.headers.map(header => header.name + ": " + header.value)
           .join(`\r
-`)), o.push("-headers"), o.push("$'" + i.headers.map(l =>
-            `${l.name}: ${l.value}\\r\\n`)
-          .join("") + "'")), n.push("-analyzeduration", "10M"), o.push(
-        "-analyzeduration", "10M"), n.push("-i", e), o.push("-i", `'${e}'`),
-      t && (n.push("-map", `0:${t}`), o.push("-map", `0:${t}`)), r && (n
-        .push("-map", `0:${r}`), o.push("-map", `0:${r}`)), t && (n.push(
-        "-codec", "copy"), o.push("-codec", "copy")), n.push("-y"), n.push(i
-        .filePath), o.push("-y"), o.push(i.filePath);
-    let s = ++Go;
-    tn[s] = i.on_progress;
-    let a = ++Qo;
-    Rt[a] = i.on_start, Nr && console.log(o.join(" "));
+`)), shellArgs.push("-headers"), shellArgs.push("$'" + options.headers.map(header =>
+            `${header.name}: ${header.value}\\r\\n`)
+          .join("") + "'")), ffmpegArgs.push("-analyzeduration", "10M"), shellArgs.push(
+        "-analyzeduration", "10M"), ffmpegArgs.push("-i", url), shellArgs.push("-i", `'${url}'`),
+      videoTrack && (ffmpegArgs.push("-map", `0:${videoTrack}`), shellArgs.push("-map", `0:${videoTrack}`)), audioTrack && (ffmpegArgs
+        .push("-map", `0:${audioTrack}`), shellArgs.push("-map", `0:${audioTrack}`)), videoTrack && (ffmpegArgs.push(
+        "-codec", "copy"), shellArgs.push("-codec", "copy")), ffmpegArgs.push("-y"), ffmpegArgs.push(options
+        .filePath), shellArgs.push("-y"), shellArgs.push(options.filePath);
+    let progressId = ++progressIdCounter;
+    convertProgressHandlers[progressId] = options.on_progress;
+    let startId = ++startIdCounter;
+    convertStartHandlers[startId] = options.on_start, converterDebug && console.log(shellArgs.join(" "));
     try {
-      let l = await fe.call("convert", n, {
-        progressTime: "" + s,
-        startHandler: "" + a
+      let result = await converterCoapp.call("convert", ffmpegArgs, {
+        progressTime: "" + progressId,
+        startHandler: "" + startId
       });
-      if (l.exitCode != 0) throw Nr && (console.warn(
-        "exitCode|sideDownloadMPD", l.exitCode), console.warn(l
-        .stderr)), new Zi.DetailsError("SideDownload error: ", l.stderr)
+      if (result.exitCode != 0) throw converterDebug && (console.warn(
+        "exitCode|sideDownloadMPD", result.exitCode), console.warn(result
+        .stderr)), new converterUtil.DetailsError("SideDownload error: ", result.stderr)
     } finally {
-      delete s[s], delete Rt[a]
+      delete progressId[progressId], delete convertStartHandlers[startId]
     }
   }
-  async function _m(e, t, r, i = !1) {
-    let n = [],
-      o = [],
-      s;
-    if (r.qr_code_needed) {
+  async function sideDownload(videoUrl, audioUrl, options, forceHls = !1) {
+    let ffmpegArgs = [],
+      shellArgs = [],
+      qrPath;
+    if (options.qr_code_needed) {
       let {
-        path: u,
-        fd: d
-      } = await fe.call("tmp.file", {
+        path,
+        fd: tmpGifFd
+      } = await converterCoapp.call("tmp.file", {
         prefix: "vdh-wm-",
         postfix: ".gif"
       });
-      await fe.call("fs.write2", d, dm), await fe.call("fs.close", d), s = u
+      await converterCoapp.call("fs.write2", tmpGifFd, converterPlaceholderGif), await converterCoapp.call("fs.close", tmpGifFd), qrPath = path
     }
-    if (n.push("-analyzeduration", "10M"), o.push("-analyzeduration",
-      "10M"), r.qr_code_needed || (n.push("-reconnect", "1"), o.push(
-        "-reconnect", "1"), n.push("-icy", "0"), o.push("-icy", "0")), r
-      .qr_code_needed && (n.push("-i", s), o.push("-i", s)), r.headers && r
+    if (ffmpegArgs.push("-analyzeduration", "10M"), shellArgs.push("-analyzeduration",
+      "10M"), options.qr_code_needed || (ffmpegArgs.push("-reconnect", "1"), shellArgs.push(
+        "-reconnect", "1"), ffmpegArgs.push("-icy", "0"), shellArgs.push("-icy", "0")), options
+      .qr_code_needed && (ffmpegArgs.push("-i", qrPath), shellArgs.push("-i", qrPath)), options.headers && options
       .headers.length > 0) {
-      Dl(r.headers);
-      let u = r.headers.map(d => `${d.name}: ${d.value}\r
+      stripBrotliEncoding(options.headers);
+      let headerStr = options.headers.map(header => `${header.name}: ${header.value}\r
 `)
         .join("");
-      n.push("-headers"), n.push(u), o.push("-headers"), o.push("$'" + r
-        .headers.map(d => `${d.name}: ${d.value}\\r\\n`)
+      ffmpegArgs.push("-headers"), ffmpegArgs.push(headerStr), shellArgs.push("-headers"), shellArgs.push("$'" + options
+        .headers.map(header => `${header.name}: ${header.value}\\r\\n`)
         .join("") + "'")
     }
-    if (i && (n.push("-f", "hls"), o.push("-f", "hls")), e && (n.push("-i",
-        e), o.push("-i", `'${e}'`)), t && (n.push("-i", t), o.push("-i",
-        `'${t}'`)), r.qr_code_needed && e) {
-      n.push("-filter_complex",
+    if (forceHls && (ffmpegArgs.push("-f", "hls"), shellArgs.push("-f", "hls")), videoUrl && (ffmpegArgs.push("-i",
+        videoUrl), shellArgs.push("-i", `'${videoUrl}'`)), audioUrl && (ffmpegArgs.push("-i", audioUrl), shellArgs.push("-i",
+        `'${audioUrl}'`)), options.qr_code_needed && videoUrl) {
+      ffmpegArgs.push("-filter_complex",
         "[0][1]scale2ref=w=oh*mdar:h=ih*0.4[logo][video];[video][logo]overlay=5:H-h-5"
-        ), o.push("-filter_complex",
+        ), shellArgs.push("-filter_complex",
         "[0][1]scale2ref=w=oh*mdar:h=ih*0.4[logo][video];[video][logo]overlay=5:H-h-5"
         );
-      let u = "h264";
-      r.filePath.endsWith("webm") && (u = "libvpx-vp9"), n.push(...
-        `-c:v ${u} -preset superfast`.split(" ")), o.push(...
-        `-c:v ${u} -preset superfast`.split(" "))
-    } else r.merge && (n.push("-map", "0:v:0", "-map", "1:a:0"), o.push(
-      "-map", "0:v:0", "-map", "1:a:0")), e && (n.push("-c", "copy"), o
+      let videoCodec = "h264";
+      options.filePath.endsWith("webm") && (videoCodec = "libvpx-vp9"), ffmpegArgs.push(...
+        `-c:v ${videoCodec} -preset superfast`.split(" ")), shellArgs.push(...
+        `-c:v ${videoCodec} -preset superfast`.split(" "))
+    } else options.merge && (ffmpegArgs.push("-map", "0:v:0", "-map", "1:a:0"), shellArgs.push(
+      "-map", "0:v:0", "-map", "1:a:0")), videoUrl && (ffmpegArgs.push("-c", "copy"), shellArgs
       .push("-c", "copy"));
-    n.push("-y", r.filePath), o.push("-y", r.filePath), Nr && console.log(o
+    ffmpegArgs.push("-y", options.filePath), shellArgs.push("-y", options.filePath), converterDebug && console.log(shellArgs
       .join(" "));
-    let a = ++Go;
-    tn[a] = r.on_progress;
-    let l = ++Qo;
-    Rt[l] = r.on_start;
+    let progressId = ++progressIdCounter;
+    convertProgressHandlers[progressId] = options.on_progress;
+    let startId = ++startIdCounter;
+    convertStartHandlers[startId] = options.on_start;
     try {
-      let u = await fe.call("convert", n, {
-        progressTime: "" + a,
-        startHandler: "" + l
+      let result = await converterCoapp.call("convert", ffmpegArgs, {
+        progressTime: "" + progressId,
+        startHandler: "" + startId
       });
-      if (u.exitCode != 0) {
-        if (Nr && (console.warn("exitCode|sideDownload", u.exitCode),
-            console.warn(u.stderr)), !i) return console.warn(
-          "Re-trying with forceHls"), _m(e, t, r, !0);
-        throw new Zi.DetailsError("SideDownload error: ", u.stderr)
+      if (result.exitCode != 0) {
+        if (converterDebug && (console.warn("exitCode|sideDownload", result.exitCode),
+            console.warn(result.stderr)), !forceHls) return console.warn(
+          "Re-trying with forceHls"), sideDownload(videoUrl, audioUrl, options, !0);
+        throw new converterUtil.DetailsError("SideDownload error: ", result.stderr)
       }
     } finally {
-      if (s) try {
-        await fe.call("fs.unlink", s)
+      if (qrPath) try {
+        await converterCoapp.call("fs.unlink", qrPath)
       } catch {}
-      delete a[a], delete Rt[l]
+      delete progressId[progressId], delete convertStartHandlers[startId]
     }
   }
 
-  function Lw(e, t) {
-    let r = Rt[e];
-    if (r) try {
-      r(t)
-    } catch (i) {
-      console.error("start handler error", i)
+  function dispatchConvertStart(startId, arg) {
+    let handler = convertStartHandlers[startId];
+    if (handler) try {
+      handler(arg)
+    } catch (err) {
+      console.error("start handler error", err)
     }
   }
-  var Sl, pm, fe, Zi, Nr, en, Go, tn, Qo, Rt, Ol, Ml, di = C(() => {
+  var converterWeh, converterBrowser, converterCoapp, converterUtil, converterDebug, defaultOutputConfigs, progressIdCounter, convertProgressHandlers, startIdCounter, convertStartHandlers, outputConfigsCache, getOutputConfigs, initConverter = defineLazyModule(() => {
     "use strict";
-    cm();
-    Sl = Y(), pm = Sl.browser, fe = (ft(), R(pt)), Zi = (he(), R(ge)),
-      Nr = !lr()
+    initConverterAssets();
+    converterWeh = requireWeh(), converterBrowser = converterWeh.browser, converterCoapp = (initCoapp(), toCommonjs(coappNs)), converterUtil = (initCoreUtil(), toCommonjs(coreUtilNs)),
+      converterDebug = !requireBuildInfo()
       .prod;
-    Go = 0, tn = {}, Qo = 0, Rt = {};
-    Ol = new Zi.Cache(() => pm.storage.local.get("outputConfigs")
-      .then(e => e.outputConfigs || en), e => pm.storage.local.set({
-        outputConfigs: e
-      })), Ml = Ol.get();
-    Sl.rpc.listen({
-      getOutputConfigs: Ml,
-      setOutputConfigs: fm,
-      resetOutputConfigs: mm,
-      editConverterConfigs: e => {
-        Sl.ui.open("convoutput" + (e ? "#" + e : ""), {
+    progressIdCounter = 0, convertProgressHandlers = {}, startIdCounter = 0, convertStartHandlers = {};
+    outputConfigsCache = new converterUtil.Cache(() => converterBrowser.storage.local.get("outputConfigs")
+      .then(stored => stored.outputConfigs || defaultOutputConfigs), configs => converterBrowser.storage.local.set({
+        outputConfigs: configs
+      })), getOutputConfigs = outputConfigsCache.get();
+    converterWeh.rpc.listen({
+      getOutputConfigs: getOutputConfigs,
+      setOutputConfigs: setOutputConfigs,
+      resetOutputConfigs: resetOutputConfigs,
+      editConverterConfigs: panelId => {
+        converterWeh.ui.open("convoutput" + (panelId ? "#" + panelId : ""), {
           type: "tab",
           url: "content/convoutput.html"
         })
       },
-      getFormats: gm,
-      getCodecs: hm,
-      convertStartNotification: Lw
+      getFormats: getFormats,
+      getCodecs: getCodecs,
+      convertStartNotification: dispatchConvertStart
     });
-    fe.listen({
-      convertOutput: Vw
+    converterCoapp.listen({
+      convertOutput: dispatchConvertProgress
     });
-    en = {
+    defaultOutputConfigs = {
       "e6587753-4ca5-4d2e-b7ba-beaf1e7f191c": {
         title: "Re-encoded MP4 (h264/aac)",
         ext: "mp4",
@@ -9160,1036 +9160,1036 @@ const store = createStore(
       }
     }
   });
-  async function Ww(e, t, r, {
-    audio_only: i,
-    ask_for_destination: n,
-    convert_to: o
-  }, s) {
-    let a = r.downloadable.variants.get(r.variant_id),
-      l = a.core_media,
-      u = Date.now(),
-      d = !1;
+  async function performServiceDownload(pending, queue, request, {
+    audio_only: audioOnly,
+    ask_for_destination: askForDestination,
+    convert_to: convertTo
+  }, onProgress) {
+    let variant = request.downloadable.variants.get(request.variant_id),
+      coreMedia = variant.core_media,
+      startTime = Date.now(),
+      isYoutube = !1;
     {
-      let S = r.downloadable.page_url,
-        M = a.manifest_url;
-      if ((S.includes("youtube.") || M.includes("youtube.") || S.includes(
-          "googlevideo.") || M.includes("googlevideo.")) && (d = !0), d &&
-        de == "google") return U({
+      let pageUrl = request.downloadable.page_url,
+        manifestUrl = variant.manifest_url;
+      if ((pageUrl.includes("youtube.") || manifestUrl.includes("youtube.") || pageUrl.includes(
+          "googlevideo.") || manifestUrl.includes("googlevideo.")) && (isYoutube = !0), isYoutube &&
+        BUILD_TARGET == "google") return resultErr({
         error: "noyt",
         id: "noyt",
-        downloadable_id: r.downloadable.id,
+        downloadable_id: request.downloadable.id,
         report_status: "unreported"
       })
     }
-    let c, m;
+    let coappOk, coappVersion;
     {
       let {
-        status: S,
-        info: M
-      } = await mt.check();
-      c = S, c && (m = M.version)
+        status,
+        info
+      } = await serviceCoapp.check();
+      coappOk = status, coappOk && (coappVersion = info.version)
     }
-    let w;
-    if (l.builder == "YoutubeBulk") w = "youtube_bulk";
-    else if (l.builder == "Hls") w = "hls";
-    else if (l.builder == "RawHls") w = "hls";
-    else if (l.builder == "MPD") w = "mpd";
-    else if (l.builder == "HTTPMedia") {
-      let S = await B(Xd);
-      S == "ask" && (S = "coapp"), !c || S == "inbrowser" ? w =
-        "file_inbrowser" : w = "file_coapp"
-    } else if (l.builder == "YoutubeFormat") w = "youtube_format";
-    else if (l.builder == "LocalFile") w = "convert_local";
+    let strategy;
+    if (coreMedia.builder == "YoutubeBulk") strategy = "youtube_bulk";
+    else if (coreMedia.builder == "Hls") strategy = "hls";
+    else if (coreMedia.builder == "RawHls") strategy = "hls";
+    else if (coreMedia.builder == "MPD") strategy = "mpd";
+    else if (coreMedia.builder == "HTTPMedia") {
+      let strategyPref = await getSetting(settingHttpMediaDownloadStrategy);
+      strategyPref == "ask" && (strategyPref = "coapp"), !coappOk || strategyPref == "inbrowser" ? strategy =
+        "file_inbrowser" : strategy = "file_coapp"
+    } else if (coreMedia.builder == "YoutubeFormat") strategy = "youtube_format";
+    else if (coreMedia.builder == "LocalFile") strategy = "convert_local";
     else {
-      if (l.builder == "JsonMPD") throw new Error(
-        "No download strategy for builder: " + l.builder);
-      if (l.builder == "Test") throw new Error(
-        "No download strategy for builder: " + l.builder);
-      l.builder
+      if (coreMedia.builder == "JsonMPD") throw new Error(
+        "No download strategy for builder: " + coreMedia.builder);
+      if (coreMedia.builder == "Test") throw new Error(
+        "No download strategy for builder: " + coreMedia.builder);
+      coreMedia.builder
     }
-    if (i && w != "hls" && w != "mpd" && w != "file_coapp" && w !=
-      "youtube_bulk") return U({
+    if (audioOnly && strategy != "hls" && strategy != "mpd" && strategy != "file_coapp" && strategy !=
+      "youtube_bulk") return resultErr({
       error: "cant_download_audio",
       id: "cant_download_audio",
-      downloadable_id: r.downloadable.id,
+      downloadable_id: request.downloadable.id,
       report_status: "unreported"
     });
-    if (n && !c) return U({
+    if (askForDestination && !coappOk) return resultErr({
       error: "nocoapp",
       id: "nocoapp",
-      downloadable_id: r.downloadable.id,
+      downloadable_id: request.downloadable.id,
       report_status: "unreported"
     });
-    if (w != "file_inbrowser") {
-      if (!c) return U({
+    if (strategy != "file_inbrowser") {
+      if (!coappOk) return resultErr({
         error: "nocoapp",
         id: "nocoapp",
-        downloadable_id: r.downloadable.id,
+        downloadable_id: request.downloadable.id,
         report_status: "unreported"
       });
-      let S = jw;
-      if (!bm.isMinimumVersion(m, S)) {
+      let minVersion = serviceSmartname;
+      if (!serviceUtil.isMinimumVersion(coappVersion, minVersion)) {
         try {
-          await mt.call("quit")
+          await serviceCoapp.call("quit")
         } catch {}
-        await new Promise(j => setTimeout(j, 2e3));
+        await new Promise(resolve => setTimeout(resolve, 2e3));
         let {
-          status: M,
-          info: N
-        } = await mt.check();
-        if (!M || !bm.isMinimumVersion(N.version, S)) return mt.call(
-          "quit"), U({
+          status: recheckStatus,
+          info: recheckInfo
+        } = await serviceCoapp.check();
+        if (!recheckStatus || !serviceUtil.isMinimumVersion(recheckInfo.version, minVersion)) return serviceCoapp.call(
+          "quit"), resultErr({
             error: "coapp_too_old",
             id: "coapp_too_old",
-            downloadable_id: r.downloadable.id,
+            downloadable_id: request.downloadable.id,
             report_status: "unreported"
           });
-        m = N.version
+        coappVersion = recheckInfo.version
       }
     }
-    let p = !1;
+    let needQr = !1;
     {
-      let S = !1;
+      let licenseOk = !1;
       {
         let {
-          status: M
-        } = await Uw.checkLicense();
-        S = (M = "accepted",true) || M == "unneeded"
+          status: licenseStatus
+        } = await serviceLicense.checkLicense();
+        licenseOk = (licenseStatus = "accepted",true) || licenseStatus == "unneeded"
       }
-      if (!S) {
-        let M = de == "google",
-          N = de == "mozilla",
-          j = de == "microsoft",
-          $ = 120 * 60 * 1e3,
-          pe = await B(Wt),
-          te = u - pe;
-        if (o) return U({
+      if (!licenseOk) {
+        let isGoogle = BUILD_TARGET == "google",
+          isMozilla = BUILD_TARGET == "mozilla",
+          isMicrosoft = BUILD_TARGET == "microsoft",
+          limitMs = 120 * 60 * 1e3,
+          lastDownloadTime = await getSetting(settingLastAdvancedDownload),
+          sinceLastDownload = startTime - lastDownloadTime;
+        if (convertTo) return resultErr({
           error: "invalid_license",
           id: "invalid_license",
-          downloadable_id: r.downloadable.id,
+          downloadable_id: request.downloadable.id,
           report_status: "unreported"
         });
-        if (i && (w == "mpd" || w == "hls" || d)) return U({
+        if (audioOnly && (strategy == "mpd" || strategy == "hls" || isYoutube)) return resultErr({
           error: "invalid_license_for_audio",
           id: "invalid_license_for_audio",
-          downloadable_id: r.downloadable.id,
+          downloadable_id: request.downloadable.id,
           report_status: "unreported"
         });
-        if ((M || j) && (w == "mpd" || w == "hls" || d) && te < $)
-    return U({
+        if ((isGoogle || isMicrosoft) && (strategy == "mpd" || strategy == "hls" || isYoutube) && sinceLastDownload < limitMs)
+    return resultErr({
           error: "download_limit",
           id: "download_limit",
-          downloadable_id: r.downloadable.id,
+          downloadable_id: request.downloadable.id,
           report_status: "unreported"
         });
-        N && d && !i && (p = !0)
+        isMozilla && isYoutube && !audioOnly && (needQr = !0)
       }
     }
-    let _, f;
-    if (f = l.container.extension, (i || !l.av.video) && (f = l.container
-        .audio_only_extension), o && (f = ue(o)
-        .extension), _ = await Fd(r.downloadable), _ = `${_}.${f}`, w ==
-      "youtube_bulk", w == "file_inbrowser") {
-      let S = {
+    let baseName, extension;
+    if (extension = coreMedia.container.extension, (audioOnly || !coreMedia.av.video) && (extension = coreMedia.container
+        .audio_only_extension), convertTo && (extension = containerByName(convertTo)
+        .extension), baseName = await selectVariantByRule(request.downloadable), baseName = `${baseName}.${extension}`, strategy ==
+      "youtube_bulk", strategy == "file_inbrowser") {
+      let downloadOptions = {
         url: "",
-        saveAs: n,
-        filename: _
+        saveAs: askForDestination,
+        filename: baseName
       };
-      de == "mozilla" && (S.incognito = r.downloadable.incognito), a.sources
-        .video ? S.url = a.sources.video : S.url = a.sources.audio;
-      let M = await ci.default.downloads.download(S);
-      e.set(r.downloadable.id, {
-        inbrowser: M
+      BUILD_TARGET == "mozilla" && (downloadOptions.incognito = request.downloadable.incognito), variant.sources
+        .video ? downloadOptions.url = variant.sources.video : downloadOptions.url = variant.sources.audio;
+      let downloadId = await servicePolyfill.default.downloads.download(downloadOptions);
+      pending.set(request.downloadable.id, {
+        inbrowser: downloadId
       });
-      let N = 0,
-        j = Date.now();
+      let receivedBytes = 0,
+        loopStart = Date.now();
       for (;;) {
-        let W = await ci.default.downloads.search({
-          id: M
+        let items = await servicePolyfill.default.downloads.search({
+          id: downloadId
         });
-        if (W.length > 0) {
-          let $ = W[0],
-            pe = $.bytesReceived - N;
-          N = $.bytesReceived;
-          let te = $.bytesReceived / $.totalBytes;
-          if (s({
-              bitrate_bs: pe,
-              progress: te,
-              duration_since_start: Date.now() - j
-            }), $.error) {
+        if (items.length > 0) {
+          let item = items[0],
+            delta = item.bytesReceived - receivedBytes;
+          receivedBytes = item.bytesReceived;
+          let progress = item.bytesReceived / item.totalBytes;
+          if (onProgress({
+              bitrate_bs: delta,
+              progress: progress,
+              duration_since_start: Date.now() - loopStart
+            }), item.error) {
             console.error("No download item found");
             break
           }
-          if ($.state == "complete") break
+          if (item.state == "complete") break
         } else break;
-        await new Promise($ => setTimeout($, 1e3))
+        await new Promise(resolve => setTimeout(resolve, 1e3))
       }
-      return L({
+      return resultOk({
         inbrowser: !0,
-        download_id: M,
-        filename: _
+        download_id: downloadId,
+        filename: baseName
       })
     }
-    let g = await B(Bi),
-      h;
-    if (n) {
-      let S = await B(as);
-      S.isNone() ? g === "dwhelper" && (g = "~/dwhelper") : g = S.unwrap();
-      let M = await mt.call("filepicker", "save_file", g,
-          "Download media as", _),
-        N = M.split(`
+    let downloadDir = await getSetting(settingDownloadDirectory),
+      filePath;
+    if (askForDestination) {
+      let lastDir = await getSetting(settingLastDownloadDirectory);
+      lastDir.isNone() ? downloadDir === "dwhelper" && (downloadDir = "~/dwhelper") : downloadDir = lastDir.unwrap();
+      let pickerResult = await serviceCoapp.call("filepicker", "save_file", downloadDir,
+          "Download media as", baseName),
+        lines = pickerResult.split(`
 `);
-      if (h = N[0], g = N[1], await Z(as, q(g)), _ = N[2], !h || !g || !_)
-        return U({
+      if (filePath = lines[0], downloadDir = lines[1], await setSetting(settingLastDownloadDirectory, resultSome(downloadDir)), baseName = lines[2], !filePath || !downloadDir || !baseName)
+        return resultErr({
           error: "filepicker_error",
-          details: "no files selected. " + M,
+          details: "no files selected. " + pickerResult,
           id: "filepicker_error",
-          downloadable_id: r.downloadable.id,
+          downloadable_id: request.downloadable.id,
           report_status: "unreported"
         });
-      h.endsWith(f) || (h += "." + f, _ += "." + f)
+      filePath.endsWith(extension) || (filePath += "." + extension, baseName += "." + extension)
     } else {
-      g = await ym(g);
+      downloadDir = await serviceFunding(downloadDir);
       {
-        let S = await mt.call("makeUniqueFileName", g, _);
-        h = S.filePath, _ = S.fileName
+        let uniqueResult = await serviceCoapp.call("makeUniqueFileName", downloadDir, baseName);
+        filePath = uniqueResult.filePath, baseName = uniqueResult.fileName
       }
-      g = await ym(g)
+      downloadDir = await serviceFunding(downloadDir)
     } {
-      let S = await B(Gd);
-      if (e.size >= S) {
-        for (t.push(r.downloadable.id);;)
-          if (await new Promise(M => setTimeout(M, 2e3)), e.size < S && t[
-            0] == r.downloadable.id) {
-            t.shift();
+      let maxConcurrent = await getSetting(settingConcurrentDownloadsMax);
+      if (pending.size >= maxConcurrent) {
+        for (queue.push(request.downloadable.id);;)
+          if (await new Promise(resolve => setTimeout(resolve, 2e3)), pending.size < maxConcurrent && queue[
+            0] == request.downloadable.id) {
+            queue.shift();
             break
           }
       }
-      e.set(r.downloadable.id, {})
+      pending.set(request.downloadable.id, {})
     }
-    let T = 0,
-      x = Date.now(),
-      b = Date.now(),
-      D = (S, M) => {
-        let N = parseFloat(M.total_size),
-          W = (Date.now() - x) / 1e3,
-          pe = ~~((N - T) / W),
-          te = "unknown";
-        if (typeof l.duration == "number") {
-          S < 0 && (S = 0);
-          let Oe = S / l.duration;
-          Oe >= 0 && Oe < 1 && (te = Oe)
-        } else if (a.core_media.content_length.isSome()) {
-          let Oe = a.core_media.content_length.unwrap();
-          Oe > 0 && (te = M.total_size / Oe)
+    let lastSize = 0,
+      startClock = Date.now(),
+      reportClock = Date.now(),
+      onDownloadProgress = (currentTime, progressData) => {
+        let totalSize = parseFloat(progressData.total_size),
+          elapsedSec = (Date.now() - startClock) / 1e3,
+          bitrate = ~~((totalSize - lastSize) / elapsedSec),
+          progress = "unknown";
+        if (typeof coreMedia.duration == "number") {
+          currentTime < 0 && (currentTime = 0);
+          let ratio = currentTime / coreMedia.duration;
+          ratio >= 0 && ratio < 1 && (progress = ratio)
+        } else if (variant.core_media.content_length.isSome()) {
+          let contentLength = variant.core_media.content_length.unwrap();
+          contentLength > 0 && (progress = progressData.total_size / contentLength)
         }
-        s({
-          bitrate_bs: pe,
-          progress: te,
-          duration_since_start: Date.now() - b
+        onProgress({
+          bitrate_bs: bitrate,
+          progress: progress,
+          duration_since_start: Date.now() - reportClock
         })
       },
-      P = S => {
-        e.set(r.downloadable.id, {
-          ffmpeg_pid: S
-        }), s("starting")
+      onDownloadStart = pid => {
+        pending.set(request.downloadable.id, {
+          ffmpeg_pid: pid
+        }), onProgress("starting")
       };
-    if (w == "hls") {
-      let S = {
-        filePath: h,
-        qr_code_needed: p,
-        headers: r.downloadable.headers,
-        on_progress: D,
-        on_start: P
+    if (strategy == "hls") {
+      let sideOptions = {
+        filePath: filePath,
+        qr_code_needed: needQr,
+        headers: request.downloadable.headers,
+        on_progress: onDownloadProgress,
+        on_start: onDownloadStart
       };
       try {
-        if (i || !l.av.video) {
-          let M = a.sources.audio || a.sources.video;
-          await Te.sideDownload(null, M, S)
-        } else a.sources.audio && a.sources.video ? await Te.sideDownload(a
-            .sources.video, a.sources.audio, S) : a.sources.video ? await Te
-          .sideDownload(a.sources.video, null, S) : await Te.sideDownload(
-            null, a.sources.audio, S)
-      } catch (M) {
-        return U({
+        if (audioOnly || !coreMedia.av.video) {
+          let sourceUrl = variant.sources.audio || variant.sources.video;
+          await serviceConverter.sideDownload(null, sourceUrl, sideOptions)
+        } else variant.sources.audio && variant.sources.video ? await serviceConverter.sideDownload(variant
+            .sources.video, variant.sources.audio, sideOptions) : variant.sources.video ? await serviceConverter
+          .sideDownload(variant.sources.video, null, sideOptions) : await serviceConverter.sideDownload(
+            null, variant.sources.audio, sideOptions)
+      } catch (err) {
+        return resultErr({
           error: "coapp_failure",
-          details: M.toString(),
+          details: err.toString(),
           id: `coapp_failure_${crypto.randomUUID()}`,
-          downloadable_id: r.downloadable.id,
+          downloadable_id: request.downloadable.id,
           report_status: "unreported"
         })
       }
     }
-    if (w == "mpd") {
-      let S = {
-        filePath: h,
-        qr_code_needed: p,
-        headers: r.downloadable.headers,
-        on_progress: D,
-        on_start: P
+    if (strategy == "mpd") {
+      let sideOptions = {
+        filePath: filePath,
+        qr_code_needed: needQr,
+        headers: request.downloadable.headers,
+        on_progress: onDownloadProgress,
+        on_start: onDownloadStart
       };
       try {
-        if (i) {
-          let M = a.sources.audio || a.sources.video;
-          await Te.sideDownloadMPD(a.manifest_url, null, M, S)
-        } else a.sources.audio && a.sources.video ? await Te
-          .sideDownloadMPD(a.manifest_url, a.sources.video, a.sources.audio,
-            S) : a.sources.video ? await Te.sideDownloadMPD(a.manifest_url,
-            a.sources.video, null, S) : await Te.sideDownloadMPD(a
-            .manifest_url, null, a.sources.audio, S)
-      } catch (M) {
-        return U({
+        if (audioOnly) {
+          let sourceUrl = variant.sources.audio || variant.sources.video;
+          await serviceConverter.sideDownloadMPD(variant.manifest_url, null, sourceUrl, sideOptions)
+        } else variant.sources.audio && variant.sources.video ? await serviceConverter
+          .sideDownloadMPD(variant.manifest_url, variant.sources.video, variant.sources.audio,
+            sideOptions) : variant.sources.video ? await serviceConverter.sideDownloadMPD(variant.manifest_url,
+            variant.sources.video, null, sideOptions) : await serviceConverter.sideDownloadMPD(variant
+            .manifest_url, null, variant.sources.audio, sideOptions)
+      } catch (err) {
+        return resultErr({
           error: "coapp_failure",
-          details: M.toString(),
+          details: err.toString(),
           id: `coapp_failure_${crypto.randomUUID()}`,
-          downloadable_id: r.downloadable.id,
+          downloadable_id: request.downloadable.id,
           report_status: "unreported"
         })
       }
     }
-    if (w == "convert_local") {
-      let S = a.manifest_url.replace("file://", ""),
-        M = S.split(".");
-      M.pop(), M.push(f);
-      let N = M.join(".");
+    if (strategy == "convert_local") {
+      let inputPath = variant.manifest_url.replace("file://", ""),
+        parts = inputPath.split(".");
+      parts.pop(), parts.push(extension);
+      let outputPath = parts.join(".");
       try {
-        await Te.convert3(S, N, D, P)
-      } catch (j) {
-        return U({
+        await serviceConverter.convert3(inputPath, outputPath, onDownloadProgress, onDownloadStart)
+      } catch (err) {
+        return resultErr({
           error: "coapp_failure",
-          details: j.toString(),
+          details: err.toString(),
           id: `coapp_failure_${crypto.randomUUID()}`,
-          downloadable_id: r.downloadable.id,
+          downloadable_id: request.downloadable.id,
           report_status: "unreported"
         })
       }
     }
-    if (w == "file_coapp") {
-      let S = {
-        filePath: h,
-        qr_code_needed: p,
-        headers: r.downloadable.headers,
-        on_progress: D,
-        on_start: P
+    if (strategy == "file_coapp") {
+      let sideOptions = {
+        filePath: filePath,
+        qr_code_needed: needQr,
+        headers: request.downloadable.headers,
+        on_progress: onDownloadProgress,
+        on_start: onDownloadStart
       };
       try {
-        i ? await Te.sideDownload(null, a.manifest_url, S) : await Te
-          .sideDownload(a.manifest_url, null, S)
-      } catch (M) {
-        return U({
+        audioOnly ? await serviceConverter.sideDownload(null, variant.manifest_url, sideOptions) : await serviceConverter
+          .sideDownload(variant.manifest_url, null, sideOptions)
+      } catch (err) {
+        return resultErr({
           error: "coapp_failure",
-          details: M.toString(),
+          details: err.toString(),
           id: `coapp_failure_${crypto.randomUUID()}`,
-          downloadable_id: r.downloadable.id,
+          downloadable_id: request.downloadable.id,
           report_status: "unreported"
         })
       }
     }
-    if (w == "youtube_format") {
-      if (!a.base_js) return U({
+    if (strategy == "youtube_format") {
+      if (!variant.base_js) return resultErr({
         error: "unknown",
         details: "Missing BaseJS",
         id: `unknown_${crypto.randomUUID()}`,
-        downloadable_id: r.downloadable.id,
+        downloadable_id: request.downloadable.id,
         report_status: "unreported"
       });
-      let S, M;
-      if (a.sources.video) M = new URL(a.sources.video);
-      else return U({
+      let audioURL, videoURL;
+      if (variant.sources.video) videoURL = new URL(variant.sources.video);
+      else return resultErr({
         error: "unknown",
         details: "Missing Video from YoutubeFormat",
         id: `unknown_${crypto.randomUUID()}`,
-        downloadable_id: r.downloadable.id,
+        downloadable_id: request.downloadable.id,
         report_status: "unreported"
       });
-      a.sources.audio && (S = new URL(a.sources.audio));
-      let N = M.searchParams.get("n"),
-        j;
-      N && (j = await mt.call("vm.run", `((a) => {${a.base_js}})('${N}')`),
-        M.searchParams.set("n", j)), S && S.searchParams.set("n", j);
-      let W = {
-        filePath: h,
-        qr_code_needed: p,
-        headers: r.downloadable.headers,
-        on_progress: D,
-        on_start: P
+      variant.sources.audio && (audioURL = new URL(variant.sources.audio));
+      let nParam = videoURL.searchParams.get("n"),
+        decodedN;
+      nParam && (decodedN = await serviceCoapp.call("vm.run", `((a) => {${variant.base_js}})('${nParam}')`),
+        videoURL.searchParams.set("n", decodedN)), audioURL && audioURL.searchParams.set("n", decodedN);
+      let sideOptions = {
+        filePath: filePath,
+        qr_code_needed: needQr,
+        headers: request.downloadable.headers,
+        on_progress: onDownloadProgress,
+        on_start: onDownloadStart
       };
       try {
-        if (i) {
-          let $ = (S || M)
+        if (audioOnly) {
+          let url = (audioURL || videoURL)
             .href;
-          await Te.sideDownload(null, $, W)
-        } else S && M ? await Te.sideDownload(M.href, S.href, W) : await Te
-          .sideDownload(M.href, null, W)
-      } catch ($) {
-        return U({
+          await serviceConverter.sideDownload(null, url, sideOptions)
+        } else audioURL && videoURL ? await serviceConverter.sideDownload(videoURL.href, audioURL.href, sideOptions) : await serviceConverter
+          .sideDownload(videoURL.href, null, sideOptions)
+      } catch (err) {
+        return resultErr({
           error: "coapp_failure",
-          details: $.toString(),
+          details: err.toString(),
           id: `coapp_failure_${crypto.randomUUID()}`,
-          downloadable_id: r.downloadable.id,
+          downloadable_id: request.downloadable.id,
           report_status: "unreported"
         })
       }
     }
-    let k;
-    if (r.downloadable.incognito ? k = await B($d) : k = await B(zd), k) {
-      let S = await B(Qd),
-        M = r.downloadable.thumbnail_url;
-      M == "/content/images/no-thumbnail.png" && (M = ci.default.runtime
-        .getURL(M));
-      let N = await B(Kr),
-        j = {
+    let showNotification;
+    if (request.downloadable.incognito ? showNotification = await getSetting(settingShowSuccessNotificationForIncognito) : showNotification = await getSetting(settingShowSuccessNotification), showNotification) {
+      let showThumbnail = await getSetting(settingShowThumbnailInNotification),
+        thumbnailUrl = request.downloadable.thumbnail_url;
+      thumbnailUrl == "/content/images/no-thumbnail.png" && (thumbnailUrl = servicePolyfill.default.runtime
+        .getURL(thumbnailUrl));
+      let customStrings = await getSetting(settingSessionViewOptions),
+        notification = {
           type: "basic",
-          title: Pt("v9_vdh_notification", [], N),
-          message: Pt("v9_file_ready", [_], N)
+          title: formatI18nMessage("v9_vdh_notification", [], customStrings),
+          message: formatI18nMessage("v9_file_ready", [baseName], customStrings)
         };
-      S && (j.iconUrl = M), ci.default.notifications.create(r.downloadable
-        .id, j)
+      showThumbnail && (notification.iconUrl = thumbnailUrl), servicePolyfill.default.notifications.create(request.downloadable
+        .id, notification)
     } {
-      let S = await B(Wt);
-      S < 2 ? await Z(Wt, S + 1) : await Z(Wt, u)
+      let downloadCount = await getSetting(settingLastAdvancedDownload);
+      downloadCount < 2 ? await setSetting(settingLastAdvancedDownload, downloadCount + 1) : await setSetting(settingLastAdvancedDownload, startTime)
     }
-    return L({
+    return resultOk({
       inbrowser: !1,
-      filepath: h,
-      filename: _,
-      filedir: g,
-      qrcode: p
+      filepath: filePath,
+      filename: baseName,
+      filedir: downloadDir,
+      qrcode: needQr
     })
   }
-  async function vm(e, t, r, i, n) {
+  async function runServiceDownload(pending, queue, request, options, onProgress) {
     try {
-      let o = await Ww(e, t, r, i, n);
-      return e.delete(r.downloadable.id), o
-    } catch (o) {
-      return e.delete(r.downloadable.id), U({
+      let result = await performServiceDownload(pending, queue, request, options, onProgress);
+      return pending.delete(request.downloadable.id), result
+    } catch (err) {
+      return pending.delete(request.downloadable.id), resultErr({
         error: "unknown",
-        details: o.toString(),
+        details: err.toString(),
         id: `unknown_${crypto.randomUUID()}`,
-        downloadable_id: r.downloadable.id,
+        downloadable_id: request.downloadable.id,
         report_status: "unreported"
       })
     }
   }
-  async function wm(e) {
-    e.inbrowser && ci.default.downloads.cancel(e.inbrowser), e.ffmpeg_pid &&
-      mt.call("abortConvert", e.ffmpeg_pid)
+  async function cancelServiceDownload(entry) {
+    entry.inbrowser && servicePolyfill.default.downloads.cancel(entry.inbrowser), entry.ffmpeg_pid &&
+      serviceCoapp.call("abortConvert", entry.ffmpeg_pid)
   }
-  var ci, mt, bm, Uw, Te, jw, ym, Am = C(() => {
+  var servicePolyfill, serviceCoapp, serviceUtil, serviceLicense, serviceConverter, serviceSmartname, serviceFunding, initServiceDownloads = defineLazyModule(() => {
     "use strict";
-    jo();
-    Uo();
-    oe();
-    ci = yt(Ht(), 1);
-    Xe();
-    Ja();
-    Jr();
-    mt = (ft(), R(pt)), bm = (he(), R(ge)), Uw = (Kt(), R(Jt)), Te = (
-    di(), R(ui)), jw = "2.0.19", ym = async e => {
+    initBuildTarget();
+    initMessageFormatting();
+    initTsResultsIndex();
+    servicePolyfill = toEsm(requirePolyfill(), 1);
+    initContainers();
+    initSettingsBrowser();
+    initSettings();
+    serviceCoapp = (initCoapp(), toCommonjs(coappNs)), serviceUtil = (initCoreUtil(), toCommonjs(coreUtilNs)), serviceLicense = (initLicense(), toCommonjs(licenseNs)), serviceConverter = (
+    initConverter(), toCommonjs(coappSideNs)), serviceSmartname = "2.0.19", serviceFunding = async dir => {
       try {
-        e = await mt.call("path.homeJoin", e), await mt.call(
-          "fs.mkdirp", e)
-      } catch (t) {
-        console.error("mkdir error", t, e)
+        dir = await serviceCoapp.call("path.homeJoin", dir), await serviceCoapp.call(
+          "fs.mkdirp", dir)
+      } catch (err) {
+        console.error("mkdir error", err, dir)
       }
-      return e
+      return dir
     }
   });
 
-  function xm(e, t) {
-    for (let r of e.downloadable.values())
-      if (r.tab_id == e.current_tab_id) return !0;
-    for (let r of e.downloading.values())
-      if (r.downloadable.tab_id == e.current_tab_id) return !0;
-    if (!t.hide_downloaded) {
-      for (let r of e.downloaded.values())
-        if (r.downloadable.tab_id == e.current_tab_id) return !0
+  function hasHitsForCurrentTab(state, viewOptions) {
+    for (let entry of state.downloadable.values())
+      if (entry.tab_id == state.current_tab_id) return !0;
+    for (let entry of state.downloading.values())
+      if (entry.downloadable.tab_id == state.current_tab_id) return !0;
+    if (!viewOptions.hide_downloaded) {
+      for (let entry of state.downloaded.values())
+        if (entry.downloadable.tab_id == state.current_tab_id) return !0
     }
     return !1
   }
 
-  function Pl(e, t) {
-    let r = Rl(e, t);
-    for (let [i, n] of r)
-      if (n.reach === "downloadable" && n.is_visible && n.is_current_tab)
-        return q(i);
-    return O
+  function findCurrentTabDownloadable(state, viewOptions) {
+    let entries = collectDownloadableViews(state, viewOptions);
+    for (let [entryId, info] of entries)
+      if (info.reach === "downloadable" && info.is_visible && info.is_current_tab)
+        return resultSome(entryId);
+    return ResultNone
   }
 
-  function Rl(e, t) {
-    let r = new Map,
-      i = [];
+  function collectDownloadableViews(state, viewOptions) {
+    let byTab = new Map,
+      downloadableEntries = [];
     {
-      for (let l of e.downloadable.values()) {
-        r.has(l.tab_id) || r.set(l.tab_id, {
+      for (let downloadable of state.downloadable.values()) {
+        byTab.has(downloadable.tab_id) || byTab.set(downloadable.tab_id, {
           downloadables: [],
           filter_out_low_quality: !1
         });
-        let u = r.get(l.tab_id);
-        u.downloadables.push(l), l.is_low_quality || (u
+        let tabGroup = byTab.get(downloadable.tab_id);
+        tabGroup.downloadables.push(downloadable), downloadable.is_low_quality || (tabGroup
           .filter_out_low_quality = !0)
       }
-      for (let l of [...e.downloading.values(), ...e.downloaded.values()]) {
-        let u = r.get(l.downloadable.tab_id);
-        u && !l.downloadable.is_low_quality && (u.filter_out_low_quality = !0)
+      for (let item of [...state.downloading.values(), ...state.downloaded.values()]) {
+        let tabGroup = byTab.get(item.downloadable.tab_id);
+        tabGroup && !item.downloadable.is_low_quality && (tabGroup.filter_out_low_quality = !0)
       }
-      for (let [l, u] of r.entries()) {
-        let d = l == e.current_tab_id,
-          c = d || l == "none" || t.all_tabs;
-        for (let m of u.downloadables) {
-          let w = {
+      for (let [tabId, tabGroup] of byTab.entries()) {
+        let isCurrentTab = tabId == state.current_tab_id,
+          isVisible = isCurrentTab || tabId == "none" || viewOptions.all_tabs;
+        for (let downloadable of tabGroup.downloadables) {
+          let entry = {
             order: 0,
-            is_current_tab: d,
-            id: m.id,
-            timestamp: m.timestamp,
+            is_current_tab: isCurrentTab,
+            id: downloadable.id,
+            timestamp: downloadable.timestamp,
             reach: "downloadable",
-            is_visible: c
+            is_visible: isVisible
           };
-          u.filter_out_low_quality && m.is_low_quality && !t.low_quality && (w
-            .is_visible = !1), i.push([m, w])
+          tabGroup.filter_out_low_quality && downloadable.is_low_quality && !viewOptions.low_quality && (entry
+            .is_visible = !1), downloadableEntries.push([downloadable, entry])
         }
       }
     }
-    let n = [...e.downloading.values()].map(l => [l, {
+    let downloadingEntries = [...state.downloading.values()].map(item => [item, {
         order: 0,
-        id: l.downloadable.id,
-        is_current_tab: l.downloadable.tab_id == e.current_tab_id,
-        timestamp: l.downloadable.timestamp,
+        id: item.downloadable.id,
+        is_current_tab: item.downloadable.tab_id == state.current_tab_id,
+        timestamp: item.downloadable.timestamp,
         reach: "downloading",
         is_visible: !0
       }]),
-      o = [...e.downloaded.values()].map(l => [l, {
+      downloadedEntries = [...state.downloaded.values()].map(item => [item, {
         order: 0,
-        id: l.downloadable.id,
-        is_current_tab: l.downloadable.tab_id == e.current_tab_id,
-        timestamp: l.downloadable.timestamp,
+        id: item.downloadable.id,
+        is_current_tab: item.downloadable.tab_id == state.current_tab_id,
+        timestamp: item.downloadable.timestamp,
         reach: "downloaded",
-        is_visible: !t.hide_downloaded
+        is_visible: !viewOptions.hide_downloaded
       }]),
-      s;
+      allEntries;
     {
-      let l = ([, u], [, d]) => d.timestamp - u.timestamp;
-      t.sort_by_status ? (i.sort(l), n.sort(l), o.sort(l), s = [...i, ...n,
-        ...o
-      ]) : (s = [...i, ...n, ...o], s.sort(l)), t.sort_reverse && s
+      let byTimestamp = ([, metaA], [, metaB]) => metaB.timestamp - metaA.timestamp;
+      viewOptions.sort_by_status ? (downloadableEntries.sort(byTimestamp), downloadingEntries.sort(byTimestamp), downloadedEntries.sort(byTimestamp), allEntries = [...downloadableEntries, ...downloadingEntries,
+        ...downloadedEntries
+      ]) : (allEntries = [...downloadableEntries, ...downloadingEntries, ...downloadedEntries], allEntries.sort(byTimestamp)), viewOptions.sort_reverse && allEntries
       .reverse()
     }
-    let a = 0;
-    for (let l of s) l[1].is_visible && (l[1].order = a++);
-    return s
+    let visibleOrder = 0;
+    for (let entry of allEntries) entry[1].is_visible && (entry[1].order = visibleOrder++);
+    return allEntries
   }
-  var Tm = C(() => {
+  var initDownloadableViews = defineLazyModule(() => {
     "use strict";
-    oe()
+    initTsResultsIndex()
   });
-  async function Pm() {
-    Nl = void 0;
-    let t = [...await B(Bn), ...zo].slice(-500);
-    await Z(Bn, t), zo.length = 0
+  async function persistServiceLogs() {
+    serviceLogsTimer = void 0;
+    let logs = [...await getSetting(settingDebuggerLogs), ...serviceLogBuffer].slice(-500);
+    await setSetting(settingDebuggerLogs, logs), serviceLogBuffer.length = 0
   }
 
-  function le(e) {
-    Il && (zo.push({
+  function addLogEntry(message) {
+    debugLoggingEnabled && (serviceLogBuffer.push({
       timestamp: Date.now(),
-      message: e
-    }), Nl || (Nl = setTimeout(Pm, 500)))
+      message: message
+    }), serviceLogsTimer || (serviceLogsTimer = setTimeout(persistServiceLogs, 500)))
   }
 
-  function Im(e) {
-    V.default.runtime.sendMessage(e)
-      .catch(t => {})
+  function broadcastToUi(msg) {
+    mainBrowser.default.runtime.sendMessage(msg)
+      .catch(err => {})
   }
 
-  function zw(e, t) {
-    V.default.tabs.sendMessage(e, t)
-      .catch(r => {})
+  function sendToTab(tabId, msg) {
+    mainBrowser.default.tabs.sendMessage(tabId, msg)
+      .catch(err => {})
   }
-  async function $w(e, t) {
-    if (!e.inbrowser && await B(Yd)) {
-      let r = Date.now(),
-        i = {
-          download_result: structuredClone(e),
-          page_url: t.page_url,
-          timestamp: r
+  async function notifyDownloadComplete(result, downloadable) {
+    if (!result.inbrowser && await getSetting(settingRecordDownloadHistory)) {
+      let now = Date.now(),
+        record = {
+          download_result: structuredClone(result),
+          page_url: downloadable.page_url,
+          timestamp: now
         },
-        n = await B(Fi);
-      n.set(t.id, i);
+        history = await getSetting(settingDownloadHistory);
+      history.set(downloadable.id, record);
       {
-        let s = await B(Zd) * 1e3 * 60 * 60 * 24;
-        for (let [a, l] of n.entries()) r - l.timestamp > s && n.delete(a)
+        let maxAge = await getSetting(settingHistoryLimitInDays) * 1e3 * 60 * 60 * 24;
+        for (let [entryId, entry] of history.entries()) now - entry.timestamp > maxAge && history.delete(entryId)
       }
-      await Z(Fi, n)
+      await setSetting(settingDownloadHistory, history)
     }
   }
-  async function Bl(e) {
-    if (!await B(Za)) {
-      V.default.contextMenus.update("vdh-top", {
+  async function syncContextMenus(state) {
+    if (!await getSetting(settingShowContextMenu)) {
+      mainBrowser.default.contextMenus.update("vdh-top", {
         visible: !1
       });
       return
     }
-    V.default.contextMenus.update("vdh-top", {
+    mainBrowser.default.contextMenus.update("vdh-top", {
       visible: !0
     });
-    let t = [];
-    if (e.downloadable.size > 0) {
-      let r = await B(hr),
-        i = Rl(e, r);
-      for (let [n, o] of i) {
-        if (o.reach != "downloadable" || !o.is_visible) continue;
-        let s = n;
-        t.push({
-          title: s.title,
+    let items = [];
+    if (state.downloadable.size > 0) {
+      let viewOptions = await getSetting(settingViewOptions),
+        entries = collectDownloadableViews(state, viewOptions);
+      for (let [item, info] of entries) {
+        if (info.reach != "downloadable" || !info.is_visible) continue;
+        let downloadable = item;
+        items.push({
+          title: downloadable.title,
           enabled: !1
         });
-        for (let a of s.variants.values()) {
-          let l = a.core_media.container.name + " - " + a.core_media
+        for (let variant of downloadable.variants.values()) {
+          let label = variant.core_media.container.name + " - " + variant.core_media
           .builder;
-          if (a.core_media.av.video && a.core_media.av.video.dimensions
+          if (variant.core_media.av.video && variant.core_media.av.video.dimensions
             .isSome()) {
-            let u = a.core_media.av.video.dimensions.unwrap();
-            l += " - " + u.width.toString() + "x" + u.height.toString()
+            let dims = variant.core_media.av.video.dimensions.unwrap();
+            label += " - " + dims.width.toString() + "x" + dims.height.toString()
           }
-          typeof a.core_media.duration == "number" && (l += " - " + tm(a
-            .core_media.duration)), t.push({
-            title: l,
+          typeof variant.core_media.duration == "number" && (label += " - " + formatDuration(variant
+            .core_media.duration)), items.push({
+            title: label,
             enabled: !0,
             onclick: () => {
-              let u = {
-                downloadable_id: s.id,
-                variant_id: a.id,
+              let request = {
+                downloadable_id: downloadable.id,
+                variant_id: variant.id,
                 audio_only: !1,
                 ask_for_destination: !1,
                 convert_to: void 0
               };
-              rn(e, u)
+              handleDownloadMessage(state, request)
             }
           })
         }
       }
     }
-    t.length == 0 && t.push({
+    items.length == 0 && items.push({
       title: "no media",
       enabled: !1
     });
-    for (let r = 0; r < Mm; r++) r < t.length ? V.default.contextMenus
-      .update("vdh-sub-" + r, {
-        ...t[r],
+    for (let menuIndex = 0; menuIndex < MAX_CONTEXT_MENU_ITEMS; menuIndex++) menuIndex < items.length ? mainBrowser.default.contextMenus
+      .update("vdh-sub-" + menuIndex, {
+        ...items[menuIndex],
         visible: !0
-      }) : V.default.contextMenus.update("vdh-sub-" + r, {
+      }) : mainBrowser.default.contextMenus.update("vdh-sub-" + menuIndex, {
         visible: !1
       });
-    V.default.contextMenus.update("vdh-blacklist", {
+    mainBrowser.default.contextMenus.update("vdh-blacklist", {
       onclick: () => {
-        V.default.tabs.create({
+        mainBrowser.default.tabs.create({
           url: "/content2/blacklist.html"
         })
       }
-    }), V.default.contextMenus.update("vdh-smartnaming", {
+    }), mainBrowser.default.contextMenus.update("vdh-smartnaming", {
       onclick: async () => {
-        let r = await B(hr),
-          i = Pl(e, r);
-        if (i.isSome()) {
-          let n = i.unwrap()
+        let viewOptions = await getSetting(settingViewOptions),
+          currentDownloadable = findCurrentTabDownloadable(state, viewOptions);
+        if (currentDownloadable.isSome()) {
+          let downloadableId = currentDownloadable.unwrap()
             .id;
-          V.default.tabs.create({
-            url: `/content2/smartnaming_editor.html?id=${n}`
+          mainBrowser.default.tabs.create({
+            url: `/content2/smartnaming_editor.html?id=${downloadableId}`
           })
         }
       }
     })
   }
-  async function Vl(e) {
-    let t = await B(hr),
-      i = {
+  async function refreshActionIcon(state) {
+    let viewOptions = await getSetting(settingViewOptions),
+      iconInstructions = {
         size: 150,
         radius: 40,
         spread: 30,
-        greyed: !xm(e, t),
-        channel: hl
+        greyed: !hasHitsForCurrentTab(state, viewOptions),
+        channel: BUILD_CHANNEL
       };
-    if (e.download_errors.size > 0) {
-      V.default.action.setBadgeText({
-        text: e.download_errors.size.toString()
+    if (state.download_errors.size > 0) {
+      mainBrowser.default.action.setBadgeText({
+        text: state.download_errors.size.toString()
       });
-      V.default.action.setBadgeBackgroundColor({
+      mainBrowser.default.action.setBadgeBackgroundColor({
         color: [255, 0, 0, 190]
       });
       try {
-        V.default.action.setBadgeTextColor({
+        mainBrowser.default.action.setBadgeTextColor({
           color: "white"
         });
       } catch(ignored) {}
-    } else if (e.downloading.size > 0) {
-       V.default.action.setBadgeText({
-        text: e.downloading.size.toString()
+    } else if (state.downloading.size > 0) {
+       mainBrowser.default.action.setBadgeText({
+        text: state.downloading.size.toString()
       });
-      V.default.action.setBadgeBackgroundColor({
+      mainBrowser.default.action.setBadgeBackgroundColor({
         color: "#0284c7"
       });
       try {
-        V.default.action.setBadgeTextColor({
+        mainBrowser.default.action.setBadgeTextColor({
           color: "white"
         });
       } catch(ignored) {}
     } else {
-      V.default.action.setBadgeText({
+      mainBrowser.default.action.setBadgeText({
         text: ""
       });
     }
-    let n = Jf(i, Qw);
-    V.default.action.setIcon({
-      imageData: n
+    let imageData = renderIconImage(iconInstructions, iconImageCache);
+    mainBrowser.default.action.setIcon({
+      imageData: imageData
     })
   }
 
-  function ce(e) {
-    pi && (clearTimeout(pi), pi = void 0), Z(ss, e), Vl(e), Bl(e)
+  function persistLogState(state) {
+    statePersistTimer && (clearTimeout(statePersistTimer), statePersistTimer = void 0), setSetting(settingServiceDatabase, state), refreshActionIcon(state), syncContextMenus(state)
   }
 
-  function It(e) {
-    typeof pi > "u" && (pi = setTimeout(() => {
-      pi = void 0, ce(e)
+  function scheduleLogPersist(state) {
+    typeof statePersistTimer > "u" && (statePersistTimer = setTimeout(() => {
+      statePersistTimer = void 0, persistLogState(state)
     }, 200))
   }
-  async function Yt(e, t) {
-    if (!be) return;
-    if (e.is_low_quality) {
-      let a = ql.get(e.page_url) ?? 0;
-      if (a > 30) return;
-      ql.set(e.page_url, a + 1)
+  async function publishDownloadable(downloadable, autoDownload) {
+    if (!serviceDb) return;
+    if (downloadable.is_low_quality) {
+      let hitCount = pageHitCounts.get(downloadable.page_url) ?? 0;
+      if (hitCount > 30) return;
+      pageHitCounts.set(downloadable.page_url, hitCount + 1)
     }
-    for (let a of Xo) a.mutateDownloadable && a.mutateDownloadable(e);
-    let r = [...e.variants.values()];
-    for (let a of Cl)
-      if (e.page_url.match(a) || r[0].manifest_url.match(a)) return;
-    if (be.downloadable.has(e.id) || be.downloading.has(e.id) || be
-      .downloaded.has(e.id)) return;
-    let n = new Map;
-    for (let a of r) {
-      let l = a.core_media.container.name;
-      n.has(l) || n.set(l, []), n.get(l)
-        .push(a)
+    for (let handler of siteHandlers) handler.mutateDownloadable && handler.mutateDownloadable(downloadable);
+    let variants = [...downloadable.variants.values()];
+    for (let pattern of urlFilterRegexes)
+      if (downloadable.page_url.match(pattern) || variants[0].manifest_url.match(pattern)) return;
+    if (serviceDb.downloadable.has(downloadable.id) || serviceDb.downloading.has(downloadable.id) || serviceDb
+      .downloaded.has(downloadable.id)) return;
+    let byContainer = new Map;
+    for (let variant of variants) {
+      let containerName = variant.core_media.container.name;
+      byContainer.has(containerName) || byContainer.set(containerName, []), byContainer.get(containerName)
+        .push(variant)
     }
-    let o = await B(Hi),
-      s = [...n.values()];
-    s.sort((a, l) => {
-      let u = a[0],
-        d = l[0];
-      return ki(u.core_media, d.core_media, o)
-    }), e.variants = new Map;
-    for (let a of s) {
-      a.sort((l, u) => ki(l.core_media, u.core_media, o)), a = a.slice(0, o
+    let prefs = await getSetting(settingMediaUserPref),
+      groups = [...byContainer.values()];
+    groups.sort((groupA, groupB) => {
+      let firstA = groupA[0],
+        firstB = groupB[0];
+      return compareFormats(firstA.core_media, firstB.core_media, prefs)
+    }), downloadable.variants = new Map;
+    for (let group of groups) {
+      group.sort((variantA, variantB) => compareFormats(variantA.core_media, variantB.core_media, prefs)), group = group.slice(0, prefs
         .max_variants);
-      for (let l of a) e.variants.set(l.id, l)
+      for (let variant of group) downloadable.variants.set(variant.id, variant)
     }
-    if (be.downloadable.set(e.id, e), t) {
-      let a = e.variants.values()
+    if (serviceDb.downloadable.set(downloadable.id, downloadable), autoDownload) {
+      let firstVariantId = downloadable.variants.values()
         .next()
         .value.id;
-      rn(be, {
-        downloadable_id: e.id,
-        variant_id: a,
+      handleDownloadMessage(serviceDb, {
+        downloadable_id: downloadable.id,
+        variant_id: firstVariantId,
         audio_only: !1,
         ask_for_destination: !1,
         convert_to: void 0
       })
     }
-    It(be)
+    scheduleLogPersist(serviceDb)
   }
-  async function $o(e, t) {
-    e.license_status = {
+  async function refreshLicenseStatus(state, key) {
+    state.license_status = {
       checking: !0
-    }, ce(e);
-    let r;
-    if (!t || t.length == 0 ? r = await Sm.checkLicense() : r = await Sm
-      .validateLicense(t), (r.status = "accepted",true) ? (e.license_status = {
+    }, persistLogState(state);
+    let result;
+    if (!key || key.length == 0 ? result = await mainLicense.checkLicense() : result = await mainLicense
+      .validateLicense(key), (result.status = "accepted",true) ? (state.license_status = {
           accepted: !0,
-          email: r.email,
-          key: r.key
-        }, !await B(is) && (e.user_messages.add("license_now_valid"),
-          await Z(is, !0)), e.download_errors.delete("invalid_license"), e
-        .download_errors.delete("invalid_license_for_audio"), e
-        .download_errors.delete("download_limit")) : e.user_messages.delete(
-        "license_now_valid"), r.status == "invalid" && (e.license_status = {
+          email: result.email,
+          key: result.key
+        }, !await getSetting(settingValidLicenseMessageShown) && (state.user_messages.add("license_now_valid"),
+          await setSetting(settingValidLicenseMessageShown, !0)), state.download_errors.delete("invalid_license"), state
+        .download_errors.delete("invalid_license_for_audio"), state
+        .download_errors.delete("download_limit")) : state.user_messages.delete(
+        "license_now_valid"), result.status == "invalid" && (state.license_status = {
         invalid: !0,
-        key: r.key
-      }), r.status == "unneeded" && (e.license_status = {
+        key: result.key
+      }), result.status == "unneeded" && (state.license_status = {
         unneeded: !0
-      }), r.status == "nocoapp" && (e.license_status = {
+      }), result.status == "nocoapp" && (state.license_status = {
         nocoapp: !0
-      }), r.status == "mismatch") {
-      let i = r.brExt,
-        n = r.brLicense;
-      e.license_status = {
+      }), result.status == "mismatch") {
+      let brExt = result.brExt,
+        brLicense = result.brLicense;
+      state.license_status = {
         mismatch: !0,
-        key: r.key,
-        other_browser: n,
-        this_browser: i
+        key: result.key,
+        other_browser: brLicense,
+        this_browser: brExt
       }
     }
-    r.status == "unset" && (e.license_status = {
+    result.status == "unset" && (state.license_status = {
       unset: !0
-    }), r.status == "blocked" && (e.license_status = {
+    }), result.status == "blocked" && (state.license_status = {
       blocked: !0,
-      key: r.key
-    }), r.status == "locked" && (e.license_status = {
+      key: result.key
+    }), result.status == "locked" && (state.license_status = {
       locked: !0,
-      key: r.key
-    }), It(e)
+      key: result.key
+    }), scheduleLogPersist(state)
   }
-  async function Nm(e, t) {
-    let r = structuredClone(e.coapp_status);
-    e.coapp_status = "checking", ce(e), t && await new Promise(a =>
-      setTimeout(a, 1e3));
+  async function refreshCoappStatus(state, delay) {
+    let prevStatus = structuredClone(state.coapp_status);
+    state.coapp_status = "checking", persistLogState(state), delay && await new Promise(resolve =>
+      setTimeout(resolve, 1e3));
     let {
-      status: i,
-      info: n,
-      error: o
-    } = await kr.check();
-    if (i) {
-      let a;
-      Mi(n.version, Em) < 0 ? a = Em : a = !1, e.download_errors.delete(
-        "nocoapp"), e.coapp_status = {
+      status,
+      info,
+      error
+    } = await mainCoapp.check();
+    if (status) {
+      let newVersion;
+      compareSemVer(info.version, REQUIRED_COAPP_VERSION) < 0 ? newVersion = REQUIRED_COAPP_VERSION : newVersion = !1, state.download_errors.delete(
+        "nocoapp"), state.coapp_status = {
         found: !0,
-        path: n.binary,
-        version: n.version,
-        new_version: a
+        path: info.binary,
+        version: info.version,
+        new_version: newVersion
       }
-    } else e.coapp_status = {
+    } else state.coapp_status = {
       found: !1,
-      error: o
+      error: error
     };
-    r != "checking" && r.found != e.coapp_status.found ? $o(e) : It(e)
+    prevStatus != "checking" && prevStatus.found != state.coapp_status.found ? refreshLicenseStatus(state) : scheduleLogPersist(state)
   }
-  async function rn(e, t) {
-    le("Service:HandleDownloadMessage");
-    let r = t.downloadable_id,
-      i = t.variant_id,
-      n = e.downloadable.get(r);
-    if (!n) {
-      le("DB inconsistency"), console.error("DB inconsistency", n, r);
+  async function handleDownloadMessage(state, request) {
+    addLogEntry("Service:HandleDownloadMessage");
+    let downloadableId = request.downloadable_id,
+      variantId = request.variant_id,
+      downloadable = state.downloadable.get(downloadableId);
+    if (!downloadable) {
+      addLogEntry("DB inconsistency"), console.error("DB inconsistency", downloadable, downloadableId);
       return
     }
-    e.downloadable.delete(r);
-    let o = {
-      downloadable: n,
-      variant_id: i,
+    state.downloadable.delete(downloadableId);
+    let downloadingEntry = {
+      downloadable: downloadable,
+      variant_id: variantId,
       progress: "queued"
     };
-    e.downloading.set(r, o), ce(e), le(
+    state.downloading.set(downloadableId, downloadingEntry), persistLogState(state), addLogEntry(
       "downloading set - to call do_download");
-    let s = await vm(Rm, Gw, o, t, a => {
-      typeof a != "string" && typeof a.progress == "number" && (a
-          .progress > 1 || a.progress < 0) && (a.progress = "unknown"),
-        o.progress = a, Im({
+    let result = await runServiceDownload(serviceActiveDownloads, serviceDownloadQueue, downloadingEntry, request, progress => {
+      typeof progress != "string" && typeof progress.progress == "number" && (progress
+          .progress > 1 || progress.progress < 0) && (progress.progress = "unknown"),
+        downloadingEntry.progress = progress, broadcastToUi({
           progress_changed: {
-            progress: a,
-            downloadable_id: r
+            progress: progress,
+            downloadable_id: downloadableId
           }
-        }), Vl(e)
+        }), refreshActionIcon(state)
     });
-    if (e.downloading.delete(r), s.isOk()) {
-      let a = await B(Vn);
-      await Z(Vn, a + 1), a > 100 && (await Z(Vn, 0), await B(ns) || e
+    if (state.downloading.delete(downloadableId), result.isOk()) {
+      let count = await getSetting(settingSuccessfulDl);
+      await setSetting(settingSuccessfulDl, count + 1), count > 100 && (await setSetting(settingSuccessfulDl, 0), await getSetting(settingNeverShowSuccessfulDlMessage) || state
         .user_messages.add("one_hundred_downloads"));
-      let l = s.unwrap(),
-        u = await B(Kd);
-      if (!l.inbrowser && l.qrcode && u) {
-        let m = {
+      let downloadResult = result.unwrap(),
+        qrEnabled = await getSetting(settingYtWarning);
+      if (!downloadResult.inbrowser && downloadResult.qrcode && qrEnabled) {
+        let qrError = {
           id: "qrcode",
-          downloadable_id: r,
+          downloadable_id: downloadableId,
           error: "qrcode",
           report_status: "unreported"
         };
-        e.download_errors.set(m.id, m)
-      }!await B(rs) && (e.user_messages.add("auto_hide_downloaded"), Z(rs, !
+        state.download_errors.set(qrError.id, qrError)
+      }!await getSetting(settingAutoHideDownloadedMessageShown) && (state.user_messages.add("auto_hide_downloaded"), setSetting(settingAutoHideDownloadedMessageShown, !
         0));
-      let c = {
-        downloadable: n,
-        variant_id: i,
-        download_result: l
+      let downloadedEntry = {
+        downloadable: downloadable,
+        variant_id: variantId,
+        download_result: downloadResult
       };
-      e.downloaded.set(r, c), await $w(l, n)
+      state.downloaded.set(downloadableId, downloadedEntry), await notifyDownloadComplete(downloadResult, downloadable)
     } else {
-      e.downloadable.set(n.id, n);
-      let a = s.unwrapErr();
-      a.error == "filepicker_error" || e.download_errors.set(a.id, a)
+      state.downloadable.set(downloadable.id, downloadable);
+      let err = result.unwrapErr();
+      err.error == "filepicker_error" || state.download_errors.set(err.id, err)
     }
-    ce(e)
+    persistLogState(state)
   }
-  async function Jw(e) {
-    le("StartListeners"), V.default.commands.onCommand.addListener(
-    async t => {
-        if (t == "default-action") {
-          let r = await B(hr),
-            i = Pl(e, r);
-          if (i.isNone()) return;
-          let n = await B(es),
-            o = i.unwrap(),
-            s = o.variants.values()
+  async function serviceStartListeners(state) {
+    addLogEntry("StartListeners"), mainBrowser.default.commands.onCommand.addListener(
+    async command => {
+        if (command == "default-action") {
+          let viewOptions = await getSetting(settingViewOptions),
+            currentDownloadable = findCurrentTabDownloadable(state, viewOptions);
+          if (currentDownloadable.isNone()) return;
+          let action = await getSetting(settingDefaultAction),
+            downloadable = currentDownloadable.unwrap(),
+            variant = downloadable.variants.values()
             .next()
             .value;
-          if (n == "copy") de == "mozilla" ? navigator.clipboard
-            .writeText(s.to_copy) : V.default.scripting.executeScript({
+          if (action == "copy") BUILD_TARGET == "mozilla" ? navigator.clipboard
+            .writeText(variant.to_copy) : mainBrowser.default.scripting.executeScript({
               target: {
-                tabId: o.tab_id
+                tabId: downloadable.tab_id
               },
-              func: a => navigator.clipboard.writeText(a),
-              args: [s.to_copy]
+              func: text => navigator.clipboard.writeText(text),
+              args: [variant.to_copy]
             });
           else {
-            let a = {
-              downloadable_id: o.id,
-              variant_id: s.id,
-              audio_only: n == "download_audio",
-              ask_for_destination: n == "download_as",
+            let request = {
+              downloadable_id: downloadable.id,
+              variant_id: variant.id,
+              audio_only: action == "download_audio",
+              ask_for_destination: action == "download_as",
               convert_to: void 0
             };
-            rn(e, a)
+            handleDownloadMessage(state, request)
           }
         }
-      }), V.default.browserAction?.onClicked?.addListener(() => {
-      kl ? V.default.sidebarAction.toggle() : V.default.browserAction
+      }), mainBrowser.default.browserAction?.onClicked?.addListener(() => {
+      sidebarEnabled ? mainBrowser.default.sidebarAction.toggle() : mainBrowser.default.browserAction
         .openPopup()
-    }), V.default.runtime.onSuspend.addListener(() => {
-      le("OnSuspend"), kr.call("quit")
-    }), V.default.tabs.onUpdated.addListener((t, r, i) => {
-      if ("url" in r) {
-        let n = Date.now();
-        for (let o of e.downloadable.values()) o.tab_id == t && n - o
-          .timestamp > 2e3 && (e.downloadable.delete(o.id), ql.delete(o
-            .page_url), It(e))
+    }), mainBrowser.default.runtime.onSuspend.addListener(() => {
+      addLogEntry("OnSuspend"), mainCoapp.call("quit")
+    }), mainBrowser.default.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+      if ("url" in changeInfo) {
+        let now = Date.now();
+        for (let downloadable of state.downloadable.values()) downloadable.tab_id == tabId && now - downloadable
+          .timestamp > 2e3 && (state.downloadable.delete(downloadable.id), pageHitCounts.delete(downloadable
+            .page_url), scheduleLogPersist(state))
       }
-    }), V.default.tabs.onActivated.addListener(t => {
-      e.current_tab_id = t.tabId, e.current_window_id = t.windowId, ce(
-        e)
-    }), V.default.windows.onFocusChanged.addListener(async t => {
-      let i = (await V.default.tabs.query({
+    }), mainBrowser.default.tabs.onActivated.addListener(activeInfo => {
+      state.current_tab_id = activeInfo.tabId, state.current_window_id = activeInfo.windowId, persistLogState(
+        state)
+    }), mainBrowser.default.windows.onFocusChanged.addListener(async windowId => {
+      let activeTab = (await mainBrowser.default.tabs.query({
         active: !0,
         currentWindow: !0
       }))[0];
-      i && (e.current_tab_id = i.id ?? -1, e.current_window_id = i
-        .windowId ?? -1, ce(e))
-    }), V.default.tabs.onRemoved.addListener(async t => {
-      let r = !1;
-      if (e.yt_bulk.isSome() && e.yt_bulk.unwrap()
-        .tab_id == t && (r = !0, e.yt_bulk = O, e.user_messages
-          .delete("yt_bulk_detected")), await B(Jd))
-        for (let i of e.downloadable.values()) i.tab_id == t && (e
-          .downloadable.delete(i.id), r = !0);
-      r && ce(e)
-    }), V.default.runtime.onMessage.addListener(async (t, r) => {
-      let i = typeof t == "object" && "debugger_new_logs" in t;
-      i = i || typeof t == "string" && t == "debugger_request_logs",
-        i || le(`Service:onMessage - ${JSON.stringify(t)}`);
-      let n = t;
-      if (typeof n == "string") {
-        if (n == "request_license_status" && r.tab?.id && zw(r.tab
+      activeTab && (state.current_tab_id = activeTab.id ?? -1, state.current_window_id = activeTab
+        .windowId ?? -1, persistLogState(state))
+    }), mainBrowser.default.tabs.onRemoved.addListener(async tabId => {
+      let changed = !1;
+      if (state.yt_bulk.isSome() && state.yt_bulk.unwrap()
+        .tab_id == tabId && (changed = !0, state.yt_bulk = ResultNone, state.user_messages
+          .delete("yt_bulk_detected")), await getSetting(settingForgetMediaOnTabClose))
+        for (let downloadable of state.downloadable.values()) downloadable.tab_id == tabId && (state
+          .downloadable.delete(downloadable.id), changed = !0);
+      changed && persistLogState(state)
+    }), mainBrowser.default.runtime.onMessage.addListener(async (message, sender) => {
+      let isDebuggerLog = typeof message == "object" && "debugger_new_logs" in message;
+      isDebuggerLog = isDebuggerLog || typeof message == "string" && message == "debugger_request_logs",
+        isDebuggerLog || addLogEntry(`Service:onMessage - ${JSON.stringify(message)}`);
+      let msg = message;
+      if (typeof msg == "string") {
+        if (msg == "request_license_status" && sender.tab?.id && sendToTab(sender.tab
           .id, {
-            license_status: e.license_status
-          }), n == "select_download_directory") {
-          let o = await B(Kr),
-            s = Pt("v9_filepicker_select_download_dir", [], o),
-            l = (await kr.call("filepicker", "pick_folder", "~", s))
+            license_status: state.license_status
+          }), msg == "select_download_directory") {
+          let customStrings = await getSetting(settingSessionViewOptions),
+            prompt = formatI18nMessage("v9_filepicker_select_download_dir", [], customStrings),
+            dir = (await mainCoapp.call("filepicker", "pick_folder", "~", prompt))
             .split(`
 `)[0];
-          typeof l == "string" && l.length > 0 && Z(Bi, l);
+          typeof dir == "string" && dir.length > 0 && setSetting(settingDownloadDirectory, dir);
           return
         }
-        if (n == "incognito_check" && (await V.default.extension
-            .isAllowedIncognitoAccess() ? e.user_messages.delete(
-              "no_incognito") : await B(ts) || (await Z(ts, !0), e
-              .user_messages.add("no_incognito"), It(e))), n ==
-          "leave_review" && (e.user_messages.delete(
-              "one_hundred_downloads"), de == "mozilla" ? V.default
+        if (msg == "incognito_check" && (await mainBrowser.default.extension
+            .isAllowedIncognitoAccess() ? state.user_messages.delete(
+              "no_incognito") : await getSetting(settingNeverShowNoIncognitoMsgAgain) || (await setSetting(settingNeverShowNoIncognitoMsgAgain, !0), state
+              .user_messages.add("no_incognito"), scheduleLogPersist(state))), msg ==
+          "leave_review" && (state.user_messages.delete(
+              "one_hundred_downloads"), BUILD_TARGET == "mozilla" ? mainBrowser.default
             .tabs.create({
               url: "https://addons.mozilla.org/firefox/addon/video-downloadhelper"
-            }) : de == "google" ? V.default.tabs.create({
+            }) : BUILD_TARGET == "google" ? mainBrowser.default.tabs.create({
               url: "https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfk"
-            }) : de == "microsoft" && V.default.tabs.create({
+            }) : BUILD_TARGET == "microsoft" && mainBrowser.default.tabs.create({
               url: "https://microsoftedge.microsoft.com/addons/detail/video-downloadhelper/jmkaglaafmhbcpleggkmaliipiilhldn"
-            }), ce(e)), n == "never_ask_for_review" && (e
-            .user_messages.delete("one_hundred_downloads"), await Z(
-              ns, !0), ce(e)), n == "bulk_download" && (e
-            .user_messages.delete("yt_bulk_detected"), e.yt_bulk
+            }), persistLogState(state)), msg == "never_ask_for_review" && (state
+            .user_messages.delete("one_hundred_downloads"), await setSetting(
+              settingNeverShowSuccessfulDlMessage, !0), persistLogState(state)), msg == "bulk_download" && (state
+            .user_messages.delete("yt_bulk_detected"), state.yt_bulk
             .isSome())) {
-          let o = e.yt_bulk.unwrap();
-          for (let s of o.ids) {
-            let a = `https://www.youtube.com/watch?v=${s}&vdh-bulk=1`,
-              l = await V.default.tabs.create({
-                url: a,
+          let ytBulk = state.yt_bulk.unwrap();
+          for (let videoId of ytBulk.ids) {
+            let bulkUrl = `https://www.youtube.com/watch?v=${videoId}&vdh-bulk=1`,
+              tab = await mainBrowser.default.tabs.create({
+                url: bulkUrl,
                 active: !1
               });
-            V.default.tabs.update(l.id, {
+            mainBrowser.default.tabs.update(tab.id, {
                 muted: !0
               })
               .then(async () => {
-                for (let u = 0; u < 30; u++) {
-                  await new Promise(d => setTimeout(d, 2e3));
-                  for (let d of e.downloading.values()) d
-                    .downloadable.tab_id == l.id && V.default.tabs
-                    .remove(l.id)
+                for (let attempt = 0; attempt < 30; attempt++) {
+                  await new Promise(resolve => setTimeout(resolve, 2e3));
+                  for (let downloadItem of state.downloading.values()) downloadItem
+                    .downloadable.tab_id == tab.id && mainBrowser.default.tabs
+                    .remove(tab.id)
                 }
               })
           }
         }
       } else {
-        if ("yt_selection" in n && de != "google") {
-          let o = r.tab?.id;
-          o && (e.yt_bulk = q({
-            ids: n.yt_selection,
-            tab_id: o
-          }), e.user_messages.add("yt_bulk_detected"), It(e));
+        if ("yt_selection" in msg && BUILD_TARGET != "google") {
+          let tabId = sender.tab?.id;
+          tabId && (state.yt_bulk = resultSome({
+            ids: msg.yt_selection,
+            tab_id: tabId
+          }), state.user_messages.add("yt_bulk_detected"), scheduleLogPersist(state));
           return
         }
-        if ("coapp_check" in n) {
-          Nm(e, n.coapp_check);
+        if ("coapp_check" in msg) {
+          refreshCoappStatus(state, msg.coapp_check);
           return
         }
-        if ("rm_error" in n) {
-          e.download_errors.delete(n.rm_error), ce(e);
+        if ("rm_error" in msg) {
+          state.download_errors.delete(msg.rm_error), persistLogState(state);
           return
         }
-        if ("rm_user_message" in n) {
-          e.user_messages.delete(n.rm_user_message), ce(e);
+        if ("rm_user_message" in msg) {
+          state.user_messages.delete(msg.rm_user_message), persistLogState(state);
           return
         }
-        if ("clean" in n) {
-          let o = n.clean;
-          e.downloadable.clear(), o && e.downloaded.clear(), ce(e);
+        if ("clean" in msg) {
+          let alsoDownloaded = msg.clean;
+          state.downloadable.clear(), alsoDownloaded && state.downloaded.clear(), persistLogState(state);
           return
         }
-        if ("license_check" in n) {
-          $o(e, n.license_check);
+        if ("license_check" in msg) {
+          refreshLicenseStatus(state, msg.license_check);
           return
         }
-        if ("report_error" in n) {
-          let o = n.report_error,
-            s = e.download_errors.get(o);
-          if (s && s.details) {
-            s.report_status = "reporting", ce(e);
+        if ("report_error" in msg) {
+          let errorId = msg.report_error,
+            errorEntry = state.download_errors.get(errorId);
+          if (errorEntry && errorEntry.details) {
+            errorEntry.report_status = "reporting", persistLogState(state);
             try {
-              let a = await V.default.runtime.getPlatformInfo(),
-                l = V.default.runtime.getManifest(),
-                u = l.version_name ?? l.version,
-                d = e.downloadable.get(s.downloadable_id);
-              if (d) {
-                let c = it(d);
-                delete c.headers;
-                let m = {
+              let platformInfo = await mainBrowser.default.runtime.getPlatformInfo(),
+                manifest = mainBrowser.default.runtime.getManifest(),
+                version = manifest.version_name ?? manifest.version,
+                downloadable = state.downloadable.get(errorEntry.downloadable_id);
+              if (downloadable) {
+                let serialized = typeTagOf(downloadable);
+                delete serialized.headers;
+                let reportBody = {
                   "vdh-bug-report": !0,
-                  dable: c,
-                  channel: hl,
-                  target: de,
+                  dable: serialized,
+                  channel: BUILD_CHANNEL,
+                  target: BUILD_TARGET,
                   ua: navigator.userAgent,
                   platform: {
-                    arg: a.arch,
-                    os: a.os
+                    arg: platformInfo.arch,
+                    os: platformInfo.os
                   },
-                  version: u,
-                  lang: V.default.i18n.getUILanguage(),
-                  details: s.details
+                  version: version,
+                  lang: mainBrowser.default.i18n.getUILanguage(),
+                  details: errorEntry.details
                 };
                 await fetch(
                   "https://api.downloadhelper.net/v1/reports", {
@@ -10200,357 +10200,357 @@ const store = createStore(
                     },
                     redirect: "follow",
                     referrerPolicy: "no-referrer",
-                    body: JSON.stringify(m)
+                    body: JSON.stringify(reportBody)
                   })
               }
-              s.report_status = "reported"
+              errorEntry.report_status = "reported"
             } catch {
-              s.report_status = "reported"
+              errorEntry.report_status = "reported"
             }
-            It(e)
+            scheduleLogPersist(state)
           }
         }
-        if ("forget" in n) {
-          let o = n.forget,
-            s = e.downloadable.get(o) || e.downloaded.get(o)
+        if ("forget" in msg) {
+          let forgetId = msg.forget,
+            forgotten = state.downloadable.get(forgetId) || state.downloaded.get(forgetId)
             ?.downloadable;
-          if (e.downloadable.delete(o), e.downloaded.delete(o), s && !
-            s.is_low_quality && !(await B(hr))
+          if (state.downloadable.delete(forgetId), state.downloaded.delete(forgetId), forgotten && !
+            forgotten.is_low_quality && !(await getSetting(settingViewOptions))
             .low_quality)
-            for (let l of e.downloadable.values()) s.tab_id == l
-              .tab_id && l.is_low_quality && e.downloadable.delete(l
+            for (let other of state.downloadable.values()) forgotten.tab_id == other
+              .tab_id && other.is_low_quality && state.downloadable.delete(other
                 .id);
-          ce(e)
+          persistLogState(state)
         }
-        if ("stop" in n) {
-          let o = n.stop,
-            s = Rm.get(o),
-            a = e.downloading.get(o);
-          if (!s || !a) {
-            le("Can't find abordable download");
+        if ("stop" in msg) {
+          let stopId = msg.stop,
+            pendingEntry = serviceActiveDownloads.get(stopId),
+            downloadingEntry = state.downloading.get(stopId);
+          if (!pendingEntry || !downloadingEntry) {
+            addLogEntry("Can't find abordable download");
             return
           }
-          wm(s), a.progress = "stopping", Im({
+          cancelServiceDownload(pendingEntry), downloadingEntry.progress = "stopping", broadcastToUi({
             progress_changed: {
-              progress: a.progress,
-              downloadable_id: o
+              progress: downloadingEntry.progress,
+              downloadable_id: stopId
             }
           })
         }
-        if ("retry" in n) {
-          let o = n.retry,
-            a = {
-              ...e.downloaded.get(o)
+        if ("retry" in msg) {
+          let retryId = msg.retry,
+            clonedDownloadable = {
+              ...state.downloaded.get(retryId)
               .downloadable
             };
-          a.timestamp = Date.now(), a.id =
-            `downloadable_${crypto.randomUUID()}`, a.tab_id = "none",
-            a.is_low_quality = !1, await Yt(a), ce(e)
+          clonedDownloadable.timestamp = Date.now(), clonedDownloadable.id =
+            `downloadable_${crypto.randomUUID()}`, clonedDownloadable.tab_id = "none",
+            clonedDownloadable.is_low_quality = !1, await publishDownloadable(clonedDownloadable), persistLogState(state)
         }
-        if ("convert_local_to" in n) {
-          let o = n.convert_local_to,
-            s = await B(Kr),
-            a = Pt("v9_filepicker_select_file", [], s),
-            u = (await kr.call("filepicker", "pick_file", "~", a))
+        if ("convert_local_to" in msg) {
+          let convertTo = msg.convert_local_to,
+            customStrings = await getSetting(settingSessionViewOptions),
+            prompt = formatI18nMessage("v9_filepicker_select_file", [], customStrings),
+            pickLines = (await mainCoapp.call("filepicker", "pick_file", "~", prompt))
             .split(`
 `),
-            d = u[0];
-          if (d) {
-            let c = u[2],
-              m = `downloadable_${ct(d)}`,
-              w = `variant_${ct(d)}`,
-              p = d.split(".")
+            filePath = pickLines[0];
+          if (filePath) {
+            let fileName = pickLines[2],
+              downloadableId = `downloadable_${hashToHex(filePath)}`,
+              variantId = `variant_${hashToHex(filePath)}`,
+              ext = filePath.split(".")
               .pop(),
-              _ = Ii(p);
-            if (_.isSome()) {
-              let [f, g] = _.unwrap(), h = {
-                content_length: O,
+              containerResult = containerForExtension(ext);
+            if (containerResult.isSome()) {
+              let [container, scope] = containerResult.unwrap(), coreMedia = {
+                content_length: ResultNone,
                 builder: "LocalFile",
                 protocol: "unknown",
                 duration: "unknown",
-                container: f,
+                container: container,
                 av: {
                   audio: !1,
-                  video: jt()
+                  video: unknownVideoTrack()
                 }
-              }, T = {
-                id: w,
-                manifest_url: "file://" + d,
-                core_media: h,
+              }, variant = {
+                id: variantId,
+                manifest_url: "file://" + filePath,
+                core_media: coreMedia,
                 sources: {
                   audio: !1,
-                  video: "file://" + d
+                  video: "file://" + filePath
                 },
-                to_copy: d
-              }, x = {
-                id: m,
+                to_copy: filePath
+              }, downloadable = {
+                id: downloadableId,
                 tab_id: "none",
                 timestamp: Date.now(),
                 incognito: !1,
                 page_url: "about:blank",
-                page_title: c,
-                title: c,
+                page_title: fileName,
+                title: fileName,
                 favicon_url: "about:blank",
                 thumbnail_url: "/content/images/no-thumbnail.png",
                 headers: [],
                 is_low_quality: !1,
                 variants: new Map([
-                  [w, T]
+                  [variantId, variant]
                 ])
               };
-              e.downloadable.set(m, x);
-              let b = {
-                downloadable_id: m,
-                variant_id: w,
-                audio_only: g == "audio_only",
+              state.downloadable.set(downloadableId, downloadable);
+              let request = {
+                downloadable_id: downloadableId,
+                variant_id: variantId,
+                audio_only: scope == "audio_only",
                 ask_for_destination: !1,
-                convert_to: o
+                convert_to: convertTo
               };
-              await rn(e, b)
+              await handleDownloadMessage(state, request)
             }
           }
         }
-        if ("rm" in n) {
-          let o = n.rm,
-            s = e.downloaded.get(o)
+        if ("rm" in msg) {
+          let rmId = msg.rm,
+            result = state.downloaded.get(rmId)
             .download_result;
-          s.inbrowser ? (await V.default.downloads.removeFile(s
-              .download_id), await V.default.downloads.erase({
-              id: s.download_id
-            })) : kr.call("fs.unlink", s.filepath), e.downloaded
-            .delete(o), ce(e);
-          let a = await B(Fi);
-          a.delete(o), await Z(Fi, a)
+          result.inbrowser ? (await mainBrowser.default.downloads.removeFile(result
+              .download_id), await mainBrowser.default.downloads.erase({
+              id: result.download_id
+            })) : mainCoapp.call("fs.unlink", result.filepath), state.downloaded
+            .delete(rmId), persistLogState(state);
+          let history = await getSetting(settingDownloadHistory);
+          history.delete(rmId), await setSetting(settingDownloadHistory, history)
         }
-        if ("play" in n) {
-          let o = n.play,
-            s = e.downloaded.get(o)
+        if ("play" in msg) {
+          let playId = msg.play,
+            result = state.downloaded.get(playId)
             .download_result;
-          s.inbrowser || kr.call("open", s.filepath)
+          result.inbrowser || mainCoapp.call("open", result.filepath)
         }
-        if ("show_dir" in n) {
-          let o = n.show_dir,
-            s = e.downloaded.get(o)
+        if ("show_dir" in msg) {
+          let showId = msg.show_dir,
+            result = state.downloaded.get(showId)
             .download_result;
-          s.inbrowser ? V.default.downloads.show(s.download_id) : kr
-            .call("open", s.filedir)
+          result.inbrowser ? mainBrowser.default.downloads.show(result.download_id) : mainCoapp
+            .call("open", result.filedir)
         }
-        if ("download" in n) {
-          let o = n.download;
-          await rn(e, o)
+        if ("download" in msg) {
+          let request = msg.download;
+          await handleDownloadMessage(state, request)
         }
       }
     })
   }
-  async function Kw(e) {
-    await V.default.contextMenus.removeAll();
-    let t = i => new Promise(n => V.default.contextMenus.create(i, n));
-    await t({
+  async function registerContextMenus(state) {
+    await mainBrowser.default.contextMenus.removeAll();
+    let create = props => new Promise(resolve => mainBrowser.default.contextMenus.create(props, resolve));
+    await create({
       id: "vdh-top",
       title: "Video DownloadHelper",
       contexts: ["page"]
     });
-    for (let i = 0; i < Mm; i++) await t({
+    for (let menuIndex = 0; menuIndex < MAX_CONTEXT_MENU_ITEMS; menuIndex++) await create({
       parentId: "vdh-top",
       title: "---",
-      id: "vdh-sub-" + i
+      id: "vdh-sub-" + menuIndex
     });
-    await t({
+    await create({
       parentId: "vdh-top",
       id: "vdh-separator",
       type: "separator"
     });
-    let r = await B(Kr);
-    await t({
+    let customStrings = await getSetting(settingSessionViewOptions);
+    await create({
       parentId: "vdh-top",
       id: "vdh-blacklist",
-      title: Pt("v9_menu_item_blacklist", [], r)
-    }), await t({
+      title: formatI18nMessage("v9_menu_item_blacklist", [], customStrings)
+    }), await create({
       parentId: "vdh-top",
       id: "vdh-smartnaming",
-      title: Pt("v9_menu_item_smartnaming", [], r)
-    }), gr(Za, () => Bl(e)), gr(hr, () => {
-      Vl(e), Bl(e)
+      title: formatI18nMessage("v9_menu_item_smartnaming", [], customStrings)
+    }), onSettingChanged(settingShowContextMenu, () => syncContextMenus(state)), onSettingChanged(settingViewOptions, () => {
+      refreshActionIcon(state), syncContextMenus(state)
     })
   }
 
-  function Yw() {
-    if (!be) return;
-    let e = Date.now();
-    for (let t of be.downloadable.values()) e - t.timestamp > Xw && (be
-      .downloadable.delete(t.id), It(be))
+  function pruneExpiredDownloadables() {
+    if (!serviceDb) return;
+    let now = Date.now();
+    for (let downloadable of serviceDb.downloadable.values()) now - downloadable.timestamp > DOWNLOADABLE_TTL_MS && (serviceDb
+      .downloadable.delete(downloadable.id), scheduleLogPersist(serviceDb))
   }
 
-  function Dm(e) {
-    e = ["https://www.youtube.com/s/search/audio/*.mp3",
+  function compileUrlFilters(patterns) {
+    patterns = ["https://www.youtube.com/s/search/audio/*.mp3",
       "https://*.xvideos-cdn.com/videos/videopreview/*.mp4",
       "https://*.phncdn.com/videos/*.webm*",
       "https://ev-ph.rdtcdn.com/videos/*.mp4*",
       "https://ev-ph.ypncdn.com/videos/*.mp4*",
-      "https://thumb-*.xhcdn.com/*", "https://*.sacdnssedge.com/*", ...e
-    ], Cl = [];
-    for (let t of e)
-      if (t.length != 0) {
-        t = t.replace(/[.+?^${}()|[\]\\]/g, "\\$&"), t = t.replaceAll("*",
+      "https://thumb-*.xhcdn.com/*", "https://*.sacdnssedge.com/*", ...patterns
+    ], urlFilterRegexes = [];
+    for (let pattern of patterns)
+      if (pattern.length != 0) {
+        pattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&"), pattern = pattern.replaceAll("*",
           ".*");
         try {
-          Cl.push(new RegExp(t))
+          urlFilterRegexes.push(new RegExp(pattern))
         } catch {
-          le("Failed to compile regex: " + t)
+          addLogEntry("Failed to compile regex: " + pattern)
         }
       }
   }
 
-  function Om(e) {
-    kl = e, bl(kl, be.current_window_id, !1)
+  function setSidebarEnabled(useSidebar) {
+    sidebarEnabled = useSidebar, applySidebarMode(sidebarEnabled, serviceDb.current_window_id, !1)
   }
-  async function Zw() {
-    Il = await B(qi), V.default.runtime.onMessage.addListener(async (e,
-      t) => {
-        let r = e;
-        if (typeof r == "string") {
-          if (r == "debugger_toggle") {
-            let i = await B(qi);
-            Z(qi, !i)
-          } else if (r == "debugger_restart_addon") V.default.runtime
+  async function setupRuntimeMessaging() {
+    debugLoggingEnabled = await getSetting(settingDebuggerEnabled), mainBrowser.default.runtime.onMessage.addListener(async (message,
+      sender) => {
+        let msg = message;
+        if (typeof msg == "string") {
+          if (msg == "debugger_toggle") {
+            let enabled = await getSetting(settingDebuggerEnabled);
+            setSetting(settingDebuggerEnabled, !enabled)
+          } else if (msg == "debugger_restart_addon") mainBrowser.default.runtime
             .reload();
-          else if (r == "debugger_request_logs" && t.tab?.id) {
-            let i = await B(qi),
-              n = "";
-            if (!i) n = "debugger disabled";
-            else if (!Il) n = "restart required";
-            else if (be) {
-              let o = V.default.runtime.lastError?.toString() ||
+          else if (msg == "debugger_request_logs" && sender.tab?.id) {
+            let enabled = await getSetting(settingDebuggerEnabled),
+              logsText = "";
+            if (!enabled) logsText = "debugger disabled";
+            else if (!debugLoggingEnabled) logsText = "restart required";
+            else if (serviceDb) {
+              let lastErrorStr = mainBrowser.default.runtime.lastError?.toString() ||
                 "(lastError empty)",
-                s = it(be);
-              "license_status" in s && s.license_status && typeof s
-                .license_status == "object" && ("key" in s
-                  .license_status && delete s.license_status.key,
-                  "email" in s.license_status && delete s.license_status
+                serialized = typeTagOf(serviceDb);
+              "license_status" in serialized && serialized.license_status && typeof serialized
+                .license_status == "object" && ("key" in serialized
+                  .license_status && delete serialized.license_status.key,
+                  "email" in serialized.license_status && delete serialized.license_status
                   .email);
-              let a = JSON.stringify(s, null, 2),
-                l = (await B(Bn))
-                .sort((u, d) => u.timestamp - d.timestamp)
-                .map(u => `${u.timestamp} : ${u.message}`)
+              let stateJson = JSON.stringify(serialized, null, 2),
+                logsStr = (await getSetting(settingDebuggerLogs))
+                .sort((entryA, entryB) => entryA.timestamp - entryB.timestamp)
+                .map(entry => `${entry.timestamp} : ${entry.message}`)
                 .join(`
 `);
-              n = o + `
-` + l + `
-` + a
+              logsText = lastErrorStr + `
+` + logsStr + `
+` + stateJson
             }
-            V.default.tabs.sendMessage(t.tab.id, {
-              all_logs: n
+            mainBrowser.default.tabs.sendMessage(sender.tab.id, {
+              all_logs: logsText
             })
           }
-        } else "debugger_new_logs" in r && (zo.push(...r
-          .debugger_new_logs), Pm())
+        } else "debugger_new_logs" in msg && (serviceLogBuffer.push(...msg
+          .debugger_new_logs), persistServiceLogs())
       })
   }
-  var V, Em, Mm, Xw, kr, Sm, zo, Il, Nl, Rm, Gw, Qw, kl, pi, Cl, ql, be, Hl =
-    C(() => {
+  var mainBrowser, REQUIRED_COAPP_VERSION, MAX_CONTEXT_MENU_ITEMS, DOWNLOADABLE_TTL_MS, mainCoapp, mainLicense, serviceLogBuffer, debugLoggingEnabled, serviceLogsTimer, serviceActiveDownloads, serviceDownloadQueue, iconImageCache, sidebarEnabled, statePersistTimer, urlFilterRegexes, pageHitCounts, serviceDb, initMain =
+    defineLazyModule(() => {
       "use strict";
-      V = yt(Ht(), 1);
-      Xe();
-      fr();
-      Uo();
-      Kf();
-      Ri();
-      em();
-      qa();
-      rm();
-      oe();
-      jo();
-      Wo();
-      qn();
-      yl();
-      Jr();
-      Am();
-      Tm();
-      Em = "2.0.19", Mm = 30, Xw = 30 * 60 * 1e3, kr = (ft(), R(pt)), Sm = (
-        Kt(), R(Jt)), zo = [], Il = !0;
-      Rm = new Map, Gw = [], Qw = new Map, kl = !1, Cl = [], ql = new Map;
+      mainBrowser = toEsm(requirePolyfill(), 1);
+      initContainers();
+      initMediaCommon();
+      initMessageFormatting();
+      initIconRendering();
+      initAsIterPolyfill();
+      initBrowserAction();
+      initSemver();
+      initMessageFormattingIndex();
+      initTsResultsIndex();
+      initBuildTarget();
+      initHitTypes();
+      initMediaUserPrefsDefaults();
+      initSiteHandlers();
+      initSettings();
+      initServiceDownloads();
+      initDownloadableViews();
+      REQUIRED_COAPP_VERSION = "2.0.19", MAX_CONTEXT_MENU_ITEMS = 30, DOWNLOADABLE_TTL_MS = 30 * 60 * 1e3, mainCoapp = (initCoapp(), toCommonjs(coappNs)), mainLicense = (
+        initLicense(), toCommonjs(licenseNs)), serviceLogBuffer = [], debugLoggingEnabled = !0;
+      serviceActiveDownloads = new Map, serviceDownloadQueue = [], iconImageCache = new Map, sidebarEnabled = !1, urlFilterRegexes = [], pageHitCounts = new Map;
       (async () => {
         try {
-          await Zw(), le("Main()");
+          await setupRuntimeMessaging(), addLogEntry("Main()");
           try {
-            await tc()
-          } catch (r) {
-            le("Main() - storage_migrate failed - " + r.toString())
+            await firstRunInit()
+          } catch (err) {
+            addLogEntry("Main() - storage_migrate failed - " + err.toString())
           }
-          let e = await B(Ya), legacyUiActive = !1;
+          let useSidebar = await getSetting(settingUseSidebar), legacyUiActive = !1;
           try {
-            let r = await B(Vi);
-            if (Wd(Vi, () => V.default.runtime.reload()), r) {
-              Zf(), legacyUiActive = !0
-            } else _l(e)
-          } catch (r) {
-            le("Main() - handle legacy UI failed - " + r.toString()),
-              _l(e), le("Main() - fallback to UseNewUI")
+            let useLegacyUi = await getSetting(settingUseLegacyUi);
+            if (onSettingChangedDebounced(settingUseLegacyUi, () => mainBrowser.default.runtime.reload()), useLegacyUi) {
+              resetBrowserAction(), legacyUiActive = !0
+            } else setPopupEnabled(useSidebar)
+          } catch (err) {
+            addLogEntry("Main() - handle legacy UI failed - " + err.toString()),
+              setPopupEnabled(useSidebar), addLogEntry("Main() - fallback to UseNewUI")
           }
-          let t = await B(ss);
-          be = t;
+          let database = await getSetting(settingServiceDatabase);
+          serviceDb = database;
           try {
-            await Kw(t)
-          } catch (r) {
-            le("Main() - RegisterContextMenus failed - " + r.toString())
+            await registerContextMenus(database)
+          } catch (err) {
+            addLogEntry("Main() - RegisterContextMenus failed - " + err.toString())
           }
-          Jw(t), Nm(t, !1), $o(t);
+          serviceStartListeners(database), refreshCoappStatus(database, !1), refreshLicenseStatus(database);
           try {
-            legacyUiActive || Om(e)
-          } catch (r) {
-            le("Main() - OnSidebarChanged failed - " + r.toString())
+            legacyUiActive || setSidebarEnabled(useSidebar)
+          } catch (err) {
+            addLogEntry("Main() - OnSidebarChanged failed - " + err.toString())
           }
-          legacyUiActive || gr(Ya, Om);
+          legacyUiActive || onSettingChanged(settingUseSidebar, setSidebarEnabled);
           try {
-            Dm(await B(os))
-          } catch (r) {
-            le("Main() - CompileBlacklist failed - " + r.toString())
+            compileUrlFilters(await getSetting(settingBlacklist))
+          } catch (err) {
+            addLogEntry("Main() - CompileBlacklist failed - " + err.toString())
           }
-          gr(os, Dm), gr(ec, () => $o(t));
+          onSettingChanged(settingBlacklist, compileUrlFilters), onSettingChanged(settingLicense, () => refreshLicenseStatus(database));
           try {
-            let i = (await V.default.tabs.query({
+            let activeTab = (await mainBrowser.default.tabs.query({
               active: !0,
               currentWindow: !0
             }))[0];
-            i && (t.current_tab_id = i.id ?? -1, t.current_window_id = i
+            activeTab && (database.current_tab_id = activeTab.id ?? -1, database.current_window_id = activeTab
               .windowId ?? -1)
-          } catch (r) {
-            le("Main() - Getting initial tab failed - " + r.toString())
+          } catch (err) {
+            addLogEntry("Main() - Getting initial tab failed - " + err.toString())
           }
-          setInterval(Yw, 60 * 1e3), It(t), le("Main() - End")
-        } catch (e) {
-          le("Main() - Failed - " + e.toString())
+          setInterval(pruneExpiredDownloadables, 60 * 1e3), scheduleLogPersist(database), addLogEntry("Main() - End")
+        } catch (err) {
+          addLogEntry("Main() - Failed - " + err.toString())
         }
       })()
     });
-  var nn = {};
-  ie(nn, {
-    defineInPage: () => rA,
+  var smartnameNs = {};
+  defineExports(smartnameNs, {
+    defineInPage: () => defineInPage,
     getFilenameFromTitle: () => getFilenameFromTitleImpl,
-    getSpecs: () => iA,
-    set: () => tA
+    getSpecs: () => getSpecs,
+    set: () => setSmartnameSpecs
   });
-  async function Jo() {
-    let e = await Cr;
-    await Fl.storage.local.set({
-      smartname: e
+  async function saveSmartname() {
+    let data = await smartnameStorage;
+    await smartnameBrowser.storage.local.set({
+      smartname: data
     })
   }
-  async function tA(e) {
-    Cr = Promise.resolve(e), Jo()
+  async function setSmartnameSpecs(data) {
+    smartnameStorage = Promise.resolve(data), saveSmartname()
   }
-  async function rA() {
-    let e = await Fl.tabs.query({
+  async function defineInPage() {
+    let tabs = await smartnameBrowser.tabs.query({
       active: !0,
       currentWindow: !0
     });
-    if (e.length === 0) throw new Error("Can't find current tab");
-    eA.executeScriptWithGlobal({
-      tabId: e[0].id
+    if (tabs.length === 0) throw new Error("Can't find current tab");
+    smartnameUtil.executeScriptWithGlobal({
+      tabId: tabs[0].id
     }, {}, "/injected/smartname.js")
   }
-  async function iA(rawUrl) {
-    let t = await Cr;
+  async function getSpecs(rawUrl) {
+    let specs = await smartnameStorage;
     // TRACE/background BugFix: better URL parsing.
     let url;
     try {
@@ -10558,11 +10558,11 @@ const store = createStore(
     } catch(error) {
       throw new Exception('Failed to parse URL: ' + rawUrl);
     }
-    let r = url.hostname.split(".");
-    for (let i = 0; i < r.length - 1; i++) {
-      let n = t[r.slice(i)
+    let hostParts = url.hostname.split(".");
+    for (let index = 0; index < hostParts.length - 1; index++) {
+      let spec = specs[hostParts.slice(index)
         .join(".")];
-      if (n) return n
+      if (spec) return spec
     }
     return null
   }
@@ -10572,22 +10572,22 @@ const store = createStore(
     var type = arguments.length > 1 && void 0 !== arguments[1]
         ? arguments[1]
         : null;
-    var n = {
+    var spaceReplacements = {
       keep: " "
       , remove: ""
       , hyphen: "-"
       , underscore: "_"
     };
 
-    let i = await Ke.prefs;
+    let prefs = await smartnameWeh.prefs;
 
     // Removes special characters.
     if (type) {
-      type = type.replace(km, "");
-      type = type.replace(Cm, n[i.smartnamerFnameSpaces]);
+      type = type.replace(invalidFilenameCharsRegex, "");
+      type = type.replace(multiSpaceRegex, spaceReplacements[prefs.smartnamerFnameSpaces]);
     }
-    title = title.replace(km, "");
-    title = title.replace(Cm, n[i.smartnamerFnameSpaces]);
+    title = title.replace(invalidFilenameCharsRegex, "");
+    title = title.replace(multiSpaceRegex, spaceReplacements[prefs.smartnamerFnameSpaces]);
 
     // Removes too-verbose words.
     title = title.replace(new RegExp("Watch|Anime|Online|Free|English", "ig"), "");
@@ -10613,7 +10613,7 @@ const store = createStore(
     title = title.replace(/\b(s|p|ep)(\s|_|\.)?(\d)/ig, "\$1-\$3");
 
     // Loads max length.
-    var maxLen = i.smartnamerFnameMaxlen;
+    var maxLen = prefs.smartnamerFnameMaxlen;
     // Remembers to cut more if we have type (file-extension).
     if (type) {
       maxLen -= type.length + 1;
@@ -10661,353 +10661,353 @@ const store = createStore(
     return title
   }
 
-  var Ke, eA, Fl, Cr, km, Cm, on = C(() => {
+  var smartnameWeh, smartnameUtil, smartnameBrowser, smartnameStorage, invalidFilenameCharsRegex, multiSpaceRegex, initSmartname = defineLazyModule(() => {
     "use strict";
-    Ke = Y(), eA = (he(), R(ge)), Fl = Ke.browser, Cr = Fl.storage.local
+    smartnameWeh = requireWeh(), smartnameUtil = (initCoreUtil(), toCommonjs(coreUtilNs)), smartnameBrowser = smartnameWeh.browser, smartnameStorage = smartnameBrowser.storage.local
       .get({
         smartname: {}
       })
-      .then(e => e.smartname);
-    km = new RegExp('[/?<>\\:*|":]|[\0-\x80-\x9F]|\\\\', "g"), Cm =
+      .then(stored => stored.smartname);
+    invalidFilenameCharsRegex = new RegExp('[/?<>\\:*|":]|[\0-\x80-\x9F]|\\\\', "g"), multiSpaceRegex =
       new RegExp(" +", "g");
-    Ke.rpc.listen({
+    smartnameWeh.rpc.listen({
       openSmartNameDefiner: async () => {
-        let e = await Ke.ui.open("smartname-definer", {
+        let panel = await smartnameWeh.ui.open("smartname-definer", {
           url: "content/smartname-define.html",
           type: "panel",
           width: 600,
           height: 400
         });
-        return await Ke.wait("smartname-definer"), e
+        return await smartnameWeh.wait("smartname-definer"), panel
       },
-      closeSmartNameDefiner: () => Ke.ui.close("smartname-definer"),
-      closedSmartNameDefiner: e => Ke.rpc.call(e, "close"),
-      setSmartNameData: e => Ke.rpc.call("smartname-definer",
-        "setData", e),
-      evaluateSmartName: (e, t) => Ke.rpc.call(e, "evaluate", t),
-      addSmartNameRule: async e => {
-        let t = await Cr;
-        t[e.domain] = e, Jo()
+      closeSmartNameDefiner: () => smartnameWeh.ui.close("smartname-definer"),
+      closedSmartNameDefiner: uiName => smartnameWeh.rpc.call(uiName, "close"),
+      setSmartNameData: data => smartnameWeh.rpc.call("smartname-definer",
+        "setData", data),
+      evaluateSmartName: (uiName, expr) => smartnameWeh.rpc.call(uiName, "evaluate", expr),
+      addSmartNameRule: async rule => {
+        let rules = await smartnameStorage;
+        rules[rule.domain] = rule, saveSmartname()
       },
-      selectSmartNameXPath: (e, t) => Ke.rpc.call(e, "select", t),
-      setSmartName: async e => {
-        Cr = Promise.resolve({}), Jo()
+      selectSmartNameXPath: (uiName, xpath) => smartnameWeh.rpc.call(uiName, "select", xpath),
+      setSmartName: async data => {
+        smartnameStorage = Promise.resolve({}), saveSmartname()
       },
-      getSmartNameRules: async () => Cr,
+      getSmartNameRules: async () => smartnameStorage,
       editSmartName: () => {
-        Ke.ui.open("smartname-edit", {
+        smartnameWeh.ui.open("smartname-edit", {
           type: "tab",
           url: "content/smartname-edit.html"
         })
       },
-      removeFromSmartName: async e => {
-        let t = await Cr;
-        delete t[e], Jo()
+      removeFromSmartName: async domain => {
+        let rules = await smartnameStorage;
+        delete rules[domain], saveSmartname()
       }
     })
   });
-  var Ko = v(Nt => {
+  var requireFxpUtil = defineCommonjsModule(exports => {
     "use strict";
-    var qm =
+    var nameStartChar =
       ":A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD",
-      oA = qm + "\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040",
-      Bm = "[" + qm + "][" + oA + "]*",
-      aA = new RegExp("^" + Bm + "$"),
-      sA = function(e, t) {
-        let r = [],
-          i = t.exec(e);
-        for (; i;) {
-          let n = [];
-          n.startIndex = t.lastIndex - i[0].length;
-          let o = i.length;
-          for (let s = 0; s < o; s++) n.push(i[s]);
-          r.push(n), i = t.exec(e)
+      nameChar = nameStartChar + "\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040",
+      nameRegexStr = "[" + nameStartChar + "][" + nameChar + "]*",
+      nameRegex = new RegExp("^" + nameRegexStr + "$"),
+      getAllMatches = function(str, regex) {
+        let matches = [],
+          match = regex.exec(str);
+        for (; match;) {
+          let group = [];
+          group.startIndex = regex.lastIndex - match[0].length;
+          let len = match.length;
+          for (let matchIndex = 0; matchIndex < len; matchIndex++) group.push(match[matchIndex]);
+          matches.push(group), match = regex.exec(str)
         }
-        return r
+        return matches
       },
-      lA = function(e) {
-        let t = aA.exec(e);
-        return !(t === null || typeof t > "u")
+      isName = function(name) {
+        let match = nameRegex.exec(name);
+        return !(match === null || typeof match > "u")
       };
-    Nt.isExist = function(e) {
-      return typeof e < "u"
+    exports.isExist = function(value) {
+      return typeof value < "u"
     };
-    Nt.isEmptyObject = function(e) {
-      return Object.keys(e)
+    exports.isEmptyObject = function(obj) {
+      return Object.keys(obj)
         .length === 0
     };
-    Nt.merge = function(e, t, r) {
-      if (t) {
-        let i = Object.keys(t),
-          n = i.length;
-        for (let o = 0; o < n; o++) r === "strict" ? e[i[o]] = [t[i[
-          o]]] : e[i[o]] = t[i[o]]
+    exports.merge = function(target, source, mode) {
+      if (source) {
+        let keys = Object.keys(source),
+          len = keys.length;
+        for (let keyIndex = 0; keyIndex < len; keyIndex++) mode === "strict" ? target[keys[keyIndex]] = [source[keys[
+          keyIndex]]] : target[keys[keyIndex]] = source[keys[keyIndex]]
       }
     };
-    Nt.getValue = function(e) {
-      return Nt.isExist(e) ? e : ""
+    exports.getValue = function(value) {
+      return exports.isExist(value) ? value : ""
     };
-    Nt.isName = lA;
-    Nt.getAllMatches = sA;
-    Nt.nameRegexp = Bm
+    exports.isName = isName;
+    exports.getAllMatches = getAllMatches;
+    exports.nameRegexp = nameRegexStr
   });
-  var Ul = v(Um => {
+  var requireFxpValidator = defineCommonjsModule(exports => {
     "use strict";
-    var Ll = Ko(),
-      uA = {
+    var util = requireFxpUtil(),
+      defaultOptions = {
         allowBooleanAttributes: !1,
         unpairedTags: []
       };
-    Um.validate = function(e, t) {
-      t = Object.assign({}, uA, t);
-      let r = [],
-        i = !1,
-        n = !1;
-      e[0] === "\uFEFF" && (e = e.substr(1));
-      for (let o = 0; o < e.length; o++)
-        if (e[o] === "<" && e[o + 1] === "?") {
-          if (o += 2, o = Hm(e, o), o.err) return o
-        } else if (e[o] === "<") {
-        let s = o;
-        if (o++, e[o] === "!") {
-          o = Fm(e, o);
+    exports.validate = function(xmlData, options) {
+      options = Object.assign({}, defaultOptions, options);
+      let tags = [],
+        tagFound = !1,
+        reachedRoot = !1;
+      xmlData[0] === "\uFEFF" && (xmlData = xmlData.substr(1));
+      for (let pos = 0; pos < xmlData.length; pos++)
+        if (xmlData[pos] === "<" && xmlData[pos + 1] === "?") {
+          if (pos += 2, pos = readPI(xmlData, pos), pos.err) return pos
+        } else if (xmlData[pos] === "<") {
+        let tagStartPos = pos;
+        if (pos++, xmlData[pos] === "!") {
+          pos = readSpecialTag(xmlData, pos);
           continue
         } else {
-          let a = !1;
-          e[o] === "/" && (a = !0, o++);
-          let l = "";
-          for (; o < e.length && e[o] !== ">" && e[o] !== " " && e[
-            o] !== "	" && e[o] !== `
-` && e[o] !== "\r"; o++) l += e[o];
-          if (l = l.trim(), l[l.length - 1] === "/" && (l = l.substring(
-              0, l.length - 1), o--), !_A(l)) {
-            let c;
-            return l.trim()
-              .length === 0 ? c = "Invalid space after '<'." : c =
-              "Tag '" + l + "' is an invalid name.", ne("InvalidTag", c,
-                Ee(e, o))
+          let isClosingTag = !1;
+          xmlData[pos] === "/" && (isClosingTag = !0, pos++);
+          let tagName = "";
+          for (; pos < xmlData.length && xmlData[pos] !== ">" && xmlData[pos] !== " " && xmlData[
+            pos] !== "	" && xmlData[pos] !== `
+` && xmlData[pos] !== "\r"; pos++) tagName += xmlData[pos];
+          if (tagName = tagName.trim(), tagName[tagName.length - 1] === "/" && (tagName = tagName.substring(
+              0, tagName.length - 1), pos--), !validateTagName(tagName)) {
+            let errorMsg;
+            return tagName.trim()
+              .length === 0 ? errorMsg = "Invalid space after '<'." : errorMsg =
+              "Tag '" + tagName + "' is an invalid name.", getErrorObject("InvalidTag", errorMsg,
+                getLineNumberForPosition(xmlData, pos))
           }
-          let u = pA(e, o);
-          if (u === !1) return ne("InvalidAttr", "Attributes for '" +
-            l + "' have open quote.", Ee(e, o));
-          let d = u.value;
-          if (o = u.index, d[d.length - 1] === "/") {
-            let c = o - d.length;
-            d = d.substring(0, d.length - 1);
-            let m = Lm(d, t);
-            if (m === !0) i = !0;
-            else return ne(m.err.code, m.err.msg, Ee(e, c + m.err.line))
-          } else if (a)
-            if (u.tagClosed) {
-              if (d.trim()
-                .length > 0) return ne("InvalidTag", "Closing tag '" +
-                l + "' can't have attributes or invalid starting.",
-                Ee(e, s));
+          let attrResult = readAttributeStr(xmlData, pos);
+          if (attrResult === !1) return getErrorObject("InvalidAttr", "Attributes for '" +
+            tagName + "' have open quote.", getLineNumberForPosition(xmlData, pos));
+          let attrStr = attrResult.value;
+          if (pos = attrResult.index, attrStr[attrStr.length - 1] === "/") {
+            let selfCloseStart = pos - attrStr.length;
+            attrStr = attrStr.substring(0, attrStr.length - 1);
+            let attrValidation = validateAttributeString(attrStr, options);
+            if (attrValidation === !0) tagFound = !0;
+            else return getErrorObject(attrValidation.err.code, attrValidation.err.msg, getLineNumberForPosition(xmlData, selfCloseStart + attrValidation.err.line))
+          } else if (isClosingTag)
+            if (attrResult.tagClosed) {
+              if (attrStr.trim()
+                .length > 0) return getErrorObject("InvalidTag", "Closing tag '" +
+                tagName + "' can't have attributes or invalid starting.",
+                getLineNumberForPosition(xmlData, tagStartPos));
               {
-                let c = r.pop();
-                if (l !== c.tagName) {
-                  let m = Ee(e, c.tagStartPos);
-                  return ne("InvalidTag", "Expected closing tag '" + c
-                    .tagName + "' (opened in line " + m.line +
-                    ", col " + m.col + ") instead of closing tag '" +
-                    l + "'.", Ee(e, s))
+                let openedTag = tags.pop();
+                if (tagName !== openedTag.tagName) {
+                  let openPos = getLineNumberForPosition(xmlData, openedTag.tagStartPos);
+                  return getErrorObject("InvalidTag", "Expected closing tag '" + openedTag
+                    .tagName + "' (opened in line " + openPos.line +
+                    ", col " + openPos.col + ") instead of closing tag '" +
+                    tagName + "'.", getLineNumberForPosition(xmlData, tagStartPos))
                 }
-                r.length == 0 && (n = !0)
+                tags.length == 0 && (reachedRoot = !0)
               }
-            } else return ne("InvalidTag", "Closing tag '" + l +
-              "' doesn't have proper closing.", Ee(e, o));
+            } else return getErrorObject("InvalidTag", "Closing tag '" + tagName +
+              "' doesn't have proper closing.", getLineNumberForPosition(xmlData, pos));
           else {
-            let c = Lm(d, t);
-            if (c !== !0) return ne(c.err.code, c.err.msg, Ee(e, o - d
-              .length + c.err.line));
-            if (n === !0) return ne("InvalidXml",
-              "Multiple possible root nodes found.", Ee(e, o));
-            t.unpairedTags.indexOf(l) !== -1 || r.push({
-              tagName: l,
-              tagStartPos: s
-            }), i = !0
+            let attrValidation = validateAttributeString(attrStr, options);
+            if (attrValidation !== !0) return getErrorObject(attrValidation.err.code, attrValidation.err.msg, getLineNumberForPosition(xmlData, pos - attrStr
+              .length + attrValidation.err.line));
+            if (reachedRoot === !0) return getErrorObject("InvalidXml",
+              "Multiple possible root nodes found.", getLineNumberForPosition(xmlData, pos));
+            options.unpairedTags.indexOf(tagName) !== -1 || tags.push({
+              tagName: tagName,
+              tagStartPos: tagStartPos
+            }), tagFound = !0
           }
-          for (o++; o < e.length; o++)
-            if (e[o] === "<")
-              if (e[o + 1] === "!") {
-                o++, o = Fm(e, o);
+          for (pos++; pos < xmlData.length; pos++)
+            if (xmlData[pos] === "<")
+              if (xmlData[pos + 1] === "!") {
+                pos++, pos = readSpecialTag(xmlData, pos);
                 continue
-              } else if (e[o + 1] === "?") {
-            if (o = Hm(e, ++o), o.err) return o
+              } else if (xmlData[pos + 1] === "?") {
+            if (pos = readPI(xmlData, ++pos), pos.err) return pos
           } else break;
-          else if (e[o] === "&") {
-            let c = gA(e, o);
-            if (c == -1) return ne("InvalidChar",
-              "char '&' is not expected.", Ee(e, o));
-            o = c
-          } else if (n === !0 && !Vm(e[o])) return ne("InvalidXml",
-            "Extra text at the end", Ee(e, o));
-          e[o] === "<" && o--
+          else if (xmlData[pos] === "&") {
+            let ampEnd = validateAmpersand(xmlData, pos);
+            if (ampEnd == -1) return getErrorObject("InvalidChar",
+              "char '&' is not expected.", getLineNumberForPosition(xmlData, pos));
+            pos = ampEnd
+          } else if (reachedRoot === !0 && !isWhitespace(xmlData[pos])) return getErrorObject("InvalidXml",
+            "Extra text at the end", getLineNumberForPosition(xmlData, pos));
+          xmlData[pos] === "<" && pos--
         }
       } else {
-        if (Vm(e[o])) continue;
-        return ne("InvalidChar", "char '" + e[o] + "' is not expected.",
-          Ee(e, o))
+        if (isWhitespace(xmlData[pos])) continue;
+        return getErrorObject("InvalidChar", "char '" + xmlData[pos] + "' is not expected.",
+          getLineNumberForPosition(xmlData, pos))
       }
-      if (i) {
-        if (r.length == 1) return ne("InvalidTag", "Unclosed tag '" + r[
-          0].tagName + "'.", Ee(e, r[0].tagStartPos));
-        if (r.length > 0) return ne("InvalidXml", "Invalid '" + JSON
-          .stringify(r.map(o => o.tagName), null, 4)
+      if (tagFound) {
+        if (tags.length == 1) return getErrorObject("InvalidTag", "Unclosed tag '" + tags[
+          0].tagName + "'.", getLineNumberForPosition(xmlData, tags[0].tagStartPos));
+        if (tags.length > 0) return getErrorObject("InvalidXml", "Invalid '" + JSON
+          .stringify(tags.map(tag => tag.tagName), null, 4)
           .replace(/\r?\n/g, "") + "' found.", {
             line: 1,
             col: 1
           })
-      } else return ne("InvalidXml", "Start tag expected.", 1);
+      } else return getErrorObject("InvalidXml", "Start tag expected.", 1);
       return !0
     };
 
-    function Vm(e) {
-      return e === " " || e === "	" || e === `
-` || e === "\r"
+    function isWhitespace(char) {
+      return char === " " || char === "	" || char === `
+` || char === "\r"
     }
 
-    function Hm(e, t) {
-      let r = t;
-      for (; t < e.length; t++)
-        if (e[t] == "?" || e[t] == " ") {
-          let i = e.substr(r, t - r);
-          if (t > 5 && i === "xml") return ne("InvalidXml",
+    function readPI(xmlData, startIndex) {
+      let start = startIndex;
+      for (; startIndex < xmlData.length; startIndex++)
+        if (xmlData[startIndex] == "?" || xmlData[startIndex] == " ") {
+          let processingInstruction = xmlData.substr(start, startIndex - start);
+          if (startIndex > 5 && processingInstruction === "xml") return getErrorObject("InvalidXml",
             "XML declaration allowed only at the start of the document.",
-            Ee(e, t));
-          if (e[t] == "?" && e[t + 1] == ">") {
-            t++;
+            getLineNumberForPosition(xmlData, startIndex));
+          if (xmlData[startIndex] == "?" && xmlData[startIndex + 1] == ">") {
+            startIndex++;
             break
           } else continue
-        } return t
+        } return startIndex
     }
 
-    function Fm(e, t) {
-      if (e.length > t + 5 && e[t + 1] === "-" && e[t + 2] === "-") {
-        for (t += 3; t < e.length; t++)
-          if (e[t] === "-" && e[t + 1] === "-" && e[t + 2] === ">") {
-            t += 2;
+    function readSpecialTag(xmlData, startIndex) {
+      if (xmlData.length > startIndex + 5 && xmlData[startIndex + 1] === "-" && xmlData[startIndex + 2] === "-") {
+        for (startIndex += 3; startIndex < xmlData.length; startIndex++)
+          if (xmlData[startIndex] === "-" && xmlData[startIndex + 1] === "-" && xmlData[startIndex + 2] === ">") {
+            startIndex += 2;
             break
           }
-      } else if (e.length > t + 8 && e[t + 1] === "D" && e[t + 2] ===
-        "O" && e[t + 3] === "C" && e[t + 4] === "T" && e[t + 5] === "Y" &&
-        e[t + 6] === "P" && e[t + 7] === "E") {
-        let r = 1;
-        for (t += 8; t < e.length; t++)
-          if (e[t] === "<") r++;
-          else if (e[t] === ">" && (r--, r === 0)) break
-      } else if (e.length > t + 9 && e[t + 1] === "[" && e[t + 2] ===
-        "C" && e[t + 3] === "D" && e[t + 4] === "A" && e[t + 5] === "T" &&
-        e[t + 6] === "A" && e[t + 7] === "[") {
-        for (t += 8; t < e.length; t++)
-          if (e[t] === "]" && e[t + 1] === "]" && e[t + 2] === ">") {
-            t += 2;
+      } else if (xmlData.length > startIndex + 8 && xmlData[startIndex + 1] === "D" && xmlData[startIndex + 2] ===
+        "O" && xmlData[startIndex + 3] === "C" && xmlData[startIndex + 4] === "T" && xmlData[startIndex + 5] === "Y" &&
+        xmlData[startIndex + 6] === "P" && xmlData[startIndex + 7] === "E") {
+        let angleBracketsLevel = 1;
+        for (startIndex += 8; startIndex < xmlData.length; startIndex++)
+          if (xmlData[startIndex] === "<") angleBracketsLevel++;
+          else if (xmlData[startIndex] === ">" && (angleBracketsLevel--, angleBracketsLevel === 0)) break
+      } else if (xmlData.length > startIndex + 9 && xmlData[startIndex + 1] === "[" && xmlData[startIndex + 2] ===
+        "C" && xmlData[startIndex + 3] === "D" && xmlData[startIndex + 4] === "A" && xmlData[startIndex + 5] === "T" &&
+        xmlData[startIndex + 6] === "A" && xmlData[startIndex + 7] === "[") {
+        for (startIndex += 8; startIndex < xmlData.length; startIndex++)
+          if (xmlData[startIndex] === "]" && xmlData[startIndex + 1] === "]" && xmlData[startIndex + 2] === ">") {
+            startIndex += 2;
             break
           }
       }
-      return t
+      return startIndex
     }
-    var dA = '"',
-      cA = "'";
+    var doubleQuote = '"',
+      singleQuote = "'";
 
-    function pA(e, t) {
-      let r = "",
-        i = "",
-        n = !1;
-      for (; t < e.length; t++) {
-        if (e[t] === dA || e[t] === cA) i === "" ? i = e[t] : i !== e[
-          t] || (i = "");
-        else if (e[t] === ">" && i === "") {
-          n = !0;
+    function readAttributeStr(xmlData, startIndex) {
+      let attrStr = "",
+        startChar = "",
+        tagClosed = !1;
+      for (; startIndex < xmlData.length; startIndex++) {
+        if (xmlData[startIndex] === doubleQuote || xmlData[startIndex] === singleQuote) startChar === "" ? startChar = xmlData[startIndex] : startChar !== xmlData[
+          startIndex] || (startChar = "");
+        else if (xmlData[startIndex] === ">" && startChar === "") {
+          tagClosed = !0;
           break
         }
-        r += e[t]
+        attrStr += xmlData[startIndex]
       }
-      return i !== "" ? !1 : {
-        value: r,
-        index: t,
-        tagClosed: n
+      return startChar !== "" ? !1 : {
+        value: attrStr,
+        index: startIndex,
+        tagClosed: tagClosed
       }
     }
-    var fA = new RegExp(
+    var validAttrStrRegxp = new RegExp(
       `(\\s*)([^\\s=]+)(\\s*=)?(\\s*(['"])(([\\s\\S])*?)\\5)?`, "g");
 
-    function Lm(e, t) {
-      let r = Ll.getAllMatches(e, fA),
-        i = {};
-      for (let n = 0; n < r.length; n++) {
-        if (r[n][1].length === 0) return ne("InvalidAttr", "Attribute '" +
-          r[n][2] + "' has no space in starting.", an(r[n]));
-        if (r[n][3] !== void 0 && r[n][4] === void 0) return ne(
-          "InvalidAttr", "Attribute '" + r[n][2] +
-          "' is without value.", an(r[n]));
-        if (r[n][3] === void 0 && !t.allowBooleanAttributes) return ne(
-          "InvalidAttr", "boolean attribute '" + r[n][2] +
-          "' is not allowed.", an(r[n]));
-        let o = r[n][2];
-        if (!hA(o)) return ne("InvalidAttr", "Attribute '" + o +
-          "' is an invalid name.", an(r[n]));
-        if (!i.hasOwnProperty(o)) i[o] = 1;
-        else return ne("InvalidAttr", "Attribute '" + o +
-          "' is repeated.", an(r[n]))
+    function validateAttributeString(attrStr, options) {
+      let matches = util.getAllMatches(attrStr, validAttrStrRegxp),
+        attrNames = {};
+      for (let index = 0; index < matches.length; index++) {
+        if (matches[index][1].length === 0) return getErrorObject("InvalidAttr", "Attribute '" +
+          matches[index][2] + "' has no space in starting.", getPositionFromMatch(matches[index]));
+        if (matches[index][3] !== void 0 && matches[index][4] === void 0) return getErrorObject(
+          "InvalidAttr", "Attribute '" + matches[index][2] +
+          "' is without value.", getPositionFromMatch(matches[index]));
+        if (matches[index][3] === void 0 && !options.allowBooleanAttributes) return getErrorObject(
+          "InvalidAttr", "boolean attribute '" + matches[index][2] +
+          "' is not allowed.", getPositionFromMatch(matches[index]));
+        let attrName = matches[index][2];
+        if (!validateAttrName(attrName)) return getErrorObject("InvalidAttr", "Attribute '" + attrName +
+          "' is an invalid name.", getPositionFromMatch(matches[index]));
+        if (!attrNames.hasOwnProperty(attrName)) attrNames[attrName] = 1;
+        else return getErrorObject("InvalidAttr", "Attribute '" + attrName +
+          "' is repeated.", getPositionFromMatch(matches[index]))
       }
       return !0
     }
 
-    function mA(e, t) {
-      let r = /\d/;
-      for (e[t] === "x" && (t++, r = /[\da-fA-F]/); t < e.length; t++) {
-        if (e[t] === ";") return t;
-        if (!e[t].match(r)) break
+    function validateNumericEntity(xmlData, startIndex) {
+      let regex = /\d/;
+      for (xmlData[startIndex] === "x" && (startIndex++, regex = /[\da-fA-F]/); startIndex < xmlData.length; startIndex++) {
+        if (xmlData[startIndex] === ";") return startIndex;
+        if (!xmlData[startIndex].match(regex)) break
       }
       return -1
     }
 
-    function gA(e, t) {
-      if (t++, e[t] === ";") return -1;
-      if (e[t] === "#") return t++, mA(e, t);
-      let r = 0;
-      for (; t < e.length; t++, r++)
-        if (!(e[t].match(/\w/) && r < 20)) {
-          if (e[t] === ";") break;
+    function validateAmpersand(xmlData, startIndex) {
+      if (startIndex++, xmlData[startIndex] === ";") return -1;
+      if (xmlData[startIndex] === "#") return startIndex++, validateNumericEntity(xmlData, startIndex);
+      let count = 0;
+      for (; startIndex < xmlData.length; startIndex++, count++)
+        if (!(xmlData[startIndex].match(/\w/) && count < 20)) {
+          if (xmlData[startIndex] === ";") break;
           return -1
-        } return t
+        } return startIndex
     }
 
-    function ne(e, t, r) {
+    function getErrorObject(code, message, lineNumber) {
       return {
         err: {
-          code: e,
-          msg: t,
-          line: r.line || r,
-          col: r.col
+          code: code,
+          msg: message,
+          line: lineNumber.line || lineNumber,
+          col: lineNumber.col
         }
       }
     }
 
-    function hA(e) {
-      return Ll.isName(e)
+    function validateAttrName(attrName) {
+      return util.isName(attrName)
     }
 
-    function _A(e) {
-      return Ll.isName(e)
+    function validateTagName(tagName) {
+      return util.isName(tagName)
     }
 
-    function Ee(e, t) {
-      let r = e.substring(0, t)
+    function getLineNumberForPosition(xmlData, index) {
+      let lines = xmlData.substring(0, index)
         .split(/\r?\n/);
       return {
-        line: r.length,
-        col: r[r.length - 1].length + 1
+        line: lines.length,
+        col: lines[lines.length - 1].length + 1
       }
     }
 
-    function an(e) {
-      return e.startIndex + e[1].length
+    function getPositionFromMatch(match) {
+      return match.startIndex + match[1].length
     }
   });
-  var Wm = v(jl => {
-    var jm = {
+  var requireFxpOptionsBuilder = defineCommonjsModule(exports => {
+    var defaultOptions = {
         preserveOrder: !1,
         attributeNamePrefix: "@_",
         attributesGroupName: !1,
@@ -11024,11 +11024,11 @@ const store = createStore(
           leadingZeros: !0,
           eNotation: !0
         },
-        tagValueProcessor: function(e, t) {
-          return t
+        tagValueProcessor: function(tagName, val) {
+          return val
         },
-        attributeValueProcessor: function(e, t) {
-          return t
+        attributeValueProcessor: function(attrName, val) {
+          return val
         },
         stopNodes: [],
         alwaysCreateTextNode: !1,
@@ -11041,185 +11041,185 @@ const store = createStore(
         ignorePiTags: !1,
         transformTagName: !1,
         transformAttributeName: !1,
-        updateTag: function(e, t, r) {
-          return e
+        updateTag: function(tagName, jPath, attrs) {
+          return tagName
         }
       },
-      bA = function(e) {
-        return Object.assign({}, jm, e)
+      buildOptions = function(options) {
+        return Object.assign({}, defaultOptions, options)
       };
-    jl.buildOptions = bA;
-    jl.defaultOptions = jm
+    exports.buildOptions = buildOptions;
+    exports.defaultOptions = defaultOptions
   });
-  var Gm = v((AS, Xm) => {
+  var requireXmlNode = defineCommonjsModule((xmlNodeExports, xmlNodeModule) => {
     "use strict";
-    var Wl = class {
-      constructor(t) {
-        this.tagname = t, this.child = [], this[":@"] = {}
+    var XmlNode = class {
+      constructor(tagname) {
+        this.tagname = tagname, this.child = [], this[":@"] = {}
       }
-      add(t, r) {
-        t === "__proto__" && (t = "#__proto__"), this.child.push({
-          [t]: r
+      add(key, value) {
+        key === "__proto__" && (key = "#__proto__"), this.child.push({
+          [key]: value
         })
       }
-      addChild(t) {
-        t.tagname === "__proto__" && (t.tagname = "#__proto__"), t[
-            ":@"] && Object.keys(t[":@"])
+      addChild(childNode) {
+        childNode.tagname === "__proto__" && (childNode.tagname = "#__proto__"), childNode[
+            ":@"] && Object.keys(childNode[":@"])
           .length > 0 ? this.child.push({
-            [t.tagname]: t.child,
-            ":@": t[":@"]
+            [childNode.tagname]: childNode.child,
+            ":@": childNode[":@"]
           }) : this.child.push({
-            [t.tagname]: t.child
+            [childNode.tagname]: childNode.child
           })
       }
     };
-    Xm.exports = Wl
+    xmlNodeModule.exports = XmlNode
   });
-  var zm = v((xS, Qm) => {
-    var yA = Ko();
+  var requireDocTypeReader = defineCommonjsModule((docTypeExports, docTypeModule) => {
+    var util = requireFxpUtil();
 
-    function vA(e, t) {
-      let r = {};
-      if (e[t + 3] === "O" && e[t + 4] === "C" && e[t + 5] === "T" && e[
-          t + 6] === "Y" && e[t + 7] === "P" && e[t + 8] === "E") {
-        t = t + 9;
-        let i = 1,
-          n = !1,
-          o = !1,
-          s = "";
-        for (; t < e.length; t++)
-          if (e[t] === "<" && !o) {
-            if (n && xA(e, t)) t += 7, [entityName, val, t] = wA(e, t +
-              1), val.indexOf("&") === -1 && (r[DA(entityName)] = {
+    function readDocType(xmlData, startIndex) {
+      let entities = {};
+      if (xmlData[startIndex + 3] === "O" && xmlData[startIndex + 4] === "C" && xmlData[startIndex + 5] === "T" && xmlData[
+          startIndex + 6] === "Y" && xmlData[startIndex + 7] === "P" && xmlData[startIndex + 8] === "E") {
+        startIndex = startIndex + 9;
+        let angleBracketsLevel = 1,
+          hasBody = !1,
+          comment = !1,
+          exp = "";
+        for (; startIndex < xmlData.length; startIndex++)
+          if (xmlData[startIndex] === "<" && !comment) {
+            if (hasBody && isEntity(xmlData, startIndex)) startIndex += 7, [entityName, val, startIndex] = readEntityExp(xmlData, startIndex +
+              1), val.indexOf("&") === -1 && (entities[validateEntityName(entityName)] = {
                 regx: RegExp(`&${entityName};`, "g"),
                 val
               });
-            else if (n && TA(e, t)) t += 8;
-            else if (n && EA(e, t)) t += 8;
-            else if (n && SA(e, t)) t += 9;
-            else if (AA) o = !0;
+            else if (hasBody && isElement(xmlData, startIndex)) startIndex += 8;
+            else if (hasBody && isAttlist(xmlData, startIndex)) startIndex += 8;
+            else if (hasBody && isNotation(xmlData, startIndex)) startIndex += 9;
+            else if (isComment) comment = !0;
             else throw new Error("Invalid DOCTYPE");
-            i++, s = ""
-          } else if (e[t] === ">") {
-          if (o ? e[t - 1] === "-" && e[t - 2] === "-" && (o = !1, i--) :
-            i--, i === 0) break
-        } else e[t] === "[" ? n = !0 : s += e[t];
-        if (i !== 0) throw new Error("Unclosed DOCTYPE")
+            angleBracketsLevel++, exp = ""
+          } else if (xmlData[startIndex] === ">") {
+          if (comment ? xmlData[startIndex - 1] === "-" && xmlData[startIndex - 2] === "-" && (comment = !1, angleBracketsLevel--) :
+            angleBracketsLevel--, angleBracketsLevel === 0) break
+        } else xmlData[startIndex] === "[" ? hasBody = !0 : exp += xmlData[startIndex];
+        if (angleBracketsLevel !== 0) throw new Error("Unclosed DOCTYPE")
       } else throw new Error("Invalid Tag instead of DOCTYPE");
       return {
-        entities: r,
-        i: t
+        entities: entities,
+        i: startIndex
       }
     }
 
-    function wA(e, t) {
-      let r = "";
-      for (; t < e.length && e[t] !== "'" && e[t] !== '"'; t++) r += e[t];
-      if (r = r.trim(), r.indexOf(" ") !== -1) throw new Error(
+    function readEntityExp(xmlData, startIndex) {
+      let entityName = "";
+      for (; startIndex < xmlData.length && xmlData[startIndex] !== "'" && xmlData[startIndex] !== '"'; startIndex++) entityName += xmlData[startIndex];
+      if (entityName = entityName.trim(), entityName.indexOf(" ") !== -1) throw new Error(
         "External entites are not supported");
-      let i = e[t++],
-        n = "";
-      for (; t < e.length && e[t] !== i; t++) n += e[t];
-      return [r, n, t]
+      let quote = xmlData[startIndex++],
+        val = "";
+      for (; startIndex < xmlData.length && xmlData[startIndex] !== quote; startIndex++) val += xmlData[startIndex];
+      return [entityName, val, startIndex]
     }
 
-    function AA(e, t) {
-      return e[t + 1] === "!" && e[t + 2] === "-" && e[t + 3] === "-"
+    function isComment(xmlData, startIndex) {
+      return xmlData[startIndex + 1] === "!" && xmlData[startIndex + 2] === "-" && xmlData[startIndex + 3] === "-"
     }
 
-    function xA(e, t) {
-      return e[t + 1] === "!" && e[t + 2] === "E" && e[t + 3] === "N" &&
-        e[t + 4] === "T" && e[t + 5] === "I" && e[t + 6] === "T" && e[t +
+    function isEntity(xmlData, startIndex) {
+      return xmlData[startIndex + 1] === "!" && xmlData[startIndex + 2] === "E" && xmlData[startIndex + 3] === "N" &&
+        xmlData[startIndex + 4] === "T" && xmlData[startIndex + 5] === "I" && xmlData[startIndex + 6] === "T" && xmlData[startIndex +
           7] === "Y"
     }
 
-    function TA(e, t) {
-      return e[t + 1] === "!" && e[t + 2] === "E" && e[t + 3] === "L" &&
-        e[t + 4] === "E" && e[t + 5] === "M" && e[t + 6] === "E" && e[t +
-          7] === "N" && e[t + 8] === "T"
+    function isElement(xmlData, startIndex) {
+      return xmlData[startIndex + 1] === "!" && xmlData[startIndex + 2] === "E" && xmlData[startIndex + 3] === "L" &&
+        xmlData[startIndex + 4] === "E" && xmlData[startIndex + 5] === "M" && xmlData[startIndex + 6] === "E" && xmlData[startIndex +
+          7] === "N" && xmlData[startIndex + 8] === "T"
     }
 
-    function EA(e, t) {
-      return e[t + 1] === "!" && e[t + 2] === "A" && e[t + 3] === "T" &&
-        e[t + 4] === "T" && e[t + 5] === "L" && e[t + 6] === "I" && e[t +
-          7] === "S" && e[t + 8] === "T"
+    function isAttlist(xmlData, startIndex) {
+      return xmlData[startIndex + 1] === "!" && xmlData[startIndex + 2] === "A" && xmlData[startIndex + 3] === "T" &&
+        xmlData[startIndex + 4] === "T" && xmlData[startIndex + 5] === "L" && xmlData[startIndex + 6] === "I" && xmlData[startIndex +
+          7] === "S" && xmlData[startIndex + 8] === "T"
     }
 
-    function SA(e, t) {
-      return e[t + 1] === "!" && e[t + 2] === "N" && e[t + 3] === "O" &&
-        e[t + 4] === "T" && e[t + 5] === "A" && e[t + 6] === "T" && e[t +
-          7] === "I" && e[t + 8] === "O" && e[t + 9] === "N"
+    function isNotation(xmlData, startIndex) {
+      return xmlData[startIndex + 1] === "!" && xmlData[startIndex + 2] === "N" && xmlData[startIndex + 3] === "O" &&
+        xmlData[startIndex + 4] === "T" && xmlData[startIndex + 5] === "A" && xmlData[startIndex + 6] === "T" && xmlData[startIndex +
+          7] === "I" && xmlData[startIndex + 8] === "O" && xmlData[startIndex + 9] === "N"
     }
 
-    function DA(e) {
-      if (yA.isName(e)) return e;
-      throw new Error(`Invalid entity name ${e}`)
+    function validateEntityName(name) {
+      if (util.isName(name)) return name;
+      throw new Error(`Invalid entity name ${name}`)
     }
-    Qm.exports = vA
+    docTypeModule.exports = readDocType
   });
-  var Jm = v((TS, $m) => {
-    var OA = /^[-+]?0x[a-fA-F0-9]+$/,
-      MA =
+  var requireStrnum = defineCommonjsModule((toNumberExports, toNumberModule) => {
+    var hexRegex = /^[-+]?0x[a-fA-F0-9]+$/,
+      numRegex =
       /^([\-\+])?(0*)(\.[0-9]+([eE]\-?[0-9]+)?|[0-9]+(\.[0-9]+([eE]\-?[0-9]+)?)?)$/;
     !Number.parseInt && window.parseInt && (Number.parseInt = window
       .parseInt);
     !Number.parseFloat && window.parseFloat && (Number.parseFloat = window
       .parseFloat);
-    var PA = {
+    var consider = {
       hex: !0,
       leadingZeros: !0,
       decimalPoint: ".",
       eNotation: !0
     };
 
-    function RA(e, t = {}) {
-      if (t = Object.assign({}, PA, t), !e || typeof e != "string")
-      return e;
-      let r = e.trim();
-      if (t.skipLike !== void 0 && t.skipLike.test(r)) return e;
-      if (t.hex && OA.test(r)) return Number.parseInt(r, 16);
+    function toNumber(str, options = {}) {
+      if (options = Object.assign({}, consider, options), !str || typeof str != "string")
+      return str;
+      let trimmedStr = str.trim();
+      if (options.skipLike !== void 0 && options.skipLike.test(trimmedStr)) return str;
+      if (options.hex && hexRegex.test(trimmedStr)) return Number.parseInt(trimmedStr, 16);
       {
-        let i = MA.exec(r);
-        if (i) {
-          let n = i[1],
-            o = i[2],
-            s = IA(i[3]),
-            a = i[4] || i[6];
-          if (!t.leadingZeros && o.length > 0 && n && r[2] !== ".")
-          return e;
-          if (!t.leadingZeros && o.length > 0 && !n && r[1] !== ".")
-            return e;
+        let match = numRegex.exec(trimmedStr);
+        if (match) {
+          let sign = match[1],
+            leadingZeros = match[2],
+            trimmedNum = trimZeros(match[3]),
+            eNotation = match[4] || match[6];
+          if (!options.leadingZeros && leadingZeros.length > 0 && sign && trimmedStr[2] !== ".")
+          return str;
+          if (!options.leadingZeros && leadingZeros.length > 0 && !sign && trimmedStr[1] !== ".")
+            return str;
           {
-            let l = Number(r),
-              u = "" + l;
-            return u.search(/[eE]/) !== -1 || a ? t.eNotation ? l : e : r
-              .indexOf(".") !== -1 ? u === "0" && s === "" || u === s ||
-              n && u === "-" + s ? l : e : o ? s === u || n + s === u ?
-              l : e : r === u || r === n + u ? l : e
+            let num = Number(trimmedStr),
+              numStr = "" + num;
+            return numStr.search(/[eE]/) !== -1 || eNotation ? options.eNotation ? num : str : trimmedStr
+              .indexOf(".") !== -1 ? numStr === "0" && trimmedNum === "" || numStr === trimmedNum ||
+              sign && numStr === "-" + trimmedNum ? num : str : leadingZeros ? trimmedNum === numStr || sign + trimmedNum === numStr ?
+              num : str : trimmedStr === numStr || trimmedStr === sign + numStr ? num : str
           }
-        } else return e
+        } else return str
       }
     }
 
-    function IA(e) {
-      return e && e.indexOf(".") !== -1 && (e = e.replace(/0+$/, ""),
-        e === "." ? e = "0" : e[0] === "." ? e = "0" + e : e[e.length -
-          1] === "." && (e = e.substr(0, e.length - 1))), e
+    function trimZeros(numStr) {
+      return numStr && numStr.indexOf(".") !== -1 && (numStr = numStr.replace(/0+$/, ""),
+        numStr === "." ? numStr = "0" : numStr[0] === "." ? numStr = "0" + numStr : numStr[numStr.length -
+          1] === "." && (numStr = numStr.substr(0, numStr.length - 1))), numStr
     }
-    $m.exports = RA
+    toNumberModule.exports = toNumber
   });
-  var Ym = v((SS, Km) => {
+  var requireOrderedObjParser = defineCommonjsModule((orderedParserExports, orderedParserModule) => {
     "use strict";
-    var zl = Ko(),
-      sn = Gm(),
-      NA = zm(),
-      kA = Jm(),
-      ES =
+    var util = requireFxpUtil(),
+      XmlNode = requireXmlNode(),
+      readDocType = requireDocTypeReader(),
+      toNumber = requireStrnum(),
+      tagsRegex =
       "<((!\\[CDATA\\[([\\s\\S]*?)(]]>))|((NAME:)?(NAME))([^>]*)>|((\\/)(NAME)\\s*>))([^<]*)"
-      .replace(/NAME/g, zl.nameRegexp),
-      Xl = class {
-        constructor(t) {
-          this.options = t, this.currentNode = null, this
+      .replace(/NAME/g, util.nameRegexp),
+      OrderedObjParser = class {
+        constructor(options) {
+          this.options = options, this.currentNode = null, this
             .tagsNodeStack = [], this.docTypeEntities = {}, this
             .lastEntities = {
               apos: {
@@ -11274,529 +11274,529 @@ const store = createStore(
                 regex: /&(inr|#8377);/g,
                 val: "\u20B9"
               }
-            }, this.addExternalEntities = CA, this.parseXml = FA, this
-            .parseTextData = qA, this.resolveNameSpace = BA, this
-            .buildAttributesMap = HA, this.isItStopNode = WA, this
-            .replaceEntitiesValue = UA, this.readStopNodeData = GA, this
-            .saveTextToParentTag = jA, this.addChild = LA
+            }, this.addExternalEntities = addExternalEntities, this.parseXml = parseXml, this
+            .parseTextData = parseTextData, this.resolveNameSpace = resolveNameSpace, this
+            .buildAttributesMap = buildAttributesMap, this.isItStopNode = isItStopNode, this
+            .replaceEntitiesValue = replaceEntitiesValue, this.readStopNodeData = readStopNodeData, this
+            .saveTextToParentTag = saveTextToParentTag, this.addChild = addChild
         }
       };
 
-    function CA(e) {
-      let t = Object.keys(e);
-      for (let r = 0; r < t.length; r++) {
-        let i = t[r];
-        this.lastEntities[i] = {
-          regex: new RegExp("&" + i + ";", "g"),
-          val: e[i]
+    function addExternalEntities(externalEntities) {
+      let entityKeys = Object.keys(externalEntities);
+      for (let entityIndex = 0; entityIndex < entityKeys.length; entityIndex++) {
+        let entityName = entityKeys[entityIndex];
+        this.lastEntities[entityName] = {
+          regex: new RegExp("&" + entityName + ";", "g"),
+          val: externalEntities[entityName]
         }
       }
     }
 
-    function qA(e, t, r, i, n, o, s) {
-      if (e !== void 0 && (this.options.trimValues && !i && (e = e
-        .trim()), e.length > 0)) {
-        s || (e = this.replaceEntitiesValue(e));
-        let a = this.options.tagValueProcessor(t, e, r, n, o);
-        return a == null ? e : typeof a != typeof e || a !== e ? a : this
-          .options.trimValues ? Ql(e, this.options.parseTagValue, this
-            .options.numberParseOptions) : e.trim() === e ? Ql(e, this
-            .options.parseTagValue, this.options.numberParseOptions) : e
+    function parseTextData(val, tagName, jPath, dontTrim, hasAttributes, isLeafNode, escapeEntities) {
+      if (val !== void 0 && (this.options.trimValues && !dontTrim && (val = val
+        .trim()), val.length > 0)) {
+        escapeEntities || (val = this.replaceEntitiesValue(val));
+        let newval = this.options.tagValueProcessor(tagName, val, jPath, hasAttributes, isLeafNode);
+        return newval == null ? val : typeof newval != typeof val || newval !== val ? newval : this
+          .options.trimValues ? parseValue(val, this.options.parseTagValue, this
+            .options.numberParseOptions) : val.trim() === val ? parseValue(val, this
+            .options.parseTagValue, this.options.numberParseOptions) : val
       }
     }
 
-    function BA(e) {
+    function resolveNameSpace(tagName) {
       if (this.options.removeNSPrefix) {
-        let t = e.split(":"),
-          r = e.charAt(0) === "/" ? "/" : "";
-        if (t[0] === "xmlns") return "";
-        t.length === 2 && (e = r + t[1])
+        let parts = tagName.split(":"),
+          prefix = tagName.charAt(0) === "/" ? "/" : "";
+        if (parts[0] === "xmlns") return "";
+        parts.length === 2 && (tagName = prefix + parts[1])
       }
-      return e
+      return tagName
     }
-    var VA = new RegExp(`([^\\s=]+)\\s*(=\\s*(['"])([\\s\\S]*?)\\3)?`,
+    var attrsRegx = new RegExp(`([^\\s=]+)\\s*(=\\s*(['"])([\\s\\S]*?)\\3)?`,
       "gm");
 
-    function HA(e, t, r) {
-      if (!this.options.ignoreAttributes && typeof e == "string") {
-        let i = zl.getAllMatches(e, VA),
-          n = i.length,
-          o = {};
-        for (let s = 0; s < n; s++) {
-          let a = this.resolveNameSpace(i[s][1]),
-            l = i[s][4],
-            u = this.options.attributeNamePrefix + a;
-          if (a.length)
-            if (this.options.transformAttributeName && (u = this.options
-                .transformAttributeName(u)), u === "__proto__" && (u =
-                "#__proto__"), l !== void 0) {
-              this.options.trimValues && (l = l.trim()), l = this
-                .replaceEntitiesValue(l);
-              let d = this.options.attributeValueProcessor(a, l, t);
-              d == null ? o[u] = l : typeof d != typeof l || d !== l ? o[
-                u] = d : o[u] = Ql(l, this.options.parseAttributeValue,
+    function buildAttributesMap(attrStr, jPath, tagName) {
+      if (!this.options.ignoreAttributes && typeof attrStr == "string") {
+        let matches = util.getAllMatches(attrStr, attrsRegx),
+          len = matches.length,
+          attrs = {};
+        for (let itemIndex = 0; itemIndex < len; itemIndex++) {
+          let attrName = this.resolveNameSpace(matches[itemIndex][1]),
+            attrVal = matches[itemIndex][4],
+            aggregatedName = this.options.attributeNamePrefix + attrName;
+          if (attrName.length)
+            if (this.options.transformAttributeName && (aggregatedName = this.options
+                .transformAttributeName(aggregatedName)), aggregatedName === "__proto__" && (aggregatedName =
+                "#__proto__"), attrVal !== void 0) {
+              this.options.trimValues && (attrVal = attrVal.trim()), attrVal = this
+                .replaceEntitiesValue(attrVal);
+              let newVal = this.options.attributeValueProcessor(attrName, attrVal, jPath);
+              newVal == null ? attrs[aggregatedName] = attrVal : typeof newVal != typeof attrVal || newVal !== attrVal ? attrs[
+                aggregatedName] = newVal : attrs[aggregatedName] = parseValue(attrVal, this.options.parseAttributeValue,
                 this.options.numberParseOptions)
-            } else this.options.allowBooleanAttributes && (o[u] = !0)
+            } else this.options.allowBooleanAttributes && (attrs[aggregatedName] = !0)
         }
-        if (!Object.keys(o)
+        if (!Object.keys(attrs)
           .length) return;
         if (this.options.attributesGroupName) {
-          let s = {};
-          return s[this.options.attributesGroupName] = o, s
+          let groupedAttrs = {};
+          return groupedAttrs[this.options.attributesGroupName] = attrs, groupedAttrs
         }
-        return o
+        return attrs
       }
     }
-    var FA = function(e) {
-      e = e.replace(/\r\n?/g, `
+    var parseXml = function(xmlData) {
+      xmlData = xmlData.replace(/\r\n?/g, `
 `);
-      let t = new sn("!xml"),
-        r = t,
-        i = "",
-        n = "";
-      for (let o = 0; o < e.length; o++)
-        if (e[o] === "<")
-          if (e[o + 1] === "/") {
-            let a = qr(e, ">", o, "Closing Tag is not closed."),
-              l = e.substring(o + 2, a)
+      let xmlObj = new XmlNode("!xml"),
+        currentNode = xmlObj,
+        textData = "",
+        jPath = "";
+      for (let charIndex = 0; charIndex < xmlData.length; charIndex++)
+        if (xmlData[charIndex] === "<")
+          if (xmlData[charIndex + 1] === "/") {
+            let closeIndex = findClosingIndex(xmlData, ">", charIndex, "Closing Tag is not closed."),
+              tagName = xmlData.substring(charIndex + 2, closeIndex)
               .trim();
             if (this.options.removeNSPrefix) {
-              let c = l.indexOf(":");
-              c !== -1 && (l = l.substr(c + 1))
+              let colonIndex = tagName.indexOf(":");
+              colonIndex !== -1 && (tagName = tagName.substr(colonIndex + 1))
             }
-            this.options.transformTagName && (l = this.options
-              .transformTagName(l)), r && (i = this
-              .saveTextToParentTag(i, r, n));
-            let u = n.substring(n.lastIndexOf(".") + 1);
-            if (l && this.options.unpairedTags.indexOf(l) !== -1)
+            this.options.transformTagName && (tagName = this.options
+              .transformTagName(tagName)), currentNode && (textData = this
+              .saveTextToParentTag(textData, currentNode, jPath));
+            let lastTagName = jPath.substring(jPath.lastIndexOf(".") + 1);
+            if (tagName && this.options.unpairedTags.indexOf(tagName) !== -1)
             throw new Error(
-                `Unpaired tag can not be used as closing tag: </${l}>`
+                `Unpaired tag can not be used as closing tag: </${tagName}>`
                 );
-            let d = 0;
-            u && this.options.unpairedTags.indexOf(u) !== -1 ? (d = n
-                .lastIndexOf(".", n.lastIndexOf(".") - 1), this
-                .tagsNodeStack.pop()) : d = n.lastIndexOf("."), n = n
-              .substring(0, d), r = this.tagsNodeStack.pop(), i = "",
-              o = a
-          } else if (e[o + 1] === "?") {
-        let a = Gl(e, o, !1, "?>");
-        if (!a) throw new Error("Pi Tag is not closed.");
-        if (i = this.saveTextToParentTag(i, r, n), !(this.options
-            .ignoreDeclaration && a.tagName === "?xml" || this.options
+            let lastTagPos = 0;
+            lastTagName && this.options.unpairedTags.indexOf(lastTagName) !== -1 ? (lastTagPos = jPath
+                .lastIndexOf(".", jPath.lastIndexOf(".") - 1), this
+                .tagsNodeStack.pop()) : lastTagPos = jPath.lastIndexOf("."), jPath = jPath
+              .substring(0, lastTagPos), currentNode = this.tagsNodeStack.pop(), textData = "",
+              charIndex = closeIndex
+          } else if (xmlData[charIndex + 1] === "?") {
+        let tagData = readTagExp(xmlData, charIndex, !1, "?>");
+        if (!tagData) throw new Error("Pi Tag is not closed.");
+        if (textData = this.saveTextToParentTag(textData, currentNode, jPath), !(this.options
+            .ignoreDeclaration && tagData.tagName === "?xml" || this.options
             .ignorePiTags)) {
-          let l = new sn(a.tagName);
-          l.add(this.options.textNodeName, ""), a.tagName !== a
-            .tagExp && a.attrExpPresent && (l[":@"] = this
-              .buildAttributesMap(a.tagExp, n, a.tagName)), this
-            .addChild(r, l, n)
+          let childNode = new XmlNode(tagData.tagName);
+          childNode.add(this.options.textNodeName, ""), tagData.tagName !== tagData
+            .tagExp && tagData.attrExpPresent && (childNode[":@"] = this
+              .buildAttributesMap(tagData.tagExp, jPath, tagData.tagName)), this
+            .addChild(currentNode, childNode, jPath)
         }
-        o = a.closeIndex + 1
-      } else if (e.substr(o + 1, 3) === "!--") {
-        let a = qr(e, "-->", o + 4, "Comment is not closed.");
+        charIndex = tagData.closeIndex + 1
+      } else if (xmlData.substr(charIndex + 1, 3) === "!--") {
+        let endIndex = findClosingIndex(xmlData, "-->", charIndex + 4, "Comment is not closed.");
         if (this.options.commentPropName) {
-          let l = e.substring(o + 4, a - 2);
-          i = this.saveTextToParentTag(i, r, n), r.add(this.options
+          let comment = xmlData.substring(charIndex + 4, endIndex - 2);
+          textData = this.saveTextToParentTag(textData, currentNode, jPath), currentNode.add(this.options
             .commentPropName, [{
-              [this.options.textNodeName]: l
+              [this.options.textNodeName]: comment
             }])
         }
-        o = a
-      } else if (e.substr(o + 1, 2) === "!D") {
-        let a = NA(e, o);
-        this.docTypeEntities = a.entities, o = a.i
-      } else if (e.substr(o + 1, 2) === "![") {
-        let a = qr(e, "]]>", o, "CDATA is not closed.") - 2,
-          l = e.substring(o + 9, a);
-        if (i = this.saveTextToParentTag(i, r, n), this.options
-          .cdataPropName) r.add(this.options.cdataPropName, [{
-          [this.options.textNodeName]: l
+        charIndex = endIndex
+      } else if (xmlData.substr(charIndex + 1, 2) === "!D") {
+        let result = readDocType(xmlData, charIndex);
+        this.docTypeEntities = result.entities, charIndex = result.i
+      } else if (xmlData.substr(charIndex + 1, 2) === "![") {
+        let closeIndex = findClosingIndex(xmlData, "]]>", charIndex, "CDATA is not closed.") - 2,
+          tagExp = xmlData.substring(charIndex + 9, closeIndex);
+        if (textData = this.saveTextToParentTag(textData, currentNode, jPath), this.options
+          .cdataPropName) currentNode.add(this.options.cdataPropName, [{
+          [this.options.textNodeName]: tagExp
         }]);
         else {
-          let u = this.parseTextData(l, r.tagname, n, !0, !1, !0);
-          u == null && (u = ""), r.add(this.options.textNodeName, u)
+          let val = this.parseTextData(tagExp, currentNode.tagname, jPath, !0, !1, !0);
+          val == null && (val = ""), currentNode.add(this.options.textNodeName, val)
         }
-        o = a + 2
+        charIndex = closeIndex + 2
       } else {
-        let a = Gl(e, o, this.options.removeNSPrefix),
-          l = a.tagName,
-          u = a.rawTagName,
-          d = a.tagExp,
-          c = a.attrExpPresent,
-          m = a.closeIndex;
-        this.options.transformTagName && (l = this.options
-          .transformTagName(l)), r && i && r.tagname !== "!xml" && (
-          i = this.saveTextToParentTag(i, r, n, !1));
-        let w = r;
-        if (w && this.options.unpairedTags.indexOf(w.tagname) !== -1 &&
-          (r = this.tagsNodeStack.pop(), n = n.substring(0, n
-            .lastIndexOf("."))), l !== t.tagname && (n += n ? "." + l :
-            l), this.isItStopNode(this.options.stopNodes, n, l)) {
-          let p = "";
-          if (d.length > 0 && d.lastIndexOf("/") === d.length - 1) o = a
+        let tagData = readTagExp(xmlData, charIndex, this.options.removeNSPrefix),
+          tagName = tagData.tagName,
+          rawTagName = tagData.rawTagName,
+          tagExp = tagData.tagExp,
+          attrExpPresent = tagData.attrExpPresent,
+          closeIndex = tagData.closeIndex;
+        this.options.transformTagName && (tagName = this.options
+          .transformTagName(tagName)), currentNode && textData && currentNode.tagname !== "!xml" && (
+          textData = this.saveTextToParentTag(textData, currentNode, jPath, !1));
+        let lastTag = currentNode;
+        if (lastTag && this.options.unpairedTags.indexOf(lastTag.tagname) !== -1 &&
+          (currentNode = this.tagsNodeStack.pop(), jPath = jPath.substring(0, jPath
+            .lastIndexOf("."))), tagName !== xmlObj.tagname && (jPath += jPath ? "." + tagName :
+            tagName), this.isItStopNode(this.options.stopNodes, jPath, tagName)) {
+          let stopNodeContent = "";
+          if (tagExp.length > 0 && tagExp.lastIndexOf("/") === tagExp.length - 1) charIndex = tagData
             .closeIndex;
-          else if (this.options.unpairedTags.indexOf(l) !== -1) o = a
+          else if (this.options.unpairedTags.indexOf(tagName) !== -1) charIndex = tagData
             .closeIndex;
           else {
-            let f = this.readStopNodeData(e, u, m + 1);
-            if (!f) throw new Error(`Unexpected end of ${u}`);
-            o = f.i, p = f.tagContent
+            let stopNodeResult = this.readStopNodeData(xmlData, rawTagName, closeIndex + 1);
+            if (!stopNodeResult) throw new Error(`Unexpected end of ${rawTagName}`);
+            charIndex = stopNodeResult.i, stopNodeContent = stopNodeResult.tagContent
           }
-          let _ = new sn(l);
-          l !== d && c && (_[":@"] = this.buildAttributesMap(d, n, l)),
-            p && (p = this.parseTextData(p, l, n, !0, c, !0, !0)), n = n
-            .substr(0, n.lastIndexOf(".")), _.add(this.options
-              .textNodeName, p), this.addChild(r, _, n)
+          let childNode = new XmlNode(tagName);
+          tagName !== tagExp && attrExpPresent && (childNode[":@"] = this.buildAttributesMap(tagExp, jPath, tagName)),
+            stopNodeContent && (stopNodeContent = this.parseTextData(stopNodeContent, tagName, jPath, !0, attrExpPresent, !0, !0)), jPath = jPath
+            .substr(0, jPath.lastIndexOf(".")), childNode.add(this.options
+              .textNodeName, stopNodeContent), this.addChild(currentNode, childNode, jPath)
         } else {
-          if (d.length > 0 && d.lastIndexOf("/") === d.length - 1) {
-            l[l.length - 1] === "/" ? (l = l.substr(0, l.length - 1),
-              n = n.substr(0, n.length - 1), d = l) : d = d.substr(0,
-              d.length - 1), this.options.transformTagName && (l =
-              this.options.transformTagName(l));
-            let p = new sn(l);
-            l !== d && c && (p[":@"] = this.buildAttributesMap(d, n,
-              l)), this.addChild(r, p, n), n = n.substr(0, n
+          if (tagExp.length > 0 && tagExp.lastIndexOf("/") === tagExp.length - 1) {
+            tagName[tagName.length - 1] === "/" ? (tagName = tagName.substr(0, tagName.length - 1),
+              jPath = jPath.substr(0, jPath.length - 1), tagExp = tagName) : tagExp = tagExp.substr(0,
+              tagExp.length - 1), this.options.transformTagName && (tagName =
+              this.options.transformTagName(tagName));
+            let childNode = new XmlNode(tagName);
+            tagName !== tagExp && attrExpPresent && (childNode[":@"] = this.buildAttributesMap(tagExp, jPath,
+              tagName)), this.addChild(currentNode, childNode, jPath), jPath = jPath.substr(0, jPath
                 .lastIndexOf("."))
           } else {
-            let p = new sn(l);
-            this.tagsNodeStack.push(r), l !== d && c && (p[":@"] = this
-                .buildAttributesMap(d, n, l)), this.addChild(r, p, n),
-              r = p
+            let childNode = new XmlNode(tagName);
+            this.tagsNodeStack.push(currentNode), tagName !== tagExp && attrExpPresent && (childNode[":@"] = this
+                .buildAttributesMap(tagExp, jPath, tagName)), this.addChild(currentNode, childNode, jPath),
+              currentNode = childNode
           }
-          i = "", o = m
+          textData = "", charIndex = closeIndex
         }
-      } else i += e[o];
-      return t.child
+      } else textData += xmlData[charIndex];
+      return xmlObj.child
     };
 
-    function LA(e, t, r) {
-      let i = this.options.updateTag(t.tagname, r, t[":@"]);
-      i === !1 || (typeof i == "string" && (t.tagname = i), e.addChild(t))
+    function addChild(currentNode, childNode, jPath) {
+      let result = this.options.updateTag(childNode.tagname, jPath, childNode[":@"]);
+      result === !1 || (typeof result == "string" && (childNode.tagname = result), currentNode.addChild(childNode))
     }
-    var UA = function(e) {
+    var replaceEntitiesValue = function(val) {
       if (this.options.processEntities) {
-        for (let t in this.docTypeEntities) {
-          let r = this.docTypeEntities[t];
-          e = e.replace(r.regx, r.val)
+        for (let entityName in this.docTypeEntities) {
+          let entity = this.docTypeEntities[entityName];
+          val = val.replace(entity.regx, entity.val)
         }
-        for (let t in this.lastEntities) {
-          let r = this.lastEntities[t];
-          e = e.replace(r.regex, r.val)
+        for (let entityName in this.lastEntities) {
+          let entity = this.lastEntities[entityName];
+          val = val.replace(entity.regex, entity.val)
         }
         if (this.options.htmlEntities)
-          for (let t in this.htmlEntities) {
-            let r = this.htmlEntities[t];
-            e = e.replace(r.regex, r.val)
+          for (let entityName in this.htmlEntities) {
+            let entity = this.htmlEntities[entityName];
+            val = val.replace(entity.regex, entity.val)
           }
-        e = e.replace(this.ampEntity.regex, this.ampEntity.val)
+        val = val.replace(this.ampEntity.regex, this.ampEntity.val)
       }
-      return e
+      return val
     };
 
-    function jA(e, t, r, i) {
-      return e && (i === void 0 && (i = Object.keys(t.child)
-        .length === 0), e = this.parseTextData(e, t.tagname, r, !1, t[
-          ":@"] ? Object.keys(t[":@"])
-        .length !== 0 : !1, i), e !== void 0 && e !== "" && t.add(this
-        .options.textNodeName, e), e = ""), e
+    function saveTextToParentTag(textData, currentNode, jPath, isLeafNode) {
+      return textData && (isLeafNode === void 0 && (isLeafNode = Object.keys(currentNode.child)
+        .length === 0), textData = this.parseTextData(textData, currentNode.tagname, jPath, !1, currentNode[
+          ":@"] ? Object.keys(currentNode[":@"])
+        .length !== 0 : !1, isLeafNode), textData !== void 0 && textData !== "" && currentNode.add(this
+        .options.textNodeName, textData), textData = ""), textData
     }
 
-    function WA(e, t, r) {
-      let i = "*." + r;
-      for (let n in e) {
-        let o = e[n];
-        if (i === o || t === o) return !0
+    function isItStopNode(stopNodes, jPath, currentTagName) {
+      let allNodesExp = "*." + currentTagName;
+      for (let stopNodePath in stopNodes) {
+        let stopNodePExp = stopNodes[stopNodePath];
+        if (allNodesExp === stopNodePExp || jPath === stopNodePExp) return !0
       }
       return !1
     }
 
-    function XA(e, t, r = ">") {
-      let i, n = "";
-      for (let o = t; o < e.length; o++) {
-        let s = e[o];
-        if (i) s === i && (i = "");
-        else if (s === '"' || s === "'") i = s;
-        else if (s === r[0])
-          if (r[1]) {
-            if (e[o + 1] === r[1]) return {
-              data: n,
-              index: o
+    function tagExpWithClosingIndex(xmlData, startIndex, closingChar = ">") {
+      let attrBoundary, tagExp = "";
+      for (let index = startIndex; index < xmlData.length; index++) {
+        let currentChar = xmlData[index];
+        if (attrBoundary) currentChar === attrBoundary && (attrBoundary = "");
+        else if (currentChar === '"' || currentChar === "'") attrBoundary = currentChar;
+        else if (currentChar === closingChar[0])
+          if (closingChar[1]) {
+            if (xmlData[index + 1] === closingChar[1]) return {
+              data: tagExp,
+              index: index
             }
           } else return {
-            data: n,
-            index: o
+            data: tagExp,
+            index: index
           };
-        else s === "	" && (s = " ");
-        n += s
+        else currentChar === "	" && (currentChar = " ");
+        tagExp += currentChar
       }
     }
 
-    function qr(e, t, r, i) {
-      let n = e.indexOf(t, r);
-      if (n === -1) throw new Error(i);
-      return n + t.length - 1
+    function findClosingIndex(xmlData, str, startIndex, errMsg) {
+      let closingIndex = xmlData.indexOf(str, startIndex);
+      if (closingIndex === -1) throw new Error(errMsg);
+      return closingIndex + str.length - 1
     }
 
-    function Gl(e, t, r, i = ">") {
-      let n = XA(e, t + 1, i);
-      if (!n) return;
-      let o = n.data,
-        s = n.index,
-        a = o.search(/\s/),
-        l = o,
-        u = !0;
-      a !== -1 && (l = o.substr(0, a)
-        .replace(/\s\s*$/, ""), o = o.substr(a + 1));
-      let d = l;
-      if (r) {
-        let c = l.indexOf(":");
-        c !== -1 && (l = l.substr(c + 1), u = l !== n.data.substr(c + 1))
+    function readTagExp(xmlData, startIndex, removeNSPrefix, closingChar = ">") {
+      let result = tagExpWithClosingIndex(xmlData, startIndex + 1, closingChar);
+      if (!result) return;
+      let tagExp = result.data,
+        closeIndex = result.index,
+        separatorIndex = tagExp.search(/\s/),
+        tagName = tagExp,
+        attrExpPresent = !0;
+      separatorIndex !== -1 && (tagName = tagExp.substr(0, separatorIndex)
+        .replace(/\s\s*$/, ""), tagExp = tagExp.substr(separatorIndex + 1));
+      let rawTagName = tagName;
+      if (removeNSPrefix) {
+        let colonIndex = tagName.indexOf(":");
+        colonIndex !== -1 && (tagName = tagName.substr(colonIndex + 1), attrExpPresent = tagName !== result.data.substr(colonIndex + 1))
       }
       return {
-        tagName: l,
-        tagExp: o,
-        closeIndex: s,
-        attrExpPresent: u,
-        rawTagName: d
+        tagName: tagName,
+        tagExp: tagExp,
+        closeIndex: closeIndex,
+        attrExpPresent: attrExpPresent,
+        rawTagName: rawTagName
       }
     }
 
-    function GA(e, t, r) {
-      let i = r,
-        n = 1;
-      for (; r < e.length; r++)
-        if (e[r] === "<")
-          if (e[r + 1] === "/") {
-            let o = qr(e, ">", r, `${t} is not closed`);
-            if (e.substring(r + 2, o)
-              .trim() === t && (n--, n === 0)) return {
-              tagContent: e.substring(i, r),
-              i: o
+    function readStopNodeData(xmlData, tagName, fromIndex) {
+      let startIndex = fromIndex,
+        openTagCount = 1;
+      for (; fromIndex < xmlData.length; fromIndex++)
+        if (xmlData[fromIndex] === "<")
+          if (xmlData[fromIndex + 1] === "/") {
+            let closeIndex = findClosingIndex(xmlData, ">", fromIndex, `${tagName} is not closed`);
+            if (xmlData.substring(fromIndex + 2, closeIndex)
+              .trim() === tagName && (openTagCount--, openTagCount === 0)) return {
+              tagContent: xmlData.substring(startIndex, fromIndex),
+              i: closeIndex
             };
-            r = o
-          } else if (e[r + 1] === "?") r = qr(e, "?>", r + 1,
+            fromIndex = closeIndex
+          } else if (xmlData[fromIndex + 1] === "?") fromIndex = findClosingIndex(xmlData, "?>", fromIndex + 1,
         "StopNode is not closed.");
-      else if (e.substr(r + 1, 3) === "!--") r = qr(e, "-->", r + 3,
+      else if (xmlData.substr(fromIndex + 1, 3) === "!--") fromIndex = findClosingIndex(xmlData, "-->", fromIndex + 3,
         "StopNode is not closed.");
-      else if (e.substr(r + 1, 2) === "![") r = qr(e, "]]>", r,
+      else if (xmlData.substr(fromIndex + 1, 2) === "![") fromIndex = findClosingIndex(xmlData, "]]>", fromIndex,
         "StopNode is not closed.") - 2;
       else {
-        let o = Gl(e, r, ">");
-        o && ((o && o.tagName) === t && o.tagExp[o.tagExp.length - 1] !==
-          "/" && n++, r = o.closeIndex)
+        let tagData = readTagExp(xmlData, fromIndex, ">");
+        tagData && ((tagData && tagData.tagName) === tagName && tagData.tagExp[tagData.tagExp.length - 1] !==
+          "/" && openTagCount++, fromIndex = tagData.closeIndex)
       }
     }
 
-    function Ql(e, t, r) {
-      if (t && typeof e == "string") {
-        let i = e.trim();
-        return i === "true" ? !0 : i === "false" ? !1 : kA(e, r)
-      } else return zl.isExist(e) ? e : ""
+    function parseValue(val, shouldParse, options) {
+      if (shouldParse && typeof val == "string") {
+        let trimmed = val.trim();
+        return trimmed === "true" ? !0 : trimmed === "false" ? !1 : toNumber(val, options)
+      } else return util.isExist(val) ? val : ""
     }
-    Km.exports = Xl
+    orderedParserModule.exports = OrderedObjParser
   });
-  var tg = v(eg => {
+  var requireNode2Json = defineCommonjsModule(exports => {
     "use strict";
 
-    function QA(e, t) {
-      return Zm(e, t)
+    function prettify(node, options) {
+      return compress(node, options)
     }
 
-    function Zm(e, t, r) {
-      let i, n = {};
-      for (let o = 0; o < e.length; o++) {
-        let s = e[o],
-          a = zA(s),
-          l = "";
-        if (r === void 0 ? l = a : l = r + "." + a, a === t.textNodeName)
-          i === void 0 ? i = s[a] : i += "" + s[a];
+    function compress(nodeArray, options, parentJPath) {
+      let textValue, result = {};
+      for (let nodeIndex = 0; nodeIndex < nodeArray.length; nodeIndex++) {
+        let node = nodeArray[nodeIndex],
+          property = getPropName(node),
+          newJpath = "";
+        if (parentJPath === void 0 ? newJpath = property : newJpath = parentJPath + "." + property, property === options.textNodeName)
+          textValue === void 0 ? textValue = node[property] : textValue += "" + node[property];
         else {
-          if (a === void 0) continue;
-          if (s[a]) {
-            let u = Zm(s[a], t, l),
-              d = JA(u, t);
-            s[":@"] ? $A(u, s[":@"], l, t) : Object.keys(u)
-              .length === 1 && u[t.textNodeName] !== void 0 && !t
-              .alwaysCreateTextNode ? u = u[t.textNodeName] : Object.keys(
-                u)
-              .length === 0 && (t.alwaysCreateTextNode ? u[t
-                .textNodeName] = "" : u = ""), n[a] !== void 0 && n
-              .hasOwnProperty(a) ? (Array.isArray(n[a]) || (n[a] = [n[
-                a]]), n[a].push(u)) : t.isArray(a, l, d) ? n[a] = [u] : n[
-                a] = u
+          if (property === void 0) continue;
+          if (node[property]) {
+            let val = compress(node[property], options, newJpath),
+              isLeaf = isLeafTag(val, options);
+            node[":@"] ? assignAttributes(val, node[":@"], newJpath, options) : Object.keys(val)
+              .length === 1 && val[options.textNodeName] !== void 0 && !options
+              .alwaysCreateTextNode ? val = val[options.textNodeName] : Object.keys(
+                val)
+              .length === 0 && (options.alwaysCreateTextNode ? val[options
+                .textNodeName] = "" : val = ""), result[property] !== void 0 && result
+              .hasOwnProperty(property) ? (Array.isArray(result[property]) || (result[property] = [result[
+                property]]), result[property].push(val)) : options.isArray(property, newJpath, isLeaf) ? result[property] = [val] : result[
+                property] = val
           }
         }
       }
-      return typeof i == "string" ? i.length > 0 && (n[t.textNodeName] =
-        i) : i !== void 0 && (n[t.textNodeName] = i), n
+      return typeof textValue == "string" ? textValue.length > 0 && (result[options.textNodeName] =
+        textValue) : textValue !== void 0 && (result[options.textNodeName] = textValue), result
     }
 
-    function zA(e) {
-      let t = Object.keys(e);
-      for (let r = 0; r < t.length; r++) {
-        let i = t[r];
-        if (i !== ":@") return i
+    function getPropName(node) {
+      let keys = Object.keys(node);
+      for (let keyIndex = 0; keyIndex < keys.length; keyIndex++) {
+        let key = keys[keyIndex];
+        if (key !== ":@") return key
       }
     }
 
-    function $A(e, t, r, i) {
-      if (t) {
-        let n = Object.keys(t),
-          o = n.length;
-        for (let s = 0; s < o; s++) {
-          let a = n[s];
-          i.isArray(a, r + "." + a, !0, !0) ? e[a] = [t[a]] : e[a] = t[a]
+    function assignAttributes(node, attrs, jpath, options) {
+      if (attrs) {
+        let keys = Object.keys(attrs),
+          len = keys.length;
+        for (let itemIndex = 0; itemIndex < len; itemIndex++) {
+          let attrName = keys[itemIndex];
+          options.isArray(attrName, jpath + "." + attrName, !0, !0) ? node[attrName] = [attrs[attrName]] : node[attrName] = attrs[attrName]
         }
       }
     }
 
-    function JA(e, t) {
+    function isLeafTag(node, options) {
       let {
-        textNodeName: r
-      } = t, i = Object.keys(e)
+        textNodeName
+      } = options, keyCount = Object.keys(node)
         .length;
-      return !!(i === 0 || i === 1 && (e[r] || typeof e[r] == "boolean" ||
-        e[r] === 0))
+      return !!(keyCount === 0 || keyCount === 1 && (node[textNodeName] || typeof node[textNodeName] == "boolean" ||
+        node[textNodeName] === 0))
     }
-    eg.prettify = QA
+    exports.prettify = prettify
   });
-  var ig = v((OS, rg) => {
+  var requireXmlParser = defineCommonjsModule((xmlParserExports, xmlParserModule) => {
     var {
-      buildOptions: KA
-    } = Wm(), YA = Ym(), {
-      prettify: ZA
-    } = tg(), e0 = Ul(), $l = class {
-      constructor(t) {
-        this.externalEntities = {}, this.options = KA(t)
+      buildOptions
+    } = requireFxpOptionsBuilder(), OrderedObjParserClass = requireOrderedObjParser(), {
+      prettify
+    } = requireNode2Json(), validator = requireFxpValidator(), XMLParser = class {
+      constructor(options) {
+        this.externalEntities = {}, this.options = buildOptions(options)
       }
-      parse(t, r) {
-        if (typeof t != "string")
-          if (t.toString) t = t.toString();
+      parse(xmlData, validationOption) {
+        if (typeof xmlData != "string")
+          if (xmlData.toString) xmlData = xmlData.toString();
           else throw new Error(
             "XML data is accepted in String or Bytes[] form.");
-        if (r) {
-          r === !0 && (r = {});
-          let o = e0.validate(t, r);
-          if (o !== !0) throw Error(
-            `${o.err.msg}:${o.err.line}:${o.err.col}`)
+        if (validationOption) {
+          validationOption === !0 && (validationOption = {});
+          let validationResult = validator.validate(xmlData, validationOption);
+          if (validationResult !== !0) throw Error(
+            `${validationResult.err.msg}:${validationResult.err.line}:${validationResult.err.col}`)
         }
-        let i = new YA(this.options);
-        i.addExternalEntities(this.externalEntities);
-        let n = i.parseXml(t);
-        return this.options.preserveOrder || n === void 0 ? n : ZA(n,
+        let orderedObjParser = new OrderedObjParserClass(this.options);
+        orderedObjParser.addExternalEntities(this.externalEntities);
+        let orderedResult = orderedObjParser.parseXml(xmlData);
+        return this.options.preserveOrder || orderedResult === void 0 ? orderedResult : prettify(orderedResult,
           this.options)
       }
-      addEntity(t, r) {
-        if (r.indexOf("&") !== -1) throw new Error(
+      addEntity(key, value) {
+        if (value.indexOf("&") !== -1) throw new Error(
           "Entity value can't have '&'");
-        if (t.indexOf("&") !== -1 || t.indexOf(";") !== -1)
+        if (key.indexOf("&") !== -1 || key.indexOf(";") !== -1)
         throw new Error(
             "An entity must be set without '&' and ';'. Eg. use '#xD' for '&#xD;'"
             );
-        if (r === "&") throw new Error(
+        if (value === "&") throw new Error(
           "An entity with value '&' is not permitted");
-        this.externalEntities[t] = r
+        this.externalEntities[key] = value
       }
     };
-    rg.exports = $l
+    xmlParserModule.exports = XMLParser
   });
-  var lg = v((MS, sg) => {
-    var t0 = `
+  var requireOrderedJs2Xml = defineCommonjsModule((builderExports, builderModule) => {
+    var newLine = `
 `;
 
-    function r0(e, t) {
-      let r = "";
-      return t.format && t.indentBy.length > 0 && (r = t0), og(e, t, "",
-        r)
+    function toXml(node, options) {
+      let indentation = "";
+      return options.format && options.indentBy.length > 0 && (indentation = newLine), arrToStr(node, options, "",
+        indentation)
     }
 
-    function og(e, t, r, i) {
-      let n = "",
-        o = !1;
-      for (let s = 0; s < e.length; s++) {
-        let a = e[s],
-          l = i0(a);
-        if (l === void 0) continue;
-        let u = "";
-        if (r.length === 0 ? u = l : u = `${r}.${l}`, l === t
+    function arrToStr(arr, options, jPath, indentation) {
+      let xmlStr = "",
+        isPrevTag = !1;
+      for (let itemIndex = 0; itemIndex < arr.length; itemIndex++) {
+        let tagObj = arr[itemIndex],
+          tagName = propName(tagObj);
+        if (tagName === void 0) continue;
+        let newJPath = "";
+        if (jPath.length === 0 ? newJPath = tagName : newJPath = `${jPath}.${tagName}`, tagName === options
           .textNodeName) {
-          let p = a[l];
-          n0(u, t) || (p = t.tagValueProcessor(l, p), p = ag(p, t)), o &&
-            (n += i), n += p, o = !1;
+          let tagText = tagObj[tagName];
+          isStopNode(newJPath, options) || (tagText = options.tagValueProcessor(tagName, tagText), tagText = replaceEntitiesValue(tagText, options)), isPrevTag &&
+            (xmlStr += indentation), xmlStr += tagText, isPrevTag = !1;
           continue
-        } else if (l === t.cdataPropName) {
-          o && (n += i), n += `<![CDATA[${a[l][0][t.textNodeName]}]]>`,
-            o = !1;
+        } else if (tagName === options.cdataPropName) {
+          isPrevTag && (xmlStr += indentation), xmlStr += `<![CDATA[${tagObj[tagName][0][options.textNodeName]}]]>`,
+            isPrevTag = !1;
           continue
-        } else if (l === t.commentPropName) {
-          n += i + `<!--${a[l][0][t.textNodeName]}-->`, o = !0;
+        } else if (tagName === options.commentPropName) {
+          xmlStr += indentation + `<!--${tagObj[tagName][0][options.textNodeName]}-->`, isPrevTag = !0;
           continue
-        } else if (l[0] === "?") {
-          let p = ng(a[":@"], t),
-            _ = l === "?xml" ? "" : i,
-            f = a[l][0][t.textNodeName];
-          f = f.length !== 0 ? " " + f : "", n += _ + `<${l}${f}${p}?>`,
-            o = !0;
+        } else if (tagName[0] === "?") {
+          let piAttrStr = attrToStr(tagObj[":@"], options),
+            piIndent = tagName === "?xml" ? "" : indentation,
+            piVal = tagObj[tagName][0][options.textNodeName];
+          piVal = piVal.length !== 0 ? " " + piVal : "", xmlStr += piIndent + `<${tagName}${piVal}${piAttrStr}?>`,
+            isPrevTag = !0;
           continue
         }
-        let d = i;
-        d !== "" && (d += t.indentBy);
-        let c = ng(a[":@"], t),
-          m = i + `<${l}${c}`,
-          w = og(a[l], t, u, d);
-        t.unpairedTags.indexOf(l) !== -1 ? t.suppressUnpairedNode ? n +=
-          m + ">" : n += m + "/>" : (!w || w.length === 0) && t
-          .suppressEmptyNode ? n += m + "/>" : w && w.endsWith(">") ? n +=
-          m + `>${w}${i}</${l}>` : (n += m + ">", w && i !== "" && (w
-              .includes("/>") || w.includes("</")) ? n += i + t.indentBy +
-            w + i : n += w, n += `</${l}>`), o = !0
+        let newIndentation = indentation;
+        newIndentation !== "" && (newIndentation += options.indentBy);
+        let attrStr = attrToStr(tagObj[":@"], options),
+          tagStart = indentation + `<${tagName}${attrStr}`,
+          childStr = arrToStr(tagObj[tagName], options, newJPath, newIndentation);
+        options.unpairedTags.indexOf(tagName) !== -1 ? options.suppressUnpairedNode ? xmlStr +=
+          tagStart + ">" : xmlStr += tagStart + "/>" : (!childStr || childStr.length === 0) && options
+          .suppressEmptyNode ? xmlStr += tagStart + "/>" : childStr && childStr.endsWith(">") ? xmlStr +=
+          tagStart + `>${childStr}${indentation}</${tagName}>` : (xmlStr += tagStart + ">", childStr && indentation !== "" && (childStr
+              .includes("/>") || childStr.includes("</")) ? xmlStr += indentation + options.indentBy +
+            childStr + indentation : xmlStr += childStr, xmlStr += `</${tagName}>`), isPrevTag = !0
       }
-      return n
+      return xmlStr
     }
 
-    function i0(e) {
-      let t = Object.keys(e);
-      for (let r = 0; r < t.length; r++) {
-        let i = t[r];
-        if (e.hasOwnProperty(i) && i !== ":@") return i
+    function propName(tagObj) {
+      let keys = Object.keys(tagObj);
+      for (let keyIndex = 0; keyIndex < keys.length; keyIndex++) {
+        let key = keys[keyIndex];
+        if (tagObj.hasOwnProperty(key) && key !== ":@") return key
       }
     }
 
-    function ng(e, t) {
-      let r = "";
-      if (e && !t.ignoreAttributes)
-        for (let i in e) {
-          if (!e.hasOwnProperty(i)) continue;
-          let n = t.attributeValueProcessor(i, e[i]);
-          n = ag(n, t), n === !0 && t.suppressBooleanAttributes ? r +=
-            ` ${i.substr(t.attributeNamePrefix.length)}` : r +=
-            ` ${i.substr(t.attributeNamePrefix.length)}="${n}"`
+    function attrToStr(attrMap, options) {
+      let attrStr = "";
+      if (attrMap && !options.ignoreAttributes)
+        for (let attr in attrMap) {
+          if (!attrMap.hasOwnProperty(attr)) continue;
+          let attrVal = options.attributeValueProcessor(attr, attrMap[attr]);
+          attrVal = replaceEntitiesValue(attrVal, options), attrVal === !0 && options.suppressBooleanAttributes ? attrStr +=
+            ` ${attr.substr(options.attributeNamePrefix.length)}` : attrStr +=
+            ` ${attr.substr(options.attributeNamePrefix.length)}="${attrVal}"`
         }
-      return r
+      return attrStr
     }
 
-    function n0(e, t) {
-      e = e.substr(0, e.length - t.textNodeName.length - 1);
-      let r = e.substr(e.lastIndexOf(".") + 1);
-      for (let i in t.stopNodes)
-        if (t.stopNodes[i] === e || t.stopNodes[i] === "*." + r) return !
+    function isStopNode(jPath, options) {
+      jPath = jPath.substr(0, jPath.length - options.textNodeName.length - 1);
+      let tagName = jPath.substr(jPath.lastIndexOf(".") + 1);
+      for (let stopNode in options.stopNodes)
+        if (options.stopNodes[stopNode] === jPath || options.stopNodes[stopNode] === "*." + tagName) return !
         0;
       return !1
     }
 
-    function ag(e, t) {
-      if (e && e.length > 0 && t.processEntities)
-        for (let r = 0; r < t.entities.length; r++) {
-          let i = t.entities[r];
-          e = e.replace(i.regex, i.val)
+    function replaceEntitiesValue(textValue, options) {
+      if (textValue && textValue.length > 0 && options.processEntities)
+        for (let entityIndex = 0; entityIndex < options.entities.length; entityIndex++) {
+          let entity = options.entities[entityIndex];
+          textValue = textValue.replace(entity.regex, entity.val)
         }
-      return e
+      return textValue
     }
-    sg.exports = r0
+    builderModule.exports = toXml
   });
-  var dg = v((PS, ug) => {
+  var requireXmlBuilder = defineCommonjsModule((builderClassExports, builderClassModule) => {
     "use strict";
-    var o0 = lg(),
-      a0 = {
+    var orderedToXml = requireOrderedJs2Xml(),
+      defaultOptions = {
         attributeNamePrefix: "@_",
         attributesGroupName: !1,
         textNodeName: "#text",
@@ -11807,11 +11807,11 @@ const store = createStore(
         suppressEmptyNode: !1,
         suppressUnpairedNode: !0,
         suppressBooleanAttributes: !0,
-        tagValueProcessor: function(e, t) {
-          return t
+        tagValueProcessor: function(tagName, val) {
+          return val
         },
-        attributeValueProcessor: function(e, t) {
-          return t
+        attributeValueProcessor: function(attrName, val) {
+          return val
         },
         preserveOrder: !1,
         commentPropName: !1,
@@ -11837,963 +11837,963 @@ const store = createStore(
         oneListGroup: !1
       };
 
-    function Zt(e) {
-      this.options = Object.assign({}, a0, e), this.options
+    function XMLBuilder(options) {
+      this.options = Object.assign({}, defaultOptions, options), this.options
         .ignoreAttributes || this.options.attributesGroupName ? this
         .isAttribute = function() {
           return !1
         } : (this.attrPrefixLen = this.options.attributeNamePrefix.length,
-          this.isAttribute = u0), this.processTextOrObjNode = s0, this
-        .options.format ? (this.indentate = l0, this.tagEndChar = `>
+          this.isAttribute = isAttribute), this.processTextOrObjNode = processTextOrObjNode, this
+        .options.format ? (this.indentate = indentate, this.tagEndChar = `>
 `, this.newLine = `
 `) : (this.indentate = function() {
           return ""
         }, this.tagEndChar = ">", this.newLine = "")
     }
-    Zt.prototype.build = function(e) {
-      return this.options.preserveOrder ? o0(e, this.options) : (Array
-        .isArray(e) && this.options.arrayNodeName && this.options
-        .arrayNodeName.length > 1 && (e = {
-          [this.options.arrayNodeName]: e
-        }), this.j2x(e, 0)
+    XMLBuilder.prototype.build = function(jObj) {
+      return this.options.preserveOrder ? orderedToXml(jObj, this.options) : (Array
+        .isArray(jObj) && this.options.arrayNodeName && this.options
+        .arrayNodeName.length > 1 && (jObj = {
+          [this.options.arrayNodeName]: jObj
+        }), this.j2x(jObj, 0)
         .val)
     };
-    Zt.prototype.j2x = function(e, t) {
-      let r = "",
-        i = "";
-      for (let n in e)
-        if (Object.prototype.hasOwnProperty.call(e, n))
-          if (typeof e[n] > "u") this.isAttribute(n) && (i += "");
-          else if (e[n] === null) this.isAttribute(n) ? i += "" : n[
-        0] === "?" ? i += this.indentate(t) + "<" + n + "?" + this
-        .tagEndChar : i += this.indentate(t) + "<" + n + "/" + this
+    XMLBuilder.prototype.j2x = function(jObj, level) {
+      let attrStr = "",
+        val = "";
+      for (let key in jObj)
+        if (Object.prototype.hasOwnProperty.call(jObj, key))
+          if (typeof jObj[key] > "u") this.isAttribute(key) && (val += "");
+          else if (jObj[key] === null) this.isAttribute(key) ? val += "" : key[
+        0] === "?" ? val += this.indentate(level) + "<" + key + "?" + this
+        .tagEndChar : val += this.indentate(level) + "<" + key + "/" + this
         .tagEndChar;
-      else if (e[n] instanceof Date) i += this.buildTextValNode(e[n], n,
-        "", t);
-      else if (typeof e[n] != "object") {
-        let o = this.isAttribute(n);
-        if (o) r += this.buildAttrPairStr(o, "" + e[n]);
-        else if (n === this.options.textNodeName) {
-          let s = this.options.tagValueProcessor(n, "" + e[n]);
-          i += this.replaceEntitiesValue(s)
-        } else i += this.buildTextValNode(e[n], n, "", t)
-      } else if (Array.isArray(e[n])) {
-        let o = e[n].length,
-          s = "";
-        for (let a = 0; a < o; a++) {
-          let l = e[n][a];
-          typeof l > "u" || (l === null ? n[0] === "?" ? i += this
-            .indentate(t) + "<" + n + "?" + this.tagEndChar : i +=
-            this.indentate(t) + "<" + n + "/" + this.tagEndChar :
-            typeof l == "object" ? this.options.oneListGroup ? s +=
-            this.j2x(l, t + 1)
-            .val : s += this.processTextOrObjNode(l, n, t) : s += this
-            .buildTextValNode(l, n, "", t))
+      else if (jObj[key] instanceof Date) val += this.buildTextValNode(jObj[key], key,
+        "", level);
+      else if (typeof jObj[key] != "object") {
+        let attr = this.isAttribute(key);
+        if (attr) attrStr += this.buildAttrPairStr(attr, "" + jObj[key]);
+        else if (key === this.options.textNodeName) {
+          let processed = this.options.tagValueProcessor(key, "" + jObj[key]);
+          val += this.replaceEntitiesValue(processed)
+        } else val += this.buildTextValNode(jObj[key], key, "", level)
+      } else if (Array.isArray(jObj[key])) {
+        let arrLen = jObj[key].length,
+          arrStr = "";
+        for (let idx = 0; idx < arrLen; idx++) {
+          let item = jObj[key][idx];
+          typeof item > "u" || (item === null ? key[0] === "?" ? val += this
+            .indentate(level) + "<" + key + "?" + this.tagEndChar : val +=
+            this.indentate(level) + "<" + key + "/" + this.tagEndChar :
+            typeof item == "object" ? this.options.oneListGroup ? arrStr +=
+            this.j2x(item, level + 1)
+            .val : arrStr += this.processTextOrObjNode(item, key, level) : arrStr += this
+            .buildTextValNode(item, key, "", level))
         }
-        this.options.oneListGroup && (s = this.buildObjectNode(s, n, "",
-          t)), i += s
-      } else if (this.options.attributesGroupName && n === this.options
+        this.options.oneListGroup && (arrStr = this.buildObjectNode(arrStr, key, "",
+          level)), val += arrStr
+      } else if (this.options.attributesGroupName && key === this.options
         .attributesGroupName) {
-        let o = Object.keys(e[n]),
-          s = o.length;
-        for (let a = 0; a < s; a++) r += this.buildAttrPairStr(o[a],
-          "" + e[n][o[a]])
-      } else i += this.processTextOrObjNode(e[n], n, t);
+        let attrKeys = Object.keys(jObj[key]),
+          attrCount = attrKeys.length;
+        for (let idx = 0; idx < attrCount; idx++) attrStr += this.buildAttrPairStr(attrKeys[idx],
+          "" + jObj[key][attrKeys[idx]])
+      } else val += this.processTextOrObjNode(jObj[key], key, level);
       return {
-        attrStr: r,
-        val: i
+        attrStr: attrStr,
+        val: val
       }
     };
-    Zt.prototype.buildAttrPairStr = function(e, t) {
-      return t = this.options.attributeValueProcessor(e, "" + t), t =
-        this.replaceEntitiesValue(t), this.options
-        .suppressBooleanAttributes && t === "true" ? " " + e : " " + e +
-        '="' + t + '"'
+    XMLBuilder.prototype.buildAttrPairStr = function(attrName, val) {
+      return val = this.options.attributeValueProcessor(attrName, "" + val), val =
+        this.replaceEntitiesValue(val), this.options
+        .suppressBooleanAttributes && val === "true" ? " " + attrName : " " + attrName +
+        '="' + val + '"'
     };
 
-    function s0(e, t, r) {
-      let i = this.j2x(e, r + 1);
-      return e[this.options.textNodeName] !== void 0 && Object.keys(e)
-        .length === 1 ? this.buildTextValNode(e[this.options
-          .textNodeName], t, i.attrStr, r) : this.buildObjectNode(i.val,
-          t, i.attrStr, r)
+    function processTextOrObjNode(node, tagName, level) {
+      let result = this.j2x(node, level + 1);
+      return node[this.options.textNodeName] !== void 0 && Object.keys(node)
+        .length === 1 ? this.buildTextValNode(node[this.options
+          .textNodeName], tagName, result.attrStr, level) : this.buildObjectNode(result.val,
+          tagName, result.attrStr, level)
     }
-    Zt.prototype.buildObjectNode = function(e, t, r, i) {
-      if (e === "") return t[0] === "?" ? this.indentate(i) + "<" + t +
-        r + "?" + this.tagEndChar : this.indentate(i) + "<" + t + r +
-        this.closeTag(t) + this.tagEndChar;
+    XMLBuilder.prototype.buildObjectNode = function(val, tagName, attrStr, level) {
+      if (val === "") return tagName[0] === "?" ? this.indentate(level) + "<" + tagName +
+        attrStr + "?" + this.tagEndChar : this.indentate(level) + "<" + tagName + attrStr +
+        this.closeTag(tagName) + this.tagEndChar;
       {
-        let n = "</" + t + this.tagEndChar,
-          o = "";
-        return t[0] === "?" && (o = "?", n = ""), (r || r === "") && e
-          .indexOf("<") === -1 ? this.indentate(i) + "<" + t + r + o +
-          ">" + e + n : this.options.commentPropName !== !1 && t ===
-          this.options.commentPropName && o.length === 0 ? this
-          .indentate(i) + `<!--${e}-->` + this.newLine : this.indentate(
-            i) + "<" + t + r + o + this.tagEndChar + e + this.indentate(
-            i) + n
+        let closeTag = "</" + tagName + this.tagEndChar,
+          piMarker = "";
+        return tagName[0] === "?" && (piMarker = "?", closeTag = ""), (attrStr || attrStr === "") && val
+          .indexOf("<") === -1 ? this.indentate(level) + "<" + tagName + attrStr + piMarker +
+          ">" + val + closeTag : this.options.commentPropName !== !1 && tagName ===
+          this.options.commentPropName && piMarker.length === 0 ? this
+          .indentate(level) + `<!--${val}-->` + this.newLine : this.indentate(
+            level) + "<" + tagName + attrStr + piMarker + this.tagEndChar + val + this.indentate(
+            level) + closeTag
       }
     };
-    Zt.prototype.closeTag = function(e) {
-      let t = "";
-      return this.options.unpairedTags.indexOf(e) !== -1 ? this.options
-        .suppressUnpairedNode || (t = "/") : this.options
-        .suppressEmptyNode ? t = "/" : t = `></${e}`, t
+    XMLBuilder.prototype.closeTag = function(tagName) {
+      let closeTag = "";
+      return this.options.unpairedTags.indexOf(tagName) !== -1 ? this.options
+        .suppressUnpairedNode || (closeTag = "/") : this.options
+        .suppressEmptyNode ? closeTag = "/" : closeTag = `></${tagName}`, closeTag
     };
-    Zt.prototype.buildTextValNode = function(e, t, r, i) {
-      if (this.options.cdataPropName !== !1 && t === this.options
-        .cdataPropName) return this.indentate(i) + `<![CDATA[${e}]]>` +
+    XMLBuilder.prototype.buildTextValNode = function(val, tagName, attrStr, level) {
+      if (this.options.cdataPropName !== !1 && tagName === this.options
+        .cdataPropName) return this.indentate(level) + `<![CDATA[${val}]]>` +
         this.newLine;
-      if (this.options.commentPropName !== !1 && t === this.options
-        .commentPropName) return this.indentate(i) + `<!--${e}-->` +
+      if (this.options.commentPropName !== !1 && tagName === this.options
+        .commentPropName) return this.indentate(level) + `<!--${val}-->` +
         this.newLine;
-      if (t[0] === "?") return this.indentate(i) + "<" + t + r + "?" +
+      if (tagName[0] === "?") return this.indentate(level) + "<" + tagName + attrStr + "?" +
         this.tagEndChar;
       {
-        let n = this.options.tagValueProcessor(t, e);
-        return n = this.replaceEntitiesValue(n), n === "" ? this
-          .indentate(i) + "<" + t + r + this.closeTag(t) + this
-          .tagEndChar : this.indentate(i) + "<" + t + r + ">" + n +
-          "</" + t + this.tagEndChar
+        let processed = this.options.tagValueProcessor(tagName, val);
+        return processed = this.replaceEntitiesValue(processed), processed === "" ? this
+          .indentate(level) + "<" + tagName + attrStr + this.closeTag(tagName) + this
+          .tagEndChar : this.indentate(level) + "<" + tagName + attrStr + ">" + processed +
+          "</" + tagName + this.tagEndChar
       }
     };
-    Zt.prototype.replaceEntitiesValue = function(e) {
-      if (e && e.length > 0 && this.options.processEntities)
-        for (let t = 0; t < this.options.entities.length; t++) {
-          let r = this.options.entities[t];
-          e = e.replace(r.regex, r.val)
+    XMLBuilder.prototype.replaceEntitiesValue = function(textValue) {
+      if (textValue && textValue.length > 0 && this.options.processEntities)
+        for (let entityIndex = 0; entityIndex < this.options.entities.length; entityIndex++) {
+          let entity = this.options.entities[entityIndex];
+          textValue = textValue.replace(entity.regex, entity.val)
         }
-      return e
+      return textValue
     };
 
-    function l0(e) {
-      return this.options.indentBy.repeat(e)
+    function indentate(level) {
+      return this.options.indentBy.repeat(level)
     }
 
-    function u0(e) {
-      return e.startsWith(this.options.attributeNamePrefix) && e !== this
-        .options.textNodeName ? e.substr(this.attrPrefixLen) : !1
+    function isAttribute(name) {
+      return name.startsWith(this.options.attributeNamePrefix) && name !== this
+        .options.textNodeName ? name.substr(this.attrPrefixLen) : !1
     }
-    ug.exports = Zt
+    builderClassModule.exports = XMLBuilder
   });
-  var pg = v((RS, cg) => {
+  var requireFxp = defineCommonjsModule((fxpExports, fxpModule) => {
     "use strict";
-    var d0 = Ul(),
-      c0 = ig(),
-      p0 = dg();
-    cg.exports = {
-      XMLParser: c0,
-      XMLValidator: d0,
-      XMLBuilder: p0
+    var validatorModule = requireFxpValidator(),
+      parserModule = requireXmlParser(),
+      builderModule = requireXmlBuilder();
+    fxpModule.exports = {
+      XMLParser: parserModule,
+      XMLValidator: validatorModule,
+      XMLBuilder: builderModule
     }
   });
 
-  function mg(e) {
-    let r = new fg.XMLParser({
+  function parseMpdManifest(mpdXml) {
+    let parsed = new fxpEsm.XMLParser({
         attributesGroupName: "@_",
         ignoreDeclaration: !0,
         parseAttributeValue: !0,
         ignoreAttributes: !1,
         removeNSPrefix: !0,
         trimValues: !0,
-        isArray: a => a === "adaptationset" || a === "representation",
-        transformTagName: a => a.toLowerCase(),
-        transformAttributeName: a => a.toLowerCase()
+        isArray: name => name === "adaptationset" || name === "representation",
+        transformTagName: name => name.toLowerCase(),
+        transformAttributeName: name => name.toLowerCase()
       })
-      .parse(e),
-      i = r.mpd?.period?.adaptationset;
-    if (!Array.isArray(i)) return U("Invalid MPD XML");
-    let n = "unknown";
+      .parse(mpdXml),
+      adaptationSets = parsed.mpd?.period?.adaptationset;
+    if (!Array.isArray(adaptationSets)) return resultErr("Invalid MPD XML");
+    let duration = "unknown";
     {
-      let a = r.mpd?.["@_"]?.["@_mediapresentationduration"];
-      if (typeof a == "string") {
-        let l = /\d+(\.\d+)?S/,
-          u = /\d+M/,
-          d = l.exec(a),
-          c = u.exec(a);
-        (d || c) && (n = 0, d && d.length > 0 && (n = parseFloat(d[0])), c &&
-          c.length > 0 && (n += 60 * (parseFloat(c[0]) || 0)))
+      let durationStr = parsed.mpd?.["@_"]?.["@_mediapresentationduration"];
+      if (typeof durationStr == "string") {
+        let secondsRegex = /\d+(\.\d+)?S/,
+          minutesRegex = /\d+M/,
+          secondsMatch = secondsRegex.exec(durationStr),
+          minutesMatch = minutesRegex.exec(durationStr);
+        (secondsMatch || minutesMatch) && (duration = 0, secondsMatch && secondsMatch.length > 0 && (duration = parseFloat(secondsMatch[0])), minutesMatch &&
+          minutesMatch.length > 0 && (duration += 60 * (parseFloat(minutesMatch[0]) || 0)))
       }
     }
-    let o = 0,
-      s = [];
-    for (let a of i) {
-      let l = [a];
-      "contentcomponent" in a && "@_" in a.contentcomponent && l.push(a
-          .contentcomponent), "segmenttemplate" in a && "@_" in a
-        .segmenttemplate && l.push(a.segmenttemplate);
-      let u = {
-          bitrate: O,
+    let variantCounter = 0,
+      results = [];
+    for (let adaptationSet of adaptationSets) {
+      let propSources = [adaptationSet];
+      "contentcomponent" in adaptationSet && "@_" in adaptationSet.contentcomponent && propSources.push(adaptationSet
+          .contentcomponent), "segmenttemplate" in adaptationSet && "@_" in adaptationSet
+        .segmenttemplate && propSources.push(adaptationSet.segmenttemplate);
+      let commonProps = {
+          bitrate: ResultNone,
           content_type: void 0,
           mime_type: void 0,
           codecs: void 0,
           width: void 0,
           height: void 0,
-          framerate: O
+          framerate: ResultNone
         },
-        d = (m, w) => {
-          let p = {
-            ...w
+        collectProps = (sources, base) => {
+          let props = {
+            ...base
           };
-          for (let _ of m) {
-            let f = _["@_"] ?? [];
-            for (let g of Object.keys(f)) {
-              if (g === "@_bandwidth") {
-                let h = f["@_bandwidth"];
-                typeof h == "number" && (p.bitrate = q(h))
+          for (let source of sources) {
+            let attrs = source["@_"] ?? [];
+            for (let attrKey of Object.keys(attrs)) {
+              if (attrKey === "@_bandwidth") {
+                let attrVal = attrs["@_bandwidth"];
+                typeof attrVal == "number" && (props.bitrate = resultSome(attrVal))
               }
-              if (g === "@_contenttype") {
-                let h = f["@_contenttype"];
-                typeof h == "string" && (p.content_type = h)
+              if (attrKey === "@_contenttype") {
+                let attrVal = attrs["@_contenttype"];
+                typeof attrVal == "string" && (props.content_type = attrVal)
               }
-              if (g === "@_mimetype") {
-                let h = f["@_mimetype"];
-                typeof h == "string" && (p.mime_type = h)
+              if (attrKey === "@_mimetype") {
+                let attrVal = attrs["@_mimetype"];
+                typeof attrVal == "string" && (props.mime_type = attrVal)
               }
-              if (g === "@_codecs") {
-                let h = f["@_codecs"];
-                typeof h == "string" && (p.codecs = h)
+              if (attrKey === "@_codecs") {
+                let attrVal = attrs["@_codecs"];
+                typeof attrVal == "string" && (props.codecs = attrVal)
               }
-              if (g === "@_width") {
-                let h = f["@_width"];
-                typeof h == "number" && (p.width = h)
+              if (attrKey === "@_width") {
+                let attrVal = attrs["@_width"];
+                typeof attrVal == "number" && (props.width = attrVal)
               }
-              if (g === "@_height") {
-                let h = f["@_height"];
-                typeof h == "number" && (p.height = h)
+              if (attrKey === "@_height") {
+                let attrVal = attrs["@_height"];
+                typeof attrVal == "number" && (props.height = attrVal)
               }
-              if (g === "@_framerate") {
-                let h = f["@_framerate"];
-                typeof h == "number" && (p.framerate = q(h))
+              if (attrKey === "@_framerate") {
+                let attrVal = attrs["@_framerate"];
+                typeof attrVal == "number" && (props.framerate = resultSome(attrVal))
               }
             }
           }
-          return p
+          return props
         };
-      u = d(l, u);
-      let c = a.representation;
-      if (!Array.isArray(c)) break;
-      for (let m of c) {
-        let w = o.toString();
-        o++;
-        let p = d([m], u),
+      commonProps = collectProps(propSources, commonProps);
+      let representations = adaptationSet.representation;
+      if (!Array.isArray(representations)) break;
+      for (let representation of representations) {
+        let variantId = variantCounter.toString();
+        variantCounter++;
+        let props = collectProps([representation], commonProps),
           {
-            codecs: _,
-            mime_type: f,
-            bitrate: g,
-            width: h,
-            height: T,
-            framerate: x
-          } = p,
-          b = U("Invalid mimetype/codecs");
-        if (typeof f == "string" && typeof _ == "string") {
-          let M = `${f}; codecs="${_}"`;
-          b = ai(M)
+            codecs,
+            mime_type,
+            bitrate,
+            width,
+            height,
+            framerate
+          } = props,
+          parseResult = resultErr("Invalid mimetype/codecs");
+        if (typeof mime_type == "string" && typeof codecs == "string") {
+          let mimeCodec = `${mime_type}; codecs="${codecs}"`;
+          parseResult = parseMimeType(mimeCodec)
         }
-        if (b.isErr()) {
-          console.warn("Failed to parse mimetype from", f, _);
+        if (parseResult.isErr()) {
+          console.warn("Failed to parse mimetype from", mime_type, codecs);
           continue
         }
         let {
-          av_codecs: D,
-          container: P
-        } = b.unwrap(), k = Ge(D, M => ({
-          codec: We(M),
-          bitrate: g
-        }), M => {
-          let N = je(M),
-            j = x,
-            W = O,
-            $ = O;
-          return typeof h == "number" && typeof T == "number" && ($ = q(
-            Qr(T)), W = q({
-            width: h,
-            height: T
+          av_codecs,
+          container
+        } = parseResult.unwrap(), avTracks = matchAudioVideo(av_codecs, audioCodecName => ({
+          codec: makeAudioCodec(audioCodecName),
+          bitrate: bitrate
+        }), videoCodecName => {
+          let codec = makeVideoCodec(videoCodecName),
+            fps = framerate,
+            dimensions = ResultNone,
+            quality = ResultNone;
+          return typeof width == "number" && typeof height == "number" && (quality = resultSome(
+            qualityLabelForHeight(height)), dimensions = resultSome({
+            width: width,
+            height: height
           })), {
-            codec: N,
-            bitrate: g,
-            fps: j,
-            dimensions: W,
-            quality: $
+            codec: codec,
+            bitrate: bitrate,
+            fps: fps,
+            dimensions: dimensions,
+            quality: quality
           }
-        }), S = {
+        }), coreMedia = {
           builder: "MPD",
           protocol: "dash",
-          content_length: O,
-          duration: n,
-          container: ue(P),
-          av: k
+          content_length: ResultNone,
+          duration: duration,
+          container: containerByName(container),
+          av: avTracks
         };
-        s.push([S, w])
+        results.push([coreMedia, variantId])
       }
     }
-    return L(s)
+    return resultOk(results)
   }
-  var fg, gg = C(() => {
+  var fxpEsm, initMpdParser = defineLazyModule(() => {
     "use strict";
-    oe();
-    Ji();
-    xt();
-    Xe();
-    pr();
-    Cn();
-    fg = yt(pg(), 1);
-    zr();
-    Ue()
+    initTsResultsIndex();
+    initMediaTypeSupport();
+    initCodecs();
+    initContainers();
+    initProtocolTypes();
+    initObjGuards();
+    fxpEsm = toEsm(requireFxp(), 1);
+    initQualities();
+    initIterTools()
   });
 
-  function _g(e, t) {
-    let r = e.video?.thumbs?.["640"] || e.video?.thumbs?.base;
-    r && (t.thumbnailUrl2 = r.toString());
-    let i = e.request?.files?.hls?.cdns,
-      n = e.request?.files?.hls?.default_cdn;
-    if (n in i) {
-      new er(i[n].url, [])
-        .onHitDataAvailable(t);
+  function vimeoThumbFrom(config, hit) {
+    let thumb = config.video?.thumbs?.["640"] || config.video?.thumbs?.base;
+    thumb && (hit.thumbnailUrl2 = thumb.toString());
+    let hlsCdns = config.request?.files?.hls?.cdns,
+      defaultCdn = config.request?.files?.hls?.default_cdn;
+    if (defaultCdn in hlsCdns) {
+      new MasterHLSProbe(hlsCdns[defaultCdn].url, [])
+        .onHitDataAvailable(hit);
       return
     }
-    let o = e.request?.files?.dash?.cdns;
-    if (i)
-      for (let s in i) {
-        let a = i[s]?.url;
-        a && new er(a, [])
-          .onHitDataAvailable(t)
+    let dashCdns = config.request?.files?.dash?.cdns;
+    if (hlsCdns)
+      for (let cdnKey in hlsCdns) {
+        let url = hlsCdns[cdnKey]?.url;
+        url && new MasterHLSProbe(url, [])
+          .onHitDataAvailable(hit)
       }
-    if (o)
-      for (let s in o) {
-        let a = o[s]?.url.replace("master.json", "master.mpd");
-        a && new Br(a, [])
-          .onHitDataAvailable(t)
+    if (dashCdns)
+      for (let cdnKey in dashCdns) {
+        let url = dashCdns[cdnKey]?.url.replace("master.json", "master.mpd");
+        url && new MPDProbe(url, [])
+          .onHitDataAvailable(hit)
       }
   }
-  var f0, hg, ln, un, bg = C(() => {
+  var httpProbeUtil, httpProbeBrowser, VimeoPlayerProbe, VimeoConfigProbe, initHttpProbes = defineLazyModule(() => {
     "use strict";
-    Yo();
-    f0 = (he(), R(ge)), hg = Y()
+    initProbes();
+    httpProbeUtil = (initCoreUtil(), toCommonjs(coreUtilNs)), httpProbeBrowser = requireWeh()
       .browser;
-    ln = class {
-      constructor(t, r) {}
-      static canHandle(t, r, i) {
-        return !!(t.startsWith("https://player.vimeo.com/video/") &&
-          r == "text/html; charset=utf-8")
+    VimeoPlayerProbe = class {
+      constructor(url, headers) {}
+      static canHandle(url, contentType, headers) {
+        return !!(url.startsWith("https://player.vimeo.com/video/") &&
+          contentType == "text/html; charset=utf-8")
       }
-      async onHitDataAvailable(t) {
-        let r = {
-          tabId: t.tabId
+      async onHitDataAvailable(hit) {
+        let target = {
+          tabId: hit.tabId
         };
-        t.frameId && (r.frameIds = [t.frameId]);
-        for (let i = 0; i < 5; i++) {
+        hit.frameId && (target.frameIds = [hit.frameId]);
+        for (let attempt = 0; attempt < 5; attempt++) {
           try {
-            let n = await hg.scripting.executeScript({
-              target: r,
-              world: hg.scripting.ExecutionWorld.MAIN,
+            let result = await httpProbeBrowser.scripting.executeScript({
+              target: target,
+              world: httpProbeBrowser.scripting.ExecutionWorld.MAIN,
               func: () => window.playerConfig ?? window
                 .wrappedJSObject?.playerConfig
             });
-            if (n[0]?.result) {
-              _g(n[0].result, t);
+            if (result[0]?.result) {
+              vimeoThumbFrom(result[0].result, hit);
               return
             }
           } catch {}
-          await new Promise(n => setTimeout(n, 2e3))
+          await new Promise(resolve => setTimeout(resolve, 2e3))
         }
         console.warn("Couldn't get vimeo player config")
       }
-    }, un = class {
-      constructor(t, r) {
-        this.headers = r, this.config_url = t
+    }, VimeoConfigProbe = class {
+      constructor(configUrl, headers) {
+        this.headers = headers, this.config_url = configUrl
       }
-      static canHandle(t, r, i) {
-        let n = i.find(o => o.name == "Origin");
-        return n?.value?.includes("vimeo.com") || n?.value?.includes(
-          "vhx.tv") ? t.includes("config?") : !1
+      static canHandle(url, contentType, headers) {
+        let originHeader = headers.find(header => header.name == "Origin");
+        return originHeader?.value?.includes("vimeo.com") || originHeader?.value?.includes(
+          "vhx.tv") ? url.includes("config?") : !1
       }
-      async onHitDataAvailable(t) {
-        let r = await f0.request({
+      async onHitDataAvailable(hit) {
+        let response = await httpProbeUtil.request({
           url: this.config_url,
           headers: this.headers
         });
-        if (!r.ok) {
+        if (!response.ok) {
           console.warn("Failed to fetch Vimeo Config content");
           return
         }
-        let i = await r.json();
-        _g(i, t)
+        let config = await response.json();
+        vimeoThumbFrom(config, hit)
       }
     }
   });
-  var Zo, yg = C(() => {
-    Zo = function() {
-      function e() {
+  var M3u8EventTarget, initM3u8EventTarget = defineLazyModule(() => {
+    M3u8EventTarget = function() {
+      function EventTargetCtor() {
         this.listeners = {}
       }
-      var t = e.prototype;
-      return t.on = function(i, n) {
-        this.listeners[i] || (this.listeners[i] = []), this.listeners[
-          i].push(n)
-      }, t.off = function(i, n) {
-        if (!this.listeners[i]) return !1;
-        var o = this.listeners[i].indexOf(n);
-        return this.listeners[i] = this.listeners[i].slice(0), this
-          .listeners[i].splice(o, 1), o > -1
-      }, t.trigger = function(i) {
-        var n = this.listeners[i];
-        if (n)
+      var proto = EventTargetCtor.prototype;
+      return proto.on = function(type, listener) {
+        this.listeners[type] || (this.listeners[type] = []), this.listeners[
+          type].push(listener)
+      }, proto.off = function(type, listener) {
+        if (!this.listeners[type]) return !1;
+        var index = this.listeners[type].indexOf(listener);
+        return this.listeners[type] = this.listeners[type].slice(0), this
+          .listeners[type].splice(index, 1), index > -1
+      }, proto.trigger = function(type) {
+        var listeners = this.listeners[type];
+        if (listeners)
           if (arguments.length === 2)
-            for (var o = n.length, s = 0; s < o; ++s) n[s].call(this,
+            for (var len = listeners.length, listenerIndex = 0; listenerIndex < len; ++listenerIndex) listeners[listenerIndex].call(this,
               arguments[1]);
           else
-            for (var a = Array.prototype.slice.call(arguments, 1), l =
-                n.length, u = 0; u < l; ++u) n[u].apply(this, a)
-      }, t.dispose = function() {
+            for (var args = Array.prototype.slice.call(arguments, 1), len =
+                listeners.length, listenerIndex = 0; listenerIndex < len; ++listenerIndex) listeners[listenerIndex].apply(this, args)
+      }, proto.dispose = function() {
         this.listeners = {}
-      }, t.pipe = function(i) {
-        this.on("data", function(n) {
-          i.push(n)
+      }, proto.pipe = function(dest) {
+        this.on("data", function(data) {
+          dest.push(data)
         })
-      }, e
+      }, EventTargetCtor
     }()
   });
 
-  function tr() {
-    return tr = Object.assign ? Object.assign.bind() : function(e) {
-      for (var t = 1; t < arguments.length; t++) {
-        var r = arguments[t];
-        for (var i in r) Object.prototype.hasOwnProperty.call(r, i) && (e[
-          i] = r[i])
+  function objectAssignInto() {
+    return objectAssignInto = Object.assign ? Object.assign.bind() : function(target) {
+      for (var argIndex = 1; argIndex < arguments.length; argIndex++) {
+        var source = arguments[argIndex];
+        for (var key in source) Object.prototype.hasOwnProperty.call(source, key) && (target[
+          key] = source[key])
       }
-      return e
-    }, tr.apply(this, arguments)
+      return target
+    }, objectAssignInto.apply(this, arguments)
   }
-  var vg = C(() => {});
-  var Ag = v((JS, wg) => {
-    var dn;
-    typeof window < "u" ? dn = window : typeof global < "u" ? dn =
-      global : typeof self < "u" ? dn = self : dn = {};
-    wg.exports = dn
+  var initM3u8Types = defineLazyModule(() => {});
+  var requireGlobalObject = defineCommonjsModule((globalExports, globalModule) => {
+    var globalObj;
+    typeof window < "u" ? globalObj = window : typeof global < "u" ? globalObj =
+      global : typeof self < "u" ? globalObj = self : globalObj = {};
+    globalModule.exports = globalObj
   });
 
-  function Kl(e) {
-    for (var t = m0(e), r = new Uint8Array(t.length), i = 0; i < t
-      .length; i++) r[i] = t.charCodeAt(i);
-    return r
+  function base64ToBytes(str) {
+    for (var binary = atobCompat(str), bytes = new Uint8Array(binary.length), index = 0; index < binary
+      .length; index++) bytes[index] = binary.charCodeAt(index);
+    return bytes
   }
-  var Jl, m0, xg = C(() => {
-    Jl = yt(Ag()), m0 = function(t) {
-      return Jl.default.atob ? Jl.default.atob(t) : Buffer.from(t,
+  var m3u8GlobalEsm, atobCompat, initM3u8Base64 = defineLazyModule(() => {
+    m3u8GlobalEsm = toEsm(requireGlobalObject()), atobCompat = function(str) {
+      return m3u8GlobalEsm.default.atob ? m3u8GlobalEsm.default.atob(str) : Buffer.from(str,
           "base64")
         .toString("binary")
     }
   });
-  var eu, g0, Yl, h0, Re, tu, _0, rr, Zl, cn, Tg = C(() => {
-    yg();
-    vg();
-    xg();
-    eu = class extends Zo {
+  var M3u8LineStream, TAB_CHAR, parseByterange, makeAttrSplitRegex, parseAttributes, M3u8ParseStream, camelCaseTagName, camelCaseKeys, applyHoldBackRules, M3u8Parser, initM3u8Parser = defineLazyModule(() => {
+    initM3u8EventTarget();
+    initM3u8Types();
+    initM3u8Base64();
+    M3u8LineStream = class extends M3u8EventTarget {
         constructor() {
           super(), this.buffer = ""
         }
-        push(t) {
-          let r;
-          for (this.buffer += t, r = this.buffer.indexOf(`
-`); r > -1; r = this.buffer.indexOf(`
-`)) this.trigger("data", this.buffer.substring(0, r)), this.buffer = this
-            .buffer.substring(r + 1)
+        push(chunk) {
+          let newlineIndex;
+          for (this.buffer += chunk, newlineIndex = this.buffer.indexOf(`
+`); newlineIndex > -1; newlineIndex = this.buffer.indexOf(`
+`)) this.trigger("data", this.buffer.substring(0, newlineIndex)), this.buffer = this
+            .buffer.substring(newlineIndex + 1)
         }
-      }, g0 = "	", Yl = function(e) {
-        let t = /([0-9.]*)?@?([0-9.]*)?/.exec(e || ""),
-          r = {};
-        return t[1] && (r.length = parseInt(t[1], 10)), t[2] && (r
-          .offset = parseInt(t[2], 10)), r
-      }, h0 = function() {
-        let r = "(?:" + "[^=]*" + ")=(?:" + '"[^"]*"|[^,]*' + ")";
-        return new RegExp("(?:^|,)(" + r + ")")
-      }, Re = function(e) {
-        let t = {};
-        if (!e) return t;
-        let r = e.split(h0()),
-          i = r.length,
-          n;
-        for (; i--;) r[i] !== "" && (n = /([^=]*)=(.*)/.exec(r[i])
-          .slice(1), n[0] = n[0].replace(/^\s+|\s+$/g, ""), n[1] = n[1]
-          .replace(/^\s+|\s+$/g, ""), n[1] = n[1].replace(
-            /^['"](.*)['"]$/g, "$1"), t[n[0]] = n[1]);
-        return t
-      }, tu = class extends Zo {
+      }, TAB_CHAR = "	", parseByterange = function(byterangeString) {
+        let match = /([0-9.]*)?@?([0-9.]*)?/.exec(byterangeString || ""),
+          result = {};
+        return match[1] && (result.length = parseInt(match[1], 10)), match[2] && (result
+          .offset = parseInt(match[2], 10)), result
+      }, makeAttrSplitRegex = function() {
+        let keyValuePattern = "(?:" + "[^=]*" + ")=(?:" + '"[^"]*"|[^,]*' + ")";
+        return new RegExp("(?:^|,)(" + keyValuePattern + ")")
+      }, parseAttributes = function(attributeString) {
+        let attributes = {};
+        if (!attributeString) return attributes;
+        let pairs = attributeString.split(makeAttrSplitRegex()),
+          index = pairs.length,
+          keyValue;
+        for (; index--;) pairs[index] !== "" && (keyValue = /([^=]*)=(.*)/.exec(pairs[index])
+          .slice(1), keyValue[0] = keyValue[0].replace(/^\s+|\s+$/g, ""), keyValue[1] = keyValue[1]
+          .replace(/^\s+|\s+$/g, ""), keyValue[1] = keyValue[1].replace(
+            /^['"](.*)['"]$/g, "$1"), attributes[keyValue[0]] = keyValue[1]);
+        return attributes
+      }, M3u8ParseStream = class extends M3u8EventTarget {
         constructor() {
           super(), this.customParsers = [], this.tagMappers = []
         }
-        push(t) {
-          let r, i;
-          if (t = t.trim(), t.length === 0) return;
-          if (t[0] !== "#") {
+        push(rawLine) {
+          let match, tagEntry;
+          if (rawLine = rawLine.trim(), rawLine.length === 0) return;
+          if (rawLine[0] !== "#") {
             this.trigger("data", {
               type: "uri",
-              uri: t
+              uri: rawLine
             });
             return
           }
-          this.tagMappers.reduce((o, s) => {
-              let a = s(t);
-              return a === t ? o : o.concat([a])
-            }, [t])
-            .forEach(o => {
-              for (let s = 0; s < this.customParsers.length; s++)
-                if (this.customParsers[s].call(this, o)) return;
-              if (o.indexOf("#EXT") !== 0) {
+          this.tagMappers.reduce((mappedLines, tagMapper) => {
+              let mapped = tagMapper(rawLine);
+              return mapped === rawLine ? mappedLines : mappedLines.concat([mapped])
+            }, [rawLine])
+            .forEach(line => {
+              for (let parserIndex = 0; parserIndex < this.customParsers.length; parserIndex++)
+                if (this.customParsers[parserIndex].call(this, line)) return;
+              if (line.indexOf("#EXT") !== 0) {
                 this.trigger("data", {
                   type: "comment",
-                  text: o.slice(1)
+                  text: line.slice(1)
                 });
                 return
               }
-              if (o = o.replace("\r", ""), r = /^#EXTM3U/.exec(o),
-                r) {
+              if (line = line.replace("\r", ""), match = /^#EXTM3U/.exec(line),
+                match) {
                 this.trigger("data", {
                   type: "tag",
                   tagType: "m3u"
                 });
                 return
               }
-              if (r = /^#EXTINF:([0-9\.]*)?,?(.*)?$/.exec(o), r) {
-                i = {
+              if (match = /^#EXTINF:([0-9\.]*)?,?(.*)?$/.exec(line), match) {
+                tagEntry = {
                     type: "tag",
                     tagType: "inf"
-                  }, r[1] && (i.duration = parseFloat(r[1])), r[2] &&
-                  (i.title = r[2]), this.trigger("data", i);
+                  }, match[1] && (tagEntry.duration = parseFloat(match[1])), match[2] &&
+                  (tagEntry.title = match[2]), this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-TARGETDURATION:([0-9.]*)?/.exec(o),
-                r) {
-                i = {
+              if (match = /^#EXT-X-TARGETDURATION:([0-9.]*)?/.exec(line),
+                match) {
+                tagEntry = {
                     type: "tag",
                     tagType: "targetduration"
-                  }, r[1] && (i.duration = parseInt(r[1], 10)), this
-                  .trigger("data", i);
+                  }, match[1] && (tagEntry.duration = parseInt(match[1], 10)), this
+                  .trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-VERSION:([0-9.]*)?/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-VERSION:([0-9.]*)?/.exec(line), match) {
+                tagEntry = {
                     type: "tag",
                     tagType: "version"
-                  }, r[1] && (i.version = parseInt(r[1], 10)), this
-                  .trigger("data", i);
+                  }, match[1] && (tagEntry.version = parseInt(match[1], 10)), this
+                  .trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-MEDIA-SEQUENCE:(\-?[0-9.]*)?/.exec(o),
-                r) {
-                i = {
+              if (match = /^#EXT-X-MEDIA-SEQUENCE:(\-?[0-9.]*)?/.exec(line),
+                match) {
+                tagEntry = {
                     type: "tag",
                     tagType: "media-sequence"
-                  }, r[1] && (i.number = parseInt(r[1], 10)), this
-                  .trigger("data", i);
+                  }, match[1] && (tagEntry.number = parseInt(match[1], 10)), this
+                  .trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-DISCONTINUITY-SEQUENCE:(\-?[0-9.]*)?/
-                .exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-DISCONTINUITY-SEQUENCE:(\-?[0-9.]*)?/
+                .exec(line), match) {
+                tagEntry = {
                     type: "tag",
                     tagType: "discontinuity-sequence"
-                  }, r[1] && (i.number = parseInt(r[1], 10)), this
-                  .trigger("data", i);
+                  }, match[1] && (tagEntry.number = parseInt(match[1], 10)), this
+                  .trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-PLAYLIST-TYPE:(.*)?$/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-PLAYLIST-TYPE:(.*)?$/.exec(line), match) {
+                tagEntry = {
                   type: "tag",
                   tagType: "playlist-type"
-                }, r[1] && (i.playlistType = r[1]), this.trigger(
-                  "data", i);
+                }, match[1] && (tagEntry.playlistType = match[1]), this.trigger(
+                  "data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-BYTERANGE:(.*)?$/.exec(o), r) {
-                i = tr(Yl(r[1]), {
+              if (match = /^#EXT-X-BYTERANGE:(.*)?$/.exec(line), match) {
+                tagEntry = objectAssignInto(parseByterange(match[1]), {
                   type: "tag",
                   tagType: "byterange"
-                }), this.trigger("data", i);
+                }), this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-ALLOW-CACHE:(YES|NO)?/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-ALLOW-CACHE:(YES|NO)?/.exec(line), match) {
+                tagEntry = {
                     type: "tag",
                     tagType: "allow-cache"
-                  }, r[1] && (i.allowed = !/NO/.test(r[1])), this
-                  .trigger("data", i);
+                  }, match[1] && (tagEntry.allowed = !/NO/.test(match[1])), this
+                  .trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-MAP:(.*)$/.exec(o), r) {
-                if (i = {
+              if (match = /^#EXT-X-MAP:(.*)$/.exec(line), match) {
+                if (tagEntry = {
                     type: "tag",
                     tagType: "map"
-                  }, r[1]) {
-                  let s = Re(r[1]);
-                  s.URI && (i.uri = s.URI), s.BYTERANGE && (i
-                    .byterange = Yl(s.BYTERANGE))
+                  }, match[1]) {
+                  let mapAttrs = parseAttributes(match[1]);
+                  mapAttrs.URI && (tagEntry.uri = mapAttrs.URI), mapAttrs.BYTERANGE && (tagEntry
+                    .byterange = parseByterange(mapAttrs.BYTERANGE))
                 }
-                this.trigger("data", i);
+                this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-STREAM-INF:(.*)$/.exec(o), r) {
-                if (i = {
+              if (match = /^#EXT-X-STREAM-INF:(.*)$/.exec(line), match) {
+                if (tagEntry = {
                     type: "tag",
                     tagType: "stream-inf"
-                  }, r[1]) {
-                  if (i.attributes = Re(r[1]), i.attributes
+                  }, match[1]) {
+                  if (tagEntry.attributes = parseAttributes(match[1]), tagEntry.attributes
                     .RESOLUTION) {
-                    let s = i.attributes.RESOLUTION.split("x"),
-                      a = {};
-                    s[0] && (a.width = parseInt(s[0], 10)), s[1] && (a
-                        .height = parseInt(s[1], 10)), i.attributes
-                      .RESOLUTION = a
+                    let resolutionParts = tagEntry.attributes.RESOLUTION.split("x"),
+                      resolution = {};
+                    resolutionParts[0] && (resolution.width = parseInt(resolutionParts[0], 10)), resolutionParts[1] && (resolution
+                        .height = parseInt(resolutionParts[1], 10)), tagEntry.attributes
+                      .RESOLUTION = resolution
                   }
-                  i.attributes.BANDWIDTH && (i.attributes.BANDWIDTH =
-                      parseInt(i.attributes.BANDWIDTH, 10)), i
-                    .attributes["FRAME-RATE"] && (i.attributes[
-                      "FRAME-RATE"] = parseFloat(i.attributes[
-                      "FRAME-RATE"])), i.attributes["PROGRAM-ID"] && (
-                      i.attributes["PROGRAM-ID"] = parseInt(i
+                  tagEntry.attributes.BANDWIDTH && (tagEntry.attributes.BANDWIDTH =
+                      parseInt(tagEntry.attributes.BANDWIDTH, 10)), tagEntry
+                    .attributes["FRAME-RATE"] && (tagEntry.attributes[
+                      "FRAME-RATE"] = parseFloat(tagEntry.attributes[
+                      "FRAME-RATE"])), tagEntry.attributes["PROGRAM-ID"] && (
+                      tagEntry.attributes["PROGRAM-ID"] = parseInt(tagEntry
                         .attributes["PROGRAM-ID"], 10))
                 }
-                this.trigger("data", i);
+                this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-MEDIA:(.*)$/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-MEDIA:(.*)$/.exec(line), match) {
+                tagEntry = {
                   type: "tag",
                   tagType: "media"
-                }, r[1] && (i.attributes = Re(r[1])), this.trigger(
-                  "data", i);
+                }, match[1] && (tagEntry.attributes = parseAttributes(match[1])), this.trigger(
+                  "data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-ENDLIST/.exec(o), r) {
+              if (match = /^#EXT-X-ENDLIST/.exec(line), match) {
                 this.trigger("data", {
                   type: "tag",
                   tagType: "endlist"
                 });
                 return
               }
-              if (r = /^#EXT-X-DISCONTINUITY/.exec(o), r) {
+              if (match = /^#EXT-X-DISCONTINUITY/.exec(line), match) {
                 this.trigger("data", {
                   type: "tag",
                   tagType: "discontinuity"
                 });
                 return
               }
-              if (r = /^#EXT-X-PROGRAM-DATE-TIME:(.*)$/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-PROGRAM-DATE-TIME:(.*)$/.exec(line), match) {
+                tagEntry = {
                   type: "tag",
                   tagType: "program-date-time"
-                }, r[1] && (i.dateTimeString = r[1], i
-                  .dateTimeObject = new Date(r[1])), this.trigger(
-                  "data", i);
+                }, match[1] && (tagEntry.dateTimeString = match[1], tagEntry
+                  .dateTimeObject = new Date(match[1])), this.trigger(
+                  "data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-KEY:(.*)$/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-KEY:(.*)$/.exec(line), match) {
+                tagEntry = {
                   type: "tag",
                   tagType: "key"
-                }, r[1] && (i.attributes = Re(r[1]), i.attributes
-                  .IV && (i.attributes.IV.substring(0, 2)
-                    .toLowerCase() === "0x" && (i.attributes.IV = i
-                      .attributes.IV.substring(2)), i.attributes
-                    .IV = i.attributes.IV.match(/.{8}/g), i
-                    .attributes.IV[0] = parseInt(i.attributes.IV[0],
-                      16), i.attributes.IV[1] = parseInt(i
-                      .attributes.IV[1], 16), i.attributes.IV[2] =
-                    parseInt(i.attributes.IV[2], 16), i.attributes
-                    .IV[3] = parseInt(i.attributes.IV[3], 16), i
-                    .attributes.IV = new Uint32Array(i.attributes
-                      .IV))), this.trigger("data", i);
+                }, match[1] && (tagEntry.attributes = parseAttributes(match[1]), tagEntry.attributes
+                  .IV && (tagEntry.attributes.IV.substring(0, 2)
+                    .toLowerCase() === "0x" && (tagEntry.attributes.IV = tagEntry
+                      .attributes.IV.substring(2)), tagEntry.attributes
+                    .IV = tagEntry.attributes.IV.match(/.{8}/g), tagEntry
+                    .attributes.IV[0] = parseInt(tagEntry.attributes.IV[0],
+                      16), tagEntry.attributes.IV[1] = parseInt(tagEntry
+                      .attributes.IV[1], 16), tagEntry.attributes.IV[2] =
+                    parseInt(tagEntry.attributes.IV[2], 16), tagEntry.attributes
+                    .IV[3] = parseInt(tagEntry.attributes.IV[3], 16), tagEntry
+                    .attributes.IV = new Uint32Array(tagEntry.attributes
+                      .IV))), this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-START:(.*)$/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-START:(.*)$/.exec(line), match) {
+                tagEntry = {
                   type: "tag",
                   tagType: "start"
-                }, r[1] && (i.attributes = Re(r[1]), i.attributes[
-                    "TIME-OFFSET"] = parseFloat(i.attributes[
-                    "TIME-OFFSET"]), i.attributes.PRECISE = /YES/
-                  .test(i.attributes.PRECISE)), this.trigger("data",
-                  i);
+                }, match[1] && (tagEntry.attributes = parseAttributes(match[1]), tagEntry.attributes[
+                    "TIME-OFFSET"] = parseFloat(tagEntry.attributes[
+                    "TIME-OFFSET"]), tagEntry.attributes.PRECISE = /YES/
+                  .test(tagEntry.attributes.PRECISE)), this.trigger("data",
+                  tagEntry);
                 return
               }
-              if (r = /^#EXT-X-CUE-OUT-CONT:(.*)?$/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-CUE-OUT-CONT:(.*)?$/.exec(line), match) {
+                tagEntry = {
                   type: "tag",
                   tagType: "cue-out-cont"
-                }, r[1] ? i.data = r[1] : i.data = "", this.trigger(
-                  "data", i);
+                }, match[1] ? tagEntry.data = match[1] : tagEntry.data = "", this.trigger(
+                  "data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-CUE-OUT:(.*)?$/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-CUE-OUT:(.*)?$/.exec(line), match) {
+                tagEntry = {
                   type: "tag",
                   tagType: "cue-out"
-                }, r[1] ? i.data = r[1] : i.data = "", this.trigger(
-                  "data", i);
+                }, match[1] ? tagEntry.data = match[1] : tagEntry.data = "", this.trigger(
+                  "data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-CUE-IN:(.*)?$/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-CUE-IN:(.*)?$/.exec(line), match) {
+                tagEntry = {
                   type: "tag",
                   tagType: "cue-in"
-                }, r[1] ? i.data = r[1] : i.data = "", this.trigger(
-                  "data", i);
+                }, match[1] ? tagEntry.data = match[1] : tagEntry.data = "", this.trigger(
+                  "data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-SKIP:(.*)$/.exec(o), r && r[1]) {
-                i = {
+              if (match = /^#EXT-X-SKIP:(.*)$/.exec(line), match && match[1]) {
+                tagEntry = {
                     type: "tag",
                     tagType: "skip"
-                  }, i.attributes = Re(r[1]), i.attributes
-                  .hasOwnProperty("SKIPPED-SEGMENTS") && (i
-                    .attributes["SKIPPED-SEGMENTS"] = parseInt(i
-                      .attributes["SKIPPED-SEGMENTS"], 10)), i
+                  }, tagEntry.attributes = parseAttributes(match[1]), tagEntry.attributes
+                  .hasOwnProperty("SKIPPED-SEGMENTS") && (tagEntry
+                    .attributes["SKIPPED-SEGMENTS"] = parseInt(tagEntry
+                      .attributes["SKIPPED-SEGMENTS"], 10)), tagEntry
                   .attributes.hasOwnProperty(
-                    "RECENTLY-REMOVED-DATERANGES") && (i.attributes[
-                    "RECENTLY-REMOVED-DATERANGES"] = i.attributes[
-                    "RECENTLY-REMOVED-DATERANGES"].split(g0)), this
-                  .trigger("data", i);
+                    "RECENTLY-REMOVED-DATERANGES") && (tagEntry.attributes[
+                    "RECENTLY-REMOVED-DATERANGES"] = tagEntry.attributes[
+                    "RECENTLY-REMOVED-DATERANGES"].split(TAB_CHAR)), this
+                  .trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-PART:(.*)$/.exec(o), r && r[1]) {
-                i = {
+              if (match = /^#EXT-X-PART:(.*)$/.exec(line), match && match[1]) {
+                tagEntry = {
                   type: "tag",
                   tagType: "part"
-                }, i.attributes = Re(r[1]), ["DURATION"].forEach(
-                  function(s) {
-                    i.attributes.hasOwnProperty(s) && (i.attributes[
-                      s] = parseFloat(i.attributes[s]))
-                  }), ["INDEPENDENT", "GAP"].forEach(function(s) {
-                  i.attributes.hasOwnProperty(s) && (i.attributes[
-                    s] = /YES/.test(i.attributes[s]))
-                }), i.attributes.hasOwnProperty("BYTERANGE") && (i
-                  .attributes.byterange = Yl(i.attributes.BYTERANGE)
-                  ), this.trigger("data", i);
+                }, tagEntry.attributes = parseAttributes(match[1]), ["DURATION"].forEach(
+                  function(attrName) {
+                    tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                      attrName] = parseFloat(tagEntry.attributes[attrName]))
+                  }), ["INDEPENDENT", "GAP"].forEach(function(attrName) {
+                  tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                    attrName] = /YES/.test(tagEntry.attributes[attrName]))
+                }), tagEntry.attributes.hasOwnProperty("BYTERANGE") && (tagEntry
+                  .attributes.byterange = parseByterange(tagEntry.attributes.BYTERANGE)
+                  ), this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-SERVER-CONTROL:(.*)$/.exec(o), r && r[
+              if (match = /^#EXT-X-SERVER-CONTROL:(.*)$/.exec(line), match && match[
                   1]) {
-                i = {
+                tagEntry = {
                     type: "tag",
                     tagType: "server-control"
-                  }, i.attributes = Re(r[1]), ["CAN-SKIP-UNTIL",
+                  }, tagEntry.attributes = parseAttributes(match[1]), ["CAN-SKIP-UNTIL",
                     "PART-HOLD-BACK", "HOLD-BACK"
-                  ].forEach(function(s) {
-                    i.attributes.hasOwnProperty(s) && (i.attributes[
-                      s] = parseFloat(i.attributes[s]))
+                  ].forEach(function(attrName) {
+                    tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                      attrName] = parseFloat(tagEntry.attributes[attrName]))
                   }), ["CAN-SKIP-DATERANGES", "CAN-BLOCK-RELOAD"]
-                  .forEach(function(s) {
-                    i.attributes.hasOwnProperty(s) && (i.attributes[
-                      s] = /YES/.test(i.attributes[s]))
-                  }), this.trigger("data", i);
+                  .forEach(function(attrName) {
+                    tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                      attrName] = /YES/.test(tagEntry.attributes[attrName]))
+                  }), this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-PART-INF:(.*)$/.exec(o), r && r[1]) {
-                i = {
+              if (match = /^#EXT-X-PART-INF:(.*)$/.exec(line), match && match[1]) {
+                tagEntry = {
                   type: "tag",
                   tagType: "part-inf"
-                }, i.attributes = Re(r[1]), ["PART-TARGET"].forEach(
-                  function(s) {
-                    i.attributes.hasOwnProperty(s) && (i.attributes[
-                      s] = parseFloat(i.attributes[s]))
-                  }), this.trigger("data", i);
+                }, tagEntry.attributes = parseAttributes(match[1]), ["PART-TARGET"].forEach(
+                  function(attrName) {
+                    tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                      attrName] = parseFloat(tagEntry.attributes[attrName]))
+                  }), this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-PRELOAD-HINT:(.*)$/.exec(o), r && r[
+              if (match = /^#EXT-X-PRELOAD-HINT:(.*)$/.exec(line), match && match[
                 1]) {
-                i = {
+                tagEntry = {
                   type: "tag",
                   tagType: "preload-hint"
-                }, i.attributes = Re(r[1]), ["BYTERANGE-START",
+                }, tagEntry.attributes = parseAttributes(match[1]), ["BYTERANGE-START",
                   "BYTERANGE-LENGTH"
-                ].forEach(function(s) {
-                  if (i.attributes.hasOwnProperty(s)) {
-                    i.attributes[s] = parseInt(i.attributes[s],
+                ].forEach(function(attrName) {
+                  if (tagEntry.attributes.hasOwnProperty(attrName)) {
+                    tagEntry.attributes[attrName] = parseInt(tagEntry.attributes[attrName],
                       10);
-                    let a = s === "BYTERANGE-LENGTH" ? "length" :
+                    let byterangeKey = attrName === "BYTERANGE-LENGTH" ? "length" :
                       "offset";
-                    i.attributes.byterange = i.attributes
-                      .byterange || {}, i.attributes.byterange[
-                      a] = i.attributes[s], delete i.attributes[s]
+                    tagEntry.attributes.byterange = tagEntry.attributes
+                      .byterange || {}, tagEntry.attributes.byterange[
+                      byterangeKey] = tagEntry.attributes[attrName], delete tagEntry.attributes[attrName]
                   }
-                }), this.trigger("data", i);
+                }), this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-RENDITION-REPORT:(.*)$/.exec(o), r &&
-                r[1]) {
-                i = {
+              if (match = /^#EXT-X-RENDITION-REPORT:(.*)$/.exec(line), match &&
+                match[1]) {
+                tagEntry = {
                   type: "tag",
                   tagType: "rendition-report"
-                }, i.attributes = Re(r[1]), ["LAST-MSN",
-                  "LAST-PART"].forEach(function(s) {
-                  i.attributes.hasOwnProperty(s) && (i.attributes[
-                    s] = parseInt(i.attributes[s], 10))
-                }), this.trigger("data", i);
+                }, tagEntry.attributes = parseAttributes(match[1]), ["LAST-MSN",
+                  "LAST-PART"].forEach(function(attrName) {
+                  tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                    attrName] = parseInt(tagEntry.attributes[attrName], 10))
+                }), this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-DATERANGE:(.*)$/.exec(o), r && r[1]) {
-                i = {
+              if (match = /^#EXT-X-DATERANGE:(.*)$/.exec(line), match && match[1]) {
+                tagEntry = {
                     type: "tag",
                     tagType: "daterange"
-                  }, i.attributes = Re(r[1]), ["ID", "CLASS"].forEach(
-                    function(a) {
-                      i.attributes.hasOwnProperty(a) && (i.attributes[
-                        a] = String(i.attributes[a]))
+                  }, tagEntry.attributes = parseAttributes(match[1]), ["ID", "CLASS"].forEach(
+                    function(attrName) {
+                      tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                        attrName] = String(tagEntry.attributes[attrName]))
                     }), ["START-DATE", "END-DATE"].forEach(function(
-                  a) {
-                    i.attributes.hasOwnProperty(a) && (i.attributes[
-                      a] = new Date(i.attributes[a]))
+                  attrName) {
+                    tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                      attrName] = new Date(tagEntry.attributes[attrName]))
                   }), ["DURATION", "PLANNED-DURATION"].forEach(
-                    function(a) {
-                      i.attributes.hasOwnProperty(a) && (i.attributes[
-                        a] = parseFloat(i.attributes[a]))
-                    }), ["END-ON-NEXT"].forEach(function(a) {
-                    i.attributes.hasOwnProperty(a) && (i.attributes[
-                      a] = /YES/i.test(i.attributes[a]))
+                    function(attrName) {
+                      tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                        attrName] = parseFloat(tagEntry.attributes[attrName]))
+                    }), ["END-ON-NEXT"].forEach(function(attrName) {
+                    tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                      attrName] = /YES/i.test(tagEntry.attributes[attrName]))
                   }), ["SCTE35-CMD", " SCTE35-OUT", "SCTE35-IN"]
-                  .forEach(function(a) {
-                    i.attributes.hasOwnProperty(a) && (i.attributes[
-                      a] = i.attributes[a].toString(16))
+                  .forEach(function(attrName) {
+                    tagEntry.attributes.hasOwnProperty(attrName) && (tagEntry.attributes[
+                      attrName] = tagEntry.attributes[attrName].toString(16))
                   });
-                let s = /^X-([A-Z]+-)+[A-Z]+$/;
-                for (let a in i.attributes) {
-                  if (!s.test(a)) continue;
-                  let l = /[0-9A-Fa-f]{6}/g.test(i.attributes[a]),
-                    u = /^\d+(\.\d+)?$/.test(i.attributes[a]);
-                  i.attributes[a] = l ? i.attributes[a].toString(16) :
-                    u ? parseFloat(i.attributes[a]) : String(i
-                      .attributes[a])
+                let customTagPattern = /^X-([A-Z]+-)+[A-Z]+$/;
+                for (let attrName in tagEntry.attributes) {
+                  if (!customTagPattern.test(attrName)) continue;
+                  let isHex = /[0-9A-Fa-f]{6}/g.test(tagEntry.attributes[attrName]),
+                    isNumeric = /^\d+(\.\d+)?$/.test(tagEntry.attributes[attrName]);
+                  tagEntry.attributes[attrName] = isHex ? tagEntry.attributes[attrName].toString(16) :
+                    isNumeric ? parseFloat(tagEntry.attributes[attrName]) : String(tagEntry
+                      .attributes[attrName])
                 }
-                this.trigger("data", i);
+                this.trigger("data", tagEntry);
                 return
               }
-              if (r = /^#EXT-X-INDEPENDENT-SEGMENTS/.exec(o), r) {
+              if (match = /^#EXT-X-INDEPENDENT-SEGMENTS/.exec(line), match) {
                 this.trigger("data", {
                   type: "tag",
                   tagType: "independent-segments"
                 });
                 return
               }
-              if (r = /^#EXT-X-CONTENT-STEERING:(.*)$/.exec(o), r) {
-                i = {
+              if (match = /^#EXT-X-CONTENT-STEERING:(.*)$/.exec(line), match) {
+                tagEntry = {
                   type: "tag",
                   tagType: "content-steering"
-                }, i.attributes = Re(r[1]), this.trigger("data", i);
+                }, tagEntry.attributes = parseAttributes(match[1]), this.trigger("data", tagEntry);
                 return
               }
               this.trigger("data", {
                 type: "tag",
-                data: o.slice(4)
+                data: line.slice(4)
               })
             })
         }
         addParser({
-          expression: t,
-          customType: r,
-          dataParser: i,
-          segment: n
+          expression: expression,
+          customType: customType,
+          dataParser: dataParser,
+          segment: segment
         }) {
-          typeof i != "function" && (i = o => o), this.customParsers
-            .push(o => {
-              if (t.exec(o)) return this.trigger("data", {
+          typeof dataParser != "function" && (dataParser = line => line), this.customParsers
+            .push(line => {
+              if (expression.exec(line)) return this.trigger("data", {
                 type: "custom",
-                data: i(o),
-                customType: r,
-                segment: n
+                data: dataParser(line),
+                customType: customType,
+                segment: segment
               }), !0
             })
         }
         addTagMapper({
-          expression: t,
-          map: r
+          expression: expression,
+          map: map
         }) {
-          let i = n => t.test(n) ? r(n) : n;
-          this.tagMappers.push(i)
+          let mapper = line => expression.test(line) ? map(line) : line;
+          this.tagMappers.push(mapper)
         }
-      }, _0 = e => e.toLowerCase()
-      .replace(/-(\w)/g, t => t[1].toUpperCase()), rr = function(e) {
-        let t = {};
-        return Object.keys(e)
-          .forEach(function(r) {
-            t[_0(r)] = e[r]
-          }), t
-      }, Zl = function(e) {
+      }, camelCaseTagName = kebabName => kebabName.toLowerCase()
+      .replace(/-(\w)/g, match => match[1].toUpperCase()), camelCaseKeys = function(source) {
+        let camelCased = {};
+        return Object.keys(source)
+          .forEach(function(key) {
+            camelCased[camelCaseTagName(key)] = source[key]
+          }), camelCased
+      }, applyHoldBackRules = function(manifest) {
         let {
-          serverControl: t,
-          targetDuration: r,
-          partTargetDuration: i
-        } = e;
-        if (!t) return;
-        let n = "#EXT-X-SERVER-CONTROL",
-          o = "holdBack",
-          s = "partHoldBack",
-          a = r && r * 3,
-          l = i && i * 2;
-        r && !t.hasOwnProperty(o) && (t[o] = a, this.trigger("info", {
-          message: `${n} defaulting HOLD-BACK to targetDuration * 3 (${a}).`
-        })), a && t[o] < a && (this.trigger("warn", {
-          message: `${n} clamping HOLD-BACK (${t[o]}) to targetDuration * 3 (${a})`
-        }), t[o] = a), i && !t.hasOwnProperty(s) && (t[s] = i * 3, this
+          serverControl: serverControl,
+          targetDuration: targetDuration,
+          partTargetDuration: partTargetDuration
+        } = manifest;
+        if (!serverControl) return;
+        let tagName = "#EXT-X-SERVER-CONTROL",
+          holdBackKey = "holdBack",
+          partHoldBackKey = "partHoldBack",
+          holdBackDefault = targetDuration && targetDuration * 3,
+          partHoldBackMin = partTargetDuration && partTargetDuration * 2;
+        targetDuration && !serverControl.hasOwnProperty(holdBackKey) && (serverControl[holdBackKey] = holdBackDefault, this.trigger("info", {
+          message: `${tagName} defaulting HOLD-BACK to targetDuration * 3 (${holdBackDefault}).`
+        })), holdBackDefault && serverControl[holdBackKey] < holdBackDefault && (this.trigger("warn", {
+          message: `${tagName} clamping HOLD-BACK (${serverControl[holdBackKey]}) to targetDuration * 3 (${holdBackDefault})`
+        }), serverControl[holdBackKey] = holdBackDefault), partTargetDuration && !serverControl.hasOwnProperty(partHoldBackKey) && (serverControl[partHoldBackKey] = partTargetDuration * 3, this
           .trigger("info", {
-            message: `${n} defaulting PART-HOLD-BACK to partTargetDuration * 3 (${t[s]}).`
-          })), i && t[s] < l && (this.trigger("warn", {
-          message: `${n} clamping PART-HOLD-BACK (${t[s]}) to partTargetDuration * 2 (${l}).`
-        }), t[s] = l)
-      }, cn = class extends Zo {
+            message: `${tagName} defaulting PART-HOLD-BACK to partTargetDuration * 3 (${serverControl[partHoldBackKey]}).`
+          })), partTargetDuration && serverControl[partHoldBackKey] < partHoldBackMin && (this.trigger("warn", {
+          message: `${tagName} clamping PART-HOLD-BACK (${serverControl[partHoldBackKey]}) to partTargetDuration * 2 (${partHoldBackMin}).`
+        }), serverControl[partHoldBackKey] = partHoldBackMin)
+      }, M3u8Parser = class extends M3u8EventTarget {
         constructor() {
-          super(), this.lineStream = new eu, this.parseStream = new tu,
+          super(), this.lineStream = new M3u8LineStream, this.parseStream = new M3u8ParseStream,
             this.lineStream.pipe(this.parseStream), this
             .lastProgramDateTime = null;
-          let t = this,
-            r = [],
-            i = {},
-            n, o, s = !1,
-            a = function() {},
-            l = {
+          let self = this,
+            entries = [],
+            currentEntry = {},
+            currentMap, currentKey, sawPart = !1,
+            noop = function() {},
+            mediaGroupDefaults = {
               AUDIO: {},
               VIDEO: {},
               "CLOSED-CAPTIONS": {},
               SUBTITLES: {}
             },
-            u = "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
-            d = 0;
+            widevineSystemId = "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
+            timeline = 0;
           this.manifest = {
             allowCache: !0,
             discontinuityStarts: [],
             dateRanges: [],
             segments: []
           };
-          let c = 0,
-            m = 0,
-            w = {};
+          let byterangeOffset = 0,
+            partByterangeOffset = 0,
+            dateRangesById = {};
           this.on("end", () => {
-            i.uri || !i.parts && !i.preloadHints || (!i.map && n &&
-              (i.map = n), !i.key && o && (i.key = o), !i
-              .timeline && typeof d == "number" && (i.timeline =
-                d), this.manifest.preloadSegment = i)
-          }), this.parseStream.on("data", function(p) {
-            let _, f;
+            currentEntry.uri || !currentEntry.parts && !currentEntry.preloadHints || (!currentEntry.map && currentMap &&
+              (currentEntry.map = currentMap), !currentEntry.key && currentKey && (currentEntry.key = currentKey), !currentEntry
+              .timeline && typeof timeline == "number" && (currentEntry.timeline =
+                timeline), this.manifest.preloadSegment = currentEntry)
+          }), this.parseStream.on("data", function(event) {
+            let mediaGroup, mediaItem;
             ({
               tag() {
                 ({
                   version() {
-                    p.version && (this.manifest.version = p
+                    event.version && (this.manifest.version = event
                       .version)
                   },
                   "allow-cache"() {
-                    this.manifest.allowCache = p.allowed,
-                      "allowed" in p || (this.trigger("info", {
+                    this.manifest.allowCache = event.allowed,
+                      "allowed" in event || (this.trigger("info", {
                         message: "defaulting allowCache to YES"
                       }), this.manifest.allowCache = !0)
                   },
                   byterange() {
-                    let g = {};
-                    "length" in p && (i.byterange = g, g
-                        .length = p.length, "offset" in p || (p
-                          .offset = c)), "offset" in p && (i
-                        .byterange = g, g.offset = p.offset),
-                      c = g.offset + g.length
+                    let byterange = {};
+                    "length" in event && (currentEntry.byterange = byterange, byterange
+                        .length = event.length, "offset" in event || (event
+                          .offset = byterangeOffset)), "offset" in event && (currentEntry
+                        .byterange = byterange, byterange.offset = event.offset),
+                      byterangeOffset = byterange.offset + byterange.length
                   },
                   endlist() {
                     this.manifest.endList = !0
@@ -12808,71 +12808,71 @@ const store = createStore(
                         .discontinuitySequence = 0, this
                         .trigger("info", {
                           message: "defaulting discontinuity sequence to zero"
-                        })), p.title && (i.title = p.title), p
-                      .duration > 0 && (i.duration = p
-                      .duration), p.duration === 0 && (i
+                        })), event.title && (currentEntry.title = event.title), event
+                      .duration > 0 && (currentEntry.duration = event
+                      .duration), event.duration === 0 && (currentEntry
                         .duration = .01, this.trigger("info", {
                           message: "updating zero segment duration to a small value"
-                        })), this.manifest.segments = r
+                        })), this.manifest.segments = entries
                   },
                   key() {
-                    if (!p.attributes) {
+                    if (!event.attributes) {
                       this.trigger("warn", {
                         message: "ignoring key declaration without attribute list"
                       });
                       return
                     }
-                    if (p.attributes.METHOD === "NONE") {
-                      o = null;
+                    if (event.attributes.METHOD === "NONE") {
+                      currentKey = null;
                       return
                     }
-                    if (!p.attributes.URI) {
+                    if (!event.attributes.URI) {
                       this.trigger("warn", {
                         message: "ignoring key declaration without URI"
                       });
                       return
                     }
-                    if (p.attributes.KEYFORMAT ===
+                    if (event.attributes.KEYFORMAT ===
                       "com.apple.streamingkeydelivery") {
                       this.manifest.contentProtection = this
                         .manifest.contentProtection || {}, this
                         .manifest.contentProtection[
                           "com.apple.fps.1_0"] = {
-                          attributes: p.attributes
+                          attributes: event.attributes
                         };
                       return
                     }
-                    if (p.attributes.KEYFORMAT ===
+                    if (event.attributes.KEYFORMAT ===
                       "com.microsoft.playready") {
                       this.manifest.contentProtection = this
                         .manifest.contentProtection || {}, this
                         .manifest.contentProtection[
                           "com.microsoft.playready"] = {
-                          uri: p.attributes.URI
+                          uri: event.attributes.URI
                         };
                       return
                     }
-                    if (p.attributes.KEYFORMAT === u) {
+                    if (event.attributes.KEYFORMAT === widevineSystemId) {
                       if (["SAMPLE-AES", "SAMPLE-AES-CTR",
                           "SAMPLE-AES-CENC"
-                        ].indexOf(p.attributes.METHOD) === -1) {
+                        ].indexOf(event.attributes.METHOD) === -1) {
                         this.trigger("warn", {
                           message: "invalid key method provided for Widevine"
                         });
                         return
                       }
-                      if (p.attributes.METHOD ===
+                      if (event.attributes.METHOD ===
                         "SAMPLE-AES-CENC" && this.trigger(
                           "warn", {
                             message: "SAMPLE-AES-CENC is deprecated, please use SAMPLE-AES-CTR instead"
-                          }), p.attributes.URI.substring(0,
+                          }), event.attributes.URI.substring(0,
                         23) !== "data:text/plain;base64,") {
                         this.trigger("warn", {
                           message: "invalid key URI provided for Widevine"
                         });
                         return
                       }
-                      if (!(p.attributes.KEYID && p.attributes
+                      if (!(event.attributes.KEYID && event.attributes
                           .KEYID.substring(0, 2) === "0x")) {
                         this.trigger("warn", {
                           message: "invalid key ID provided for Widevine"
@@ -12884,141 +12884,141 @@ const store = createStore(
                         .manifest.contentProtection[
                           "com.widevine.alpha"] = {
                           attributes: {
-                            schemeIdUri: p.attributes.KEYFORMAT,
-                            keyId: p.attributes.KEYID.substring(
+                            schemeIdUri: event.attributes.KEYFORMAT,
+                            keyId: event.attributes.KEYID.substring(
                               2)
                           },
-                          pssh: Kl(p.attributes.URI.split(",")[
+                          pssh: base64ToBytes(event.attributes.URI.split(",")[
                             1])
                         };
                       return
                     }
-                    p.attributes.METHOD || this.trigger(
+                    event.attributes.METHOD || this.trigger(
                     "warn", {
                       message: "defaulting key method to AES-128"
-                    }), o = {
-                      method: p.attributes.METHOD ||
+                    }), currentKey = {
+                      method: event.attributes.METHOD ||
                         "AES-128",
-                      uri: p.attributes.URI
-                    }, typeof p.attributes.IV < "u" && (o.iv =
-                      p.attributes.IV)
+                      uri: event.attributes.URI
+                    }, typeof event.attributes.IV < "u" && (currentKey.iv =
+                      event.attributes.IV)
                   },
                   "media-sequence"() {
-                    if (!isFinite(p.number)) {
+                    if (!isFinite(event.number)) {
                       this.trigger("warn", {
                         message: "ignoring invalid media sequence: " +
-                          p.number
+                          event.number
                       });
                       return
                     }
-                    this.manifest.mediaSequence = p.number
+                    this.manifest.mediaSequence = event.number
                   },
                   "discontinuity-sequence"() {
-                    if (!isFinite(p.number)) {
+                    if (!isFinite(event.number)) {
                       this.trigger("warn", {
                         message: "ignoring invalid discontinuity sequence: " +
-                          p.number
+                          event.number
                       });
                       return
                     }
-                    this.manifest.discontinuitySequence = p
-                      .number, d = p.number
+                    this.manifest.discontinuitySequence = event
+                      .number, timeline = event.number
                   },
                   "playlist-type"() {
-                    if (!/VOD|EVENT/.test(p.playlistType)) {
+                    if (!/VOD|EVENT/.test(event.playlistType)) {
                       this.trigger("warn", {
                         message: "ignoring unknown playlist type: " +
-                          p.playlist
+                          event.playlist
                       });
                       return
                     }
-                    this.manifest.playlistType = p.playlistType
+                    this.manifest.playlistType = event.playlistType
                   },
                   map() {
-                    n = {}, p.uri && (n.uri = p.uri), p
-                      .byterange && (n.byterange = p.byterange),
-                      o && (n.key = o)
+                    currentMap = {}, event.uri && (currentMap.uri = event.uri), event
+                      .byterange && (currentMap.byterange = event.byterange),
+                      currentKey && (currentMap.key = currentKey)
                   },
                   "stream-inf"() {
-                    if (this.manifest.playlists = r, this
+                    if (this.manifest.playlists = entries, this
                       .manifest.mediaGroups = this.manifest
-                      .mediaGroups || l, !p.attributes) {
+                      .mediaGroups || mediaGroupDefaults, !event.attributes) {
                       this.trigger("warn", {
                         message: "ignoring empty stream-inf attributes"
                       });
                       return
                     }
-                    i.attributes || (i.attributes = {}), tr(i
-                      .attributes, p.attributes)
+                    currentEntry.attributes || (currentEntry.attributes = {}), objectAssignInto(currentEntry
+                      .attributes, event.attributes)
                   },
                   media() {
                     if (this.manifest.mediaGroups = this
-                      .manifest.mediaGroups || l, !(p
-                        .attributes && p.attributes.TYPE && p
-                        .attributes["GROUP-ID"] && p.attributes
+                      .manifest.mediaGroups || mediaGroupDefaults, !(event
+                        .attributes && event.attributes.TYPE && event
+                        .attributes["GROUP-ID"] && event.attributes
                         .NAME)) {
                       this.trigger("warn", {
                         message: "ignoring incomplete or missing media group"
                       });
                       return
                     }
-                    let g = this.manifest.mediaGroups[p
+                    let groupMap = this.manifest.mediaGroups[event
                       .attributes.TYPE];
-                    g[p.attributes["GROUP-ID"]] = g[p
-                        .attributes["GROUP-ID"]] || {}, _ = g[p
-                        .attributes["GROUP-ID"]], f = {
-                        default: /yes/i.test(p.attributes
+                    groupMap[event.attributes["GROUP-ID"]] = groupMap[event
+                        .attributes["GROUP-ID"]] || {}, mediaGroup = groupMap[event
+                        .attributes["GROUP-ID"]], mediaItem = {
+                        default: /yes/i.test(event.attributes
                           .DEFAULT)
-                      }, f.default ? f.autoselect = !0 : f
-                      .autoselect = /yes/i.test(p.attributes
-                        .AUTOSELECT), p.attributes.LANGUAGE && (
-                        f.language = p.attributes.LANGUAGE), p
-                      .attributes.URI && (f.uri = p.attributes
-                        .URI), p.attributes["INSTREAM-ID"] && (f
-                        .instreamId = p.attributes[
-                          "INSTREAM-ID"]), p.attributes
-                      .CHARACTERISTICS && (f.characteristics = p
-                        .attributes.CHARACTERISTICS), p
-                      .attributes.FORCED && (f.forced = /yes/i
-                        .test(p.attributes.FORCED)), _[p
-                        .attributes.NAME] = f
+                      }, mediaItem.default ? mediaItem.autoselect = !0 : mediaItem
+                      .autoselect = /yes/i.test(event.attributes
+                        .AUTOSELECT), event.attributes.LANGUAGE && (
+                        mediaItem.language = event.attributes.LANGUAGE), event
+                      .attributes.URI && (mediaItem.uri = event.attributes
+                        .URI), event.attributes["INSTREAM-ID"] && (mediaItem
+                        .instreamId = event.attributes[
+                          "INSTREAM-ID"]), event.attributes
+                      .CHARACTERISTICS && (mediaItem.characteristics = event
+                        .attributes.CHARACTERISTICS), event
+                      .attributes.FORCED && (mediaItem.forced = /yes/i
+                        .test(event.attributes.FORCED)), mediaGroup[event
+                        .attributes.NAME] = mediaItem
                   },
                   discontinuity() {
-                    d += 1, i.discontinuity = !0, this.manifest
-                      .discontinuityStarts.push(r.length)
+                    timeline += 1, currentEntry.discontinuity = !0, this.manifest
+                      .discontinuityStarts.push(entries.length)
                   },
                   "program-date-time"() {
                     typeof this.manifest.dateTimeString > "u" &&
-                      (this.manifest.dateTimeString = p
+                      (this.manifest.dateTimeString = event
                         .dateTimeString, this.manifest
-                        .dateTimeObject = p.dateTimeObject), i
-                      .dateTimeString = p.dateTimeString, i
-                      .dateTimeObject = p.dateTimeObject;
+                        .dateTimeObject = event.dateTimeObject), currentEntry
+                      .dateTimeString = event.dateTimeString, currentEntry
+                      .dateTimeObject = event.dateTimeObject;
                     let {
-                      lastProgramDateTime: g
+                      lastProgramDateTime: prevProgramDateTime
                     } = this;
-                    this.lastProgramDateTime = new Date(p
+                    this.lastProgramDateTime = new Date(event
                         .dateTimeString)
-                      .getTime(), g === null && this.manifest
-                      .segments.reduceRight((h, T) => (T
-                          .programDateTime = h - T.duration *
-                          1e3, T.programDateTime), this
+                      .getTime(), prevProgramDateTime === null && this.manifest
+                      .segments.reduceRight((nextProgramDateTime, segment) => (segment
+                          .programDateTime = nextProgramDateTime - segment.duration *
+                          1e3, segment.programDateTime), this
                         .lastProgramDateTime)
                   },
                   targetduration() {
-                    if (!isFinite(p.duration) || p.duration <
+                    if (!isFinite(event.duration) || event.duration <
                       0) {
                       this.trigger("warn", {
                         message: "ignoring invalid target duration: " +
-                          p.duration
+                          event.duration
                       });
                       return
                     }
-                    this.manifest.targetDuration = p.duration,
-                      Zl.call(this, this.manifest)
+                    this.manifest.targetDuration = event.duration,
+                      applyHoldBackRules.call(this, this.manifest)
                   },
                   start() {
-                    if (!p.attributes || isNaN(p.attributes[
+                    if (!event.attributes || isNaN(event.attributes[
                         "TIME-OFFSET"])) {
                       this.trigger("warn", {
                         message: "ignoring start declaration without appropriate attribute list"
@@ -13026,153 +13026,153 @@ const store = createStore(
                       return
                     }
                     this.manifest.start = {
-                      timeOffset: p.attributes["TIME-OFFSET"],
-                      precise: p.attributes.PRECISE
+                      timeOffset: event.attributes["TIME-OFFSET"],
+                      precise: event.attributes.PRECISE
                     }
                   },
                   "cue-out"() {
-                    i.cueOut = p.data
+                    currentEntry.cueOut = event.data
                   },
                   "cue-out-cont"() {
-                    i.cueOutCont = p.data
+                    currentEntry.cueOutCont = event.data
                   },
                   "cue-in"() {
-                    i.cueIn = p.data
+                    currentEntry.cueIn = event.data
                   },
                   skip() {
-                    this.manifest.skip = rr(p.attributes), this
-                      .warnOnMissingAttributes_("#EXT-X-SKIP", p
+                    this.manifest.skip = camelCaseKeys(event.attributes), this
+                      .warnOnMissingAttributes_("#EXT-X-SKIP", event
                         .attributes, ["SKIPPED-SEGMENTS"])
                   },
                   part() {
-                    s = !0;
-                    let g = this.manifest.segments.length,
-                      h = rr(p.attributes);
-                    i.parts = i.parts || [], i.parts.push(h), h
-                      .byterange && (h.byterange.hasOwnProperty(
-                          "offset") || (h.byterange.offset = m),
-                        m = h.byterange.offset + h.byterange
+                    sawPart = !0;
+                    let segmentIndex = this.manifest.segments.length,
+                      part = camelCaseKeys(event.attributes);
+                    currentEntry.parts = currentEntry.parts || [], currentEntry.parts.push(part), part
+                      .byterange && (part.byterange.hasOwnProperty(
+                          "offset") || (part.byterange.offset = partByterangeOffset),
+                        partByterangeOffset = part.byterange.offset + part.byterange
                         .length);
-                    let T = i.parts.length - 1;
+                    let partIndex = currentEntry.parts.length - 1;
                     this.warnOnMissingAttributes_(
-                        `#EXT-X-PART #${T} for segment #${g}`, p
+                        `#EXT-X-PART #${partIndex} for segment #${segmentIndex}`, event
                         .attributes, ["URI", "DURATION"]), this
                       .manifest.renditionReports && this
-                      .manifest.renditionReports.forEach((x,
-                        b) => {
-                          x.hasOwnProperty("lastPart") || this
+                      .manifest.renditionReports.forEach((report,
+                        reportIndex) => {
+                          report.hasOwnProperty("lastPart") || this
                             .trigger("warn", {
-                              message: `#EXT-X-RENDITION-REPORT #${b} lacks required attribute(s): LAST-PART`
+                              message: `#EXT-X-RENDITION-REPORT #${reportIndex} lacks required attribute(s): LAST-PART`
                             })
                         })
                   },
                   "server-control"() {
-                    let g = this.manifest.serverControl = rr(p
+                    let serverControl = this.manifest.serverControl = camelCaseKeys(event
                       .attributes);
-                    g.hasOwnProperty("canBlockReload") || (g
+                    serverControl.hasOwnProperty("canBlockReload") || (serverControl
                         .canBlockReload = !1, this.trigger(
                           "info", {
                             message: "#EXT-X-SERVER-CONTROL defaulting CAN-BLOCK-RELOAD to false"
-                          })), Zl.call(this, this.manifest), g
-                      .canSkipDateranges && !g.hasOwnProperty(
+                          })), applyHoldBackRules.call(this, this.manifest), serverControl
+                      .canSkipDateranges && !serverControl.hasOwnProperty(
                         "canSkipUntil") && this.trigger(
                       "warn", {
                         message: "#EXT-X-SERVER-CONTROL lacks required attribute CAN-SKIP-UNTIL which is required when CAN-SKIP-DATERANGES is set"
                       })
                   },
                   "preload-hint"() {
-                    let g = this.manifest.segments.length,
-                      h = rr(p.attributes),
-                      T = h.type && h.type === "PART";
-                    i.preloadHints = i.preloadHints || [], i
-                      .preloadHints.push(h), h.byterange && (h
+                    let segmentIndex = this.manifest.segments.length,
+                      hint = camelCaseKeys(event.attributes),
+                      isPart = hint.type && hint.type === "PART";
+                    currentEntry.preloadHints = currentEntry.preloadHints || [], currentEntry
+                      .preloadHints.push(hint), hint.byterange && (hint
                         .byterange.hasOwnProperty("offset") || (
-                          h.byterange.offset = T ? m : 0, T && (
-                            m = h.byterange.offset + h.byterange
+                          hint.byterange.offset = isPart ? partByterangeOffset : 0, isPart && (
+                            partByterangeOffset = hint.byterange.offset + hint.byterange
                             .length)));
-                    let x = i.preloadHints.length - 1;
+                    let hintIndex = currentEntry.preloadHints.length - 1;
                     if (this.warnOnMissingAttributes_(
-                        `#EXT-X-PRELOAD-HINT #${x} for segment #${g}`,
-                        p.attributes, ["TYPE", "URI"]), !!h
+                        `#EXT-X-PRELOAD-HINT #${hintIndex} for segment #${segmentIndex}`,
+                        event.attributes, ["TYPE", "URI"]), !!hint
                       .type)
-                      for (let b = 0; b < i.preloadHints
-                        .length - 1; b++) {
-                        let D = i.preloadHints[b];
-                        D.type && D.type === h.type && this
+                      for (let otherIndex = 0; otherIndex < currentEntry.preloadHints
+                        .length - 1; otherIndex++) {
+                        let otherHint = currentEntry.preloadHints[otherIndex];
+                        otherHint.type && otherHint.type === hint.type && this
                           .trigger("warn", {
-                            message: `#EXT-X-PRELOAD-HINT #${x} for segment #${g} has the same TYPE ${h.type} as preload hint #${b}`
+                            message: `#EXT-X-PRELOAD-HINT #${hintIndex} for segment #${segmentIndex} has the same TYPE ${hint.type} as preload hint #${otherIndex}`
                           })
                       }
                   },
                   "rendition-report"() {
-                    let g = rr(p.attributes);
+                    let report = camelCaseKeys(event.attributes);
                     this.manifest.renditionReports = this
                       .manifest.renditionReports || [], this
-                      .manifest.renditionReports.push(g);
-                    let h = this.manifest.renditionReports
+                      .manifest.renditionReports.push(report);
+                    let reportIndex = this.manifest.renditionReports
                       .length - 1,
-                      T = ["LAST-MSN", "URI"];
-                    s && T.push("LAST-PART"), this
+                      requiredAttrs = ["LAST-MSN", "URI"];
+                    sawPart && requiredAttrs.push("LAST-PART"), this
                       .warnOnMissingAttributes_(
-                        `#EXT-X-RENDITION-REPORT #${h}`, p
-                        .attributes, T)
+                        `#EXT-X-RENDITION-REPORT #${reportIndex}`, event
+                        .attributes, requiredAttrs)
                   },
                   "part-inf"() {
-                    this.manifest.partInf = rr(p.attributes),
+                    this.manifest.partInf = camelCaseKeys(event.attributes),
                       this.warnOnMissingAttributes_(
-                        "#EXT-X-PART-INF", p.attributes, [
+                        "#EXT-X-PART-INF", event.attributes, [
                           "PART-TARGET"
                         ]), this.manifest.partInf.partTarget &&
                       (this.manifest.partTargetDuration = this
-                        .manifest.partInf.partTarget), Zl.call(
+                        .manifest.partInf.partTarget), applyHoldBackRules.call(
                         this, this.manifest)
                   },
                   daterange() {
-                    this.manifest.dateRanges.push(rr(p
+                    this.manifest.dateRanges.push(camelCaseKeys(event
                       .attributes));
-                    let g = this.manifest.dateRanges.length - 1;
+                    let dateRangeIndex = this.manifest.dateRanges.length - 1;
                     this.warnOnMissingAttributes_(
-                      `#EXT-X-DATERANGE #${g}`, p.attributes,
+                      `#EXT-X-DATERANGE #${dateRangeIndex}`, event.attributes,
                       ["ID", "START-DATE"]);
-                    let h = this.manifest.dateRanges[g];
-                    h.endDate && h.startDate && new Date(h
-                        .endDate) < new Date(h.startDate) &&
+                    let dateRange = this.manifest.dateRanges[dateRangeIndex];
+                    dateRange.endDate && dateRange.startDate && new Date(dateRange
+                        .endDate) < new Date(dateRange.startDate) &&
                       this.trigger("warn", {
                         message: "EXT-X-DATERANGE END-DATE must be equal to or later than the value of the START-DATE"
-                      }), h.duration && h.duration < 0 && this
+                      }), dateRange.duration && dateRange.duration < 0 && this
                       .trigger("warn", {
                         message: "EXT-X-DATERANGE DURATION must not be negative"
-                      }), h.plannedDuration && h
+                      }), dateRange.plannedDuration && dateRange
                       .plannedDuration < 0 && this.trigger(
                         "warn", {
                           message: "EXT-X-DATERANGE PLANNED-DURATION must not be negative"
                         });
-                    let T = !!h.endOnNext;
-                    if (T && !h.class && this.trigger("warn", {
+                    let endOnNext = !!dateRange.endOnNext;
+                    if (endOnNext && !dateRange.class && this.trigger("warn", {
                         message: "EXT-X-DATERANGE with an END-ON-NEXT=YES attribute must have a CLASS attribute"
-                      }), T && (h.duration || h.endDate) && this
+                      }), endOnNext && (dateRange.duration || dateRange.endDate) && this
                       .trigger("warn", {
                         message: "EXT-X-DATERANGE with an END-ON-NEXT=YES attribute must not contain DURATION or END-DATE attributes"
-                      }), h.duration && h.endDate) {
-                      let b = h.startDate.getTime() + h
+                      }), dateRange.duration && dateRange.endDate) {
+                      let endDateMs = dateRange.startDate.getTime() + dateRange
                         .duration * 1e3;
-                      this.manifest.dateRanges[g].endDate =
-                        new Date(b)
+                      this.manifest.dateRanges[dateRangeIndex].endDate =
+                        new Date(endDateMs)
                     }
-                    if (!w[h.id]) w[h.id] = h;
+                    if (!dateRangesById[dateRange.id]) dateRangesById[dateRange.id] = dateRange;
                     else {
-                      for (let b in w[h.id])
-                        if (h[b] && JSON.stringify(w[h.id][
-                          b]) !== JSON.stringify(h[b])) {
+                      for (let attrKey in dateRangesById[dateRange.id])
+                        if (dateRange[attrKey] && JSON.stringify(dateRangesById[dateRange.id][
+                          attrKey]) !== JSON.stringify(dateRange[attrKey])) {
                           this.trigger("warn", {
                             message: "EXT-X-DATERANGE tags with the same ID in a playlist must have the same attributes values"
                           });
                           break
-                        } let x = this.manifest.dateRanges
-                        .findIndex(b => b.id === h.id);
-                      this.manifest.dateRanges[x] = tr(this
-                          .manifest.dateRanges[x], h), w[h.id] =
-                        tr(w[h.id], h), this.manifest.dateRanges
+                        } let existingIndex = this.manifest.dateRanges
+                        .findIndex(candidate => candidate.id === dateRange.id);
+                      this.manifest.dateRanges[existingIndex] = objectAssignInto(this
+                          .manifest.dateRanges[existingIndex], dateRange), dateRangesById[dateRange.id] =
+                        objectAssignInto(dateRangesById[dateRange.id], dateRange), this.manifest.dateRanges
                         .pop()
                     }
                   },
@@ -13180,48 +13180,48 @@ const store = createStore(
                     this.manifest.independentSegments = !0
                   },
                   "content-steering"() {
-                    this.manifest.contentSteering = rr(p
+                    this.manifest.contentSteering = camelCaseKeys(event
                         .attributes), this
                       .warnOnMissingAttributes_(
-                        "#EXT-X-CONTENT-STEERING", p.attributes,
+                        "#EXT-X-CONTENT-STEERING", event.attributes,
                         ["SERVER-URI"])
                   }
-                } [p.tagType] || a)
-                .call(t)
+                } [event.tagType] || noop)
+                .call(self)
               },
               uri() {
-                i.uri = p.uri, r.push(i), this.manifest
-                  .targetDuration && !("duration" in i) && (this
+                currentEntry.uri = event.uri, entries.push(currentEntry), this.manifest
+                  .targetDuration && !("duration" in currentEntry) && (this
                     .trigger("warn", {
                       message: "defaulting segment duration to the target duration"
-                    }), i.duration = this.manifest.targetDuration
-                    ), o && (i.key = o), i.timeline = d, n && (i
-                    .map = n), m = 0, this.lastProgramDateTime !==
-                  null && (i.programDateTime = this
+                    }), currentEntry.duration = this.manifest.targetDuration
+                    ), currentKey && (currentEntry.key = currentKey), currentEntry.timeline = timeline, currentMap && (currentEntry
+                    .map = currentMap), partByterangeOffset = 0, this.lastProgramDateTime !==
+                  null && (currentEntry.programDateTime = this
                     .lastProgramDateTime, this
-                    .lastProgramDateTime += i.duration * 1e3),
-                  i = {}
+                    .lastProgramDateTime += currentEntry.duration * 1e3),
+                  currentEntry = {}
               },
               comment() {},
               custom() {
-                p.segment ? (i.custom = i.custom || {}, i.custom[p
-                  .customType] = p.data) : (this.manifest
+                event.segment ? (currentEntry.custom = currentEntry.custom || {}, currentEntry.custom[event
+                  .customType] = event.data) : (this.manifest
                   .custom = this.manifest.custom || {}, this
-                  .manifest.custom[p.customType] = p.data)
+                  .manifest.custom[event.customType] = event.data)
               }
-            })[p.type].call(t)
+            })[event.type].call(self)
           })
         }
-        warnOnMissingAttributes_(t, r, i) {
-          let n = [];
-          i.forEach(function(o) {
-            r.hasOwnProperty(o) || n.push(o)
-          }), n.length && this.trigger("warn", {
-            message: `${t} lacks required attribute(s): ${n.join(", ")}`
+        warnOnMissingAttributes_(context, attributes, required) {
+          let missing = [];
+          required.forEach(function(attrName) {
+            attributes.hasOwnProperty(attrName) || missing.push(attrName)
+          }), missing.length && this.trigger("warn", {
+            message: `${context} lacks required attribute(s): ${missing.join(", ")}`
           })
         }
-        push(t) {
-          this.lineStream.push(t)
+        push(chunk) {
+          this.lineStream.push(chunk)
         }
         end() {
           this.lineStream.push(`
@@ -13230,693 +13230,693 @@ const store = createStore(
               message: "A playlist with EXT-X-DATERANGE tag must contain atleast one EXT-X-PROGRAM-DATE-TIME tag"
             }), this.lastProgramDateTime = null, this.trigger("end")
         }
-        addParser(t) {
-          this.parseStream.addParser(t)
+        addParser(options) {
+          this.parseStream.addParser(options)
         }
-        addTagMapper(t) {
-          this.parseStream.addTagMapper(t)
+        addTagMapper(options) {
+          this.parseStream.addTagMapper(options)
         }
       }
   });
 
-  function ru(e) {
-    let t = null;
+  function parseHlsSegmentDurations(hlsText) {
+    let manifest = null;
     try {
-      let i = new cn;
-      i.push(e), i.end(), t = i.manifest
+      let parser = new M3u8Parser;
+      parser.push(hlsText), parser.end(), manifest = parser.manifest
     } catch {}
-    if (!t || !Array.isArray(t.segments)) return U("Parsing error");
-    if (t.segments.some(i => typeof i.duration != "number")) return U(
+    if (!manifest || !Array.isArray(manifest.segments)) return resultErr("Parsing error");
+    if (manifest.segments.some(segment => typeof segment.duration != "number")) return resultErr(
       "Missing duration");
-    let r = t.segments.reduce((i, n) => (typeof n.duration == "number" && (
-      i += n.duration), i), 0);
-    return L(r)
+    let totalDuration = manifest.segments.reduce((total, segment) => (typeof segment.duration == "number" && (
+      total += segment.duration), total), 0);
+    return resultOk(totalDuration)
   }
 
-  function Eg(e, t) {
-    let r = ru(e)
+  function probeRawHls(hlsText, url) {
+    let duration = parseHlsSegmentDurations(hlsText)
       .unwrapOr("unknown"),
-      i;
-    return t.includes(".mp3") ? i = {
+      avTracks;
+    return url.includes(".mp3") ? avTracks = {
       video: !1,
       audio: {
-        codec: We("MP3"),
-        bitrate: O
+        codec: makeAudioCodec("MP3"),
+        bitrate: ResultNone
       }
-    } : i = {
+    } : avTracks = {
       audio: !1,
       video: {
-        codec: je("H264"),
-        fps: O,
-        dimensions: O,
-        quality: O,
-        bitrate: O
+        codec: makeVideoCodec("H264"),
+        fps: ResultNone,
+        dimensions: ResultNone,
+        quality: ResultNone,
+        bitrate: ResultNone
       }
-    }, L({
+    }, resultOk({
       builder: "RawHls",
       protocol: "hls",
-      content_length: O,
-      duration: r,
-      container: ue("Mp4"),
-      av: i
+      content_length: ResultNone,
+      duration: duration,
+      container: containerByName("Mp4"),
+      av: avTracks
     })
   }
 
-  function Sg(e, t) {
-    let r = null;
+  function probeMasterHls(hlsText, baseUrl) {
+    let manifest = null;
     try {
-      let o = new cn;
-      o.push(e), o.end(), r = o.manifest
+      let parser = new M3u8Parser;
+      parser.push(hlsText), parser.end(), manifest = parser.manifest
     } catch {}
-    if (!r || !r.playlists) return U("Parsing error");
-    let i = r.playlists,
-      n = r.mediaGroups.AUDIO;
-    return L(i.map(({
-      uri: o,
-      attributes: s
+    if (!manifest || !manifest.playlists) return resultErr("Parsing error");
+    let playlists = manifest.playlists,
+      audioGroups = manifest.mediaGroups.AUDIO;
+    return resultOk(playlists.map(({
+      uri: playlistUri,
+      attributes: attributes
     }) => {
-      let a = new URL(o, t)
+      let resolvedUri = new URL(playlistUri, baseUrl)
         .href,
-        l = O;
-      if (s.AUDIO && n) {
-        let _ = n[s.AUDIO]?.Default?.uri;
-        if (!_) {
-          for (let f of Object.keys(n[s.AUDIO] ?? {}))
-            if (_ = n[s.AUDIO]?.[f]?.uri, _) break
+        audioUri = ResultNone;
+      if (attributes.AUDIO && audioGroups) {
+        let audioTrackUri = audioGroups[attributes.AUDIO]?.Default?.uri;
+        if (!audioTrackUri) {
+          for (let groupKey of Object.keys(audioGroups[attributes.AUDIO] ?? {}))
+            if (audioTrackUri = audioGroups[attributes.AUDIO]?.[groupKey]?.uri, audioTrackUri) break
         }
-        _ && (l = q(new URL(_, t)
+        audioTrackUri && (audioUri = resultSome(new URL(audioTrackUri, baseUrl)
           .href))
       }
-      let u = {
+      let codecs = {
         audio: !1,
         video: "unknown"
       };
-      s.CODECS && (u = ml(s.CODECS, O, O));
-      let d = Ge(u, _ => ({
-          codec: We(_),
-          bitrate: O
-        }), _ => {
-          let f = O,
-            g = O,
-            h = O,
-            T = O;
-          return s.BANDWIDTH && (T = q(s.BANDWIDTH)), s[
-            "FRAME-RATE"] && (f = q(s["FRAME-RATE"])), s.RESOLUTION &&
-            (g = q(s.RESOLUTION), h = q(Qr(s.RESOLUTION.height))), {
-              codec: je(_),
-              bitrate: T,
-              fps: f,
-              dimensions: g,
-              quality: h
+      attributes.CODECS && (codecs = parseCodecs(attributes.CODECS, ResultNone, ResultNone));
+      let avTracks = matchAudioVideo(codecs, audioCodec => ({
+          codec: makeAudioCodec(audioCodec),
+          bitrate: ResultNone
+        }), videoCodec => {
+          let fps = ResultNone,
+            dimensions = ResultNone,
+            quality = ResultNone,
+            bitrate = ResultNone;
+          return attributes.BANDWIDTH && (bitrate = resultSome(attributes.BANDWIDTH)), attributes[
+            "FRAME-RATE"] && (fps = resultSome(attributes["FRAME-RATE"])), attributes.RESOLUTION &&
+            (dimensions = resultSome(attributes.RESOLUTION), quality = resultSome(qualityLabelForHeight(attributes.RESOLUTION.height))), {
+              codec: makeVideoCodec(videoCodec),
+              bitrate: bitrate,
+              fps: fps,
+              dimensions: dimensions,
+              quality: quality
             }
         }),
-        m = l.isSome() ? {
-          audio: l.unwrap(),
-          video: a
-        } : d.video ? {
+        sources = audioUri.isSome() ? {
+          audio: audioUri.unwrap(),
+          video: resolvedUri
+        } : avTracks.video ? {
           audio: !1,
-          video: a
+          video: resolvedUri
         } : {
           video: !1,
-          audio: a
+          audio: resolvedUri
         },
-        w = [ue("Mp4"), ue("WebM"), ue("Mkv")];
-      w = w.filter(_ => {
-        if (d.video && d.audio) {
-          let f = d.audio.codec.name,
-            g = d.video.codec.name,
-            h = !!_.supported_video_codecs.find(x => x == g),
-            T = !!_.supported_audio_codecs.find(x => x == f);
-          return h && T
-        } else if (d.video) {
-          let f = d.video.codec.name;
-          return !!_.supported_video_codecs.find(g => g == f)
-        } else if (d.audio) {
-          let f = d.audio.codec.name;
-          return !!_.supported_audio_codecs.find(g => g == f)
+        containers = [containerByName("Mp4"), containerByName("WebM"), containerByName("Mkv")];
+      containers = containers.filter(support => {
+        if (avTracks.video && avTracks.audio) {
+          let audioCodecName = avTracks.audio.codec.name,
+            videoCodecName = avTracks.video.codec.name,
+            videoSupported = !!support.supported_video_codecs.find(codec => codec == videoCodecName),
+            audioSupported = !!support.supported_audio_codecs.find(codec => codec == audioCodecName);
+          return videoSupported && audioSupported
+        } else if (avTracks.video) {
+          let videoCodecName = avTracks.video.codec.name;
+          return !!support.supported_video_codecs.find(codec => codec == videoCodecName)
+        } else if (avTracks.audio) {
+          let audioCodecName = avTracks.audio.codec.name;
+          return !!support.supported_audio_codecs.find(codec => codec == audioCodecName)
         }
         return !1
       });
-      let p = w[0] ?? ue("Mkv");
+      let container = containers[0] ?? containerByName("Mkv");
       return [{
         builder: "Hls",
         protocol: "hls",
-        content_length: O,
+        content_length: ResultNone,
         duration: "unknown",
-        av: d,
-        container: p
-      }, m]
+        av: avTracks,
+        container: container
+      }, sources]
     }))
   }
-  var Dg = C(() => {
+  var initHlsParsing = defineLazyModule(() => {
     "use strict";
-    oe();
-    Ji();
-    xt();
-    zr();
-    pr();
-    Xe();
-    Tg();
-    Ue()
+    initTsResultsIndex();
+    initMediaTypeSupport();
+    initCodecs();
+    initQualities();
+    initProtocolTypes();
+    initContainers();
+    initM3u8Parser();
+    initIterTools()
   });
-  var ou = {};
-  ie(ou, {
-    FireProbeForHTTPMedia: () => y0,
-    MPDProbe: () => Br,
-    MasterHLSProbe: () => er,
-    MaybeCreateProbeFromNetworkRequest: () => v0
+  var probesNs = {};
+  defineExports(probesNs, {
+    FireProbeForHTTPMedia: () => FireProbeForHTTPMedia,
+    MPDProbe: () => MPDProbe,
+    MasterHLSProbe: () => MasterHLSProbe,
+    MaybeCreateProbeFromNetworkRequest: () => MaybeCreateProbeFromNetworkRequest
   });
 
-  function b0(e) {
-    let t = null,
-      r = !1;
-    for (let [n, o] of e)
-      if (n.av.video === !1) {
-        let s = n.av.audio.bitrate.unwrapOr(0);
-        t ? t.bitrate < s && (t = {
-          id: o,
-          bitrate: s,
-          audio: n.av.audio
-        }) : t = {
-          id: o,
-          bitrate: s,
-          audio: n.av.audio
+  function pickBestAudioTracks(entries) {
+    let bestAudio = null,
+      hasVideo = !1;
+    for (let [media, trackId] of entries)
+      if (media.av.video === !1) {
+        let bitrate = media.av.audio.bitrate.unwrapOr(0);
+        bestAudio ? bestAudio.bitrate < bitrate && (bestAudio = {
+          id: trackId,
+          bitrate: bitrate,
+          audio: media.av.audio
+        }) : bestAudio = {
+          id: trackId,
+          bitrate: bitrate,
+          audio: media.av.audio
         }
-      } else r = !0;
-    return !r || !t ? e.map(([n, o]) => [n, o, O]) : e.filter(([n, o]) => !!n
+      } else hasVideo = !0;
+    return !hasVideo || !bestAudio ? entries.map(([media, trackId]) => [media, trackId, ResultNone]) : entries.filter(([media, trackId]) => !!media
         .av.video)
-      .map(([n, o]) => {
-        let s = O;
-        return n.av.audio === !1 && (n.av = {
+      .map(([media, trackId]) => {
+        let audioId = ResultNone;
+        return media.av.audio === !1 && (media.av = {
           audio: {
-            ...t.audio
+            ...bestAudio.audio
           },
-          video: n.av.video
-        }, s = q(t.id)), [n, o, s]
+          video: media.av.video
+        }, audioId = resultSome(bestAudio.id)), [media, trackId, audioId]
       })
   }
 
-  function nu(e, t) {
-    let r = {
-      bulk: e.bulk,
-      originalId: e.originalId,
-      isPrivate: e.isPrivate,
-      tabId: e.tabId,
-      title: e.title,
-      topUrl: e.topUrl,
-      pageTitle: e.pageTitle,
-      pageUrl: e.pageUrl,
-      thumbnailUrl: e.thumbnailUrl,
-      thumbnailUrl2: e.thumbnailUrl2,
-      headers: e.headers,
-      extension: t.av.video ? t.container.extension : t.container
+  function buildHitBase(probe, media) {
+    let hit = {
+      bulk: probe.bulk,
+      originalId: probe.originalId,
+      isPrivate: probe.isPrivate,
+      tabId: probe.tabId,
+      title: probe.title,
+      topUrl: probe.topUrl,
+      pageTitle: probe.pageTitle,
+      pageUrl: probe.pageUrl,
+      thumbnailUrl: probe.thumbnailUrl,
+      thumbnailUrl2: probe.thumbnailUrl2,
+      headers: probe.headers,
+      extension: media.av.video ? media.container.extension : media.container
         .audio_only_extension,
-      core_media: t
+      core_media: media
     };
-    if (t.av.video && (t.av.video.bitrate.isSome() && (r.bitrate = t.av.video
-        .bitrate.unwrap()), t.av.video.dimensions.isSome())) {
-      let i = t.av.video.dimensions.unwrap();
-      r.size = `${i.width}x${i.height}`
+    if (media.av.video && (media.av.video.bitrate.isSome() && (hit.bitrate = media.av.video
+        .bitrate.unwrap()), media.av.video.dimensions.isSome())) {
+      let dimensions = media.av.video.dimensions.unwrap();
+      hit.size = `${dimensions.width}x${dimensions.height}`
     }
-    return t.duration != "unknown" && typeof t.duration == "number" && (r
-      .duration = t.duration), r
+    return media.duration != "unknown" && typeof media.duration == "number" && (hit
+      .duration = media.duration), hit
   }
 
-  function y0(e) {
-    let t = new Map,
-      r = {
-        core_media: e.core_media,
-        manifest_url: e.url,
-        to_copy: e.url,
+  function FireProbeForHTTPMedia(probe) {
+    let variants = new Map,
+      variant = {
+        core_media: probe.core_media,
+        manifest_url: probe.url,
+        to_copy: probe.url,
         sources: {
-          video: e.url,
+          video: probe.url,
           audio: !1
         },
         id: `variant_${crypto.randomUUID()}`
       };
-    t.set(r.id, r);
-    let i = {
+    variants.set(variant.id, variant);
+    let downloadable = {
       is_low_quality: !0,
       timestamp: Date.now(),
-      incognito: e.isPrivate,
-      tab_id: e.tabId,
-      page_url: e.topUrl,
-      page_title: e.pageTitle,
-      headers: e.headers,
-      id: `downloadable_${ct(e.url+e.tabId)}`,
-      title: e.title,
-      favicon_url: new URL(e.topUrl)
+      incognito: probe.isPrivate,
+      tab_id: probe.tabId,
+      page_url: probe.topUrl,
+      page_title: probe.pageTitle,
+      headers: probe.headers,
+      id: `downloadable_${hashToHex(probe.url+probe.tabId)}`,
+      title: probe.title,
+      favicon_url: new URL(probe.topUrl)
         .origin + "/favicon.ico",
-      variants: t,
-      thumbnail_url: e.thumbnailUrl2
+      variants: variants,
+      thumbnail_url: probe.thumbnailUrl2
     };
-    Yt(i)
+    publishDownloadable(downloadable)
   }
 
-  function v0(e, t, r) {
-    if (e.method != "GET") return [];
-    Array.isArray(r) || (r = []), t = t?.toLowerCase() ?? "";
-    let i = [];
-    return ln.canHandle(e.url, t, r) && i.push(new ln(e.url, r)), un
-      .canHandle(e.url, t, r) && i.push(new un(e.url, r)), er.canHandle(e.url,
-        t, r) && i.push(new er(e.url, r)), Br.canHandle(e.url, t, r) && i
-      .push(new Br(e.url, r)), i
+  function MaybeCreateProbeFromNetworkRequest(request, contentType, headers) {
+    if (request.method != "GET") return [];
+    Array.isArray(headers) || (headers = []), contentType = contentType?.toLowerCase() ?? "";
+    let probes = [];
+    return VimeoPlayerProbe.canHandle(request.url, contentType, headers) && probes.push(new VimeoPlayerProbe(request.url, headers)), VimeoConfigProbe
+      .canHandle(request.url, contentType, headers) && probes.push(new VimeoConfigProbe(request.url, headers)), MasterHLSProbe.canHandle(request.url,
+        contentType, headers) && probes.push(new MasterHLSProbe(request.url, headers)), MPDProbe.canHandle(request.url, contentType, headers) && probes
+      .push(new MPDProbe(request.url, headers)), probes
   }
-  var iu, ea, kt, Br, er, Yo = C(() => {
+  var probesWeh, probesStore, probeUtil, MPDProbe, MasterHLSProbe, initProbes = defineLazyModule(() => {
     "use strict";
-    oe();
-    gg();
-    Hl();
-    pr();
-    bg();
-    Wo();
-    yl();
-    Dg();
-    iu = Y(), ea = (ze(), R(Qe)), kt = (he(), R(ge));
-    Br = class {
-      constructor(t, r) {
-        this.mpd_url = t, this.headers = r
+    initTsResultsIndex();
+    initMpdParser();
+    initMain();
+    initProtocolTypes();
+    initHttpProbes();
+    initHitTypes();
+    initSiteHandlers();
+    initHlsParsing();
+    probesWeh = requireWeh(), probesStore = (initStore(), toCommonjs(storeNs)), probeUtil = (initCoreUtil(), toCommonjs(coreUtilNs));
+    MPDProbe = class {
+      constructor(mpdUrl, headers) {
+        this.mpd_url = mpdUrl, this.headers = headers
       }
-      static canHandle(t, r, i) {
-        if (r.includes("application/dash+xml")) return !0;
+      static canHandle(url, contentType, headers) {
+        if (contentType.includes("application/dash+xml")) return !0;
         try {
-          if (new URL(t)
+          if (new URL(url)
             .pathname.endsWith(".mpd")) return !0
         } catch {}
         return !1
       }
-      async onHitDataAvailable(t) {
-        let r = await kt.request({
+      async onHitDataAvailable(probe) {
+        let response = await probeUtil.request({
           url: this.mpd_url,
           headers: this.headers
         });
-        if (!r.ok) {
+        if (!response.ok) {
           console.warn("Failed to fetch MPD content");
           return
         }
-        let i = await r.text(),
-          n = mg(i);
-        if (n.isErr()) {
-          console.error("Failed to parse MPD", n.unwrapErr());
+        let mpdText = await response.text(),
+          parsed = parseMpdManifest(mpdText);
+        if (parsed.isErr()) {
+          console.error("Failed to parse MPD", parsed.unwrapErr());
           return
         }
-        let o = b0(n.unwrap()),
-          s = {
+        let tracks = pickBestAudioTracks(parsed.unwrap()),
+          downloadable = {
             is_low_quality: !1,
             timestamp: Date.now(),
-            incognito: t.isPrivate,
-            tab_id: t.tabId,
-            page_url: t.topUrl,
-            page_title: t.pageTitle,
-            headers: t.headers,
-            id: `downloadable_${ct(this.mpd_url+t.tabId)}`,
-            title: t.title,
-            favicon_url: new URL(t.topUrl)
+            incognito: probe.isPrivate,
+            tab_id: probe.tabId,
+            page_url: probe.topUrl,
+            page_title: probe.pageTitle,
+            headers: probe.headers,
+            id: `downloadable_${hashToHex(this.mpd_url+probe.tabId)}`,
+            title: probe.title,
+            favicon_url: new URL(probe.topUrl)
               .origin + "/favicon.ico",
             variants: new Map,
-            thumbnail_url: t.thumbnailUrl2
+            thumbnail_url: probe.thumbnailUrl2
           };
-        for (let [a, l, u] of o) {
-          let c = {
-            ...nu(t, a),
-            id: "dash:" + kt.hashHex(l),
-            descrPrefix: iu._("dash_streaming"),
+        for (let [media, videoId, audioId] of tracks) {
+          let hit = {
+            ...buildHitBase(probe, media),
+            id: "dash:" + probeUtil.hashHex(videoId),
+            descrPrefix: probesWeh._("dash_streaming"),
             chunked: "dash-adp",
-            group: "grp-" + kt.hashHex(this.mpd_url),
+            group: "grp-" + probeUtil.hashHex(this.mpd_url),
             mpd_url: this.mpd_url
           };
-          if (a.av.video !== !1) {
-            c.mpd_video_id = l;
-            let m = {
-              core_media: a,
+          if (media.av.video !== !1) {
+            hit.mpd_video_id = videoId;
+            let variant = {
+              core_media: media,
               to_copy: this.mpd_url,
               manifest_url: this.mpd_url,
               sources: {
-                video: l,
+                video: videoId,
                 audio: !1
               },
               id: `variant_${crypto.randomUUID()}`
             };
-            if (a.av.video.bitrate.isSome() && (c.bitrate = a.av.video
-                .bitrate.unwrap()), u.isSome() && (c.mpd_audio_id = u
-                .unwrap(), m.sources.audio = c.mpd_audio_id), a.av
+            if (media.av.video.bitrate.isSome() && (hit.bitrate = media.av.video
+                .bitrate.unwrap()), audioId.isSome() && (hit.mpd_audio_id = audioId
+                .unwrap(), variant.sources.audio = hit.mpd_audio_id), media.av
               .video.dimensions.isSome()) {
-              let w = a.av.video.dimensions.unwrap();
-              c.size = `${w.width}x${w.height}`
+              let dimensions = media.av.video.dimensions.unwrap();
+              hit.size = `${dimensions.width}x${dimensions.height}`
             }
-            a.duration != "unknown" && typeof a.duration ==
-              "number" && (c.duration = a.duration), s.variants.set(m
-                .id, m), ea.dispatch("hit.new", c)
-          } else c.mpd_audio_id = l, a.av.audio.bitrate.isSome() && (c
-              .bitrate = a.av.audio.bitrate.unwrap()), a.duration !=
-            "unknown" && typeof a.duration == "number" && (c
-              .duration = a.duration), ea.dispatch("hit.new", c)
+            media.duration != "unknown" && typeof media.duration ==
+              "number" && (hit.duration = media.duration), downloadable.variants.set(variant
+                .id, variant), probesStore.dispatch("hit.new", hit)
+          } else hit.mpd_audio_id = videoId, media.av.audio.bitrate.isSome() && (hit
+              .bitrate = media.av.audio.bitrate.unwrap()), media.duration !=
+            "unknown" && typeof media.duration == "number" && (hit
+              .duration = media.duration), probesStore.dispatch("hit.new", hit)
         }
-        Yt(s)
+        publishDownloadable(downloadable)
       }
-    }, er = class {
-      constructor(t, r) {
-        this.m3u8_url = t, this.headers = r
+    }, MasterHLSProbe = class {
+      constructor(m3u8Url, headers) {
+        this.m3u8_url = m3u8Url, this.headers = headers
       }
-      static canHandle(t, r, i) {
-        if (t.includes(".m3u8") || r.includes("mpegurl")) return !0;
-        for (let n of Xo)
-          if (n.canHandleHLS && n.canHandleHLS(t, r, i)) return !0;
+      static canHandle(url, contentType, headers) {
+        if (url.includes(".m3u8") || contentType.includes("mpegurl")) return !0;
+        for (let handler of siteHandlers)
+          if (handler.canHandleHLS && handler.canHandleHLS(url, contentType, headers)) return !0;
         return !1
       }
-      async onHitDataAvailable(t) {
-        let r = await kt.request({
+      async onHitDataAvailable(probe) {
+        let response = await probeUtil.request({
           url: this.m3u8_url,
           headers: this.headers
         });
-        if (!r.ok) {
+        if (!response.ok) {
           console.warn("Failed to fetch M3U8 content");
           return
         }
-        let i = await r.text(),
-          n = Sg(i, this.m3u8_url);
-        if (n.isErr()) {
-          let a = Eg(i, this.m3u8_url);
-          if (a.isErr()) {
+        let m3u8Text = await response.text(),
+          masterResult = probeMasterHls(m3u8Text, this.m3u8_url);
+        if (masterResult.isErr()) {
+          let rawResult = probeRawHls(m3u8Text, this.m3u8_url);
+          if (rawResult.isErr()) {
             console.warn("can't parse M3U8");
             return
           }
-          let l = a.unwrap(),
-            d = {
-              ...nu(t, l),
-              id: "rawhls:" + kt.hashHex(this.m3u8_url),
-              descrPrefix: iu._("hls_streaming"),
+          let media = rawResult.unwrap(),
+            hit = {
+              ...buildHitBase(probe, media),
+              id: "rawhls:" + probeUtil.hashHex(this.m3u8_url),
+              descrPrefix: probesWeh._("hls_streaming"),
               chunked: "hls",
-              group: "grp-" + kt.hashHex(this.m3u8_url),
+              group: "grp-" + probeUtil.hashHex(this.m3u8_url),
               mediaManifest: this.m3u8_url
             };
-          ea.dispatch("hit.new", d);
-          let c = new Map,
-            m = {
-              core_media: l,
+          probesStore.dispatch("hit.new", hit);
+          let variants = new Map,
+            variant = {
+              core_media: media,
               to_copy: this.m3u8_url,
               manifest_url: this.m3u8_url,
-              sources: Ge(l.av, p => this.m3u8_url, p => this
+              sources: matchAudioVideo(media.av, codec => this.m3u8_url, codec => this
                 .m3u8_url),
               id: `variant_${crypto.randomUUID()}`
             };
-          c.set(m.id, m);
-          let w = {
+          variants.set(variant.id, variant);
+          let downloadable = {
             is_low_quality: !0,
             timestamp: Date.now(),
-            incognito: t.isPrivate,
-            tab_id: t.tabId,
-            page_url: t.topUrl,
-            page_title: t.pageTitle,
-            headers: t.headers,
-            id: `downloadable_${ct(this.m3u8_url+t.tabId)}`,
-            title: t.title,
-            favicon_url: new URL(t.topUrl)
+            incognito: probe.isPrivate,
+            tab_id: probe.tabId,
+            page_url: probe.topUrl,
+            page_title: probe.pageTitle,
+            headers: probe.headers,
+            id: `downloadable_${hashToHex(this.m3u8_url+probe.tabId)}`,
+            title: probe.title,
+            favicon_url: new URL(probe.topUrl)
               .origin + "/favicon.ico",
-            variants: c,
-            thumbnail_url: t.thumbnailUrl2
+            variants: variants,
+            thumbnail_url: probe.thumbnailUrl2
           };
-          w.variants.set(m.id, m), Yt(w);
+          downloadable.variants.set(variant.id, variant), publishDownloadable(downloadable);
           return
         }
-        let o = n.unwrap();
+        let playlists = masterResult.unwrap();
         {
-          let a = o.as_iter()
-            .find(([, l]) => !!l.video)
-            .map(([, l]) => l.video);
-          if (a.isSome()) {
-            let l = a.unwrap(),
-              u = await kt.request({
-                url: l,
+          let firstVideoSource = playlists.as_iter()
+            .find(([, sources]) => !!sources.video)
+            .map(([, sources]) => sources.video);
+          if (firstVideoSource.isSome()) {
+            let videoUri = firstVideoSource.unwrap(),
+              mediaResponse = await probeUtil.request({
+                url: videoUri,
                 headers: this.headers
               });
-            if (!u.ok) {
+            if (!mediaResponse.ok) {
               console.warn("Failed to fetch M3U8 content");
               return
             }
-            let d = await u.text(),
-              c = ru(d);
-            if (c.isOk())
-              for (let [m] of o) m.duration = c.unwrap()
+            let mediaText = await mediaResponse.text(),
+              durationResult = parseHlsSegmentDurations(mediaText);
+            if (durationResult.isOk())
+              for (let [media] of playlists) media.duration = durationResult.unwrap()
           }
         }
-        let s = {
+        let downloadable = {
           is_low_quality: !1,
           timestamp: Date.now(),
-          incognito: t.isPrivate,
-          tab_id: t.tabId,
-          page_url: t.topUrl,
-          page_title: t.pageTitle,
-          headers: t.headers,
-          id: `downloadable_${ct(this.m3u8_url+t.tabId)}`,
-          title: t.title,
-          favicon_url: new URL(t.topUrl)
+          incognito: probe.isPrivate,
+          tab_id: probe.tabId,
+          page_url: probe.topUrl,
+          page_title: probe.pageTitle,
+          headers: probe.headers,
+          id: `downloadable_${hashToHex(this.m3u8_url+probe.tabId)}`,
+          title: probe.title,
+          favicon_url: new URL(probe.topUrl)
             .origin + "/favicon.ico",
           variants: new Map,
-          thumbnail_url: t.thumbnailUrl2
+          thumbnail_url: probe.thumbnailUrl2
         };
-        for (let [a, l] of o) {
-          let u = nu(t, a),
-            d = "";
-          l.audio && (d += l.audio), l.video && (d += l.video);
-          let c = {
-              ...u,
-              id: "hls:" + kt.hashHex(d),
-              descrPrefix: iu._("hls_streaming"),
+        for (let [media, sources] of playlists) {
+          let hitBase = buildHitBase(probe, media),
+            hashInput = "";
+          sources.audio && (hashInput += sources.audio), sources.video && (hashInput += sources.video);
+          let hit = {
+              ...hitBase,
+              id: "hls:" + probeUtil.hashHex(hashInput),
+              descrPrefix: probesWeh._("hls_streaming"),
               chunked: "hls",
-              group: "grp-" + kt.hashHex(this.m3u8_url + a.container
+              group: "grp-" + probeUtil.hashHex(this.m3u8_url + media.container
                 .name),
               masterManifest: this.m3u8_url
             },
-            m = l.video || l.audio,
-            w = {
-              core_media: a,
-              to_copy: m,
+            primarySource = sources.video || sources.audio,
+            variant = {
+              core_media: media,
+              to_copy: primarySource,
               manifest_url: this.m3u8_url,
-              sources: l,
+              sources: sources,
               id: `variant_${crypto.randomUUID()}`
             };
-          s.variants.set(w.id, w), !l.audio && l.video ? c
-            .mediaManifest = l.video : !l.video && l.audio ? c
-            .mediaManifest = l.audio : l.video && l.audio && (c
-              .audioMediaManifest = l.audio, c.videoMediaManifest = l
-              .video), ea.dispatch("hit.new", c)
+          downloadable.variants.set(variant.id, variant), !sources.audio && sources.video ? hit
+            .mediaManifest = sources.video : !sources.video && sources.audio ? hit
+            .mediaManifest = sources.audio : sources.video && sources.audio && (hit
+              .audioMediaManifest = sources.audio, hit.videoMediaManifest = sources
+              .video), probesStore.dispatch("hit.new", hit)
         }
-        Yt(s, t.bulk)
+        publishDownloadable(downloadable, probe.bulk)
       }
     }
   });
-  var Ng = {};
-  ie(Ng, {
-    default: () => P0,
-    forbidden: () => Ig,
-    matchHit: () => Rg
+  var tbvwsNs = {};
+  defineExports(tbvwsNs, {
+    default: () => tbvwsDefault,
+    forbidden: () => tbvwsForbidden,
+    matchHit: () => tbvwsMatchHit
   });
-  async function O0(e) {
-    let t = e.thumbnailUrl && e.videoDetails.thumbnail?.thumbnails[0]?.url,
-      r = {
-        id: "tbvws:" + e.videoId,
-        group: "tbvws:" + e.videoId,
-        isPrivate: e.isPrivate,
-        tabId: e.tabId,
-        title: e.title,
+  async function buildTbvwsDownloadable(request) {
+    let thumbnail = request.thumbnailUrl && request.videoDetails.thumbnail?.thumbnails[0]?.url,
+      hitBase = {
+        id: "tbvws:" + request.videoId,
+        group: "tbvws:" + request.videoId,
+        isPrivate: request.isPrivate,
+        tabId: request.tabId,
+        title: request.title,
         from: "tbvws",
-        videoId: e.videoId,
-        topUrl: e.topUrl,
-        pageTitle: e.pageTitle,
-        pageUrl: e.pageUrl,
-        thumbnailUrl: t,
-        thumbnailUrl2: t ?? "/content/images/no-thumbnail.png",
-        duration: parseInt(e.videoDetails.lengthSeconds) || void 0,
+        videoId: request.videoId,
+        topUrl: request.topUrl,
+        pageTitle: request.pageTitle,
+        pageUrl: request.pageUrl,
+        thumbnailUrl: thumbnail,
+        thumbnailUrl2: thumbnail ?? "/content/images/no-thumbnail.png",
+        duration: parseInt(request.videoDetails.lengthSeconds) || void 0,
         headers: [],
-        baseJs: e.baseJs,
-        bulk: e.bulk
+        baseJs: request.baseJs,
+        bulk: request.bulk
       };
-    if (e.hlsManifestUrl) {
-      new T0(e.hlsManifestUrl, {})
-        .onHitDataAvailable(r);
+    if (request.hlsManifestUrl) {
+      new TbvwsMasterHlsProbe(request.hlsManifestUrl, {})
+        .onHitDataAvailable(hitBase);
       return
     }
-    let i = e.adaptiveFormats,
-      n = e.formats,
-      o = i.as_iter()
-      .filter(_ => typeof _.url == "string")
-      .map(_ => ({
-        result: gl(_, "dash"),
-        json: _
+    let adaptiveFormats = request.adaptiveFormats,
+      formats = request.formats,
+      adaptiveParsed = adaptiveFormats.as_iter()
+      .filter(format => typeof format.url == "string")
+      .map(format => ({
+        result: parseYoutubeFormat(format, "dash"),
+        json: format
       }))
       .toArray(),
-      s = n.as_iter()
-      .filter(_ => typeof _.url == "string")
-      .map(_ => ({
-        result: gl(_, "non-adaptative"),
-        json: _
+      formatsParsed = formats.as_iter()
+      .filter(format => typeof format.url == "string")
+      .map(format => ({
+        result: parseYoutubeFormat(format, "non-adaptative"),
+        json: format
       }))
       .toArray(),
-      a = [...o, ...s];
-    a.forEach(({
-      result: _,
-      json: f
+      allParsed = [...adaptiveParsed, ...formatsParsed];
+    allParsed.forEach(({
+      result: result,
+      json: json
     }) => {
-      _.isErr() && console.warn("tbvws JSON parsing error", _
-      .unwrapErr(), f)
+      result.isErr() && console.warn("tbvws JSON parsing error", result
+      .unwrapErr(), json)
     });
-    let l = a.as_iter()
+    let parsedMedia = allParsed.as_iter()
       .filterMap(({
-          result: _,
-          json: f
-        }) => _.toOption()
-        .map(g => ({
-          core_media: g,
-          url: f.url
+          result: result,
+          json: json
+        }) => result.toOption()
+        .map(coreMedia => ({
+          core_media: coreMedia,
+          url: json.url
         })))
       .toArray(),
-      u = l.as_iter()
+      combined = parsedMedia.as_iter()
       .filter(({
-        core_media: _
-      }) => !!_.av.audio && !!_.av.video)
-      .map(_ => _)
+        core_media: media
+      }) => !!media.av.audio && !!media.av.video)
+      .map(entry => entry)
       .toArray(),
-      d = l.as_iter()
+      videoOnly = parsedMedia.as_iter()
       .filter(({
-        core_media: _
-      }) => !_.av.audio)
-      .map(_ => _)
+        core_media: media
+      }) => !media.av.audio)
+      .map(entry => entry)
       .toArray(),
-      c = l.as_iter()
+      audioOnly = parsedMedia.as_iter()
       .filter(({
-        core_media: _
-      }) => !_.av.video)
-      .map(_ => _)
-      .sort((_, f) => {
-        if (_.core_media.av.audio && f.core_media.av.audio) {
-          let g = _.core_media.av.audio.bitrate.unwrapOr(0),
-            h = f.core_media.av.audio.bitrate.unwrapOr(0);
-          return g - h
+        core_media: media
+      }) => !media.av.video)
+      .map(entry => entry)
+      .sort((entryA, entryB) => {
+        if (entryA.core_media.av.audio && entryB.core_media.av.audio) {
+          let bitrateA = entryA.core_media.av.audio.bitrate.unwrapOr(0),
+            bitrateB = entryB.core_media.av.audio.bitrate.unwrapOr(0);
+          return bitrateA - bitrateB
         } else throw "unreachable"
       }),
-      m = [];
-    for (let _ of d) {
-      let f = c.as_iter()
-        .filter(g => g.core_media.container.name == _.core_media.container
+      merged = [];
+    for (let videoEntry of videoOnly) {
+      let matchingAudio = audioOnly.as_iter()
+        .filter(audioCandidate => audioCandidate.core_media.container.name == videoEntry.core_media.container
           .name)
         .toArray();
-      if (f.length > 0) {
-        let g = f[0],
-          h = {
-            ..._,
+      if (matchingAudio.length > 0) {
+        let matchedAudio = matchingAudio[0],
+          mergedEntry = {
+            ...videoEntry,
             core_media: {
-              ..._.core_media,
+              ...videoEntry.core_media,
               av: {
-                video: _.core_media.av.video,
-                audio: g.core_media.av.audio
+                video: videoEntry.core_media.av.video,
+                audio: matchedAudio.core_media.av.audio
               }
             },
-            videoUrl: _.url,
-            audioUrl: g.url
+            videoUrl: videoEntry.url,
+            audioUrl: matchedAudio.url
           };
-        delete h.url, m.push(h)
+        delete mergedEntry.url, merged.push(mergedEntry)
       }
     }
-    let w = new Map,
-      p = [...u, ...m].as_iter()
+    let variants = new Map,
+      hits = [...combined, ...merged].as_iter()
       .map(({
-        core_media: _,
-        ...f
+        core_media: media,
+        ...rest
       }) => {
-        let g = _.av.video,
-          h = {
-            ...r,
-            ...f,
-            extension: _.container.extension,
-            videoCodec: g.codec.name,
-            audioCodec: _.av.audio.codec.name,
-            core_media: _
+        let video = media.av.video,
+          hit = {
+            ...hitBase,
+            ...rest,
+            extension: media.container.extension,
+            videoCodec: video.codec.name,
+            audioCodec: media.av.audio.codec.name,
+            core_media: media
           };
-        if (g.quality.isSome() && (h.quality = g.quality.unwrap() + "p"),
-          g.fps.isSome() && (h.fps = g.fps.unwrap()), g.dimensions
+        if (video.quality.isSome() && (hit.quality = video.quality.unwrap() + "p"),
+          video.fps.isSome() && (hit.fps = video.fps.unwrap()), video.dimensions
           .isSome()) {
-          let T = g.dimensions.unwrap();
-          h.size = `${T.width}x${T.height}`
+          let dimensions = video.dimensions.unwrap();
+          hit.size = `${dimensions.width}x${dimensions.height}`
         } {
-          let T, x, b;
-          f.videoUrl && f.audioUrl ? (b = x = f.videoUrl, T = {
-            video: f.videoUrl,
-            audio: f.audioUrl
-          }) : f.videoUrl ? (b = x = f.videoUrl, T = {
-            video: f.videoUrl,
+          let sources, manifestUrl, toCopy;
+          rest.videoUrl && rest.audioUrl ? (toCopy = manifestUrl = rest.videoUrl, sources = {
+            video: rest.videoUrl,
+            audio: rest.audioUrl
+          }) : rest.videoUrl ? (toCopy = manifestUrl = rest.videoUrl, sources = {
+            video: rest.videoUrl,
             audio: !1
-          }) : f.audioUrl ? (b = x = f.audioUrl, T = {
+          }) : rest.audioUrl ? (toCopy = manifestUrl = rest.audioUrl, sources = {
             video: !1,
-            audio: f.audioUrl
-          }) : (b = x = f.url || "unreachable", T = {
-            video: f.url || "unreachable",
+            audio: rest.audioUrl
+          }) : (toCopy = manifestUrl = rest.url || "unreachable", sources = {
+            video: rest.url || "unreachable",
             audio: !1
           });
-          let D = {
-            core_media: _,
+          let variant = {
+            core_media: media,
             id: `variant_${crypto.randomUUID()}`,
-            manifest_url: x,
-            sources: T,
-            to_copy: b
+            manifest_url: manifestUrl,
+            sources: sources,
+            to_copy: toCopy
           };
-          r.baseJs && (D.base_js = r.baseJs), w.set(D.id, D)
+          hitBase.baseJs && (variant.base_js = hitBase.baseJs), variants.set(variant.id, variant)
         }
-        return h
+        return hit
       })
       .toArray();
     {
-      let _ = {
+      let downloadable = {
         is_low_quality: !1,
         timestamp: Date.now(),
-        incognito: r.isPrivate,
-        tab_id: r.tabId,
-        page_url: r.topUrl,
-        page_title: r.pageTitle,
-        headers: r.headers,
-        id: `downloadable_${ct(r.topUrl+r.tabId)}`,
-        title: r.title,
-        favicon_url: new URL(r.topUrl)
+        incognito: hitBase.isPrivate,
+        tab_id: hitBase.tabId,
+        page_url: hitBase.topUrl,
+        page_title: hitBase.pageTitle,
+        headers: hitBase.headers,
+        id: `downloadable_${hashToHex(hitBase.topUrl+hitBase.tabId)}`,
+        title: hitBase.title,
+        favicon_url: new URL(hitBase.topUrl)
           .origin + "/favicon.ico",
-        variants: w,
-        thumbnail_url: r.thumbnailUrl2
+        variants: variants,
+        thumbnail_url: hitBase.thumbnailUrl2
       };
-      Yt(_)
+      publishDownloadable(downloadable)
     }
-    p.forEach(_ => {
-      w0.dispatch("hit.new", _)
+    hits.forEach(hit => {
+      tbvwsStore.dispatch("hit.new", hit)
     })
   }
 
-  function M0() {
-    return Mg.isProbablyAvailable() && Mg.isAtLeastVersion("2.0.0")
+  function coappSupportsChallenge() {
+    return tbvwsCoapp.isProbablyAvailable() && tbvwsCoapp.isAtLeastVersion("2.0.0")
   }
 
-  function Rg(e) {
-    return ![e.url, e.audioUrl, e.videoUrl, e.pageUrl, e.topUrl].every(t =>
-      t ? !Pg.test(t) && !D0.test(t) : !0)
+  function tbvwsMatchHit(hit) {
+    return ![hit.url, hit.audioUrl, hit.videoUrl, hit.pageUrl, hit.topUrl].every(url =>
+      url ? !youtubeUrlRegex.test(url) && !googlevideoRegex.test(url) : !0)
   }
-  async function Ig() {
-    let e = Ct._("chrome_noyt_text"),
-      t = ta.hash(e),
-      r = Ct._("chrome_noyt_text3"),
-      i = ta.hash(r),
-      n = r;
-    i == -1960581238 && t != -1126813505 && (n = e);
+  async function tbvwsForbidden() {
+    let text1 = tbvwsWeh._("chrome_noyt_text"),
+      hash1 = tbvwsUtil.hash(text1),
+      text3 = tbvwsWeh._("chrome_noyt_text3"),
+      hash3 = tbvwsUtil.hash(text3),
+      chosenText = text3;
+    hash3 == -1960581238 && hash1 != -1126813505 && (chosenText = text1);
     try {
-      switch ((await x0.alert({
-          title: Ct._("chrome_warning_yt"),
-          text: [n, Ct._("chrome_noyt_text2")],
+      switch ((await tbvwsDialog.alert({
+          title: tbvwsWeh._("chrome_warning_yt"),
+          text: [chosenText, tbvwsWeh._("chrome_noyt_text2")],
           height: 400,
           buttons: [{
-            text: Ct._("chrome_install_firefox"),
+            text: tbvwsWeh._("chrome_install_firefox"),
             className: "btn-outline-secondary",
             close: !0,
             trigger: {
               what: "installFirefox"
             }
           }, {
-            text: Ct._("chrome_install_fx_vdh"),
+            text: tbvwsWeh._("chrome_install_fx_vdh"),
             className: "btn-outline-primary",
             close: !0,
             trigger: {
@@ -13926,724 +13926,724 @@ const store = createStore(
         }))
         .what) {
         case "installFirefox":
-          return Og.gotoOrOpenTab("https://getfirefox.com/");
+          return tbvwsTabNav.gotoOrOpenTab("https://getfirefox.com/");
         case "vdhForFirefox":
-          return Og.gotoOrOpenTab(
+          return tbvwsTabNav.gotoOrOpenTab(
             "https://addons.mozilla.org/firefox/addon/video-downloadhelper/"
             )
       }
-    } catch (o) {
-      console.error("tbvws error", o)
+    } catch (err) {
+      console.error("tbvws error", err)
     }
   }
-  var Ct, au, w0, A0, ta, Og, x0, Mg, T0, E0, S0, D0, Pg, P0, kg = C(() => {
+  var tbvwsWeh, tbvwsBrowser, tbvwsStore, tbvwsSmartname, tbvwsUtil, tbvwsTabNav, tbvwsDialog, tbvwsCoapp, TbvwsMasterHlsProbe, YOUTUBE_HOST_SUBSTR, youtubePageRegex, googlevideoRegex, youtubeUrlRegex, tbvwsDefault, initTbvws = defineLazyModule(() => {
     "use strict";
-    Gf();
-    Hl();
-    Wo();
-    Ct = Y(), au = Ct.browser, w0 = (ze(), R(Qe)), A0 = (on(), R(nn)),
-      ta = (he(), R(ge)), Og = (Rr(), R(Pr)), x0 = (Yi(), R(Ki)), Mg = (
-        ft(), R(pt)), {
-        MasterHLSProbe: T0
-      } = (Yo(), R(ou)), E0 = "youtube", S0 = new RegExp(
+    initFormatParsing();
+    initMain();
+    initHitTypes();
+    tbvwsWeh = requireWeh(), tbvwsBrowser = tbvwsWeh.browser, tbvwsStore = (initStore(), toCommonjs(storeNs)), tbvwsSmartname = (initSmartname(), toCommonjs(smartnameNs)),
+      tbvwsUtil = (initCoreUtil(), toCommonjs(coreUtilNs)), tbvwsTabNav = (initTabTracker(), toCommonjs(tabTrackerNs)), tbvwsDialog = (initDialogs(), toCommonjs(dialogNs)), tbvwsCoapp = (
+        initCoapp(), toCommonjs(coappNs)), {
+        MasterHLSProbe: TbvwsMasterHlsProbe
+      } = (initProbes(), toCommonjs(probesNs)), YOUTUBE_HOST_SUBSTR = "youtube", youtubePageRegex = new RegExp(
         "^https?://([^/]*\\.)?youtube(?:\\-nocookie)?(\\.co)?.([^./]+)/"),
-      D0 = new RegExp("^https?://([^/]*.)?googlevideo\\."), Pg =
+      googlevideoRegex = new RegExp("^https?://([^/]*.)?googlevideo\\."), youtubeUrlRegex =
       new RegExp("^https?://([^/]*\\.)?youtube(\\.co)?.([^./]+)/.*");
-    Ct.rpc.listen({
-      tbvwsDetectedVideo: async e => {
+    tbvwsWeh.rpc.listen({
+      tbvwsDetectedVideo: async detectedVideo => {
         try {
-          await O0(e)
-        } catch (t) {
-          console.error("VDH error: detectedVideo", t)
+          await buildTbvwsDownloadable(detectedVideo)
+        } catch (err) {
+          console.error("VDH error: detectedVideo", err)
         }
       }
     });
-    au.webNavigation.onCompleted.addListener(async function(e) {
-      let t = await Ct.prefs,
-        r = {
-          tabId: e.tabId,
-          frameIds: [e.frameId]
+    tbvwsBrowser.webNavigation.onCompleted.addListener(async function(nav) {
+      let prefs = await tbvwsWeh.prefs,
+        scriptTarget = {
+          tabId: nav.tabId,
+          frameIds: [nav.frameId]
         };
-      if (S0.test(e.url)) try {
-        let i = await au.tabs.get(e.tabId);
-        ta.executeScriptWithGlobal(r, {
+      if (youtubePageRegex.test(nav.url)) try {
+        let tab = await tbvwsBrowser.tabs.get(nav.tabId);
+        tbvwsUtil.executeScriptWithGlobal(scriptTarget, {
           _$vdhData: {
-            ...r,
+            ...scriptTarget,
             isPrivate: !1
           },
-          _$vdhSmartNameSpecs: await A0.getSpecs(e.url),
-          _$vdhTopUrl: i.url,
-          _$vdhExtractMethod: t.tbvwsExtractionMethod,
-          _$vdhSupportChallenge: M0()
+          _$vdhSmartNameSpecs: await tbvwsSmartname.getSpecs(nav.url),
+          _$vdhTopUrl: tab.url,
+          _$vdhExtractMethod: prefs.tbvwsExtractionMethod,
+          _$vdhSupportChallenge: coappSupportsChallenge()
         }, "/injected/tbvws.js")
-      } catch (i) {
-        console.error("Cannot find tab", i)
+      } catch (err) {
+        console.error("Cannot find tab", err)
       }
-      if (t.bulkEnabled && Pg.test(e.url)) try {
-        let i = await au.tabs.get(e.tabId);
-        ta.executeScriptWithGlobal(r, {
-          _$vdhTopUrl: i.url
+      if (prefs.bulkEnabled && youtubeUrlRegex.test(nav.url)) try {
+        let tab = await tbvwsBrowser.tabs.get(nav.tabId);
+        tbvwsUtil.executeScriptWithGlobal(scriptTarget, {
+          _$vdhTopUrl: tab.url
         }, "/injected/tbvws-bulk.js")
-      } catch (i) {
+      } catch (err) {
         console.error("VDH error: could not inject bulk script",
-          i)
+          err)
       }
     }, {
       url: [{
-        hostContains: E0
+        hostContains: YOUTUBE_HOST_SUBSTR
       }]
     });
-    P0 = {
-      matchHit: Rg,
-      forbidden: Ig
+    tbvwsDefault = {
+      matchHit: tbvwsMatchHit,
+      forbidden: tbvwsForbidden
     }
   });
-  var Cg = {};
-  ie(Cg, {
-    BulkDownload: () => N0
+  var youtubeBulkNs = {};
+  defineExports(youtubeBulkNs, {
+    BulkDownload: () => BulkDownload
   });
-  async function N0(e, t) {
-    let r = new Set;
-    for (let i of e.bulk_ids) {
-      let n = `https://www.${I0}.com/watch?v=${i}&vdh-bulk=1`,
-        o = await ia.tabs.create({
-          url: n,
+  async function BulkDownload(request, downloadContext) {
+    let openedTabs = new Set;
+    for (let videoId of request.bulk_ids) {
+      let watchUrl = `https://www.${BULK_YOUTUBE_HOST}.com/watch?v=${videoId}&vdh-bulk=1`,
+        tab = await bulkBrowser.tabs.create({
+          url: watchUrl,
           active: !1
         });
-      await ia.tabs.update(o.id, {
+      await bulkBrowser.tabs.update(tab.id, {
         muted: !0
-      }), r.add(o.id)
+      }), openedTabs.add(tab.id)
     }
-    for (let i = 0; i < 60; i++) {
-      let n = await na.getSerializedHits();
-      for (let o of n) {
-        let s = o[0];
-        for (let a of r) {
-          let l = s.tabId == a,
-            u = !!s.masterManifest,
-            d = s.extension == "mp4";
-          if (l && u && d) {
-            r.delete(s.tabId), R0.execute(t, s.id), ia.tabs.remove(s.tabId);
+    for (let attempt = 0; attempt < 60; attempt++) {
+      let hits = await bulkStore.getSerializedHits();
+      for (let hitEntry of hits) {
+        let hit = hitEntry[0];
+        for (let tabId of openedTabs) {
+          let tabMatches = hit.tabId == tabId,
+            hasMaster = !!hit.masterManifest,
+            isMp4 = hit.extension == "mp4";
+          if (tabMatches && hasMaster && isMp4) {
+            openedTabs.delete(hit.tabId), bulkActions.execute(downloadContext, hit.id), bulkBrowser.tabs.remove(hit.tabId);
             break
           }
         }
       }
-      if (r.size == 0) {
+      if (openedTabs.size == 0) {
         console.log("All hits were found and downloaded");
         break
       }
-      await new Promise(o => setTimeout(o, 1e3))
+      await new Promise(resolve => setTimeout(resolve, 1e3))
     }
   }
-  var ra, ia, na, R0, I0, qg = C(() => {
+  var bulkWeh, bulkBrowser, bulkStore, bulkActions, BULK_YOUTUBE_HOST, initYoutubeBulk = defineLazyModule(() => {
     "use strict";
-    Xe();
-    fr();
-    oe();
-    ra = Y(), ia = ra.browser, na = (ze(), R(Qe)), R0 = (aa(), R(oa)),
-      I0 = "youtube";
-    ra.rpc.listen({
-      tbvwsSelectedIds: e => {
-        let t = [],
+    initContainers();
+    initMediaCommon();
+    initTsResultsIndex();
+    bulkWeh = requireWeh(), bulkBrowser = bulkWeh.browser, bulkStore = (initStore(), toCommonjs(storeNs)), bulkActions = (initActions(), toCommonjs(actionsNs)),
+      BULK_YOUTUBE_HOST = "youtube";
+    bulkWeh.rpc.listen({
+      tbvwsSelectedIds: selection => {
+        let staleIds = [],
           {
-            flat: r
-          } = na.getHits();
-        for (let i of r.values()) i.from == "tbvws-bulk" && i
-          .topUrl == e.topUrl && !i.running && t.push(i.id);
-        if (t.length > 0 && na.dispatch("hit.delete", t), e.ids
+            flat: flatHits
+          } = bulkStore.getHits();
+        for (let hit of flatHits.values()) hit.from == "tbvws-bulk" && hit
+          .topUrl == selection.topUrl && !hit.running && staleIds.push(hit.id);
+        if (staleIds.length > 0 && bulkStore.dispatch("hit.delete", staleIds), selection.ids
           .length > 0) {
-          let i = "tbvws-bulk:" + Math.floor(Math.random() * 1e9),
-            n = {
-              id: i,
-              group: i,
-              title: ra._("selected_media"),
-              descrPrefix: ra._("bulk_n_videos", "" + e.ids.length),
+          let bulkId = "tbvws-bulk:" + Math.floor(Math.random() * 1e9),
+            bulkHit = {
+              id: bulkId,
+              group: bulkId,
+              title: bulkWeh._("selected_media"),
+              descrPrefix: bulkWeh._("bulk_n_videos", "" + selection.ids.length),
               from: "tbvws-bulk",
-              bulk_ids: e.ids,
-              pageUrl: e.pageUrl,
-              topUrl: e.topUrl,
-              thumbnailUrl: ia.runtime.getURL(
+              bulk_ids: selection.ids,
+              pageUrl: selection.pageUrl,
+              topUrl: selection.topUrl,
+              thumbnailUrl: bulkBrowser.runtime.getURL(
                 "/content/images/tbvws.png"),
               core_media: {
-                content_length: O,
+                content_length: ResultNone,
                 builder: "YoutubeBulk",
                 protocol: "unknown",
                 duration: "unknown",
-                container: ue("Mp4"),
-                av: jt()
+                container: containerByName("Mp4"),
+                av: unknownVideoTrack()
               }
             };
-          na.dispatch("hit.new", n)
+          bulkStore.dispatch("hit.new", bulkHit)
         }
       }
     })
   });
-  var Vg = v((kD, Bg) => {
+  var requireFunding = defineCommonjsModule((fundingExports, fundingModule) => {
     "use strict";
-    var pn = Y(),
-      k0 = (Kt(), R(Jt));
-    async function C0(e) {
-      let t = await pn.prefs;
-      Math.round(Date.now() / 1e3) < t.donateNotAgainExpire || k0
+    var weh = requireWeh(),
+      licenseModule = (initLicense(), toCommonjs(licenseNs));
+    async function maybePromptFunding(downloadCount) {
+      let prefs = await weh.prefs;
+      Math.round(Date.now() / 1e3) < prefs.donateNotAgainExpire || licenseModule
         .checkLicense()
-        .then(r => {
-          r && (r.status = "accepted",true) || pn.ui.open("funding", {
-            type: t.alertDialogType,
+        .then(license => {
+          license && (license.status = "accepted",true) || weh.ui.open("funding", {
+            type: prefs.alertDialogType,
             url: "content/funding.html",
             height: 550
           })
         })
     }
-    Bg.exports.newDownload = async function() {
-      let e = await pn.prefs,
-        t = e.downloadCount;
-      t++, e.downloadCount = t, t > 0 && t % 100 == 0 && C0(t)
+    fundingModule.exports.newDownload = async function() {
+      let prefs = await weh.prefs,
+        count = prefs.downloadCount;
+      count++, prefs.downloadCount = count, count > 0 && count % 100 == 0 && maybePromptFunding(count)
     };
-    pn.rpc.listen({
+    weh.rpc.listen({
       fundingLater: async () => {
-        let e = await pn.prefs;
-        e.donateNotAgainExpire = Math.round(Date.now() / 1e3) + 60 *
+        let prefs = await weh.prefs;
+        prefs.donateNotAgainExpire = Math.round(Date.now() / 1e3) + 60 *
           60 * 24 * 30
       }
     })
   });
-  async function j0(e, t, r, i, n, o) {
-    let s = await z.prefs,
-      a = !!r,
-      l = Date.now(),
-      u = !1;
-    if (u = Hg.matchHit(e), fi.noyt && u) {
-      Hg.forbidden();
+  async function performDownload(hit, autoSave, conversionTarget, audioOnly, activeDownloads, downloadQueue) {
+    let prefs = await downloadWeh.prefs,
+      needsConversion = !!conversionTarget,
+      startTime = Date.now(),
+      forbidden = !1;
+    if (forbidden = downloadTbvws.matchHit(hit), downloadBuildOptions.noyt && forbidden) {
+      downloadTbvws.forbidden();
       return
     }
-    se.update(e.id, {
+    downloadHitsStore.update(hit.id, {
       operation: "queued"
     });
-    let d, c;
+    let coappAvailable, coappVersion;
     {
       let {
-        status: b,
-        info: D
-      } = await qt.check();
-      d = b, d && (c = D.version)
+        status: status,
+        info: info
+      } = await downloadCoapp.check();
+      coappAvailable = status, coappAvailable && (coappVersion = info.version)
     }
-    let m;
+    let strategy;
     {
-      if (e.gallery_urls) m = "gallery";
-      else if (e.core_media.builder == "YoutubeBulk") m = "youtube_bulk";
-      else if (e.core_media.builder == "Hls") m = "hls";
-      else if (e.core_media.builder == "RawHls") m = "hls";
-      else if (e.core_media.builder == "MPD") m = "mpd";
-      else if (e.core_media.builder == "HTTPMedia") {
-        let b = s.coappDownloads;
-        if (d && b == "ask") {
-          let P = await U0();
-          b = P.mode, P.notAgain && (s.coappDownloads = b)
+      if (hit.gallery_urls) strategy = "gallery";
+      else if (hit.core_media.builder == "YoutubeBulk") strategy = "youtube_bulk";
+      else if (hit.core_media.builder == "Hls") strategy = "hls";
+      else if (hit.core_media.builder == "RawHls") strategy = "hls";
+      else if (hit.core_media.builder == "MPD") strategy = "mpd";
+      else if (hit.core_media.builder == "HTTPMedia") {
+        let coappMode = prefs.coappDownloads;
+        if (coappAvailable && coappMode == "ask") {
+          let choice = await askDownloadMethod();
+          coappMode = choice.mode, choice.notAgain && (prefs.coappDownloads = coappMode)
         }
-        b == "browser" || !d && !a ? m = "file_inbrowser" : m = "file_coapp"
-      } else e.core_media.builder == "YoutubeFormat" && (m =
+        coappMode == "browser" || !coappAvailable && !needsConversion ? strategy = "file_inbrowser" : strategy = "file_coapp"
+      } else hit.core_media.builder == "YoutubeFormat" && (strategy =
         "youtube_format");
-      if (!m) throw new Error("No download strategy for builder: " + e
+      if (!strategy) throw new Error("No download strategy for builder: " + hit
         .core_media.builder)
     }
-    if (i && m != "hls" && m != "mpd" && m != "file_coapp" && m !=
+    if (audioOnly && strategy != "hls" && strategy != "mpd" && strategy != "file_coapp" && strategy !=
       "youtube_bulk") {
-      ir.alert({
-        title: z._("dialog_audio_impossible_title"),
-        text: z._("dialog_audio_impossible")
+      downloadDialog.alert({
+        title: downloadWeh._("dialog_audio_impossible_title"),
+        text: downloadWeh._("dialog_audio_impossible")
       });
       return
     }
-    if (m != "file_inbrowser" && m != "gallery") {
-      if (!d) {
-        ir.alert({
-          title: z._("coapp_required"),
-          text: z._("coapp_required_text"),
+    if (strategy != "file_inbrowser" && strategy != "gallery") {
+      if (!coappAvailable) {
+        downloadDialog.alert({
+          title: downloadWeh._("coapp_required"),
+          text: downloadWeh._("coapp_required_text"),
           buttons: [{
-            text: z._("coapp_install"),
+            text: downloadWeh._("coapp_install"),
             className: "btn-success",
             rpcMethod: "installCoApp"
           }]
         });
         return
       }
-      let b = F0;
-      if (m == "mpd" && (b = L0), !Fg.isMinimumVersion(c, b)) {
+      let minVersion = MIN_COAPP_VERSION;
+      if (strategy == "mpd" && (minVersion = MIN_COAPP_VERSION_MPD), !downloadUtil.isMinimumVersion(coappVersion, minVersion)) {
         try {
-          await qt.call("quit")
+          await downloadCoapp.call("quit")
         } catch {}
-        await new Promise(k => setTimeout(k, 2e3));
+        await new Promise(resolve => setTimeout(resolve, 2e3));
         let {
-          status: D,
-          info: P
-        } = await qt.check();
-        if (!D || !Fg.isMinimumVersion(P.version, b)) {
-          qt.call("quit"), ir.alert({
-            title: z._("coapp_outofdate"),
-            text: z._("coapp_outofdate_text", [P.version, b]),
+          status: status,
+          info: info
+        } = await downloadCoapp.check();
+        if (!status || !downloadUtil.isMinimumVersion(info.version, minVersion)) {
+          downloadCoapp.call("quit"), downloadDialog.alert({
+            title: downloadWeh._("coapp_outofdate"),
+            text: downloadWeh._("coapp_outofdate_text", [info.version, minVersion]),
             buttons: [{
-              text: z._("coapp_update"),
+              text: downloadWeh._("coapp_update"),
               className: "btn-success",
               rpcMethod: "installCoApp"
             }]
           });
           return
         }
-        c = P.version
+        coappVersion = info.version
       }
     }
-    let w = !1;
+    let needsQr = !1;
     {
-      let b = !1;
+      let licensed = !1;
       {
         let {
-          status: D
-        } = await B0.checkLicense();
-        b = (D = "accepted",true) || D == "unneeded"
+          status: status
+        } = await downloadLicense.checkLicense();
+        licensed = (status = "accepted",true) || status == "unneeded"
       }
-      if (!b) {
-        let D = fi.target == "google",
-          P = fi.target == "mozilla",
-          k = fi.target == "microsoft",
-          S = 120,
-          M = S * 60 * 1e3,
-          N = await B(Wt),
-          j = l - N,
-          W = "https://www.downloadhelper.net/convert";
-        if (i && (m == "mpd" || m == "hls" || u)) {
-          ir.alert({
-            title: z._("chrome_premium_required"),
-            text: z._("converter_reg_audio"),
+      if (!licensed) {
+        let isGoogle = downloadBuildOptions.target == "google",
+          isMozilla = downloadBuildOptions.target == "mozilla",
+          isMicrosoft = downloadBuildOptions.target == "microsoft",
+          limitMinutes = 120,
+          limitMs = limitMinutes * 60 * 1e3,
+          lastConvertTime = await getSetting(settingLastAdvancedDownload),
+          elapsed = startTime - lastConvertTime,
+          convertUrl = "https://www.downloadhelper.net/convert";
+        if (audioOnly && (strategy == "mpd" || strategy == "hls" || forbidden)) {
+          downloadDialog.alert({
+            title: downloadWeh._("chrome_premium_required"),
+            text: downloadWeh._("converter_reg_audio"),
             buttons: [{
-              text: z._("continue"),
+              text: downloadWeh._("continue"),
               className: "btn-success",
               rpcMethod: "goto",
-              rpcArgs: [W]
+              rpcArgs: [convertUrl]
             }]
           });
           return
         }
-        if (a) {
-          ir.alert({
-            title: z._("chrome_premium_required"),
-            text: z._("converter_needs_reg"),
+        if (needsConversion) {
+          downloadDialog.alert({
+            title: downloadWeh._("chrome_premium_required"),
+            text: downloadWeh._("converter_needs_reg"),
             buttons: [{
-              text: z._("continue"),
+              text: downloadWeh._("continue"),
               className: "btn-success",
               rpcMethod: "goto",
-              rpcArgs: [W]
+              rpcArgs: [convertUrl]
             }]
           });
           return
         }
-        if ((D || k || a) && (m == "mpd" || m == "hls" || u) && j < M) {
-          ir.alert({
-            title: z._("chrome_premium_required"),
-            text: z._("chrome_premium_hls", [S]),
+        if ((isGoogle || isMicrosoft || needsConversion) && (strategy == "mpd" || strategy == "hls" || forbidden) && elapsed < limitMs) {
+          downloadDialog.alert({
+            title: downloadWeh._("chrome_premium_required"),
+            text: downloadWeh._("chrome_premium_hls", [limitMinutes]),
             buttons: [{
-              text: z._("continue"),
+              text: downloadWeh._("continue"),
               className: "btn-success",
               rpcMethod: "goto",
-              rpcArgs: [W]
+              rpcArgs: [convertUrl]
             }]
           });
           return
         }
-        P && u && !i && (w = !0)
+        isMozilla && forbidden && !audioOnly && (needsQr = !0)
       }
     }
-    let p, _;
+    let filename, extension;
     {
-      _ = e.core_media.container.extension, (i || !e.core_media.av.video) &&
-        (_ = e.core_media.container.audio_only_extension);
-      let b = e.title ?? "video";
-      p = await V0.getFilenameFromTitle(b, _)
+      extension = hit.core_media.container.extension, (audioOnly || !hit.core_media.av.video) &&
+        (extension = hit.core_media.container.audio_only_extension);
+      let rawTitle = hit.title ?? "video";
+      filename = await downloadSmartname.getFilenameFromTitle(rawTitle, extension)
     }
-    if (m == "gallery") {
-      for (let b of e.gallery_urls) {
-        let P = {
-          url: new URL(b, e.topUrl)
+    if (strategy == "gallery") {
+      for (let galleryUrl of hit.gallery_urls) {
+        let downloadOptions = {
+          url: new URL(galleryUrl, hit.topUrl)
             .href
         };
-        fn.downloads.download(P)
+        downloadBrowser.downloads.download(downloadOptions)
       }
       return
     }
-    if (m == "youtube_bulk") {
-      q0.BulkDownload(e, i ? "quickdownloadaudio" : "quickdownload");
+    if (strategy == "youtube_bulk") {
+      downloadBulk.BulkDownload(hit, audioOnly ? "quickdownloadaudio" : "quickdownload");
       return
     }
-    if (m == "file_inbrowser") {
-      se.updateRunning(e.id, 1), se.update(e.id, {
+    if (strategy == "file_inbrowser") {
+      downloadHitsStore.updateRunning(hit.id, 1), downloadHitsStore.update(hit.id, {
         operation: "downloading",
         opStartDate: Date.now()
-      }), se.updateProgress(e.id, 0);
-      let b = {
-        url: e.url,
-        saveAs: !t,
-        filename: p
+      }), downloadHitsStore.updateProgress(hit.id, 0);
+      let downloadOptions = {
+        url: hit.url,
+        saveAs: !autoSave,
+        filename: filename
       };
-      fi.target == "mozilla" && (b.incognito = e.isPrivate);
-      let D = await fn.downloads.download(b);
-      n.set(e.id, {
-        inbrowser: D
+      downloadBuildOptions.target == "mozilla" && (downloadOptions.incognito = hit.isPrivate);
+      let downloadId = await downloadBrowser.downloads.download(downloadOptions);
+      activeDownloads.set(hit.id, {
+        inbrowser: downloadId
       });
-      let P = 0;
+      let lastBytes = 0;
       for (;;) {
-        let k = await fn.downloads.search({
-          id: D
+        let items = await downloadBrowser.downloads.search({
+          id: downloadId
         });
-        if (k.length > 0) {
-          let S = k[0],
-            M = S.bytesReceived - P;
-          P = S.bytesReceived;
-          let N = S.bytesReceived / S.totalBytes;
-          if (se.update(e.id, {
-              raw_bitrate: M
-            }), se.updateProgress(e.id, 100 * N), S.error) {
-            Ug("No download item found");
+        if (items.length > 0) {
+          let item = items[0],
+            bytesDelta = item.bytesReceived - lastBytes;
+          lastBytes = item.bytesReceived;
+          let fraction = item.bytesReceived / item.totalBytes;
+          if (downloadHitsStore.update(hit.id, {
+              raw_bitrate: bytesDelta
+            }), downloadHitsStore.updateProgress(hit.id, 100 * fraction), item.error) {
+            reportDownloadError("No download item found");
             break
           }
-          if (S.state == "complete") break
+          if (item.state == "complete") break
         } else break;
-        await new Promise(S => setTimeout(S, 1e3))
+        await new Promise(resolve => setTimeout(resolve, 1e3))
       }
       return "inbrowser"
     }
-    let f, g = s.lastDownloadDirectory;
+    let filePath, directory = prefs.lastDownloadDirectory;
     {
-      if (g = await Lg(g), t) f = (await qt.call("makeUniqueFileName", g,
-          p))
+      if (directory = await resolveDownloadDir(directory), autoSave) filePath = (await downloadCoapp.call("makeUniqueFileName", directory,
+          filename))
         .filePath;
       else {
-        let b = await ir.saveAs(p, g);
-        if (b) f = b.filePath, f.endsWith(`.${_}`) || (f += `.${_}`), g = b
+        let result = await downloadDialog.saveAs(filename, directory);
+        if (result) filePath = result.filePath, filePath.endsWith(`.${extension}`) || (filePath += `.${extension}`), directory = result
           .directory;
         else return
       }
-      g = await Lg(g), s.rememberLastDir && (s.lastDownloadDirectory = g)
+      directory = await resolveDownloadDir(directory), prefs.rememberLastDir && (prefs.lastDownloadDirectory = directory)
     }
-    if (se.updateRunning(e.id, 1), n.size >= s.downloadControlledMax) {
-      for (o.push(e.id);;)
-        if (await new Promise(b => setTimeout(b, 2e3)), n.size < s
-          .downloadControlledMax && o[0] == e.id) {
-          o.shift();
+    if (downloadHitsStore.updateRunning(hit.id, 1), activeDownloads.size >= prefs.downloadControlledMax) {
+      for (downloadQueue.push(hit.id);;)
+        if (await new Promise(resolve => setTimeout(resolve, 2e3)), activeDownloads.size < prefs
+          .downloadControlledMax && downloadQueue[0] == hit.id) {
+          downloadQueue.shift();
           break
         }
     }
-    n.set(e.id, {}), se.update(e.id, {
+    activeDownloads.set(hit.id, {}), downloadHitsStore.update(hit.id, {
       operation: "downloading",
       opStartDate: Date.now()
-    }), se.updateProgress(e.id, 1);
-    let h = 0,
-      T = (b, D) => {
-        let P = 1024 * (parseFloat(D.bitrate) ?? 0);
-        if (P > 0 && se.update(e.id, {
-            raw_bitrate: P
-          }), b < 0 && (b = 0), h > 0) {
-          let k = Math.floor(100 * b / h);
-          k > 100 && (k = 1 / 0), se.updateProgress(e.id, k)
+    }), downloadHitsStore.updateProgress(hit.id, 1);
+    let duration = 0,
+      onProgress = (received, stats) => {
+        let bitrate = 1024 * (parseFloat(stats.bitrate) ?? 0);
+        if (bitrate > 0 && downloadHitsStore.update(hit.id, {
+            raw_bitrate: bitrate
+          }), received < 0 && (received = 0), duration > 0) {
+          let percent = Math.floor(100 * received / duration);
+          percent > 100 && (percent = 1 / 0), downloadHitsStore.updateProgress(hit.id, percent)
         }
       },
-      x = b => n.set(e.id, {
-        ffmpeg_pid: b
+      onStart = pid => activeDownloads.set(hit.id, {
+        ffmpeg_pid: pid
       });
-    if (m == "hls") {
-      let b = e,
-        D = b.mediaManifest ?? b.videoMediaManifest ?? b.audioMediaManifest,
-        P = await Se.info(D, !0, e.headers);
-      h = parseFloat(P.format?.duration);
-      let k = {
-        filePath: f,
-        qr_code_needed: w,
-        headers: e.headers,
-        on_progress: T,
-        on_start: x
+    if (strategy == "hls") {
+      let hitData = hit,
+        manifestUrl = hitData.mediaManifest ?? hitData.videoMediaManifest ?? hitData.audioMediaManifest,
+        mediaInfo = await downloadConverter.info(manifestUrl, !0, hit.headers);
+      duration = parseFloat(mediaInfo.format?.duration);
+      let sideOptions = {
+        filePath: filePath,
+        qr_code_needed: needsQr,
+        headers: hit.headers,
+        on_progress: onProgress,
+        on_start: onStart
       };
-      i || !e.core_media.av.video ? await Se.sideDownload(null, b
-          .audioMediaManifest ?? b.mediaManifest, k) : b.mediaManifest ?
-        await Se.sideDownload(b.mediaManifest, null, k) : await Se
-        .sideDownload(b.videoMediaManifest, b.audioMediaManifest, k)
+      audioOnly || !hit.core_media.av.video ? await downloadConverter.sideDownload(null, hitData
+          .audioMediaManifest ?? hitData.mediaManifest, sideOptions) : hitData.mediaManifest ?
+        await downloadConverter.sideDownload(hitData.mediaManifest, null, sideOptions) : await downloadConverter
+        .sideDownload(hitData.videoMediaManifest, hitData.audioMediaManifest, sideOptions)
     }
-    if (m == "mpd") {
-      let b = e,
-        D = await Se.info(b.mpd_url, !0, e.headers);
-      h = parseFloat(D.format?.duration);
-      let P = {
-        filePath: f,
-        qr_code_needed: w,
-        headers: b.headers,
-        on_progress: T,
-        on_start: x
+    if (strategy == "mpd") {
+      let hitData = hit,
+        mediaInfo = await downloadConverter.info(hitData.mpd_url, !0, hit.headers);
+      duration = parseFloat(mediaInfo.format?.duration);
+      let sideOptions = {
+        filePath: filePath,
+        qr_code_needed: needsQr,
+        headers: hitData.headers,
+        on_progress: onProgress,
+        on_start: onStart
       };
-      i ? await Se.sideDownloadMPD(b.mpd_url, null, b.mpd_audio_id, P) :
-        await Se.sideDownloadMPD(b.mpd_url, b.mpd_video_id, b.mpd_audio_id,
-          P)
+      audioOnly ? await downloadConverter.sideDownloadMPD(hitData.mpd_url, null, hitData.mpd_audio_id, sideOptions) :
+        await downloadConverter.sideDownloadMPD(hitData.mpd_url, hitData.mpd_video_id, hitData.mpd_audio_id,
+          sideOptions)
     }
-    if (m == "file_coapp") {
-      if (h == 0) {
-        let D = await Se.info(e.url, !0, e.headers);
-        h = parseFloat(D.format?.duration)
+    if (strategy == "file_coapp") {
+      if (duration == 0) {
+        let mediaInfo = await downloadConverter.info(hit.url, !0, hit.headers);
+        duration = parseFloat(mediaInfo.format?.duration)
       }
-      let b = {
-        filePath: f,
-        qr_code_needed: w,
-        headers: e.headers,
-        on_progress: T,
-        on_start: x
+      let sideOptions = {
+        filePath: filePath,
+        qr_code_needed: needsQr,
+        headers: hit.headers,
+        on_progress: onProgress,
+        on_start: onStart
       };
-      i ? await Se.sideDownload(null, e.url, b) : await Se.sideDownload(e
-        .url, null, b)
+      audioOnly ? await downloadConverter.sideDownload(null, hit.url, sideOptions) : await downloadConverter.sideDownload(hit
+        .url, null, sideOptions)
     }
-    if (m == "youtube_format") {
-      if (!e.baseJs) throw new Error("baseJs expected");
-      let b, D;
-      if (e.videoUrl || e.url) {
-        let N = e.videoUrl ?? e.url;
-        D = new URL(N)
+    if (strategy == "youtube_format") {
+      if (!hit.baseJs) throw new Error("baseJs expected");
+      let audioUrlObj, videoUrlObj;
+      if (hit.videoUrl || hit.url) {
+        let videoUrlStr = hit.videoUrl ?? hit.url;
+        videoUrlObj = new URL(videoUrlStr)
       } else {
         console.warn("unconsistent hit");
         return
       }
-      e.audioUrl && (b = new URL(e.audioUrl));
-      let P = D.searchParams.get("n"),
-        k;
-      P && (k = await qt.call("vm.run", `((a) => {${e.baseJs}})('${P}')`), D
-        .searchParams.set("n", k)), b && b.searchParams.set("n", k);
-      let S = await Se.info(D.href, !0, e.headers);
-      h = parseFloat(S.format?.duration);
-      let M = {
-        filePath: f,
-        qr_code_needed: w,
-        headers: e.headers,
-        on_progress: T,
-        on_start: x
+      hit.audioUrl && (audioUrlObj = new URL(hit.audioUrl));
+      let nParam = videoUrlObj.searchParams.get("n"),
+        transformedN;
+      nParam && (transformedN = await downloadCoapp.call("vm.run", `((a) => {${hit.baseJs}})('${nParam}')`), videoUrlObj
+        .searchParams.set("n", transformedN)), audioUrlObj && audioUrlObj.searchParams.set("n", transformedN);
+      let mediaInfo = await downloadConverter.info(videoUrlObj.href, !0, hit.headers);
+      duration = parseFloat(mediaInfo.format?.duration);
+      let sideOptions = {
+        filePath: filePath,
+        qr_code_needed: needsQr,
+        headers: hit.headers,
+        on_progress: onProgress,
+        on_start: onStart
       };
-      b ? await Se.sideDownload(D.href, b.href, M) : await Se.sideDownload(D
-        .href, null, M)
+      audioUrlObj ? await downloadConverter.sideDownload(videoUrlObj.href, audioUrlObj.href, sideOptions) : await downloadConverter.sideDownload(videoUrlObj
+        .href, null, sideOptions)
     }
-    if (a) {
-      let b = (k, S) => {
-          k < 0 && (k = 0), se.update(e.id, {
-            raw_bitrate: 1024 * (parseFloat(S.bitrate) ?? 0)
-          }), h > 0 && se.updateProgress(e.id, Math.floor(100 * k / h))
+    if (needsConversion) {
+      let onConvProgress = (received, stats) => {
+          received < 0 && (received = 0), downloadHitsStore.update(hit.id, {
+            raw_bitrate: 1024 * (parseFloat(stats.bitrate) ?? 0)
+          }), duration > 0 && downloadHitsStore.updateProgress(hit.id, Math.floor(100 * received / duration))
         },
-        D = k => n.set(e.id, {
-          ffmpeg_pid: k
+        onConvStart = pid => activeDownloads.set(hit.id, {
+          ffmpeg_pid: pid
         });
-      se.update(e.id, {
+      downloadHitsStore.update(hit.id, {
         operation: "converting",
         opStartDate: Date.now()
       });
-      let P = await Se.convert2(f, null, r, b, D);
-      if (!s.converterKeepTmpFiles) try {
-        await qt.call("fs.unlink", f), f = P
+      let convertedPath = await downloadConverter.convert2(filePath, null, conversionTarget, onConvProgress, onConvStart);
+      if (!prefs.converterKeepTmpFiles) try {
+        await downloadCoapp.call("fs.unlink", filePath), filePath = convertedPath
       } catch {}
     }
-    return w && !s.qrMessageNotAgain && !e.bulk && z.ui.open("explainqr#" +
-      encodeURIComponent(e.id), {
-        type: s.alertDialogType,
+    return needsQr && !prefs.qrMessageNotAgain && !hit.bulk && downloadWeh.ui.open("explainqr#" +
+      encodeURIComponent(hit.id), {
+        type: prefs.alertDialogType,
         url: "content/explain-qr.html"
-      }), se.update(e.id, {
-      localFilePath: f
-    }), se.update(e.id, {
-      localDirectory: g
-    }), await Z(Wt, l), f
+      }), downloadHitsStore.update(hit.id, {
+      localFilePath: filePath
+    }), downloadHitsStore.update(hit.id, {
+      localDirectory: directory
+    }), await setSetting(settingLastAdvancedDownload, startTime), filePath
   }
-  async function mi(e, t, r, i, n, o) {
-    let s = await z.prefs,
-      a;
+  async function downloadAndNotify(hit, autoSave, conversionTarget, audioOnly, activeDownloads, downloadQueue) {
+    let prefs = await downloadWeh.prefs,
+      result;
     try {
-      if (a = await j0(e, t, r, i, n, o), a && (await H0.newDownload(), s
+      if (result = await performDownload(hit, autoSave, conversionTarget, audioOnly, activeDownloads, downloadQueue), result && (await downloadFunding.newDownload(), prefs
           .notifyReady)) {
-        let l = z._("file_ready", a == "inbrowser" ? e.title : a);
-        e.isPrivate && s.noPrivateNotification || fn.notifications.create(e
+        let message = downloadWeh._("file_ready", result == "inbrowser" ? hit.title : result);
+        hit.isPrivate && prefs.noPrivateNotification || downloadBrowser.notifications.create(hit
           .id, {
             type: "basic",
-            title: z._("vdh_notification"),
-            iconUrl: fn.runtime.getURL(
-              `/content2/icons/${fi.channel}-color.png`),
-            message: l
+            title: downloadWeh._("vdh_notification"),
+            iconUrl: downloadBrowser.runtime.getURL(
+              `/content2/icons/${downloadBuildOptions.channel}-color.png`),
+            message: message
           })
       }
-    } catch (l) {
-      console.error(l), Ug(l)
+    } catch (error) {
+      console.error(error), reportDownloadError(error)
     } finally {
-      n.delete(e.id), se.updateRunning(e.id, -1), se.updateProgress(e.id,
-        null), se.update(e.id, {
+      activeDownloads.delete(hit.id), downloadHitsStore.updateRunning(hit.id, -1), downloadHitsStore.updateProgress(hit.id,
+        null), downloadHitsStore.update(hit.id, {
         operation: null
       })
     }
-    return a
+    return result
   }
-  var Ug, z, Hg, q0, fi, se, qt, ir, Fg, B0, fn, V0, Se, H0, F0, L0, Lg, U0,
-    jg = C(() => {
+  var reportDownloadError, downloadWeh, downloadTbvws, downloadBulk, downloadBuildOptions, downloadHitsStore, downloadCoapp, downloadDialog, downloadUtil, downloadLicense, downloadBrowser, downloadSmartname, downloadConverter, downloadFunding, MIN_COAPP_VERSION, MIN_COAPP_VERSION_MPD, resolveDownloadDir, askDownloadMethod,
+    initDownloader = defineLazyModule(() => {
       "use strict";
-      Jr();
+      initSettings();
       ({
-        error: Ug
-      } = (Un(), R(Ln))), z = Y(), Hg = (kg(), R(Ng)), q0 = (qg(), R(Cg)),
-        fi = lr()
-        .buildOptions, se = (gn(), R(mn)), qt = (ft(), R(pt)), ir = (Yi(),
-          R(Ki)), Fg = (he(), R(ge)), B0 = (Kt(), R(Jt)), fn = z.browser,
-        V0 = (on(), R(nn)), Se = (di(), R(ui)), H0 = Vg(), F0 = "2.0.9",
-        L0 = "2.0.13", Lg = async e => {
+        error: reportDownloadError
+      } = (initAppLog(), toCommonjs(errorReportingNs))), downloadWeh = requireWeh(), downloadTbvws = (initTbvws(), toCommonjs(tbvwsNs)), downloadBulk = (initYoutubeBulk(), toCommonjs(youtubeBulkNs)),
+        downloadBuildOptions = requireBuildInfo()
+        .buildOptions, downloadHitsStore = (initHitsStore(), toCommonjs(hitsStoreNs)), downloadCoapp = (initCoapp(), toCommonjs(coappNs)), downloadDialog = (initDialogs(),
+          toCommonjs(dialogNs)), downloadUtil = (initCoreUtil(), toCommonjs(coreUtilNs)), downloadLicense = (initLicense(), toCommonjs(licenseNs)), downloadBrowser = downloadWeh.browser,
+        downloadSmartname = (initSmartname(), toCommonjs(smartnameNs)), downloadConverter = (initConverter(), toCommonjs(coappSideNs)), downloadFunding = requireFunding(), MIN_COAPP_VERSION = "2.0.9",
+        MIN_COAPP_VERSION_MPD = "2.0.13", resolveDownloadDir = async dir => {
           try {
-            e = await qt.call("path.homeJoin", e), await qt.call(
-              "fs.mkdirp", e)
-          } catch (t) {
-            console.error("mkdir error", t, e)
+            dir = await downloadCoapp.call("path.homeJoin", dir), await downloadCoapp.call(
+              "fs.mkdirp", dir)
+          } catch (err) {
+            console.error("mkdir error", err, dir)
           }
-          return e
-        }, U0 = () => ir.alert({
-          title: z._("download_method"),
-          text: [z._("download_modes1"), z._("download_modes2")],
+          return dir
+        }, askDownloadMethod = () => downloadDialog.alert({
+          title: downloadWeh._("download_method"),
+          text: [downloadWeh._("download_modes1"), downloadWeh._("download_modes2")],
           height: 350,
           buttons: [{
-            text: z._("download_with_browser"),
+            text: downloadWeh._("download_with_browser"),
             className: "btn-primary",
             close: !0,
             trigger: {
               mode: "browser"
             }
           }, {
-            text: z._("download_with_coapp"),
+            text: downloadWeh._("download_with_coapp"),
             className: "btn-success",
             close: !0,
             trigger: {
               mode: "coapp"
             }
           }],
-          notAgain: z._("download_method_not_again")
+          notAgain: downloadWeh._("download_method_not_again")
         })
     });
-  var oa = {};
-  ie(oa, {
-    availableActions: () => Qg,
-    describeAll: () => t1,
-    execute: () => zg,
-    execute_default: () => e1
+  var actionsNs = {};
+  defineExports(actionsNs, {
+    availableActions: () => availableActions,
+    describeAll: () => describeAll,
+    execute: () => execute,
+    execute_default: () => executeDefault
   });
-  async function Qg(e) {
-    let t = _n.getHit(e);
-    if (!t) return [];
-    let r = ["details", "copyurl"],
-      i = t.operation == "downloading",
-      n = t.operation == "converting",
-      o = !!t.localFilePath,
-      s = !!t.core_media?.av.audio,
-      a = t.core_media?.builder == "YoutubeBulk",
-      l = [],
-      u = "";
-    return Ze.has(t.id) ? (u = "abort", l = ["abort", ...r]) : o ? (u = (
-        await H.prefs)["default-action-1"], Ye.isDegradedVersion() ? l = [
-        "deletehit", ...r
-      ] : l = ["openlocalfile", "openlocalcontainer", "deletehit", ...r]) :
-      !n && !i ? (u = (await H.prefs)["default-action-0"], l = [
+  async function availableActions(hitId) {
+    let hit = actionsStore.getHit(hitId);
+    if (!hit) return [];
+    let baseActions = ["details", "copyurl"],
+      isDownloading = hit.operation == "downloading",
+      isConverting = hit.operation == "converting",
+      hasLocalFile = !!hit.localFilePath,
+      hasAudio = !!hit.core_media?.av.audio,
+      isBulk = hit.core_media?.builder == "YoutubeBulk",
+      actions = [],
+      defaultAction = "";
+    return actionsActiveDownloads.has(hit.id) ? (defaultAction = "abort", actions = ["abort", ...baseActions]) : hasLocalFile ? (defaultAction = (
+        await actionsWeh.prefs)["default-action-1"], actionsCoapp.isDegradedVersion() ? actions = [
+        "deletehit", ...baseActions
+      ] : actions = ["openlocalfile", "openlocalcontainer", "deletehit", ...baseActions]) :
+      !isConverting && !isDownloading ? (defaultAction = (await actionsWeh.prefs)["default-action-0"], actions = [
         "quickdownload", "download"
-      ], l = [...l, "quickdownloadaudio", "downloadaudio"], l = [...l,
-        "downloadconvert", "blacklist", "deletehit", ...r
-      ]) : (u = "copyurl", l = r), l.sort((d, c) => d == c ? 0 : d == u ? -
-        1 : c == u ? 1 : 0)
+      ], actions = [...actions, "quickdownloadaudio", "downloadaudio"], actions = [...actions,
+        "downloadconvert", "blacklist", "deletehit", ...baseActions
+      ]) : (defaultAction = "copyurl", actions = baseActions), actions.sort((actionA, actionB) => actionA == actionB ? 0 : actionA == defaultAction ? -
+        1 : actionB == defaultAction ? 1 : 0)
   }
 
-  function W0(e) {
-    H.ui.open("details#" + encodeURIComponent(e.id), {
+  function openDetails(hit) {
+    actionsWeh.ui.open("details#" + encodeURIComponent(hit.id), {
       type: "tab",
       url: "content/details.html"
     })
   }
-  async function X0(e) {
-    let t;
-    if (e.core_media?.builder == "Hls" || e.core_media?.builder ==
+  async function copyHitUrl(hit) {
+    let url;
+    if (hit.core_media?.builder == "Hls" || hit.core_media?.builder ==
       "RawHls") {
-      let r = e;
-      t = r.videoMediaManifest ?? r.audioMediaManifest ?? r.mediaManifest ??
-        r.masterManifest
-    } else e.core_media?.builder == "MPD" ? t = e.mpd_url : e.core_media
-      ?.builder == "HTTPMedia" && (t = e.url);
-    if (t) {
+      let hitData = hit;
+      url = hitData.videoMediaManifest ?? hitData.audioMediaManifest ?? hitData.mediaManifest ??
+        hitData.masterManifest
+    } else hit.core_media?.builder == "MPD" ? url = hit.mpd_url : hit.core_media
+      ?.builder == "HTTPMedia" && (url = hit.url);
+    if (url) {
       try {
-        lu.call("main", "copyToClipboard", t)
+        actionsRpc.call("main", "copyToClipboard", url)
       } catch {}
       try {
-        await navigator.clipboard.writeText(t)
+        await navigator.clipboard.writeText(url)
       } catch {}
       try {
-        await sa.scripting.executeScript({
+        await actionsBrowser.scripting.executeScript({
           target: {
-            tabId: e.tabId
+            tabId: hit.tabId
           },
-          func: r => navigator.clipboard.writeText(r),
-          args: [t]
+          func: text => navigator.clipboard.writeText(text),
+          args: [url]
         })
       } catch {}
     }
   }
-  async function G0(e) {
-    _n.dispatch("hit.delete", e.id)
+  async function deleteHit(hit) {
+    actionsStore.dispatch("hit.delete", hit.id)
   }
-  async function Q0(e) {
-    "localFilePath" in e && await gi.open(e.localFilePath)
+  async function openLocalFile(hit) {
+    "localFilePath" in hit && await actionsConverter.open(hit.localFilePath)
   }
-  async function z0(e) {
-    "localDirectory" in e && await gi.open(e.localDirectory)
+  async function openLocalContainer(hit) {
+    "localDirectory" in hit && await actionsConverter.open(hit.localDirectory)
   }
-  async function $0(e) {
-    let t = Ze.get(e.id);
-    if (!t) throw new Error("Attempt to abord non-downloading hit");
-    t.inbrowser && sa.downloads.cancel(e.id), t.ffmpeg_pid && await Ye.call(
-      "abortConvert", t.ffmpeg_pid)
+  async function abortDownload(hit) {
+    let entry = actionsActiveDownloads.get(hit.id);
+    if (!entry) throw new Error("Attempt to abord non-downloading hit");
+    entry.inbrowser && actionsBrowser.downloads.cancel(hit.id), entry.ffmpeg_pid && await actionsCoapp.call(
+      "abortConvert", entry.ffmpeg_pid)
   }
-  async function J0(e) {
-    let t = await H.prefs,
-      r = "dlconv#" + e.id;
-    await H.rpc.call("main", "embed", sa.runtime.getURL(
-      "content/dlconv-embed.html?panel=" + r));
+  async function downloadConvert(hit) {
+    let prefs = await actionsWeh.prefs,
+      panelId = "dlconv#" + hit.id;
+    await actionsWeh.rpc.call("main", "embed", actionsBrowser.runtime.getURL(
+      "content/dlconv-embed.html?panel=" + panelId));
     let {
-      outputConfigId: i
-    } = await H.wait(r);
-    return t.dlconvLastOutput = i, await mi(e, !0, i, !1, Ze, hn)
+      outputConfigId: outputConfigId
+    } = await actionsWeh.wait(panelId);
+    return prefs.dlconvLastOutput = outputConfigId, await downloadAndNotify(hit, !0, outputConfigId, !1, actionsActiveDownloads, actionsDownloadQueue)
   }
-  async function K0(e) {
-    let t = "content/blacklist-embed.html?panel=blacklist#" +
-      encodeURIComponent(e.id);
-    await lu.call("main", "embed", sa.runtime.getURL(t))
+  async function blacklistHit(hit) {
+    let embedUrl = "content/blacklist-embed.html?panel=blacklist#" +
+      encodeURIComponent(hit.id);
+    await actionsRpc.call("main", "embed", actionsBrowser.runtime.getURL(embedUrl))
   }
-  async function Y0() {
+  async function mergeLocalFiles() {
     {
       let {
-        status: a,
-        info: l
-      } = await Ye.check();
-      if (!a) {
-        Vr.alert({
-          title: H._("coapp_required"),
-          text: H._("coapp_required_text"),
+        status: status,
+        info: info
+      } = await actionsCoapp.check();
+      if (!status) {
+        actionsDialog.alert({
+          title: actionsWeh._("coapp_required"),
+          text: actionsWeh._("coapp_required_text"),
           buttons: [{
-            text: H._("coapp_install"),
+            text: actionsWeh._("coapp_install"),
             className: "btn-success",
             rpcMethod: "installCoApp"
           }]
         });
         return
       }
-      let u = l.version;
-      if (!Wg.isMinimumVersion(u, su)) {
+      let version = info.version;
+      if (!actionsUtil.isMinimumVersion(version, MERGE_MIN_COAPP_VERSION)) {
         try {
-          await Ye.call("quit")
+          await actionsCoapp.call("quit")
         } catch {}
-        await new Promise(m => setTimeout(m, 2e3));
+        await new Promise(resolve => setTimeout(resolve, 2e3));
         let {
-          status: d,
-          info: c
-        } = await Ye.check();
-        if (!d || !Wg.isMinimumVersion(c.version, su)) {
-          Ye.call("quit"), Vr.alert({
-            title: H._("coapp_outofdate"),
-            text: H._("coapp_outofdate_text", [c.version, su]),
+          status: status2,
+          info: info2
+        } = await actionsCoapp.check();
+        if (!status2 || !actionsUtil.isMinimumVersion(info2.version, MERGE_MIN_COAPP_VERSION)) {
+          actionsCoapp.call("quit"), actionsDialog.alert({
+            title: actionsWeh._("coapp_outofdate"),
+            text: actionsWeh._("coapp_outofdate_text", [info2.version, MERGE_MIN_COAPP_VERSION]),
             buttons: [{
-              text: H._("coapp_update"),
+              text: actionsWeh._("coapp_update"),
               className: "btn-success",
               rpcMethod: "installCoApp"
             }]
@@ -14653,13 +14653,13 @@ const store = createStore(
       }
     } {
       let {
-        status: a
-      } = await Gg.checkLicense();
-      if (!((a = "accepted",true) || a == "unneeded")) {
-        Vr.alert({
-          title: H._("converter_needs_reg"),
+        status: licenseStatus
+      } = await actionsLicense.checkLicense();
+      if (!((licenseStatus = "accepted",true) || licenseStatus == "unneeded")) {
+        actionsDialog.alert({
+          title: actionsWeh._("converter_needs_reg"),
           buttons: [{
-            text: H._("get_conversion_license"),
+            text: actionsWeh._("get_conversion_license"),
             className: "btn-success",
             rpcMethod: "goto",
             rpcArgs: ["https://www.downloadhelper.net/convert"]
@@ -14668,76 +14668,76 @@ const store = createStore(
         return
       }
     }
-    H.ui.close("main");
-    let e, t, r, i;
+    actionsWeh.ui.close("main");
+    let videoPath, audioPath, outputPath, outputDir;
     {
-      let a = await Ye.call("filepicker", "pick_file", "~/dwhelper",
+      let pickResult = await actionsCoapp.call("filepicker", "pick_file", "~/dwhelper",
           "Video file"),
-        l = a.split(`
+        lines = pickResult.split(`
 `);
-      e = l[0];
-      let u = l[2];
-      if (!e) return;
-      let d = u.split("."),
-        c = d.pop(),
-        m = d.join(".") + "-combined." + c;
-      if (a = await Ye.call("filepicker", "pick_file", "~/dwhelper",
-          "Audio file"), l = a.split(`
-`), t = l[0], !t || (a = await Ye.call("filepicker", "save_file", "~/dwhelper",
-          "Save as\u2026", m), l = a.split(`
-`), r = l[0], i = l[1], !r || !i)) return
+      videoPath = lines[0];
+      let videoDisplayPath = lines[2];
+      if (!videoPath) return;
+      let nameParts = videoDisplayPath.split("."),
+        ext = nameParts.pop(),
+        combinedName = nameParts.join(".") + "-combined." + ext;
+      if (pickResult = await actionsCoapp.call("filepicker", "pick_file", "~/dwhelper",
+          "Audio file"), lines = pickResult.split(`
+`), audioPath = lines[0], !audioPath || (pickResult = await actionsCoapp.call("filepicker", "save_file", "~/dwhelper",
+          "Save as\u2026", combinedName), lines = pickResult.split(`
+`), outputPath = lines[0], outputDir = lines[1], !outputPath || !outputDir)) return
     }
-    let n = {
-      id: r,
-      group: r,
+    let mergeHit = {
+      id: outputPath,
+      group: outputPath,
       operation: "converting",
       status: "inactive",
       opStartDate: Date.now(),
       descrPrefix: "merge",
-      title: r
+      title: outputPath
     };
-    _n.dispatch("hit.new", n);
-    let o = (a, l) => {
-        a < 0 && (a = 0);
+    actionsStore.dispatch("hit.new", mergeHit);
+    let onProgress = (received, stats) => {
+        received < 0 && (received = 0);
         try {
-          Ie.update(n.id, {
-            raw_bitrate: 1024 * parseFloat(l.bitrate)
+          actionsHitsStore.update(mergeHit.id, {
+            raw_bitrate: 1024 * parseFloat(stats.bitrate)
           })
         } catch {}
       },
-      s = a => Ze.set(n.id, {
-        ffmpeg_pid: a
+      onStart = pid => actionsActiveDownloads.set(mergeHit.id, {
+        ffmpeg_pid: pid
       });
     try {
-      Ie.updateRunning(n.id, 1), Ie.update(n.id, {
-        localFilePath: r
-      }), Ie.update(n.id, {
-        localDirectory: i
-      }), await gi.sideDownload(e, t, {
-        filePath: r,
+      actionsHitsStore.updateRunning(mergeHit.id, 1), actionsHitsStore.update(mergeHit.id, {
+        localFilePath: outputPath
+      }), actionsHitsStore.update(mergeHit.id, {
+        localDirectory: outputDir
+      }), await actionsConverter.sideDownload(videoPath, audioPath, {
+        filePath: outputPath,
         merge: !0,
-        on_progress: o,
-        on_start: s
+        on_progress: onProgress,
+        on_start: onStart
       })
-    } catch (a) {
-      console.error(a), Xg(a)
+    } catch (error) {
+      console.error(error), reportActionError(error)
     } finally {
-      Ze.delete(n.id), Ie.updateRunning(n.id, -1), Ie.update(n.id, {
+      actionsActiveDownloads.delete(mergeHit.id), actionsHitsStore.updateRunning(mergeHit.id, -1), actionsHitsStore.update(mergeHit.id, {
         operation: null
       })
     }
   }
-  async function Z0() {
+  async function convertLocalFiles() {
     {
       let {
-        status: s
-      } = await Ye.check();
-      if (!s) {
-        Vr.alert({
-          title: H._("coapp_required"),
-          text: H._("coapp_required_text"),
+        status: status
+      } = await actionsCoapp.check();
+      if (!status) {
+        actionsDialog.alert({
+          title: actionsWeh._("coapp_required"),
+          text: actionsWeh._("coapp_required_text"),
           buttons: [{
-            text: H._("coapp_install"),
+            text: actionsWeh._("coapp_install"),
             className: "btn-success",
             rpcMethod: "installCoApp"
           }]
@@ -14746,13 +14746,13 @@ const store = createStore(
       }
     } {
       let {
-        status: s
-      } = await Gg.checkLicense();
-      if (!((s = "accepted",true) || s == "unneeded")) {
-        Vr.alert({
-          title: H._("converter_needs_reg"),
+        status: licenseStatus
+      } = await actionsLicense.checkLicense();
+      if (!((licenseStatus = "accepted",true) || licenseStatus == "unneeded")) {
+        actionsDialog.alert({
+          title: actionsWeh._("converter_needs_reg"),
           buttons: [{
-            text: H._("get_conversion_license"),
+            text: actionsWeh._("get_conversion_license"),
             className: "btn-success",
             rpcMethod: "goto",
             rpcArgs: ["https://www.downloadhelper.net/convert"]
@@ -14761,1256 +14761,1256 @@ const store = createStore(
         return
       }
     }
-    H.ui.close("main");
-    let e = await H.prefs,
-      t = await Vr.selectConvertFiles(e.lastDownloadDirectory ||
+    actionsWeh.ui.close("main");
+    let prefs = await actionsWeh.prefs,
+      selection = await actionsDialog.selectConvertFiles(prefs.lastDownloadDirectory ||
       "dwhelper");
-    if (!t) return;
-    let r = t.selected,
-      i = t.outputConfig,
-      n = t.directory;
-    e.dlconvLastOutput = i;
-    let o = null;
-    if (r.length == 1) {
-      let s = gi.defaultOutputConfigs[i],
-        a = r[0].split(".");
-      a[a.length - 1] = s.ext, o = a.join(".");
-      let l = await Vr.saveAs(o, n);
-      if (l) o = l.filePath, o.endsWith(`.${s.ext}`) || (o += `.${s.ext}`);
+    if (!selection) return;
+    let selectedFiles = selection.selected,
+      outputConfigId = selection.outputConfig,
+      directory = selection.directory;
+    prefs.dlconvLastOutput = outputConfigId;
+    let savePath = null;
+    if (selectedFiles.length == 1) {
+      let outputConfig = actionsConverter.defaultOutputConfigs[outputConfigId],
+        nameParts = selectedFiles[0].split(".");
+      nameParts[nameParts.length - 1] = outputConfig.ext, savePath = nameParts.join(".");
+      let saveResult = await actionsDialog.saveAs(savePath, directory);
+      if (saveResult) savePath = saveResult.filePath, savePath.endsWith(`.${outputConfig.ext}`) || (savePath += `.${outputConfig.ext}`);
       else return
     }
-    for (let s of r) {
-      s = await Ye.call("path.homeJoin", n, s);
-      let a = await gi.info(s, !0),
-        l = parseFloat(a.format?.duration),
-        u = {
-          id: s,
-          group: s,
+    for (let file of selectedFiles) {
+      file = await actionsCoapp.call("path.homeJoin", directory, file);
+      let mediaInfo = await actionsConverter.info(file, !0),
+        duration = parseFloat(mediaInfo.format?.duration),
+        convertHit = {
+          id: file,
+          group: file,
           operation: "converting",
           status: "inactive",
           opStartDate: Date.now(),
           descrPrefix: "local convert",
-          title: s
+          title: file
         };
-      _n.dispatch("hit.new", u);
-      let d = (m, w) => {
-          m < 0 && (m = 0);
+      actionsStore.dispatch("hit.new", convertHit);
+      let onProgress = (received, stats) => {
+          received < 0 && (received = 0);
           try {
-            Ie.update(u.id, {
-              raw_bitrate: 1024 * parseFloat(w.bitrate)
+            actionsHitsStore.update(convertHit.id, {
+              raw_bitrate: 1024 * parseFloat(stats.bitrate)
             })
           } catch {}
-          l > 0 && Ie.updateProgress(u.id, Math.floor(100 * m / l))
+          duration > 0 && actionsHitsStore.updateProgress(convertHit.id, Math.floor(100 * received / duration))
         },
-        c = m => Ze.set(u.id, {
-          ffmpeg_pid: m
+        onStart = pid => actionsActiveDownloads.set(convertHit.id, {
+          ffmpeg_pid: pid
         });
       try {
-        Ie.updateRunning(u.id, 1), Ie.update(u.id, {
-          localFilePath: s
-        }), Ie.update(u.id, {
-          localDirectory: n
-        }), s = await gi.convert2(s, o, i, d, c)
+        actionsHitsStore.updateRunning(convertHit.id, 1), actionsHitsStore.update(convertHit.id, {
+          localFilePath: file
+        }), actionsHitsStore.update(convertHit.id, {
+          localDirectory: directory
+        }), file = await actionsConverter.convert2(file, savePath, outputConfigId, onProgress, onStart)
       } finally {
-        Ze.delete(u.id), Ie.updateRunning(u.id, -1), Ie.update(u.id, {
+        actionsActiveDownloads.delete(convertHit.id), actionsHitsStore.updateRunning(convertHit.id, -1), actionsHitsStore.update(convertHit.id, {
           operation: null
         })
       }
     }
   }
 
-  function zg(e, t) {
-    let r = _n.getHit(t),
-      i = !!r.running,
-      n = !!r.localFilePath,
-      o = !i && !n,
-      s = !0;
+  function execute(action, hitId) {
+    let hit = actionsStore.getHit(hitId),
+      isRunning = !!hit.running,
+      hasLocalFile = !!hit.localFilePath,
+      isIdle = !isRunning && !hasLocalFile,
+      handled = !0;
     try {
-      if (e == "details" && W0(r), e == "copyurl") X0(r);
+      if (action == "details" && openDetails(hit), action == "copyurl") copyHitUrl(hit);
       else {
-        if (!i && e == "deletehit") return G0(r), s;
-        if (o) {
-          if (e == "download" && mi(r, !1, null, !1, Ze, hn), e ==
-            "quickdownload" && mi(r, !0, null, !1, Ze, hn), e ==
-            "downloadaudio" && mi(r, !1, null, !0, Ze, hn), e ==
-            "quickdownloadaudio" && mi(r, !0, null, !0, Ze, hn), e ==
-            "downloadconvert") return J0(r), s;
-          if (e == "blacklist") return K0(r), s
+        if (!isRunning && action == "deletehit") return deleteHit(hit), handled;
+        if (isIdle) {
+          if (action == "download" && downloadAndNotify(hit, !1, null, !1, actionsActiveDownloads, actionsDownloadQueue), action ==
+            "quickdownload" && downloadAndNotify(hit, !0, null, !1, actionsActiveDownloads, actionsDownloadQueue), action ==
+            "downloadaudio" && downloadAndNotify(hit, !1, null, !0, actionsActiveDownloads, actionsDownloadQueue), action ==
+            "quickdownloadaudio" && downloadAndNotify(hit, !0, null, !0, actionsActiveDownloads, actionsDownloadQueue), action ==
+            "downloadconvert") return downloadConvert(hit), handled;
+          if (action == "blacklist") return blacklistHit(hit), handled
         } else {
-          if (i && e == "abort") return $0(r), s;
-          n && (e == "openlocalfile" && Q0(r), e == "openlocalcontainer" &&
-            z0(r))
+          if (isRunning && action == "abort") return abortDownload(hit), handled;
+          hasLocalFile && (action == "openlocalfile" && openLocalFile(hit), action == "openlocalcontainer" &&
+            openLocalContainer(hit))
         }
       }
-    } catch (a) {
-      return Xg(a), s
+    } catch (error) {
+      return reportActionError(error), handled
     }
-    return !s
+    return !handled
   }
-  async function e1(e) {
-    let t = await Qg(e);
-    return t.length > 0 ? zg(t[0], e) : !1
+  async function executeDefault(hitId) {
+    let actions = await availableActions(hitId);
+    return actions.length > 0 ? execute(actions[0], hitId) : !1
   }
 
-  function t1() {
+  function describeAll() {
     return {
       abort: {
         name: "abort",
-        title: H._("action_abort_title"),
-        description: H._("action_abort_description"),
+        title: actionsWeh._("action_abort_title"),
+        description: actionsWeh._("action_abort_description"),
         icon: "images/icon-action-abort-64.png",
         icon18: "images/icon-action-abort-64.png",
         catPriority: 2
       },
       download: {
         name: "download",
-        title: H._("action_download_title"),
-        description: H._("action_download_description"),
+        title: actionsWeh._("action_download_title"),
+        description: actionsWeh._("action_download_description"),
         icon: "images/icon-action-download-64.png",
         icon18: "images/icon-action-download-64.png",
         catPriority: 0
       },
       quickdownload: {
         name: "quickdownload",
-        title: H._("action_quickdownload_title"),
-        description: H._("action_quickdownload_description"),
+        title: actionsWeh._("action_quickdownload_title"),
+        description: actionsWeh._("action_quickdownload_description"),
         icon: "images/icon-action-quick-download2-64.png",
         icon18: "images/icon-action-quick-download2-64.png",
         catPriority: 0
       },
       downloadaudio: {
         name: "downloadaudio",
-        title: H._("action_downloadaudio_title"),
-        description: H._("action_downloadaudio_description"),
+        title: actionsWeh._("action_downloadaudio_title"),
+        description: actionsWeh._("action_downloadaudio_description"),
         icon: "images/icon-action-download-only-sound-64.png",
         icon18: "images/icon-action-download-only-sound-64.png",
         catPriority: 0
       },
       quickdownloadaudio: {
         name: "quickdownloadaudio",
-        title: H._("action_quickdownloadaudio_title"),
-        description: H._("action_quickdownloadaudio_description"),
+        title: actionsWeh._("action_quickdownloadaudio_title"),
+        description: actionsWeh._("action_quickdownloadaudio_description"),
         icon: "images/icon-action-quick-download-only-sound-64.png",
         icon18: "images/icon-action-quick-download-only-sound-64.png",
         catPriority: 0
       },
       downloadconvert: {
         name: "downloadconvert",
-        title: H._("action_downloadconvert_title"),
-        description: H._("action_downloadconvert_description"),
+        title: actionsWeh._("action_downloadconvert_title"),
+        description: actionsWeh._("action_downloadconvert_description"),
         icon: "images/icon-action-download-convert-64.png",
         icon18: "images/icon-action-download-convert-64.png",
         catPriority: 0
       },
       details: {
         name: "details",
-        title: H._("action_details_title"),
-        description: H._("action_details_description"),
+        title: actionsWeh._("action_details_title"),
+        description: actionsWeh._("action_details_description"),
         icon: "images/icon-action-details-64.png",
         icon18: "images/icon-action-details-64.png",
         catPriority: 0
       },
       copyurl: {
         name: "copyurl",
-        title: H._("action_copyurl_title"),
-        description: H._("action_copyurl_description"),
+        title: actionsWeh._("action_copyurl_title"),
+        description: actionsWeh._("action_copyurl_description"),
         icon: "images/icon-action-copy-link-64.png",
         icon18: "images/icon-action-copy-link-64.png",
         catPriority: 0
       },
       deletehit: {
         name: "deletehit",
-        title: H._("action_deletehit_title"),
-        description: H._("action_deletehit_description"),
+        title: actionsWeh._("action_deletehit_title"),
+        description: actionsWeh._("action_deletehit_description"),
         icon: "images/icon-action-delete-64.png",
         icon18: "images/icon-action-delete-64.png",
         catPriority: 0
       },
       pin: {
         name: "pin",
-        title: H._("action_pin_title"),
-        description: H._("action_pin_description"),
+        title: actionsWeh._("action_pin_title"),
+        description: actionsWeh._("action_pin_description"),
         icon: "images/icon-action-pin-64.png",
         icon18: "images/icon-action-pin-64.png",
         catPriority: 0
       },
       blacklist: {
         name: "blacklist",
-        title: H._("action_blacklist_title"),
-        description: H._("action_blacklist_description"),
+        title: actionsWeh._("action_blacklist_title"),
+        description: actionsWeh._("action_blacklist_description"),
         icon: "images/icon-action-blacklist-64.png",
         icon18: "images/icon-action-blacklist-64.png",
         catPriority: 0
       },
       openlocalfile: {
         name: "openlocalfile",
-        title: H._("action_openlocalfile_title"),
-        description: H._("action_openlocalfile_description"),
+        title: actionsWeh._("action_openlocalfile_title"),
+        description: actionsWeh._("action_openlocalfile_description"),
         icon: "images/icon-action-play-64.png",
         icon18: "images/icon-action-play-64.png",
         catPriority: 1
       },
       openlocalcontainer: {
         name: "openlocalcontainer",
-        title: H._("action_openlocalcontainer_title"),
-        description: H._("action_openlocalcontainer_description"),
+        title: actionsWeh._("action_openlocalcontainer_title"),
+        description: actionsWeh._("action_openlocalcontainer_description"),
         icon: "images/icon-action-open-dir-64.png",
         icon18: "images/icon-action-open-dir-64.png",
         catPriority: 1
       }
     }
   }
-  var Xg, Ye, H, lu, _n, gi, Vr, Gg, sa, Ie, Wg, Ze, hn, su, aa = C(() => {
+  var reportActionError, actionsCoapp, actionsWeh, actionsRpc, actionsStore, actionsConverter, actionsDialog, actionsLicense, actionsBrowser, actionsHitsStore, actionsUtil, actionsActiveDownloads, actionsDownloadQueue, MERGE_MIN_COAPP_VERSION, initActions = defineLazyModule(() => {
     "use strict";
-    jg();
+    initDownloader();
     ({
-      error: Xg
-    } = (Un(), R(Ln))), Ye = (ft(), R(pt)), H = Y(), lu = Ft(), _n = (
-      ze(), R(Qe)), gi = (di(), R(ui)), Vr = (Yi(), R(Ki)), Gg = (Kt(), R(
-        Jt)), sa = H.browser, Ie = (gn(), R(mn)), Wg = (he(), R(ge)), Ze =
-      new Map, hn = [];
-    su = "2.0.17";
-    lu.listen({
-      convertLocal: Z0,
-      mergeLocal: Y0
+      error: reportActionError
+    } = (initAppLog(), toCommonjs(errorReportingNs))), actionsCoapp = (initCoapp(), toCommonjs(coappNs)), actionsWeh = requireWeh(), actionsRpc = requireRpc(), actionsStore = (
+      initStore(), toCommonjs(storeNs)), actionsConverter = (initConverter(), toCommonjs(coappSideNs)), actionsDialog = (initDialogs(), toCommonjs(dialogNs)), actionsLicense = (initLicense(), toCommonjs(
+        licenseNs)), actionsBrowser = actionsWeh.browser, actionsHitsStore = (initHitsStore(), toCommonjs(hitsStoreNs)), actionsUtil = (initCoreUtil(), toCommonjs(coreUtilNs)), actionsActiveDownloads =
+      new Map, actionsDownloadQueue = [];
+    MERGE_MIN_COAPP_VERSION = "2.0.17";
+    actionsRpc.listen({
+      convertLocal: convertLocalFiles,
+      mergeLocal: mergeLocalFiles
     })
   });
-  var mn = {};
-  ie(mn, {
-    clearHits: () => Jg,
-    create: () => l1,
-    progressReducer: () => a1,
-    reducer: () => f1,
-    setHitOperation: () => p1,
-    update: () => $g,
-    updateOriginal: () => d1,
-    updateProgress: () => c1,
-    updateRunning: () => u1
+  var hitsStoreNs = {};
+  defineExports(hitsStoreNs, {
+    clearHits: () => clearHits,
+    create: () => createHit,
+    progressReducer: () => progressReducer,
+    reducer: () => hitsReducer,
+    setHitOperation: () => setHitOperation,
+    update: () => update,
+    updateOriginal: () => updateOriginal,
+    updateProgress: () => updateProgress,
+    updateRunning: () => updateRunning
   });
 
-  function a1(e = {}, t) {
-    let r;
-    switch (t.type) {
+  function progressReducer(state = {}, action) {
+    let current;
+    switch (action.type) {
       case "hit.progress":
-        r = e[t.payload.id], r !== t.payload.progress && (e = Object
-        .assign({}, e, {
-            [t.payload.id]: t.payload.progress
+        current = state[action.payload.id], current !== action.payload.progress && (state = Object
+        .assign({}, state, {
+            [action.payload.id]: action.payload.progress
           }));
         break;
       case "hit.clear-progress":
-        r = e[t.payload], typeof r < "u" && (e = Object.assign({}, e),
-          delete e[t.payload]);
+        current = state[action.payload], typeof current < "u" && (state = Object.assign({}, state),
+          delete state[action.payload]);
         break
     }
-    return e
+    return state
   }
 
-  function s1(e) {
-    let t = e.status,
+  function computeHitStatus(hit) {
+    let status = hit.status,
       {
-        url: r,
-        urls: i
-      } = o1.current();
-    return e.status == "running" ? "running" : (e.status == "active" && e
-      .topUrl != r ? e.topUrl in i ? t = "inactive" : t = "orphan" : e
-      .status == "inactive" && !(e.topUrl in i) ? t = "orphan" : (e
-        .status == "inactive" || e.status == "orphan") && e.topUrl == r && (
-        t = "active"), t == "orphan" && e.pinned && (t = "pinned"), t)
+        url: currentUrl,
+        urls: currentUrls
+      } = hitsTabTracker.current();
+    return hit.status == "running" ? "running" : (hit.status == "active" && hit
+      .topUrl != currentUrl ? hit.topUrl in currentUrls ? status = "inactive" : status = "orphan" : hit
+      .status == "inactive" && !(hit.topUrl in currentUrls) ? status = "orphan" : (hit
+        .status == "inactive" || hit.status == "orphan") && hit.topUrl == currentUrl && (
+        status = "active"), status == "orphan" && hit.pinned && (status = "pinned"), status)
   }
 
-  function l1(e) {
-    gt.dispatch("hit.new", e)
+  function createHit(hit) {
+    hitsStoreApi.dispatch("hit.new", hit)
   }
 
-  function $g(e, t = {}) {
-    gt.dispatch("hit.update", {
-      id: e,
-      changes: t
+  function update(hitId, changes = {}) {
+    hitsStoreApi.dispatch("hit.update", {
+      id: hitId,
+      changes: changes
     })
   }
 
-  function u1(e, t) {
-    gt.dispatch("hit.updateRunning", {
-      id: e,
-      runningDelta: t
+  function updateRunning(hitId, runningDelta) {
+    hitsStoreApi.dispatch("hit.updateRunning", {
+      id: hitId,
+      runningDelta: runningDelta
     })
   }
 
-  function d1(e, t = {}) {
-    gt.dispatch("hit.updateOriginal", {
-      id: e,
-      changes: t
+  function updateOriginal(hitId, changes = {}) {
+    hitsStoreApi.dispatch("hit.updateOriginal", {
+      id: hitId,
+      changes: changes
     })
   }
 
-  function c1(e, t) {
-    t === null ? gt.dispatch("hit.clear-progress", e) : gt.dispatch(
+  function updateProgress(hitId, progress) {
+    progress === null ? hitsStoreApi.dispatch("hit.clear-progress", hitId) : hitsStoreApi.dispatch(
       "hit.progress", {
-        id: e,
-        progress: t
+        id: hitId,
+        progress: progress
       })
   }
 
-  function p1(e, t) {
-    let r = gt.getHit(e);
-    r && r.operation !== t && $g(e, {
-      operation: t
+  function setHitOperation(hitId, operation) {
+    let hit = hitsStoreApi.getHit(hitId);
+    hit && hit.operation !== operation && update(hitId, {
+      operation: operation
     })
   }
 
-  function Jg(e) {
-    let t = [],
+  function clearHits(scope) {
+    let ids = [],
       {
-        flat: r
-      } = gt.getHits();
-    for (let i of r.values())(e == "all" && i.status != "running" && i
-      .status != "pinned" || e == "pinned" && i.status == "pinned" || e ==
-      "inactive" && i.status == "inactive" || e == "orphans" && i.status ==
-      "orphan") && t.push(i.id);
-    gt.dispatch("hit.delete", t)
+        flat: flatHits
+      } = hitsStoreApi.getHits();
+    for (let hit of flatHits.values())(scope == "all" && hit.status != "running" && hit
+      .status != "pinned" || scope == "pinned" && hit.status == "pinned" || scope ==
+      "inactive" && hit.status == "inactive" || scope == "orphans" && hit.status ==
+      "orphan") && ids.push(hit.id);
+    hitsStoreApi.dispatch("hit.delete", ids)
   }
 
-  function f1(e, t) {
-    e || (e = {
+  function hitsReducer(state, action) {
+    state || (state = {
       flat: new Map
     });
-    let r = e.flat;
+    let flat = state.flat;
 
-    function i(n, o = {}) {
-      !n.referrer && o.pageUrl && (o.referrer = o.pageUrl);
-      let s = o.core_media ?? n.core_media;
-      n.core_media && o.core_media && (s = Sd(n.core_media, o.core_media));
-      let a = n.status != "orphan";
-      if (n = {
-          ...n,
-          ...o,
-          core_media: s
-        }, n = {
-          ...n,
-          status: s1(n)
-        }, n.status == "orphan" && a) {
-        let l = Date.now(),
-          u = r1.unsafe_prefs.orphanExpiration * 1e3;
-        n.orphanT0 = l, n.orphanT = l + u, setTimeout(() => gt.dispatch(
-          "hit.orphanTimeout", n.id), u + 100)
+    function applyUpdate(hit, changes = {}) {
+      !hit.referrer && changes.pageUrl && (changes.referrer = changes.pageUrl);
+      let coreMedia = changes.core_media ?? hit.core_media;
+      hit.core_media && changes.core_media && (coreMedia = mergeCoreMedia(hit.core_media, changes.core_media));
+      let wasNotOrphan = hit.status != "orphan";
+      if (hit = {
+          ...hit,
+          ...changes,
+          core_media: coreMedia
+        }, hit = {
+          ...hit,
+          status: computeHitStatus(hit)
+        }, hit.status == "orphan" && wasNotOrphan) {
+        let now = Date.now(),
+          expiration = hitsWeh.unsafe_prefs.orphanExpiration * 1e3;
+        hit.orphanT0 = now, hit.orphanT = now + expiration, setTimeout(() => hitsStoreApi.dispatch(
+          "hit.orphanTimeout", hit.id), expiration + 100)
       }
-      return n
+      return hit
     }
-    switch (t.type) {
+    switch (action.type) {
       case "hit.new": {
-        if (r.size > 1e4) return console.error(
+        if (flat.size > 1e4) return console.error(
           "Hit DB is reaching limit. Something is wrong. Abording."), {
-          flat: r
+          flat: flat
         };
-        let n = t.payload;
-        n.created = new Date()
+        let payload = action.payload;
+        payload.created = new Date()
           .getTime();
-        let o = r.get(n.id) ?? {};
-        if (o.status == "running") return {
-          flat: r
+        let existing = flat.get(payload.id) ?? {};
+        if (existing.status == "running") return {
+          flat: flat
         };
-        o.status = "active";
-        let s = i(o, n);
-        s.core_media || console.trace("Missing core_media"), r.set(s.id, s)
+        existing.status = "active";
+        let resultHit = applyUpdate(existing, payload);
+        resultHit.core_media || console.trace("Missing core_media"), flat.set(resultHit.id, resultHit)
       }
       break;
       case "hits.urlUpdated":
-        for (let n of r.keys()) r.set(n, i(r.get(n)));
+        for (let hitId of flat.keys()) flat.set(hitId, applyUpdate(flat.get(hitId)));
         break;
       case "hit.update": {
         let {
-          id: n,
-          changes: o
-        } = t.payload;
-        Array.isArray(n) || (n = [n]);
-        for (let s of n) {
-          let a = r.get(s);
-          if (a) {
-            let l = i(a, o);
-            r.set(l.id, l)
+          id: ids,
+          changes: changes
+        } = action.payload;
+        Array.isArray(ids) || (ids = [ids]);
+        for (let hitId of ids) {
+          let hit = flat.get(hitId);
+          if (hit) {
+            let updated = applyUpdate(hit, changes);
+            flat.set(updated.id, updated)
           } else console.trace("unknown hit")
         }
       }
       break;
       case "hit.updateRunning": {
         let {
-          id: n,
-          runningDelta: o
-        } = t.payload, s = r.get(n);
-        if (s) {
-          let a = s.running ?? 0,
-            l = {
-              running: a + o
+          id: hitId,
+          runningDelta: runningDelta
+        } = action.payload, hit = flat.get(hitId);
+        if (hit) {
+          let running = hit.running ?? 0,
+            changes = {
+              running: running + runningDelta
             };
-          a == 0 && (l.status = "running"), l.running <= 0 && (l.running = 0,
-            l.status = "active"), r.set(n, i(s, l))
+          running == 0 && (changes.status = "running"), changes.running <= 0 && (changes.running = 0,
+            changes.status = "active"), flat.set(hitId, applyUpdate(hit, changes))
         } else console.trace("unknown hit")
       }
       break;
       case "hit.updateOriginal": {
         let {
-          id: n,
-          changes: o
-        } = t.payload;
-        for (let s of r.values())(n === s.id || n === s.originalId) && r.set(s
-          .id, i(s, o))
+          id: hitId,
+          changes: changes
+        } = action.payload;
+        for (let hit of flat.values())(hitId === hit.id || hitId === hit.originalId) && flat.set(hit
+          .id, applyUpdate(hit, changes))
       }
       break;
       case "hit.delete": {
-        let n = t.payload;
-        Array.isArray(n) || (n = [n]);
-        for (let o of n) r.delete(o)
+        let ids = action.payload;
+        Array.isArray(ids) || (ids = [ids]);
+        for (let hitId of ids) flat.delete(hitId)
       }
       break;
       case "hit.orphanTimeout": {
-        let n = t.payload,
-          o = r.get(n);
-        if (o && o.status == "orphan" && !isNaN(o.orphanT) && Date.now() > o
+        let hitId = action.payload,
+          hit = flat.get(hitId);
+        if (hit && hit.status == "orphan" && !isNaN(hit.orphanT) && Date.now() > hit
           .orphanT) {
-          let s = t.payload;
-          Array.isArray(s) || (s = [s]);
-          for (let a of s) r.delete(a)
+          let ids = action.payload;
+          Array.isArray(ids) || (ids = [ids]);
+          for (let delId of ids) flat.delete(delId)
         }
       }
       break;
       case "blacklist-changed":
         break;
       default:
-        return !t.type.startsWith("@@redux") && t.type !=
-          "hit.clear-progress" && t.type != "log.new" && t.type !=
-          "log.clear" && t.type != "hit.progress" && console.trace(
-            "Unexpected action:", t.type), e
+        return !action.type.startsWith("@@redux") && action.type !=
+          "hit.clear-progress" && action.type != "log.new" && action.type !=
+          "log.clear" && action.type != "hit.progress" && console.trace(
+            "Unexpected action:", action.type), state
     }
     return {
-      flat: r
+      flat: flat
     }
   }
-  var r1, i1, n1, gt, o1, gn = C(() => {
+  var hitsWeh, hitsRpc, hitsActions, hitsStoreApi, hitsTabTracker, initHitsStore = defineLazyModule(() => {
     "use strict";
-    fr();
-    r1 = Y(), i1 = Ft(), n1 = (aa(), R(oa)), gt = (ze(), R(Qe)), o1 = (
-    Rr(), R(Pr));
-    i1.listen({
-      actionCommand: (e, t) => n1.execute(e, t),
-      clearHits: Jg
+    initMediaCommon();
+    hitsWeh = requireWeh(), hitsRpc = requireRpc(), hitsActions = (initActions(), toCommonjs(actionsNs)), hitsStoreApi = (initStore(), toCommonjs(storeNs)), hitsTabTracker = (
+    initTabTracker(), toCommonjs(tabTrackerNs));
+    hitsRpc.listen({
+      actionCommand: (action, hitId) => hitsActions.execute(action, hitId),
+      clearHits: clearHits
     })
   });
-  var rh = {};
-  ie(rh, {
-    checkHitBlacklisted: () => _1,
-    set: () => th
+  var blacklistNs = {};
+  defineExports(blacklistNs, {
+    checkHitBlacklisted: () => checkHitBlacklisted,
+    set: () => setBlacklist
   });
-  async function uu() {
+  async function writeBlacklistStorage() {
     try {
-      await Kg.storage.local.set({
-        blacklist: await yn
+      await blacklistBrowser.storage.local.set({
+        blacklist: await blacklistPromise
       })
     } catch {
       console.error("Cannot write blacklist storage")
     }
   }
 
-  function bn(e) {
-    let t = [],
-      r = /^https?:\/\/([^\/:]+)/.exec(e);
-    if (r)
-      if (m1.test(r[1])) t.push(r[1]);
+  function domainsFromUrl(url) {
+    let domains = [],
+      match = /^https?:\/\/([^\/:]+)/.exec(url);
+    if (match)
+      if (ipv4Regex.test(match[1])) domains.push(match[1]);
       else {
-        let i = r[1].split(".");
-        for (; i.length > 1 && (i[0] != "co" || i.length > 2);) t.push(i.join(
-          ".")), i.shift()
-      } return t
+        let parts = match[1].split(".");
+        for (; parts.length > 1 && (parts[0] != "co" || parts.length > 2);) domains.push(parts.join(
+          ".")), parts.shift()
+      } return domains
   }
 
-  function eh(e) {
-    let t = [];
-    e.url && (t = t.concat(bn(e.url))), e.audioUrl && (t = t.concat(bn(e
-        .audioUrl))), e.videoUrl && (t = t.concat(bn(e.videoUrl))), e
-      .topUrl && (t = t.concat(bn(e.topUrl))), e.pageUrl && (t = t.concat(bn(e
+  function domainsFromHit(hit) {
+    let domains = [];
+    hit.url && (domains = domains.concat(domainsFromUrl(hit.url))), hit.audioUrl && (domains = domains.concat(domainsFromUrl(hit
+        .audioUrl))), hit.videoUrl && (domains = domains.concat(domainsFromUrl(hit.videoUrl))), hit
+      .topUrl && (domains = domains.concat(domainsFromUrl(hit.topUrl))), hit.pageUrl && (domains = domains.concat(domainsFromUrl(hit
         .pageUrl)));
-    let r = {};
-    return t.forEach(function(i) {
-      r[i] = 1
-    }), r
+    let domainSet = {};
+    return domains.forEach(function(domain) {
+      domainSet[domain] = 1
+    }), domainSet
   }
 
-  function g1(e) {
-    let t = Object.keys(e);
-    return t.sort(function(r, i) {
-      let n = r.split(".")
+  function sortDomains(domainSet) {
+    let keys = Object.keys(domainSet);
+    return keys.sort(function(domainA, domainB) {
+      let partsA = domainA.split(".")
         .reverse(),
-        o = i.split(".")
+        partsB = domainB.split(".")
         .reverse();
       for (;;) {
-        if (n.length && !o.length) return -1;
-        if (!n.length && o.length) return 1;
-        if (!n.length && !o.length) return 0;
-        let s = n.shift(),
-          a = o.shift();
-        if (s != a) return s < a ? -1 : 1
+        if (partsA.length && !partsB.length) return -1;
+        if (!partsA.length && partsB.length) return 1;
+        if (!partsA.length && !partsB.length) return 0;
+        let partA = partsA.shift(),
+          partB = partsB.shift();
+        if (partA != partB) return partA < partB ? -1 : 1
       }
-    }), t
+    }), keys
   }
 
-  function h1(e) {
-    let t = eh(e);
-    return g1(t)
+  function sortedDomainsFromHit(hit) {
+    let domainSet = domainsFromHit(hit);
+    return sortDomains(domainSet)
   }
 
-  function _1(e) {
-    if (!la.unsafe_prefs.blacklistEnabled) return !1;
-    let t = eh(e);
-    for (let r in t)
-      if (Zg[r]) return !0;
+  function checkHitBlacklisted(hit) {
+    if (!blacklistWeh.unsafe_prefs.blacklistEnabled) return !1;
+    let domainSet = domainsFromHit(hit);
+    for (let domain in domainSet)
+      if (blacklistCache[domain]) return !0;
     return !1
   }
-  async function b1(e) {
-    let t = await yn;
-    e.forEach(r => {
-      t[r] = !0
-    }), await uu(), Yg.dispatch("blacklist-changed")
+  async function addBlacklistDomains(domains) {
+    let blacklist = await blacklistPromise;
+    domains.forEach(domain => {
+      blacklist[domain] = !0
+    }), await writeBlacklistStorage(), blacklistStore.dispatch("blacklist-changed")
   }
-  async function y1(e) {
-    let t = await yn;
-    e.forEach(r => {
-      delete t[r]
-    }), await uu()
+  async function removeBlacklistDomains(domains) {
+    let blacklist = await blacklistPromise;
+    domains.forEach(domain => {
+      delete blacklist[domain]
+    }), await writeBlacklistStorage()
   }
-  async function th(e) {
-    yn = Promise.resolve(e || {}), await uu()
+  async function setBlacklist(blacklist) {
+    blacklistPromise = Promise.resolve(blacklist || {}), await writeBlacklistStorage()
   }
-  var la, Kg, Yg, m1, Zg, yn, ih = C(() => {
+  var blacklistWeh, blacklistBrowser, blacklistStore, ipv4Regex, blacklistCache, blacklistPromise, initBlacklist = defineLazyModule(() => {
     "use strict";
-    la = Y(), Kg = la.browser, Yg = (ze(), R(Qe)), m1 = new RegExp(
+    blacklistWeh = requireWeh(), blacklistBrowser = blacklistWeh.browser, blacklistStore = (initStore(), toCommonjs(storeNs)), ipv4Regex = new RegExp(
       "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-      ), yn = (async () => {
+      ), blacklistPromise = (async () => {
       try {
-        let t = (await Kg.storage.local.get({
+        let stored = (await blacklistBrowser.storage.local.get({
             blacklist: {}
           }))
           .blacklist;
-        return Zg = t, t
+        return blacklistCache = stored, stored
       } catch {
         console.error("Cannot read blacklist storage");
         return
       }
     })();
-    la.rpc.listen({
-      domainsFromHitId: e => {
-        let t = Yg.getHit(e);
-        return t && h1(t) || []
+    blacklistWeh.rpc.listen({
+      domainsFromHitId: hitId => {
+        let hit = blacklistStore.getHit(hitId);
+        return hit && sortedDomainsFromHit(hit) || []
       },
-      addToBlacklist: b1,
-      removeFromBlacklist: y1,
-      setBlacklist: async e => {
-        await th(e)
+      addToBlacklist: addBlacklistDomains,
+      removeFromBlacklist: removeBlacklistDomains,
+      setBlacklist: async blacklist => {
+        await setBlacklist(blacklist)
       },
       getBlacklist: async () => {
-        let e = await yn;
-        return Object.keys(e)
-          .filter(t => !!e[t])
+        let blacklist = await blacklistPromise;
+        return Object.keys(blacklist)
+          .filter(domain => !!blacklist[domain])
       },
       editBlacklist: () => {
-        la.ui.open("blacklist-edit", {
+        blacklistWeh.ui.open("blacklist-edit", {
           type: "tab",
           url: "content/blacklist-edit.html"
         })
       }
     })
   });
-  var pu = {};
-  ie(pu, {
-    outputConfigForHit: () => w1,
-    set: () => oh
+  var convrulesNs = {};
+  defineExports(convrulesNs, {
+    outputConfigForHit: () => outputConfigForHit,
+    set: () => setConversionRules
   });
-  async function oh(e) {
-    cu = Promise.resolve(e), await nh.storage.local.set({
-      convrules: e
+  async function setConversionRules(rules) {
+    conversionRulesPromise = Promise.resolve(rules), await convrulesBrowser.storage.local.set({
+      convrules: rules
     })
   }
-  async function w1(e) {
-    let t = await cu,
-      r = (e.url || e.videoUrl || e.audioUrl) && e.topUrl;
-    if (!r) return null;
-    let i = new URL(r)
+  async function outputConfigForHit(hit) {
+    let rules = await conversionRulesPromise,
+      topUrl = (hit.url || hit.videoUrl || hit.audioUrl) && hit.topUrl;
+    if (!topUrl) return null;
+    let hostname = new URL(topUrl)
       .hostname,
-      n = [],
-      o = i.split(".");
-    for (let l = 0; l < o.length - 1; l++) n.push(o.slice(l)
+      domainSuffixes = [],
+      hostParts = hostname.split(".");
+    for (let partIndex = 0; partIndex < hostParts.length - 1; partIndex++) domainSuffixes.push(hostParts.slice(partIndex)
       .join("."));
-    let s = null;
-    return t.every(l => {
-        let u = !0;
-        return l.extension && e.extension !== l.extension && (u = !1),
-          u && l.domain && (u = !n.every(d => d !== l.domain)), u && (s =
-            l), !u
-      }) || !s.convert ? null : (await v1.getOutputConfigs())[s.format] ||
+    let matchedRule = null;
+    return rules.every(rule => {
+        let matches = !0;
+        return rule.extension && hit.extension !== rule.extension && (matches = !1),
+          matches && rule.domain && (matches = !domainSuffixes.every(suffix => suffix !== rule.domain)), matches && (matchedRule =
+            rule), !matches
+      }) || !matchedRule.convert ? null : (await convrulesConverter.getOutputConfigs())[matchedRule.format] ||
       null
   }
-  var du, nh, v1, cu, fu = C(() => {
+  var convrulesWeh, convrulesBrowser, convrulesConverter, conversionRulesPromise, initConversionRules = defineLazyModule(() => {
     "use strict";
-    du = Y(), nh = du.browser, v1 = (di(), R(ui)), cu = nh.storage.local
+    convrulesWeh = requireWeh(), convrulesBrowser = convrulesWeh.browser, convrulesConverter = (initConverter(), toCommonjs(coappSideNs)), conversionRulesPromise = convrulesBrowser.storage.local
       .get({
         convrules: []
       })
-      .then(e => e.convrules);
-    du.rpc.listen({
+      .then(stored => stored.convrules);
+    convrulesWeh.rpc.listen({
       editConversionRules: () => {
-        du.ui.open("convrules-edit", {
+        convrulesWeh.ui.open("convrules-edit", {
           type: "tab",
           url: "content/convrules-edit.html"
         })
       },
-      getConversionRules: () => cu,
-      setConversionRules: e => oh(e)
+      getConversionRules: () => conversionRulesPromise,
+      setConversionRules: rules => setConversionRules(rules)
     })
   });
-  var Qe = {};
-  ie(Qe, {
-    closePopup: () => ph,
-    dispatch: () => V1,
-    getHit: () => uh,
-    getHits: () => bu,
-    getLogs: () => k1,
-    getMainData: () => ch,
-    getSerializedHits: () => yu
+  var storeNs = {};
+  defineExports(storeNs, {
+    closePopup: () => closePopup,
+    dispatch: () => storeDispatch,
+    getHit: () => getHit,
+    getHits: () => getHits,
+    getLogs: () => getLogs,
+    getMainData: () => getMainData,
+    getSerializedHits: () => getSerializedHits
   });
 
-  function bu() {
-    return De.getState()
+  function getHits() {
+    return reduxStore.getState()
       .hits
   }
 
-  function uh(e) {
-    return bu()
-      .flat.get(e)
+  function getHit(hitId) {
+    return getHits()
+      .flat.get(hitId)
   }
 
-  function k1() {
-    return De.getState()
+  function getLogs() {
+    return reduxStore.getState()
       .logs
   }
-  async function dh() {
+  async function getVisibleHits() {
     let {
-      flat: e
-    } = bu(), t = (await ht.prefs)
-      .mediaweightMinSize, r = await Hr.storage.local.get({
+      flat: flat
+    } = getHits(), minSize = (await storeWeh.prefs)
+      .mediaweightMinSize, stored = await storeBrowser.storage.local.get({
         blacklist: {}
-      }), i = Object.keys(r.blacklist)
-      .map(n => n.split(".")
+      }), blacklistDomains = Object.keys(stored.blacklist)
+      .map(domain => domain.split(".")
         .reverse());
-    return Id(e, i, t)
+    return filterHitsForDisplay(flat, blacklistDomains, minSize)
   }
-  async function yu() {
-    let e = await B(Hi),
-      t = await dh(),
-      r = Nd(t, e);
-    for (let i of r)
-      for (let n of i) n.actions = await ah.availableActions(n.id);
-    return r
+  async function getSerializedHits() {
+    let sortConfig = await getSetting(settingMediaUserPref),
+      hits = await getVisibleHits(),
+      serialized = groupHitsForDisplay(hits, sortConfig);
+    for (let group of serialized)
+      for (let hit of group) hit.actions = await storeActions.availableActions(hit.id);
+    return serialized
   }
-  async function vu() {
-    if (!await sh) return;
-    let e = 0,
-      t = 0,
-      r = 0,
-      i = 0,
-      n = await dh();
-    for (let d of n.values()) switch (d.status) {
+  async function updateBadgeAndIcon() {
+    if (!await legacyUiSetting) return;
+    let activeCount = 0,
+      anyTabCount = 0,
+      pinnedCount = 0,
+      runningCount = 0,
+      hits = await getVisibleHits();
+    for (let hit of hits.values()) switch (hit.status) {
       case "running":
-        i++;
+        runningCount++;
         break;
       case "active":
-        e++, t++;
+        activeCount++, anyTabCount++;
         break;
       case "inactive":
-        t++;
+        anyTabCount++;
         break;
       case "pinned":
-        r++;
+        pinnedCount++;
         break
     }
-    let o = await ht.prefs,
-      s = !1;
-    (t == 0 || o.iconActivation == "currenttab" && e == 0) && (s = !0), Hr
+    let prefs = await storeWeh.prefs,
+      isGrey = !1;
+    (anyTabCount == 0 || prefs.iconActivation == "currenttab" && activeCount == 0) && (isGrey = !0), storeBrowser
       .action.setIcon({
-        path: `/content2/icons/${S1.channel}-${s?"grey":"color"}.png`
+        path: `/content2/icons/${storeBuildInfo.channel}-${isGrey?"grey":"color"}.png`
       });
-    let a = "",
-      l = "#000";
-    switch (o.iconBadge) {
+    let badgeText = "",
+      badgeColor = "#000";
+    switch (prefs.iconBadge) {
       case "tasks":
-        l = "#00f", a = i || "";
+        badgeColor = "#00f", badgeText = runningCount || "";
         break;
       case "activetab":
-        l = "#080", a = e || "";
+        badgeColor = "#080", badgeText = activeCount || "";
         break;
       case "anytab":
-        l = "#b59e32", a = t || "";
+        badgeColor = "#b59e32", badgeText = anyTabCount || "";
         break;
       case "pinned":
-        l = "#000", a = r || "";
+        badgeColor = "#000", badgeText = pinnedCount || "";
         break;
       case "mixed":
-        r > 0 ? (l = "#000", a = r) : i > 0 ? (l = "#00f", a = i) : e > 0 ?
-          (l = "#080", a = e) : t > 0 && (l = "#b59e32", a = t)
+        pinnedCount > 0 ? (badgeColor = "#000", badgeText = pinnedCount) : runningCount > 0 ? (badgeColor = "#00f", badgeText = runningCount) : activeCount > 0 ?
+          (badgeColor = "#080", badgeText = activeCount) : anyTabCount > 0 && (badgeColor = "#b59e32", badgeText = anyTabCount)
     }
-    let u = De.getState()
-      .logs.filter(d => d.type === "error");
-    u.length > 0 && (a = u.length, l = "#f44"), Hr.action.setBadgeText({
-      text: "" + a
-    }), Hr.action.setBadgeBackgroundColor({
-      color: l
+    let errorLogs = reduxStore.getState()
+      .logs.filter(log => log.type === "error");
+    errorLogs.length > 0 && (badgeText = errorLogs.length, badgeColor = "#f44"), storeBrowser.action.setBadgeText({
+      text: "" + badgeText
+    }), storeBrowser.action.setBadgeBackgroundColor({
+      color: badgeColor
     })
   }
 
-  function V1(e, t) {
-    De.dispatch({
-      type: e,
-      payload: t
+  function storeDispatch(type, payload) {
+    reduxStore.dispatch({
+      type: type,
+      payload: payload
     })
   }
-  async function ch() {
+  async function getMainData() {
     return {
-      hits: await yu(),
-      actions: ah.describeAll(),
-      logs: De.getState()
+      hits: await getSerializedHits(),
+      actions: storeActions.describeAll(),
+      logs: reduxStore.getState()
         .logs,
-      progress: De.getState()
+      progress: reduxStore.getState()
         .progress
     }
   }
-  async function ph() {
-    return vn.call("main", "close")
+  async function closePopup() {
+    return storeRpc.call("main", "close")
   }
-  async function H1() {
-    let e = ["blacklist", "license", hu, "convrules", "outputConfigs",
+  async function exportSettings() {
+    let keys = ["blacklist", "license", MEDIA_USER_PREFS_KEY, "convrules", "outputConfigs",
         "smartname"
       ],
-      t = await ht.prefs;
-    return Hr.storage.local.get(e)
-      .then(r => {
-        let i = Object.assign({
+      prefs = await storeWeh.prefs;
+    return storeBrowser.storage.local.get(keys)
+      .then(stored => {
+        let settings = Object.assign({
             blacklist: {},
             license: null,
             conversionRules: [],
             outputConfigs: {}
-          }, r, {
-            "weh-prefs": t.getAll()
+          }, stored, {
+            "weh-prefs": prefs.getAll()
           }),
-          n = JSON.stringify(i, null, 4),
-          o;
-        if (ht.isBrowser("firefox")) {
-          let s = new Blob([n], {
+          json = JSON.stringify(settings, null, 4),
+          dataUrl;
+        if (storeWeh.isBrowser("firefox")) {
+          let blob = new Blob([json], {
             type: "text/json;charset=utf-8"
           });
-          o = URL.createObjectURL(s)
-        } else o = "data:," + n;
-        Hr.downloads.download({
-          url: o,
+          dataUrl = URL.createObjectURL(blob)
+        } else dataUrl = "data:," + json;
+        storeBrowser.downloads.download({
+          url: dataUrl,
           filename: "vdh-settings.json",
           saveAs: !0,
           conflictAction: "uniquify"
         })
       })
   }
-  async function F1(e) {
-    return e.convrules && await N1.set(e.convrules), e.outputConfigs && O1
-      .setOutputConfigs(e.outputConfigs), e.license && M1.setLicense(e
-        .license), e.blacklist && await R1.set(e.blacklist), hu in e &&
-      await Z(Hi, e[hu]), e.smartname && await I1.set(e.smartname), e[
+  async function importSettings(settings) {
+    return settings.convrules && await storeConvrules.set(settings.convrules), settings.outputConfigs && storeConverter
+      .setOutputConfigs(settings.outputConfigs), settings.license && storeLicense.setLicense(settings
+        .license), settings.blacklist && await storeBlacklist.set(settings.blacklist), MEDIA_USER_PREFS_KEY in settings &&
+      await setSetting(settingMediaUserPref, settings[MEDIA_USER_PREFS_KEY]), settings.smartname && await storeSmartname.set(settings.smartname), settings[
         "weh-prefs"] || {}
   }
 
-  function L1() {
-    Hr.runtime.reload()
+  function reloadAddon() {
+    storeBrowser.runtime.reload()
   }
-  var A1, x1, T1, E1, _u, S1, ht, vn, gu, ah, D1, O1, M1, P1, R1, I1, N1, sh,
-    lh, Hr, De, C1, q1, B1, mu, hu, ze = C(() => {
+  var createStoreFn, combineReducersFn, applyMiddlewareFn, createLoggerFn, makeWatcher, storeBuildInfo, storeWeh, storeRpc, storeHitsStore, storeActions, storeAppLog, storeConverter, storeLicense, storeSidePanel, storeBlacklist, storeSmartname, storeConvrules, legacyUiSetting,
+    storeMiddlewares, storeBrowser, reduxStore, watchHitsState, watchProgressState, watchLogsState, hitsUpdateTimer, MEDIA_USER_PREFS_KEY, initStore = defineLazyModule(() => {
       "use strict";
-      kd();
-      Jr();
+      initHitSerializer();
+      initSettings();
       ({
-        createStore: A1,
-        combineReducers: x1,
-        applyMiddleware: T1
-      } = Bc()), {
-        createLogger: E1
-      } = Hc(), _u = Wc(), S1 = lr(), ht = Y(), vn = Ft(), gu = (gn(), R(
-          mn)), ah = (aa(), R(oa)), D1 = (Un(), R(Ln)), O1 = (di(), R(ui)),
-        M1 = (Kt(), R(Jt)), P1 = void 0, R1 = (ih(), R(rh)), I1 = (on(), R(
-          nn)), N1 = (fu(), R(pu));
-      Rr();
-      sh = B(Vi), lh = [];
-      ht.prefs.then(e => {
-        e.backgroundReduxLogger && lh.push(E1({
-          collapsed: (t, r, i) => !0
+        createStore: createStoreFn,
+        combineReducers: combineReducersFn,
+        applyMiddleware: applyMiddlewareFn
+      } = requireRedux()), {
+        createLogger: createLoggerFn
+      } = requireReduxLogger(), makeWatcher = requireReduxWatch(), storeBuildInfo = requireBuildInfo(), storeWeh = requireWeh(), storeRpc = requireRpc(), storeHitsStore = (initHitsStore(), toCommonjs(
+          hitsStoreNs)), storeActions = (initActions(), toCommonjs(actionsNs)), storeAppLog = (initAppLog(), toCommonjs(errorReportingNs)), storeConverter = (initConverter(), toCommonjs(coappSideNs)),
+        storeLicense = (initLicense(), toCommonjs(licenseNs)), storeSidePanel = void 0, storeBlacklist = (initBlacklist(), toCommonjs(blacklistNs)), storeSmartname = (initSmartname(), toCommonjs(
+          smartnameNs)), storeConvrules = (initConversionRules(), toCommonjs(convrulesNs));
+      initTabTracker();
+      legacyUiSetting = getSetting(settingUseLegacyUi), storeMiddlewares = [];
+      storeWeh.prefs.then(prefs => {
+        prefs.backgroundReduxLogger && storeMiddlewares.push(createLoggerFn({
+          collapsed: (getState, action, logEntry) => !0
         }))
       });
-      Hr = ht.browser, De = A1(x1({
-        hits: gu.reducer,
-        progress: gu.progressReducer,
-        logs: D1.reducer
-      }), T1(...lh));
-      C1 = _u(De.getState, "hits"), q1 = _u(De.getState, "progress"), B1 =
-        _u(De.getState, "logs");
-      mu = null;
-      De.subscribe(C1(async () => {
-        if (mu || !await sh) return;
-        let e = (await ht.prefs)
+      storeBrowser = storeWeh.browser, reduxStore = createStoreFn(combineReducersFn({
+        hits: storeHitsStore.reducer,
+        progress: storeHitsStore.progressReducer,
+        logs: storeAppLog.reducer
+      }), applyMiddlewareFn(...storeMiddlewares));
+      watchHitsState = makeWatcher(reduxStore.getState, "hits"), watchProgressState = makeWatcher(reduxStore.getState, "progress"), watchLogsState =
+        makeWatcher(reduxStore.getState, "logs");
+      hitsUpdateTimer = null;
+      reduxStore.subscribe(watchHitsState(async () => {
+        if (hitsUpdateTimer || !await legacyUiSetting) return;
+        let floodDelay = (await storeWeh.prefs)
           .hitUpdateFloodProtect;
-        mu = setTimeout(async () => {
-          mu = null;
-          let t = await yu();
+        hitsUpdateTimer = setTimeout(async () => {
+          hitsUpdateTimer = null;
+          let hits = await getSerializedHits();
           try {
-            ht.openedContents()
-              .indexOf("main") >= 0 && vn.call("main", "hits",
-                t), P1?.updateHits(t), vu()
-          } catch (r) {
-            console.error(r)
+            storeWeh.openedContents()
+              .indexOf("main") >= 0 && storeRpc.call("main", "hits",
+                hits), storeSidePanel?.updateHits(hits), updateBadgeAndIcon()
+          } catch (err) {
+            console.error(err)
           }
-        }, e)
+        }, floodDelay)
       }));
-      De.subscribe(q1(() => {
+      reduxStore.subscribe(watchProgressState(() => {
         try {
-          vn.call("main", "progress", De.getState()
+          storeRpc.call("main", "progress", reduxStore.getState()
             .progress)
         } catch {}
       }));
-      De.subscribe(B1(() => {
+      reduxStore.subscribe(watchLogsState(() => {
         try {
-          vn.call("main", "logs", De.getState()
+          storeRpc.call("main", "logs", reduxStore.getState()
             .logs)
         } catch {}
         try {
-          vu()
-        } catch (e) {
-          console.error(e)
+          updateBadgeAndIcon()
+        } catch (err) {
+          console.error(err)
         }
       }));
-      vn.listen({
-        getHit: e => uh(e),
-        getMainData: ch,
-        hitPageData: e => {
-          gu.updateOriginal(e.id, e.data)
+      storeRpc.listen({
+        getHit: hitId => getHit(hitId),
+        getMainData: getMainData,
+        hitPageData: pageData => {
+          storeHitsStore.updateOriginal(pageData.id, pageData.data)
         },
-        closePopup: ph,
-        closePanel: e => ht.ui.close(e)
+        closePopup: closePopup,
+        closePanel: panelId => storeWeh.ui.close(panelId)
       });
-      vu();
-      hu = "media_user_pref";
-      ht.rpc.listen({
-        exportSettings: H1,
-        importSettings: F1,
-        reloadAddon: L1
+      updateBadgeAndIcon();
+      MEDIA_USER_PREFS_KEY = "media_user_pref";
+      storeWeh.rpc.listen({
+        exportSettings: exportSettings,
+        importSettings: importSettings,
+        reloadAddon: reloadAddon
       })
     });
-  var Pr = {};
-  ie(Pr, {
-    current: () => G1,
-    gotoOrOpenTab: () => K1,
-    setTransientTab: () => fh,
-    update: () => _i
+  var tabTrackerNs = {};
+  defineExports(tabTrackerNs, {
+    current: () => currentTabInfo,
+    gotoOrOpenTab: () => tabTrackerGoto,
+    setTransientTab: () => setTransientTab,
+    update: () => scheduleTabUpdate
   });
 
-  function G1() {
+  function currentTabInfo() {
     return {
-      url: wu,
-      urls: da
+      url: currentTabUrl,
+      urls: openTabUrls
     }
   }
 
-  function Q1() {
-    ua = null, X1()
-      .then(e => {
-        e && (wu = e.url, Bt.tabs.query({})
-          .then(t => {
-            da = {};
-            for (let r in t) da[t[r].url] = 1;
-            j1.dispatch("hits.urlUpdated", {
-              url: wu,
-              urls: da
+  function refreshActiveTabInfo() {
+    tabRefreshTimer = null, getFocusedActiveTab()
+      .then(activeTab => {
+        activeTab && (currentTabUrl = activeTab.url, tabBrowser.tabs.query({})
+          .then(tabs => {
+            openTabUrls = {};
+            for (let tabIndex in tabs) openTabUrls[tabs[tabIndex].url] = 1;
+            tabStore.dispatch("hits.urlUpdated", {
+              url: currentTabUrl,
+              urls: openTabUrls
             })
           }))
       })
   }
 
-  function _i() {
-    ua && clearTimeout(ua), ua = setTimeout(Q1, 50)
+  function scheduleTabUpdate() {
+    tabRefreshTimer && clearTimeout(tabRefreshTimer), tabRefreshTimer = setTimeout(refreshActiveTabInfo, 50)
   }
 
-  function fh(e, t) {
-    nr = e, hi = t
+  function setTransientTab(marker, tabId) {
+    transientMarker = marker, transientTabId = tabId
   }
 
-  function z1(e) {
-    nr === e && hi && Bt.tabs.update(hi, {
+  function handleTabRemoved(removedTabId) {
+    transientMarker === removedTabId && transientTabId && tabBrowser.tabs.update(transientTabId, {
       active: !0
-    }), nr = null, hi = null, _i()
+    }), transientMarker = null, transientTabId = null, scheduleTabUpdate()
   }
 
-  function $1({
-    tabId: e,
-    _windowId: t
+  function handleTabActivated({
+    tabId: tabId,
+    _windowId: _windowId
   }) {
-    e !== nr && (nr = null, hi = null), _i()
+    tabId !== transientMarker && (transientMarker = null, transientTabId = null), scheduleTabUpdate()
   }
 
-  function J1(e) {
-    nr === "<next-tab>" && (nr = e.id)
+  function handleTabCreated(tab) {
+    transientMarker === "<next-tab>" && (transientMarker = tab.id)
   }
 
-  function K1(e) {
-    return nr = null, hi = null, W1.gotoOrOpenTab(e, fh)
+  function tabTrackerGoto(url) {
+    return transientMarker = null, transientTabId = null, tabUtil.gotoOrOpenTab(url, setTransientTab)
   }
-  var U1, Bt, j1, W1, ua, X1, wu, da, nr, hi, Rr = C(() => {
+  var tabWeh, tabBrowser, tabStore, tabUtil, tabRefreshTimer, getFocusedActiveTab, currentTabUrl, openTabUrls, transientMarker, transientTabId, initTabTracker = defineLazyModule(() => {
     "use strict";
-    U1 = Y(), Bt = U1.browser, j1 = (ze(), R(Qe)), W1 = (he(), R(ge)),
-      ua = null, X1 = async () => {
+    tabWeh = requireWeh(), tabBrowser = tabWeh.browser, tabStore = (initStore(), toCommonjs(storeNs)), tabUtil = (initCoreUtil(), toCommonjs(coreUtilNs)),
+      tabRefreshTimer = null, getFocusedActiveTab = async () => {
         try {
-          let e = await Bt.windows.getLastFocused({
+          let lastWindow = await tabBrowser.windows.getLastFocused({
             populate: !0
           });
-          if (e.focused) {
-            let t = e.tabs.filter(r => r.active);
-            return t.length ? t[0] : null
+          if (lastWindow.focused) {
+            let activeTabs = lastWindow.tabs.filter(tab => tab.active);
+            return activeTabs.length ? activeTabs[0] : null
           } else return null
         } catch {
           return null
         }
-      }, wu = "about:blank", da = {};
-    nr = null, hi = null;
-    Bt.windows?.onFocusChanged?.addListener(_i);
-    Bt.windows?.onRemoved?.addListener(_i);
-    Bt.tabs.onActivated.addListener($1);
-    Bt.tabs.onRemoved.addListener(z1);
-    Bt.tabs.onUpdated.addListener(_i);
-    Bt.tabs.onCreated.addListener(J1)
+      }, currentTabUrl = "about:blank", openTabUrls = {};
+    transientMarker = null, transientTabId = null;
+    tabBrowser.windows?.onFocusChanged?.addListener(scheduleTabUpdate);
+    tabBrowser.windows?.onRemoved?.addListener(scheduleTabUpdate);
+    tabBrowser.tabs.onActivated.addListener(handleTabActivated);
+    tabBrowser.tabs.onRemoved.addListener(handleTabRemoved);
+    tabBrowser.tabs.onUpdated.addListener(scheduleTabUpdate);
+    tabBrowser.tabs.onCreated.addListener(handleTabCreated)
   });
-  var pt = {};
-  ie(pt, {
-    call: () => hh,
-    check: () => Tu,
-    downloads: () => ux,
-    gotoInstall: () => xu,
-    isAtLeastVersion: () => lx,
-    isDegradedVersion: () => sx,
-    isProbablyAvailable: () => ax,
-    listen: () => nx,
-    request: () => dx,
-    requestBinary: () => cx
+  var coappNs = {};
+  defineExports(coappNs, {
+    call: () => coappCall,
+    check: () => coappCheck,
+    downloads: () => downloads,
+    gotoInstall: () => gotoInstall,
+    isAtLeastVersion: () => isAtLeastVersion,
+    isDegradedVersion: () => isDegradedVersion,
+    isProbablyAvailable: () => isProbablyAvailable,
+    listen: () => coappListen,
+    request: () => coappRequest,
+    requestBinary: () => coappRequestBinary
   });
 
-  function xu() {
-    tx(async () => {
-      let e = await ca.prefs,
-        t =
-        `https://www.downloadhelper.net/install-coapp-v2?channel=${ix}`;
-      return e.forcedCoappVersion && (t += "&version=" + e
-        .forcedCoappVersion), ex.gotoOrOpenTab(t)
+  function gotoInstall() {
+    installGate(async () => {
+      let prefs = await coappWeh.prefs,
+        installUrl =
+        `https://www.downloadhelper.net/install-coapp-v2?channel=${coappChannel}`;
+      return prefs.forcedCoappVersion && (installUrl += "&version=" + prefs
+        .forcedCoappVersion), coappTabNav.gotoOrOpenTab(installUrl)
     })
   }
 
-  function hh(...e) {
-    return et.call(...e)
+  function coappCall(...args) {
+    return coappConnection.call(...args)
   }
 
-  function nx(...e) {
-    return et.listen(...e)
+  function coappListen(...args) {
+    return coappConnection.listen(...args)
   }
 
-  function ox() {
-    return new Promise((e, t) => {
-      let r = !1;
-      et.callCatchAppNotFound(i => {
-          bi = !1, r = !0, e({
+  function coappQueryInfo() {
+    return new Promise((resolve, reject) => {
+      let settled = !1;
+      coappConnection.callCatchAppNotFound(notFoundErr => {
+          coappOnline = !1, settled = !0, resolve({
             status: !1,
-            error: i.message
+            error: notFoundErr.message
           })
         }, "info")
-        .then(i => {
-          bi = !0, Au = i.version, gh = i.target?.node == 10, e({
+        .then(info => {
+          coappOnline = !0, coappKnownVersion = info.version, coappDegraded = info.target?.node == 10, resolve({
             status: !0,
-            info: i
+            info: info
           })
         })
-        .catch(i => {
-          bi = !1, r || e({
+        .catch(err => {
+          coappOnline = !1, settled || resolve({
             status: !1,
-            error: i.message
+            error: err.message
           })
         })
     })
   }
 
-  function Tu() {
-    return rx(() => ox())
+  function coappCheck() {
+    return checkGate(() => coappQueryInfo())
   }
 
-  function ax() {
-    return bi
+  function isProbablyAvailable() {
+    return coappOnline
   }
 
-  function sx() {
-    return !!gh
+  function isDegradedVersion() {
+    return !!coappDegraded
   }
 
-  function lx(e) {
-    if (Au) return Z1(Au, e) >= 0;
+  function isAtLeastVersion(version) {
+    if (coappKnownVersion) return coappCompareSemVer(coappKnownVersion, version) >= 0;
     throw new Error("Coapp no available")
   }
 
-  function dx(e, t) {
-    return new Promise((r, i) => {
-      let n = [];
+  function coappRequest(url, options) {
+    return new Promise((resolve, reject) => {
+      let chunks = [];
 
-      function o(s) {
-        if (n.push(s.data), !s.more) return r(n.join(""));
-        et.call("requestExtra", s.id)
-          .then(a => {
-            o(a)
+      function handleChunk(chunk) {
+        if (chunks.push(chunk.data), !chunk.more) return resolve(chunks.join(""));
+        coappConnection.call("requestExtra", chunk.id)
+          .then(next => {
+            handleChunk(next)
           })
-          .catch(i)
+          .catch(reject)
       }
-      et.call("request", e, t)
-        .then(s => (bi = !0, s))
-        .then(o)
-        .catch(i)
+      coappConnection.call("request", url, options)
+        .then(chunk => (coappOnline = !0, chunk))
+        .then(handleChunk)
+        .catch(reject)
     })
   }
 
-  function cx(e, t) {
-    return new Promise((r, i) => {
-      let n = 0,
-        o = [];
+  function coappRequestBinary(url, options) {
+    return new Promise((resolve, reject) => {
+      let totalLength = 0,
+        chunks = [];
 
-      function s(a) {
-        if (a.data && a.data.data && (n += a.data.data.length, o.push(
-            new Uint8Array(a.data.data))), !a.more) {
-          let l = new Uint8Array(n),
-            u = 0;
-          return o.forEach(d => {
-            l.set(d, u), u += d.length
-          }), r(l)
+      function handleChunk(chunk) {
+        if (chunk.data && chunk.data.data && (totalLength += chunk.data.data.length, chunks.push(
+            new Uint8Array(chunk.data.data))), !chunk.more) {
+          let combined = new Uint8Array(totalLength),
+            offset = 0;
+          return chunks.forEach(part => {
+            combined.set(part, offset), offset += part.length
+          }), resolve(combined)
         }
-        et.call("requestExtra", a.id)
-          .then(l => {
+        coappConnection.call("requestExtra", chunk.id)
+          .then(next => {
             setTimeout(() => {
-              s(l)
+              handleChunk(next)
             })
           })
-          .catch(i)
+          .catch(reject)
       }
-      et.call("requestBinary", e, t)
-        .then(a => (bi = !0, a))
-        .then(s)
-        .catch(i)
+      coappConnection.call("requestBinary", url, options)
+        .then(first => (coappOnline = !0, first))
+        .then(handleChunk)
+        .catch(reject)
     })
   }
-  var ca, mh, Y1, Z1, et, ex, tx, rx, ix, wn, bi, Au, gh, ux, ft = C(() => {
+  var coappWeh, coappUtil, coappDownloadsLib, coappCompareSemVer, coappConnection, coappTabNav, installGate, checkGate, coappChannel, coappIdleTimer, coappOnline, coappKnownVersion, coappDegraded, downloads, initCoapp = defineLazyModule(() => {
     "use strict";
-    ca = Y(), mh = (he(), R(ge)), Y1 = (ad(), R(od)), {
-      compareSemVer: Z1
-    } = (qa(), R(gd)), et = _d()("net.downloadhelper.coapp"), ex = (
-    Rr(), R(Pr)), tx = mh.Concurrent(), rx = mh.Concurrent(), {
-      channel: ix
-    } = lr(), wn = null;
-    et.onAppNotFound.addListener(() => {
-      xu()
+    coappWeh = requireWeh(), coappUtil = (initCoreUtil(), toCommonjs(coreUtilNs)), coappDownloadsLib = (initDownloadsLib(), toCommonjs(downloadsNs)), {
+      compareSemVer: coappCompareSemVer
+    } = (initSemver(), toCommonjs(semverNs)), coappConnection = requireCoappClient()("net.downloadhelper.coapp"), coappTabNav = (
+    initTabTracker(), toCommonjs(tabTrackerNs)), installGate = coappUtil.Concurrent(), checkGate = coappUtil.Concurrent(), {
+      channel: coappChannel
+    } = requireBuildInfo(), coappIdleTimer = null;
+    coappConnection.onAppNotFound.addListener(() => {
+      gotoInstall()
     });
-    et.onCallCount.addListener(async (e, t) => {
-      let r = await ca.prefs;
-      wn && (clearTimeout(wn), wn = null), e === 0 && t === 0 && r
-        .coappIdleExit && (wn = setTimeout(() => {
-          wn = null, et.close()
-        }, r.coappIdleExit))
+    coappConnection.onCallCount.addListener(async (addonCount, appCount) => {
+      let prefs = await coappWeh.prefs;
+      coappIdleTimer && (clearTimeout(coappIdleTimer), coappIdleTimer = null), addonCount === 0 && appCount === 0 && prefs
+        .coappIdleExit && (coappIdleTimer = setTimeout(() => {
+          coappIdleTimer = null, coappConnection.close()
+        }, prefs.coappIdleExit))
     });
-    ux = new Y1.Downloads(et);
-    ca.prefs.then(e => {
-      e.checkCoappOnStartup && Tu()
+    downloads = new coappDownloadsLib.Downloads(coappConnection);
+    coappWeh.prefs.then(prefs => {
+      prefs.checkCoappOnStartup && coappCheck()
     });
-    ca.rpc.listen({
-      coappProxy: hh,
-      checkCoApp: Tu,
-      installCoApp: xu
+    coappWeh.rpc.listen({
+      coappProxy: coappCall,
+      checkCoApp: coappCheck,
+      installCoApp: gotoInstall
     })
   });
-  var Eu = {};
-  ie(Eu, {
-    getProxyHeaders: () => Px
+  var proxyHeadersNs = {};
+  defineExports(proxyHeadersNs, {
+    getProxyHeaders: () => getProxyHeaders
   });
-  async function wh() {
-    let e = await _t.prefs,
-      t = {};
-    return e.mediaExtensions.split("|")
-      .forEach(function(r) {
-        t[r] = 1
-      }), t
+  async function loadMediaExtensionSet() {
+    let prefs = await probeWeh.prefs,
+      extensionSet = {};
+    return prefs.mediaExtensions.split("|")
+      .forEach(function(ext) {
+        extensionSet[ext] = 1
+      }), extensionSet
   }
-  async function Ah() {
-    let e = (await _t.prefs)
+  async function compileNetworkFilterRegex() {
+    let filterPattern = (await probeWeh.prefs)
       .networkFilterOut;
-    if (e) try {
-      return new RegExp(e, "i")
+    if (filterPattern) try {
+      return new RegExp(filterPattern, "i")
     } catch {
       console.warn("networkFilterOut preference is not a valid regex");
       return
     }
   }
 
-  function bh() {
-    Ve.webRequest.onHeadersReceived.addListener(Eh, {
+  function startHeadersProbe() {
+    probeBrowser.webRequest.onHeadersReceived.addListener(handleHeadersReceived, {
       urls: ["<all_urls>"]
     }, ["responseHeaders"])
   }
 
-  function Ox() {
-    Ve.webRequest.onHeadersReceived.removeListener(Eh)
+  function stopHeadersProbe() {
+    probeBrowser.webRequest.onHeadersReceived.removeListener(handleHeadersReceived)
   }
 
-  function yh() {
-    Vt = {}, Ve.webRequest.onSendHeaders.addListener(Sh, {
+  function startRequestMonitor() {
+    monitoredRequestHeaders = {}, probeBrowser.webRequest.onSendHeaders.addListener(handleSendHeaders, {
       urls: ["<all_urls>"]
-    }, Oh), Ve.webRequest.onErrorOccurred.addListener(Dh, {
+    }, sendHeadersExtraInfo), probeBrowser.webRequest.onErrorOccurred.addListener(handleRequestError, {
       urls: ["<all_urls>"]
     })
   }
 
-  function Mx() {
-    Ve.webRequest.onSendHeaders.removeListener(Sh), Ve.webRequest
-      .onErrorOccurred.removeListener(Dh), Vt = null
+  function stopRequestMonitor() {
+    probeBrowser.webRequest.onSendHeaders.removeListener(handleSendHeaders), probeBrowser.webRequest
+      .onErrorOccurred.removeListener(handleRequestError), monitoredRequestHeaders = null
   }
 
-  function Mh(e) {
-    let t = yi[e.url];
-    if (t) {
-      clearTimeout(t.timer), delete yi[e.url];
-      let r = e.requestHeaders.filter(i => typeof vh[i.name.toLowerCase()] >
+  function resolveProxyHeaders(details) {
+    let pending = proxyHeaderWaiters[details.url];
+    if (pending) {
+      clearTimeout(pending.timer), delete proxyHeaderWaiters[details.url];
+      let headers = details.requestHeaders.filter(header => typeof skippedHeaderNames[header.name.toLowerCase()] >
         "u");
-      t.handlers.forEach(i => {
-        i.resolve({
-          proxy: e.proxyInfo,
-          headers: r
+      pending.handlers.forEach(handler => {
+        handler.resolve({
+          proxy: details.proxyInfo,
+          headers: headers
         })
       })
     }
   }
 
-  function Px(e) {
-    function t() {
-      let i = yi[e];
-      i && (i.handlers.forEach(n => {
-        n.reject(new Error("timeout monitoring proxyHeaders"))
-      }), delete yi[e])
+  function getProxyHeaders(url) {
+    function onTimeout() {
+      let entry = proxyHeaderWaiters[url];
+      entry && (entry.handlers.forEach(handler => {
+        handler.reject(new Error("timeout monitoring proxyHeaders"))
+      }), delete proxyHeaderWaiters[url])
     }
-    let r = yi[e];
-    return r ? clearTimeout(r.timer) : r = yi[e] = {
+    let entry = proxyHeaderWaiters[url];
+    return entry ? clearTimeout(entry.timer) : entry = proxyHeaderWaiters[url] = {
       handlers: []
-    }, new Promise((i, n) => {
-      r.handlers.push({
-        resolve: i,
-        reject: n
-      }), r.timer = setTimeout(t, 3e4), fetch(e, {
+    }, new Promise((resolve, reject) => {
+      entry.handlers.push({
+        resolve: resolve,
+        reject: reject
+      }), entry.timer = setTimeout(onTimeout, 3e4), fetch(url, {
         method: "HEAD",
         credentials: "include"
       })
     })
   }
-  var _t, px, fx, _h, mx, gx, hx, Ve, _x, bx, yx, vx, wx, Ax, xx, Tx, Ex, Sx,
-    vh, xh, Th, Eh, Dx, Vt, Sh, Dh, Oh, yi, Su = C(() => {
+  var probeWeh, netProbeStore, netProbeHits, netProbeUtil, netProbeSmartname, makeProbesForRequest, fireHttpMediaProbe, probeBrowser, contentRangeRegex, avMimeRegex, dispositionFilenameRegex, urlFilenameRegex, urlExtensionRegex, ytOtfRegex, ptrackingRegex, ytDoodleRegex, tumblrVideoRegex, soundcloudRegex,
+    skippedHeaderNames, mediaExtensionSetPromise, filterOutRegexPromise, handleHeadersReceived, monitoredRequestTypes, monitoredRequestHeaders, handleSendHeaders, handleRequestError, sendHeadersExtraInfo, proxyHeaderWaiters, initNetworkProbe = defineLazyModule(() => {
       "use strict";
-      Ji();
-      oe();
-      pr();
-      Xe();
-      xt();
-      fr();
-      _t = Y(), px = (ze(), R(Qe)), fx = (gn(), R(mn)), _h = (he(), R(ge)),
-        mx = (on(), R(nn)), {
-          MaybeCreateProbeFromNetworkRequest: gx,
-          FireProbeForHTTPMedia: hx
-        } = (Yo(), R(ou)), Ve = _t.browser, _x = new RegExp(
-          "^bytes [0-9]+-[0-9]+/([0-9]+)$"), bx = new RegExp(
-          "^(audio|video)/(?:x-)?([^; ]+)"), yx = new RegExp(
-          'filename\\s*=\\s*"\\s*([^"]+?)\\s*"'), vx = new RegExp(
-          "/([^/]+?)(?:\\.([a-z0-9]{1,5}))?(?:\\?|#|$)", "i"), wx =
-        new RegExp("\\.([a-z0-9]{1,5})(?:\\?|#|$)", "i"), Ax = new RegExp(
-          "\\bsource=yt_otf\\b"), xx = new RegExp("/ptracking\\b"), Tx =
-        new RegExp("^https://www.gstatic.com/youtube/doodle\\b"), Ex =
+      initMediaTypeSupport();
+      initTsResultsIndex();
+      initProtocolTypes();
+      initContainers();
+      initCodecs();
+      initMediaCommon();
+      probeWeh = requireWeh(), netProbeStore = (initStore(), toCommonjs(storeNs)), netProbeHits = (initHitsStore(), toCommonjs(hitsStoreNs)), netProbeUtil = (initCoreUtil(), toCommonjs(coreUtilNs)),
+        netProbeSmartname = (initSmartname(), toCommonjs(smartnameNs)), {
+          MaybeCreateProbeFromNetworkRequest: makeProbesForRequest,
+          FireProbeForHTTPMedia: fireHttpMediaProbe
+        } = (initProbes(), toCommonjs(probesNs)), probeBrowser = probeWeh.browser, contentRangeRegex = new RegExp(
+          "^bytes [0-9]+-[0-9]+/([0-9]+)$"), avMimeRegex = new RegExp(
+          "^(audio|video)/(?:x-)?([^; ]+)"), dispositionFilenameRegex = new RegExp(
+          'filename\\s*=\\s*"\\s*([^"]+?)\\s*"'), urlFilenameRegex = new RegExp(
+          "/([^/]+?)(?:\\.([a-z0-9]{1,5}))?(?:\\?|#|$)", "i"), urlExtensionRegex =
+        new RegExp("\\.([a-z0-9]{1,5})(?:\\?|#|$)", "i"), ytOtfRegex = new RegExp(
+          "\\bsource=yt_otf\\b"), ptrackingRegex = new RegExp("/ptracking\\b"), ytDoodleRegex =
+        new RegExp("^https://www.gstatic.com/youtube/doodle\\b"), tumblrVideoRegex =
         new RegExp(
           "^(https?)://v[^\\/]*\\.tumblr\\.com/(tumblr_[0-9a-zA-Z_]+)\\.(?:mp4|mov)"
-          ), Sx = new RegExp("^https://soundcloud.com/"), vh = {
+          ), soundcloudRegex = new RegExp("^https://soundcloud.com/"), skippedHeaderNames = {
           host: !0,
           range: !0,
           "content-length": !0
         };
-      xh = wh();
-      _t.prefs.then(e => e.on("mediaExtensions", () => {
-        xh = wh()
+      mediaExtensionSetPromise = loadMediaExtensionSet();
+      probeWeh.prefs.then(prefs => prefs.on("mediaExtensions", () => {
+        mediaExtensionSetPromise = loadMediaExtensionSet()
       }));
-      Th = Ah();
-      _t.prefs.then(e => e.on("networkFilterOut", () => {
-        Th = Ah()
+      filterOutRegexPromise = compileNetworkFilterRegex();
+      probeWeh.prefs.then(prefs => prefs.on("networkFilterOut", () => {
+        filterOutRegexPromise = compileNetworkFilterRegex()
       }));
-      Eh = async e => {
-        let t = await _t.prefs,
-          r;
-        if (Vt && (r = Vt[e.requestId], r && delete Vt[e.requestId]), e
-          .tabId < 0 && !e.initiator?.startsWith("http")) return;
-        let i = await Th;
-        if (Ax.test(e.url) || xx.test(e.url) || Tx.test(e.url) || i && i
-          .test(e.url)) return;
+      handleHeadersReceived = async details => {
+        let prefs = await probeWeh.prefs,
+          requestHeaders;
+        if (monitoredRequestHeaders && (requestHeaders = monitoredRequestHeaders[details.requestId], requestHeaders && delete monitoredRequestHeaders[details.requestId]), details
+          .tabId < 0 && !details.initiator?.startsWith("http")) return;
+        let filterRegex = await filterOutRegexPromise;
+        if (ytOtfRegex.test(details.url) || ptrackingRegex.test(details.url) || ytDoodleRegex.test(details.url) || filterRegex && filterRegex
+          .test(details.url)) return;
 
-        function n(p, _) {
-          if (!_ && (!a && isNaN(l) && !u || !a && !u && (isNaN(l) || t
-                .mediaweightThreshold === 0 || l < t
-                .mediaweightThreshold) || a && a[2].toLowerCase() ==
+        function emitProbe(probes, force) {
+          if (!force && (!mimeMatch && isNaN(contentLength) && !extMatch || !mimeMatch && !extMatch && (isNaN(contentLength) || prefs
+                .mediaweightThreshold === 0 || contentLength < prefs
+                .mediaweightThreshold) || mimeMatch && mimeMatch[2].toLowerCase() ==
               "ms-asf")) return;
-          let f = {
-            id: "network-probe:" + _h.hashHex(e.url),
+          let hit = {
+            id: "network-probe:" + netProbeUtil.hashHex(details.url),
             status: "active",
-            url: e.url,
-            tabId: e.tabId,
-            frameId: e.frameId,
+            url: details.url,
+            tabId: details.tabId,
+            frameId: details.frameId,
             fromCache: !0,
-            referrer: m
+            referrer: referrer
           };
-          !isNaN(l) && !p && (f.length = l), e.proxyInfo && e.proxyInfo
-            .type.substr(0, 4) == "http" && (f.proxy = e.proxyInfo);
-          let g = o["content-disposition"];
-          if (g) {
-            let b = yx.exec(g);
-            b && b[1] && (f.headerFilename = b[1])
+          !isNaN(contentLength) && !probes && (hit.length = contentLength), details.proxyInfo && details.proxyInfo
+            .type.substr(0, 4) == "http" && (hit.proxy = details.proxyInfo);
+          let contentDisposition = headers["content-disposition"];
+          if (contentDisposition) {
+            let dispositionMatch = dispositionFilenameRegex.exec(contentDisposition);
+            dispositionMatch && dispositionMatch[1] && (hit.headerFilename = dispositionMatch[1])
           }
-          let h = vx.exec(e.url);
-          h && (f.urlFilename = h[1]), f.title = f.headerFilename || f
-            .urlFilename || _t._("media");
-          let T = Ex.exec(e.url);
-          T && (f.thumbnailUrl = T[1] + "://media.tumblr.com/" + T[2] +
-              "_frame1.jpg"), u ? (f.type = "video", f.extension = u[
-            1]) : a ? (f.type = a[1], f.extension = a[2]) : f
-            .extension = d, f.headers = r && r.filter(b => typeof vh[b
+          let urlMatch = urlFilenameRegex.exec(details.url);
+          urlMatch && (hit.urlFilename = urlMatch[1]), hit.title = hit.headerFilename || hit
+            .urlFilename || probeWeh._("media");
+          let tumblrMatch = tumblrVideoRegex.exec(details.url);
+          tumblrMatch && (hit.thumbnailUrl = tumblrMatch[1] + "://media.tumblr.com/" + tumblrMatch[2] +
+              "_frame1.jpg"), extMatch ? (hit.type = "video", hit.extension = extMatch[
+            1]) : mimeMatch ? (hit.type = mimeMatch[1], hit.extension = mimeMatch[2]) : hit
+            .extension = extension, hit.headers = requestHeaders && requestHeaders.filter(header => typeof skippedHeaderNames[header
               .name.toLowerCase()] > "u") || [];
-          async function x(b) {
-            for (; b.status != "complete";) await new Promise(D =>
-              setTimeout(D, 500)), b = await Ve.tabs.get(b.id);
-            if (b) {
-              f.tabId = b.id, f.topUrl = b.url, f.isPrivate = b
-                .incognito, f.pageTitle = b.title, f.title = f
-                .headerFilename || b.title || f.urlFilename || _t._(
+          async function resolveWithTab(tab) {
+            for (; tab.status != "complete";) await new Promise(resolve =>
+              setTimeout(resolve, 500)), tab = await probeBrowser.tabs.get(tab.id);
+            if (tab) {
+              hit.tabId = tab.id, hit.topUrl = tab.url, hit.isPrivate = tab
+                .incognito, hit.pageTitle = tab.title, hit.title = hit
+                .headerFilename || tab.title || hit.urlFilename || probeWeh._(
                   "media");
-              let D = await mx.getSpecs(b.url);
-              D && (D.headerFilename = f.headerFilename, D
-                .urlFilename = f.urlFilename);
+              let specs = await netProbeSmartname.getSpecs(tab.url);
+              specs && (specs.headerFilename = hit.headerFilename, specs
+                .urlFilename = hit.urlFilename);
               {
-                let P;
+                let scriptResults;
                 try {
-                  P = await Ve.scripting.executeScript({
+                  scriptResults = await probeBrowser.scripting.executeScript({
                     target: {
-                      tabId: b.id
+                      tabId: tab.id
                     },
                     func: () => {
-                      let k = [{
+                      let selectors = [{
                         sel: "meta[property='og:image:secure_url']",
                         attr: "content"
                       }, {
@@ -16035,13 +16035,13 @@ const store = createStore(
                         sel: "#vp-preview",
                         attr: "data-thumb"
                       }];
-                      for (let S of k) {
-                        let M = document.querySelectorAll(S
+                      for (let selector of selectors) {
+                        let elements = document.querySelectorAll(selector
                         .sel);
-                        for (let N of M) {
-                          let j = N.getAttribute(S.attr);
-                          if (typeof j == "string") try {
-                            return new URL(j, window.location
+                        for (let element of elements) {
+                          let attrValue = element.getAttribute(selector.attr);
+                          if (typeof attrValue == "string") try {
+                            return new URL(attrValue, window.location
                                 .href)
                               .href
                           } catch {}
@@ -16051,359 +16051,359 @@ const store = createStore(
                     }
                   })
                 } catch {}
-                typeof P?.[0]?.result == "string" ? f.thumbnailUrl2 =
-                  P[0].result : f.thumbnailUrl2 =
+                typeof scriptResults?.[0]?.result == "string" ? hit.thumbnailUrl2 =
+                  scriptResults[0].result : hit.thumbnailUrl2 =
                   "/content/images/no-thumbnail.png"
               }
-              if (p) {
-                f.originalId = f.id;
-                for (let P of p) await P.onHitDataAvailable(f)
+              if (probes) {
+                hit.originalId = hit.id;
+                for (let probe of probes) await probe.onHitDataAvailable(hit)
               }
-              f.frameId >= 0 && _h.executeScriptWithGlobal({
-                  tabId: b.id
+              hit.frameId >= 0 && netProbeUtil.executeScriptWithGlobal({
+                  tabId: tab.id
                 }, {
-                  _$vdhHitId: f.id,
-                  _$vdhSmartNameSpecs: D
+                  _$vdhHitId: hit.id,
+                  _$vdhSmartNameSpecs: specs
                 }, "/injected/pagedata.js")
-                .catch(P => {
-                  Ve.webNavigation.getFrame({
-                      tabId: b.id,
-                      frameId: f.frameId
+                .catch(err => {
+                  probeBrowser.webNavigation.getFrame({
+                      tabId: tab.id,
+                      frameId: hit.frameId
                     })
-                    .then(k => {
-                      k && (console.warn(
-                          "pagedata execution error", P.message
-                          ), fx.updateOriginal(f.id, {
-                          title: b.title || f.title,
-                          pageUrl: k.url,
-                          topUrl: b.url
+                    .then(frame => {
+                      frame && (console.warn(
+                          "pagedata execution error", err.message
+                          ), netProbeHits.updateOriginal(hit.id, {
+                          title: tab.title || hit.title,
+                          pageUrl: frame.url,
+                          topUrl: tab.url
                         }))
                     })
                 })
             }
-            if (!p) {
-              f.group = f.id;
-              let D = O,
-                P = {
+            if (!probes) {
+              hit.group = hit.id;
+              let coreMediaOpt = ResultNone,
+                baseMedia = {
                   builder: "HTTPMedia",
                   protocol: "non-adaptative",
                   duration: "unknown",
-                  content_length: O
+                  content_length: ResultNone
                 };
-              f.length && (P.content_length = q(f.length));
+              hit.length && (baseMedia.content_length = resultSome(hit.length));
               {
-                if (s) {
-                  let S = ai(s);
-                  if (S.isErr()) console.warn(
-                    "Couldn't not parse mimetype", s);
+                if (contentType) {
+                  let parseResult = parseMimeType(contentType);
+                  if (parseResult.isErr()) console.warn(
+                    "Couldn't not parse mimetype", contentType);
                   else {
                     let {
-                      container: M,
-                      av_codecs: N
-                    } = S.unwrap();
-                    D = q({
-                      ...P,
-                      container: ue(M),
-                      av: Ge(N, j => ({
-                        codec: We(j),
-                        bitrate: O
-                      }), j => ({
-                        codec: je(j),
-                        fps: O,
-                        dimensions: O,
-                        quality: O,
-                        bitrate: O
+                      container: container,
+                      av_codecs: av_codecs
+                    } = parseResult.unwrap();
+                    coreMediaOpt = resultSome({
+                      ...baseMedia,
+                      container: containerByName(container),
+                      av: matchAudioVideo(av_codecs, audioCodec => ({
+                        codec: makeAudioCodec(audioCodec),
+                        bitrate: ResultNone
+                      }), videoCodec => ({
+                        codec: makeVideoCodec(videoCodec),
+                        fps: ResultNone,
+                        dimensions: ResultNone,
+                        quality: ResultNone,
+                        bitrate: ResultNone
                       }))
                     })
                   }
                 }
-                let k = u?.[1] || f.headerFilename?.split(".")
+                let extForLookup = extMatch?.[1] || hit.headerFilename?.split(".")
                   .pop() || "";
-                D.isNone() && (D = Ii(k)
-                  .map(([S, M]) => {
-                    let N = M == "audio_only";
+                coreMediaOpt.isNone() && (coreMediaOpt = containerForExtension(extForLookup)
+                  .map(([container, kind]) => {
+                    let isAudioOnly = kind == "audio_only";
                     return {
-                      ...P,
-                      container: S,
+                      ...baseMedia,
+                      container: container,
                       av: {
-                        audio: N ? Ed() : !1,
-                        video: N ? !1 : jt()
+                        audio: isAudioOnly ? unknownAudioTrack() : !1,
+                        video: isAudioOnly ? !1 : unknownVideoTrack()
                       }
                     }
                   }))
               }
-              D.isSome() && (f.core_media = D.unwrap(), hx(f), px
-                .dispatch("hit.new", f))
+              coreMediaOpt.isSome() && (hit.core_media = coreMediaOpt.unwrap(), fireHttpMediaProbe(hit), netProbeStore
+                .dispatch("hit.new", hit))
             }
           }
-          e.tabId > 0 ? Ve.tabs.get(e.tabId)
-            .then(x) : p && e.initiator?.startsWith("http") && Ve.tabs
+          details.tabId > 0 ? probeBrowser.tabs.get(details.tabId)
+            .then(resolveWithTab) : probes && details.initiator?.startsWith("http") && probeBrowser.tabs
             .query({
-              url: e.initiator + "/*"
+              url: details.initiator + "/*"
             })
-            .then(async b => {
-              for (let D of b) await x(D)
+            .then(async tabs => {
+              for (let tab of tabs) await resolveWithTab(tab)
             })
         }
-        let o = {};
-        (e.responseHeaders || [])
-        .forEach(p => {
-          o[p.name.toLowerCase()] = p.value
+        let headers = {};
+        (details.responseHeaders || [])
+        .forEach(header => {
+          headers[header.name.toLowerCase()] = header.value
         });
-        let s = o["content-type"],
-          a = bx.exec(s),
-          l = parseInt(o["content-length"]);
-        if (isNaN(l)) {
-          let p = o["content-range"];
-          if (p) {
-            let _ = _x.exec(p);
-            _ && (l = parseInt(_[1]))
+        let contentType = headers["content-type"],
+          mimeMatch = avMimeRegex.exec(contentType),
+          contentLength = parseInt(headers["content-length"]);
+        if (isNaN(contentLength)) {
+          let contentRange = headers["content-range"];
+          if (contentRange) {
+            let rangeMatch = contentRangeRegex.exec(contentRange);
+            rangeMatch && (contentLength = parseInt(rangeMatch[1]))
           }
         }
-        let u = wx.exec(e.url),
-          d = null,
-          c = await xh;
-        if (u) {
-          if (d = u[1].toLowerCase(), d == "m4s" && t.dashHideM4s ||
-            d == "ts" && t.mpegtsHideTs) return;
-          !Ii(u[1])
-            .isSome() && !c[u[1]] && (u = null)
+        let extMatch = urlExtensionRegex.exec(details.url),
+          extension = null,
+          mediaExtensions = await mediaExtensionSetPromise;
+        if (extMatch) {
+          if (extension = extMatch[1].toLowerCase(), extension == "m4s" && prefs.dashHideM4s ||
+            extension == "ts" && prefs.mpegtsHideTs) return;
+          !containerForExtension(extMatch[1])
+            .isSome() && !mediaExtensions[extMatch[1]] && (extMatch = null)
         }
-        let m = e.originUrl || e.documentUrl || void 0;
-        if (Sx.test(m) && l < 1e6 && s == "audio/mpeg") return;
-        let w = gx(e, s, r);
-        if (w.length > 0) try {
-          n(w, !0, m, r, e)
-        } catch (p) {
-          console.error("Uncaught PostHook error:", p)
+        let referrer = details.originUrl || details.documentUrl || void 0;
+        if (soundcloudRegex.test(referrer) && contentLength < 1e6 && contentType == "audio/mpeg") return;
+        let probes = makeProbesForRequest(details, contentType, requestHeaders);
+        if (probes.length > 0) try {
+          emitProbe(probes, !0, referrer, requestHeaders, details)
+        } catch (err) {
+          console.error("Uncaught PostHook error:", err)
         } else {
-          let p = a && (a[1] == "audio" || a[1] == "video"),
-            _ = !isNaN(l) && t.mediaweightThreshold > 0 && l >= t
+          let isAvMime = mimeMatch && (mimeMatch[1] == "audio" || mimeMatch[1] == "video"),
+            isLargeMedia = !isNaN(contentLength) && prefs.mediaweightThreshold > 0 && contentLength >= prefs
             .mediaweightThreshold;
-          n(null, p || _)
+          emitProbe(null, isAvMime || isLargeMedia)
         }
-      }, Dx = ["main_frame", "sub_frame", "xmlhttprequest", "object",
+      }, monitoredRequestTypes = ["main_frame", "sub_frame", "xmlhttprequest", "object",
         "media"
       ];
-      _t.browserType == "firefox" && Dx.push("object_subrequest");
-      _t.prefs.then(e => {
-        e.networkProbe && bh(), e.monitorNetworkRequests && yh(), e.on(
-          "networkProbe", (t, r) => {
-            r ? bh() : Ox()
-          }), e.on("monitorNetworkRequests", (t, r) => {
-          r ? yh() : Mx()
+      probeWeh.browserType == "firefox" && monitoredRequestTypes.push("object_subrequest");
+      probeWeh.prefs.then(prefs => {
+        prefs.networkProbe && startHeadersProbe(), prefs.monitorNetworkRequests && startRequestMonitor(), prefs.on(
+          "networkProbe", (name, enabled) => {
+            enabled ? startHeadersProbe() : stopHeadersProbe()
+          }), prefs.on("monitorNetworkRequests", (name, enabled) => {
+          enabled ? startRequestMonitor() : stopRequestMonitor()
         })
       });
-      Vt = null, Sh = e => {
-        Mh(e), Vt && (Vt[e.requestId] = e.requestHeaders)
-      }, Dh = e => {
-        Mh(e), Vt && delete Vt[e.requestId]
-      }, Oh = ["requestHeaders"];
-      Ve.runtime.getManifest()
-        .manifest_version >= 3 && Oh.push("extraHeaders");
-      yi = {}
+      monitoredRequestHeaders = null, handleSendHeaders = details => {
+        resolveProxyHeaders(details), monitoredRequestHeaders && (monitoredRequestHeaders[details.requestId] = details.requestHeaders)
+      }, handleRequestError = details => {
+        resolveProxyHeaders(details), monitoredRequestHeaders && delete monitoredRequestHeaders[details.requestId]
+      }, sendHeadersExtraInfo = ["requestHeaders"];
+      probeBrowser.runtime.getManifest()
+        .manifest_version >= 3 && sendHeadersExtraInfo.push("extraHeaders");
+      proxyHeaderWaiters = {}
     });
-  var Nh = {};
-  ie(Nh, {
-    analyzePage: () => Ou
+  var galleryNs = {};
+  defineExports(galleryNs, {
+    analyzePage: () => analyzePage
   });
-  async function Du() {
-    let e = await An.tabs.query({
+  async function getActiveTabTarget() {
+    let tabs = await galleryBrowser.tabs.query({
       active: !0,
       currentWindow: !0
     });
-    if (e.length === 0) throw new Error("Can't find current tab");
+    if (tabs.length === 0) throw new Error("Can't find current tab");
     return {
-      tabId: e[0].id
+      tabId: tabs[0].id
     }
   }
-  async function Ou(e) {
-    let t;
-    e ? t = {
-      tabId: e
-    } : t = await Du(), await An.scripting.insertCSS({
-      target: t,
-      css: Ix
+  async function analyzePage(tabId) {
+    let target;
+    tabId ? target = {
+      tabId: tabId
+    } : target = await getActiveTabTarget(), await galleryBrowser.scripting.insertCSS({
+      target: target,
+      css: galleryMaskCssBase
     });
-    let r = await or.prefs;
-    await Ih.executeScriptWithGlobal(t, {
+    let prefs = await galleryWeh.prefs;
+    await galleryUtil.executeScriptWithGlobal(target, {
       _$vdhParams: {
-        extensions: r.medialinkExtensions,
-        maxHits: r.medialinkMaxHits,
-        minFilesPerGroup: r.medialinkMinFilesPerGroup,
-        minImgSize: r.medialinkMinImgSize,
-        scanImages: r.medialinkScanImages,
-        scanLinks: r.medialinkScanLinks
+        extensions: prefs.medialinkExtensions,
+        maxHits: prefs.medialinkMaxHits,
+        minFilesPerGroup: prefs.medialinkMinFilesPerGroup,
+        minImgSize: prefs.medialinkMinImgSize,
+        scanImages: prefs.medialinkScanImages,
+        scanLinks: prefs.medialinkScanLinks
       }
     }, "/injected/gallery.js")
   }
 
-  function Rh(e) {
-    return ".vdh-mask." + e + " { display: block; }"
+  function galleryMaskCss(className) {
+    return ".vdh-mask." + className + " { display: block; }"
   }
-  var or, An, Ph, Ih, Rx, Ix, kh = C(() => {
+  var galleryWeh, galleryBrowser, galleryStore, galleryUtil, galleryProxyHeaders, galleryMaskCssBase, initGallery = defineLazyModule(() => {
     "use strict";
-    or = Y(), An = or.browser, Ph = (ze(), R(Qe)), Ih = (he(), R(ge)),
-      Rx = (Su(), R(Eu)), Ix =
+    galleryWeh = requireWeh(), galleryBrowser = galleryWeh.browser, galleryStore = (initStore(), toCommonjs(storeNs)), galleryUtil = (initCoreUtil(), toCommonjs(coreUtilNs)),
+      galleryProxyHeaders = (initNetworkProbe(), toCommonjs(proxyHeadersNs)), galleryMaskCssBase =
       ".vdh-mask { position: absolute; display: none; background-color: rgba(255,0,0,0.5); z-index: 2147483647; }";
-    or.rpc.listen({
+    galleryWeh.rpc.listen({
       analyzePage: () => {
-        Ou()
+        analyzePage()
       },
-      galleryGroups: e => {
-        Object.keys(e.groups)
-          .forEach(t => {
-            let r = e.groups[t],
-              i = "??",
-              n = "??";
+      galleryGroups: message => {
+        Object.keys(message.groups)
+          .forEach(groupKey => {
+            let group = message.groups[groupKey],
+              title = "??",
+              hostname = "??";
             try {
-              n = new URL(r.baseUrl)
+              hostname = new URL(group.baseUrl)
                 .hostname
-            } catch (a) {
-              console.warn("Uncaught URL error", a)
+            } catch (err) {
+              console.warn("Uncaught URL error", err)
             }
-            switch (r.type) {
+            switch (group.type) {
               case "image":
-                i = or._("gallery_from_domain", n);
+                title = galleryWeh._("gallery_from_domain", hostname);
                 break;
               case "link":
-                i = or._("gallery_links_from_domain", n);
+                title = galleryWeh._("gallery_links_from_domain", hostname);
                 break
             }
-            let o;
-            if (r.extensions) {
-              let a = Object.keys(r.extensions);
-              a.sort((u, d) => r.extensions[u] - r.extensions[d]);
-              let l = [];
-              a.forEach(u => {
-                let d = or._("number_type", ["" + r
-                  .extensions[u], u.toUpperCase()
+            let description;
+            if (group.extensions) {
+              let extensions = Object.keys(group.extensions);
+              extensions.sort((extA, extB) => group.extensions[extA] - group.extensions[extB]);
+              let typeLabels = [];
+              extensions.forEach(ext => {
+                let label = galleryWeh._("number_type", ["" + group
+                  .extensions[ext], ext.toUpperCase()
                 ]);
-                l.push(d)
-              }), o = or._("gallery_files_types", l.length >
-                0 && l.join(", ") || "" + r.urls.length)
+                typeLabels.push(label)
+              }), description = galleryWeh._("gallery_files_types", typeLabels.length >
+                0 && typeLabels.join(", ") || "" + group.urls.length)
             }
-            let s = "gallery:" + Ih.hashHex(e.pageUrl) + ":" + t;
-            Ph.dispatch("hit.new", Object.assign({}, r, {
-                gallery_urls: r.urls,
-                id: s,
-                topUrl: e.pageUrl,
-                title: i,
-                description: o,
+            let hitId = "gallery:" + galleryUtil.hashHex(message.pageUrl) + ":" + groupKey;
+            galleryStore.dispatch("hit.new", Object.assign({}, group, {
+                gallery_urls: group.urls,
+                id: hitId,
+                topUrl: message.pageUrl,
+                title: title,
+                description: description,
                 mouseTrack: !0
-              })), Rx.getProxyHeaders(e.pageUrl)
-              .then(a => {
-                Ph.dispatch("hit.update", {
-                  id: s,
-                  changes: a
+              })), galleryProxyHeaders.getProxyHeaders(message.pageUrl)
+              .then(headers => {
+                galleryStore.dispatch("hit.update", {
+                  id: hitId,
+                  changes: headers
                 })
               })
           })
       },
-      galleryHighlight: async e => {
-        An.scripting.insertCSS({
-          target: await Du(),
-          css: Rh(e)
+      galleryHighlight: async className => {
+        galleryBrowser.scripting.insertCSS({
+          target: await getActiveTabTarget(),
+          css: galleryMaskCss(className)
         })
       },
-      galleryUnhighlight: async e => {
-        An.scripting.removeCSS({
-          target: await Du(),
-          css: Rh(e)
+      galleryUnhighlight: async className => {
+        galleryBrowser.scripting.removeCSS({
+          target: await getActiveTabTarget(),
+          css: galleryMaskCss(className)
         })
       }
     });
-    An.tabs.onUpdated.addListener(async (e, t, r) => {
-      let i = await or.prefs;
-      t.status === "complete" && i.medialinkAutoDetect && Ou(e)
+    galleryBrowser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+      let prefs = await galleryWeh.prefs;
+      changeInfo.status === "complete" && prefs.medialinkAutoDetect && analyzePage(tabId)
     })
   });
-  Iu();
-  var Nx = (async () => {
-    let e = Y(),
-      t = e.browser,
-      r = lr();
-    r.prod || console.info("=========== VDH started", new Date()
-        .toLocaleTimeString(), "=========="), Yu(), ft(), Kt(), Su(),
-      kh(), fu();
-    let i = (Rr(), R(Pr));
-    return e.rpc.listen({
+  requireEmptySideEffect();
+  var appStartup = (async () => {
+    let weh = requireWeh(),
+      browser = weh.browser,
+      build = requireBuildInfo();
+    build.prod || console.info("=========== VDH started", new Date()
+        .toLocaleTimeString(), "=========="), requireInspect(), initCoapp(), initLicense(), initNetworkProbe(),
+      initGallery(), initConversionRules();
+    let tabTracker = (initTabTracker(), toCommonjs(tabTrackerNs));
+    return weh.rpc.listen({
       openSettings: () => {
-        e.ui.open("settings", {
+        weh.ui.open("settings", {
           type: "tab",
           url: "content/settings.html"
-        }), e.ui.close("main")
+        }), weh.ui.close("main")
       },
       openTranslation: () => {
-        e.ui.open("translation", {
+        weh.ui.open("translation", {
           type: "tab",
           url: "content/translation.html"
-        }), e.ui.close("main")
+        }), weh.ui.close("main")
       },
-      openSites: () => i.gotoOrOpenTab(
+      openSites: () => tabTracker.gotoOrOpenTab(
         "https://www.downloadhelper.net/sites"),
-      openForum: () => i.gotoOrOpenTab(
+      openForum: () => tabTracker.gotoOrOpenTab(
         "https://github.com/aclap-dev/video-downloadhelper/discussions"
         ),
-      openHomepage: () => i.gotoOrOpenTab(
+      openHomepage: () => tabTracker.gotoOrOpenTab(
         "https://www.downloadhelper.net/"),
-      openTranslationForum: () => i.gotoOrOpenTab(
+      openTranslationForum: () => tabTracker.gotoOrOpenTab(
         "https://github.com/aclap-dev/video-downloadhelper/discussions/categories/language-translation"
         ),
-      openWeh: () => i.gotoOrOpenTab("https://github.com/mi-g/weh"),
+      openWeh: () => tabTracker.gotoOrOpenTab("https://github.com/mi-g/weh"),
       openAbout: () => {
-        e.ui.open("about", {
+        weh.ui.open("about", {
           type: "panel",
           url: "content/about.html"
-        }), e.ui.close("main")
+        }), weh.ui.close("main")
       },
       openCoapp: () => {
-        e.ui.open("coappShell", {
+        weh.ui.open("coappShell", {
           type: "tab",
           url: "content/coapp-shell.html"
-        }), e.ui.close("main")
+        }), weh.ui.close("main")
       },
-      goto: n => i.gotoOrOpenTab(n),
-      getBuild: () => r,
-      updateLastFocusedWindowHeight: (n, o) => {
-        t.windows.getLastFocused()
-          .then(s => {
-            if (s) {
-              n = Math.floor(n), o = Math.floor(o);
-              let a = Math.floor(s.height) - o;
-              t.windows.update(s.id, {
-                height: n + a
+      goto: url => tabTracker.gotoOrOpenTab(url),
+      getBuild: () => build,
+      updateLastFocusedWindowHeight: (desiredHeight, contentHeight) => {
+        browser.windows.getLastFocused()
+          .then(win => {
+            if (win) {
+              desiredHeight = Math.floor(desiredHeight), contentHeight = Math.floor(contentHeight);
+              let chromeHeight = Math.floor(win.height) - contentHeight;
+              browser.windows.update(win.id, {
+                height: desiredHeight + chromeHeight
               })
             }
           })
       },
       editMediaUserPrefs: () => {
-        e.ui.open("media-user-prefs-edit", {
+        weh.ui.open("media-user-prefs-edit", {
           type: "tab",
           url: "content/media-user-prefs-edit.html"
         })
       }
-    }), n => {
-      let o = t.runtime.getManifest(),
-        s = r.channel,
-        a = r.buildOptions.target,
-        l = o.version.split(".")
+    }), installDetails => {
+      let manifest = browser.runtime.getManifest(),
+        channel = build.channel,
+        target = build.buildOptions.target,
+        currentVersion = manifest.version.split(".")
         .slice(0, 2)
         .join(".");
-      if (n.reason == "install") i.gotoOrOpenTab(
+      if (installDetails.reason == "install") tabTracker.gotoOrOpenTab(
         "https://github.com/top-master/ext-VDH/blob/master/README.md");
-      else if (n.reason == "update") {
-        let u = n.previousVersion.split(".")
+      else if (installDetails.reason == "update") {
+        let previousVersion = installDetails.previousVersion.split(".")
           .slice(0, 2)
           .join(".");
-        l != u && i.gotoOrOpenTab(
+        currentVersion != previousVersion && tabTracker.gotoOrOpenTab(
           "https://github.com/top-master/ext-VDH/releases")
       }
     }
   })();
   (chrome || browser)
-  .runtime.onInstalled.addListener(async t => {
-    (await Nx)(t)
+  .runtime.onInstalled.addListener(async installDetails => {
+    (await appStartup)(installDetails)
   });
 })();
 /*! Bundled license information:
