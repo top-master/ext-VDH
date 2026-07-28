@@ -1,51 +1,51 @@
 "use strict";
 (() => {
-  var ye = Object.create;
-  var ee = Object.defineProperty;
-  var Ae = Object.getOwnPropertyDescriptor;
-  var we = Object.getOwnPropertyNames;
-  var be = Object.getPrototypeOf,
-    xe = Object.prototype.hasOwnProperty;
-  var ve = (e, r) => () => (r || e((r = {
+  var objectCreate = Object.create;
+  var defineProperty = Object.defineProperty;
+  var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var getOwnPropNames = Object.getOwnPropertyNames;
+  var getPrototypeOf = Object.getPrototypeOf,
+    hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+  var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
       exports: {}
     })
-    .exports, r), r.exports);
-  var Se = (e, r, t, n) => {
-    if (r && typeof r == "object" || typeof r == "function")
-      for (let a of we(r)) !xe.call(e, a) && a !== t && ee(e, a, {
-        get: () => r[a],
-        enumerable: !(n = Ae(r, a)) || n.enumerable
+    .exports, cachedExports), cachedExports.exports);
+  var copyProps = (targetObj, from, except, desc) => {
+    if (from && typeof from == "object" || typeof from == "function")
+      for (let key of getOwnPropNames(from)) !hasOwnPropertyRef.call(targetObj, key) && key !== except && defineProperty(targetObj, key, {
+        get: () => from[key],
+        enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable
       });
-    return e
+    return targetObj
   };
-  var re = (e, r, t) => (t = e != null ? ye(be(e)) : {}, Se(r || !e || !e
-    .__esModule ? ee(t, "default", {
-      value: e,
+  var toEsm = (mod, isNodeMode, target) => (target = mod != null ? objectCreate(getPrototypeOf(mod)) : {}, copyProps(isNodeMode || !mod || !mod
+    .__esModule ? defineProperty(target, "default", {
+      value: mod,
       enumerable: !0
-    }) : t, e));
-  var Q = ve((q, te) => {
-    (function(e, r) {
+    }) : target, mod));
+  var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
+    (function(globalScope, factory) {
       if (typeof define == "function" && define.amd) define(
-        "webextension-polyfill", ["module"], r);
-      else if (typeof q < "u") r(te);
+        "webextension-polyfill", ["module"], factory);
+      else if (typeof polyfillExports < "u") factory(polyfillModule);
       else {
-        var t = {
+        var moduleShim = {
           exports: {}
         };
-        r(t), e.browser = t.exports
+        factory(moduleShim), globalScope.browser = moduleShim.exports
       }
     })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self :
-      q,
-      function(e) {
+      polyfillExports,
+      function(browserModule) {
         "use strict";
         if (!globalThis.chrome?.runtime?.id) throw new Error(
           "This script should only be loaded in a browser extension.");
         if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
             globalThis.browser) !== Object.prototype) {
-          let r =
+          let messagePortClosedMessage =
             "The message port closed before a response was received.",
-            t = n => {
-              let a = {
+            wrapApis = chromeApi => {
+              let apiMetadata = {
                 alarms: {
                   clear: {
                     minArgs: 0,
@@ -717,206 +717,206 @@
                   }
                 }
               };
-              if (Object.keys(a)
+              if (Object.keys(apiMetadata)
                 .length === 0) throw new Error(
                 "api-metadata.json has not been included in browser-polyfill"
                 );
-              class o extends WeakMap {
-                constructor(m, g = void 0) {
-                  super(g), this.createItem = m
+              class DefaultWeakMap extends WeakMap {
+                constructor(createItem, entries = void 0) {
+                  super(entries), this.createItem = createItem
                 }
-                get(m) {
-                  return this.has(m) || this.set(m, this.createItem(m)),
-                    super.get(m)
+                get(key) {
+                  return this.has(key) || this.set(key, this.createItem(key)),
+                    super.get(key)
                 }
               }
-              let i = c => c && typeof c == "object" && typeof c.then ==
+              let isThenable = value => value && typeof value == "object" && typeof value.then ==
                 "function",
-                s = (c, m) => (...g) => {
-                  n.runtime.lastError ? c.reject(new Error(n.runtime
-                      .lastError.message)) : m.singleCallbackArg || g
-                    .length <= 1 && m.singleCallbackArg !== !1 ? c
-                    .resolve(g[0]) : c.resolve(g)
+                makeCallback = (promiseCallbacks, metadata) => (...callbackArgs) => {
+                  chromeApi.runtime.lastError ? promiseCallbacks.reject(new Error(chromeApi.runtime
+                      .lastError.message)) : metadata.singleCallbackArg || callbackArgs
+                    .length <= 1 && metadata.singleCallbackArg !== !1 ? promiseCallbacks
+                    .resolve(callbackArgs[0]) : promiseCallbacks.resolve(callbackArgs)
                 },
-                u = c => c == 1 ? "argument" : "arguments",
-                l = (c, m) => function(_, ...b) {
-                  if (b.length < m.minArgs) throw new Error(
-                    `Expected at least ${m.minArgs} ${u(m.minArgs)} for ${c}(), got ${b.length}`
+                pluralizeArgs = count => count == 1 ? "argument" : "arguments",
+                wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (b.length > m.maxArgs) throw new Error(
-                    `Expected at most ${m.maxArgs} ${u(m.maxArgs)} for ${c}(), got ${b.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((T, C) => {
-                    if (m.fallbackToNoCallback) try {
-                      _[c](...b, s({
-                        resolve: T,
-                        reject: C
-                      }, m))
-                    } catch (p) {
+                  return new Promise((resolve, reject) => {
+                    if (metadata.fallbackToNoCallback) try {
+                      apiTarget[name](...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
+                    } catch (error) {
                       console.warn(
-                          `${c} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                          p), _[c](...b), m.fallbackToNoCallback = !
-                        1, m.noCallback = !0, T()
-                    } else m.noCallback ? (_[c](...b), T()) : _[c](
-                      ...b, s({
-                        resolve: T,
-                        reject: C
-                      }, m))
+                          `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                          error), apiTarget[name](...args), metadata.fallbackToNoCallback = !
+                        1, metadata.noCallback = !0, resolve()
+                    } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](
+                      ...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
                   })
                 },
-                h = (c, m, g) => new Proxy(m, {
-                  apply(_, b, T) {
-                    return g.call(b, c, ...T)
+                wrapMethod = (target, method, wrapper) => new Proxy(method, {
+                  apply(fnTarget, thisArg, callArgs) {
+                    return wrapper.call(thisArg, target, ...callArgs)
                   }
                 }),
-                A = Function.call.bind(Object.prototype.hasOwnProperty),
-                N = (c, m = {}, g = {}) => {
-                  let _ = Object.create(null),
-                    b = {
-                      has(C, p) {
-                        return p in c || p in _
+                hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty),
+                wrapObject = (target, wrappers = {}, metadata = {}) => {
+                  let cache = Object.create(null),
+                    handler = {
+                      has(proxyTarget, prop) {
+                        return prop in target || prop in cache
                       },
-                      get(C, p, k) {
-                        if (p in _) return _[p];
-                        if (!(p in c)) return;
-                        let w = c[p];
-                        if (typeof w == "function")
-                          if (typeof m[p] == "function") w = h(c, c[p],
-                            m[p]);
-                          else if (A(g, p)) {
-                          let V = l(p, g[p]);
-                          w = h(c, c[p], V)
-                        } else w = w.bind(c);
-                        else if (typeof w == "object" && w !== null && (
-                            A(m, p) || A(g, p))) w = N(w, m[p], g[p]);
-                        else if (A(g, "*")) w = N(w, m[p], g["*"]);
-                        else return Object.defineProperty(_, p, {
+                      get(proxyTarget, prop, receiver) {
+                        if (prop in cache) return cache[prop];
+                        if (!(prop in target)) return;
+                        let value = target[prop];
+                        if (typeof value == "function")
+                          if (typeof wrappers[prop] == "function") value = wrapMethod(target, target[prop],
+                            wrappers[prop]);
+                          else if (hasOwnProperty(metadata, prop)) {
+                          let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
+                          value = wrapMethod(target, target[prop], wrappedFn)
+                        } else value = value.bind(target);
+                        else if (typeof value == "object" && value !== null && (
+                            hasOwnProperty(wrappers, prop) || hasOwnProperty(metadata, prop))) value = wrapObject(value, wrappers[prop], metadata[prop]);
+                        else if (hasOwnProperty(metadata, "*")) value = wrapObject(value, wrappers[prop], metadata["*"]);
+                        else return Object.defineProperty(cache, prop, {
                           configurable: !0,
                           enumerable: !0,
                           get() {
-                            return c[p]
+                            return target[prop]
                           },
-                          set(V) {
-                            c[p] = V
+                          set(newValue) {
+                            target[prop] = newValue
                           }
-                        }), w;
-                        return _[p] = w, w
+                        }), value;
+                        return cache[prop] = value, value
                       },
-                      set(C, p, k, w) {
-                        return p in _ ? _[p] = k : c[p] = k, !0
+                      set(proxyTarget, prop, value, receiver) {
+                        return prop in cache ? cache[prop] = value : target[prop] = value, !0
                       },
-                      defineProperty(C, p, k) {
-                        return Reflect.defineProperty(_, p, k)
+                      defineProperty(proxyTarget, prop, desc) {
+                        return Reflect.defineProperty(cache, prop, desc)
                       },
-                      deleteProperty(C, p) {
-                        return Reflect.deleteProperty(_, p)
+                      deleteProperty(proxyTarget, prop) {
+                        return Reflect.deleteProperty(cache, prop)
                       }
                     },
-                    T = Object.create(c);
-                  return new Proxy(T, b)
+                    proxyBase = Object.create(target);
+                  return new Proxy(proxyBase, handler)
                 },
-                O = c => ({
-                  addListener(m, g, ..._) {
-                    m.addListener(c.get(g), ..._)
+                wrapEvent = wrapperMap => ({
+                  addListener(target, listener, ...args) {
+                    target.addListener(wrapperMap.get(listener), ...args)
                   },
-                  hasListener(m, g) {
-                    return m.hasListener(c.get(g))
+                  hasListener(target, listener) {
+                    return target.hasListener(wrapperMap.get(listener))
                   },
-                  removeListener(m, g) {
-                    m.removeListener(c.get(g))
+                  removeListener(target, listener) {
+                    target.removeListener(wrapperMap.get(listener))
                   }
                 }),
-                S = new o(c => typeof c != "function" ? c : function(g) {
-                  let _ = N(g, {}, {
+                onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
+                  let wrappedRequest = wrapObject(request, {}, {
                     getContent: {
                       minArgs: 0,
                       maxArgs: 0
                     }
                   });
-                  c(_)
+                  listener(wrappedRequest)
                 }),
-                I = new o(c => typeof c != "function" ? c : function(g, _,
-                  b) {
-                  let T = !1,
-                    C, p = new Promise(F => {
-                      C = function(P) {
-                        T = !0, F(P)
+                onMessageWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(message, sender,
+                  sendResponse) {
+                  let responseSent = !1,
+                    resolveResponse, responsePromise = new Promise(resolvePromise => {
+                      resolveResponse = function(response) {
+                        responseSent = !0, resolvePromise(response)
                       }
                     }),
-                    k;
+                    result;
                   try {
-                    k = c(g, _, C)
-                  } catch (F) {
-                    k = Promise.reject(F)
+                    result = listener(message, sender, resolveResponse)
+                  } catch (error) {
+                    result = Promise.reject(error)
                   }
-                  let w = k !== !0 && i(k);
-                  if (k !== !0 && !w && !T) return !1;
-                  let V = F => {
-                    F.then(P => {
-                        b(P)
-                      }, P => {
-                        let J;
-                        P && (P instanceof Error || typeof P
-                            .message == "string") ? J = P.message :
-                          J = "An unexpected error occurred", b({
+                  let resultIsThenable = result !== !0 && isThenable(result);
+                  if (result !== !0 && !resultIsThenable && !responseSent) return !1;
+                  let sendResolvedResponse = resultPromise => {
+                    resultPromise.then(response => {
+                        sendResponse(response)
+                      }, error => {
+                        let errorMessage;
+                        error && (error instanceof Error || typeof error
+                            .message == "string") ? errorMessage = error.message :
+                          errorMessage = "An unexpected error occurred", sendResponse({
                             __mozWebExtensionPolyfillReject__: !0,
-                            message: J
+                            message: errorMessage
                           })
                       })
-                      .catch(P => {
+                      .catch(replyError => {
                         console.error(
                           "Failed to send onMessage rejected reply",
-                          P)
+                          replyError)
                       })
                   };
-                  return V(w ? k : p), !0
+                  return sendResolvedResponse(resultIsThenable ? result : responsePromise), !0
                 }),
-                _e = ({
-                  reject: c,
-                  resolve: m
-                }, g) => {
-                  n.runtime.lastError ? n.runtime.lastError.message ===
-                    r ? m() : c(new Error(n.runtime.lastError.message)) :
-                    g && g.__mozWebExtensionPolyfillReject__ ? c(
-                      new Error(g.message)) : m(g)
+                processResponse = ({
+                  reject: reject,
+                  resolve: resolve
+                }, response) => {
+                  chromeApi.runtime.lastError ? chromeApi.runtime.lastError.message ===
+                    messagePortClosedMessage ? resolve() : reject(new Error(chromeApi.runtime.lastError.message)) :
+                    response && response.__mozWebExtensionPolyfillReject__ ? reject(
+                      new Error(response.message)) : resolve(response)
                 },
-                X = (c, m, g, ..._) => {
-                  if (_.length < m.minArgs) throw new Error(
-                    `Expected at least ${m.minArgs} ${u(m.minArgs)} for ${c}(), got ${_.length}`
+                wrapSendMessage = (name, metadata, apiTarget, ...args) => {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (_.length > m.maxArgs) throw new Error(
-                    `Expected at most ${m.maxArgs} ${u(m.maxArgs)} for ${c}(), got ${_.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((b, T) => {
-                    let C = _e.bind(null, {
-                      resolve: b,
-                      reject: T
+                  return new Promise((resolve, reject) => {
+                    let boundCallback = processResponse.bind(null, {
+                      resolve: resolve,
+                      reject: reject
                     });
-                    _.push(C), g.sendMessage(..._)
+                    args.push(boundCallback), apiTarget.sendMessage(...args)
                   })
                 },
-                he = {
+                staticWrappers = {
                   devtools: {
                     network: {
-                      onRequestFinished: O(S)
+                      onRequestFinished: wrapEvent(onRequestFinishedWrappers)
                     }
                   },
                   runtime: {
-                    onMessage: O(I),
-                    onMessageExternal: O(I),
-                    sendMessage: X.bind(null, "sendMessage", {
+                    onMessage: wrapEvent(onMessageWrappers),
+                    onMessageExternal: wrapEvent(onMessageWrappers),
+                    sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                       minArgs: 1,
                       maxArgs: 3
                     })
                   },
                   tabs: {
-                    sendMessage: X.bind(null, "sendMessage", {
+                    sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                       minArgs: 2,
                       maxArgs: 3
                     })
                   }
                 },
-                H = {
+                settingMetadata = {
                   clear: {
                     minArgs: 1,
                     maxArgs: 1
@@ -930,38 +930,38 @@
                     maxArgs: 1
                   }
                 };
-              return a.privacy = {
+              return apiMetadata.privacy = {
                 network: {
-                  "*": H
+                  "*": settingMetadata
                 },
                 services: {
-                  "*": H
+                  "*": settingMetadata
                 },
                 websites: {
-                  "*": H
+                  "*": settingMetadata
                 }
-              }, N(n, he, a)
+              }, wrapObject(chromeApi, staticWrappers, apiMetadata)
             };
-          e.exports = t(chrome)
-        } else e.exports = globalThis.browser
+          browserModule.exports = wrapApis(chrome)
+        } else browserModule.exports = globalThis.browser
       })
   });
-  var pe = re(Q(), 1);
+  var browserPolyfill = toEsm(requirePolyfill(), 1);
 
-  function D(e) {
-    var r = String(e);
-    if (r === "[object Object]") try {
-      r = JSON.stringify(e)
+  function describeValue(value) {
+    var text = String(value);
+    if (text === "[object Object]") try {
+      text = JSON.stringify(value)
     } catch {}
-    return r
+    return text
   }
-  var Te = function() {
-      function e() {}
-      return e.prototype.isSome = function() {
+  var NoneOption = function() {
+      function NoneCtor() {}
+      return NoneCtor.prototype.isSome = function() {
         return !1
-      }, e.prototype.isNone = function() {
+      }, NoneCtor.prototype.isNone = function() {
         return !0
-      }, e.prototype[Symbol.iterator] = function() {
+      }, NoneCtor.prototype[Symbol.iterator] = function() {
         return {
           next: function() {
             return {
@@ -970,44 +970,44 @@
             }
           }
         }
-      }, e.prototype.unwrapOr = function(r) {
-        return r
-      }, e.prototype.expect = function(r) {
-        throw new Error("".concat(r))
-      }, e.prototype.unwrap = function() {
+      }, NoneCtor.prototype.unwrapOr = function(defaultValue) {
+        return defaultValue
+      }, NoneCtor.prototype.expect = function(message) {
+        throw new Error("".concat(message))
+      }, NoneCtor.prototype.unwrap = function() {
         throw new Error("Tried to unwrap None")
-      }, e.prototype.map = function(r) {
+      }, NoneCtor.prototype.map = function(mapFn) {
         return this
-      }, e.prototype.mapOr = function(r, t) {
-        return r
-      }, e.prototype.mapOrElse = function(r, t) {
-        return r()
-      }, e.prototype.or = function(r) {
-        return r
-      }, e.prototype.orElse = function(r) {
-        return r()
-      }, e.prototype.andThen = function(r) {
+      }, NoneCtor.prototype.mapOr = function(defaultValue, mapFn) {
+        return defaultValue
+      }, NoneCtor.prototype.mapOrElse = function(defaultFn, mapFn) {
+        return defaultFn()
+      }, NoneCtor.prototype.or = function(alternative) {
+        return alternative
+      }, NoneCtor.prototype.orElse = function(alternativeFn) {
+        return alternativeFn()
+      }, NoneCtor.prototype.andThen = function(mapFn) {
         return this
-      }, e.prototype.toResult = function(r) {
-        return x(r)
-      }, e.prototype.toString = function() {
+      }, NoneCtor.prototype.toResult = function(errorValue) {
+        return err(errorValue)
+      }, NoneCtor.prototype.toString = function() {
         return "None"
-      }, e
+      }, NoneCtor
     }(),
-    d = new Te;
-  Object.freeze(d);
-  var Ce = function() {
-      function e(r) {
-        if (!(this instanceof e)) return new e(r);
-        this.value = r
+    noneValue = new NoneOption;
+  Object.freeze(noneValue);
+  var SomeOption = function() {
+      function SomeCtor(value) {
+        if (!(this instanceof SomeCtor)) return new SomeCtor(value);
+        this.value = value
       }
-      return e.prototype.isSome = function() {
+      return SomeCtor.prototype.isSome = function() {
         return !0
-      }, e.prototype.isNone = function() {
+      }, SomeCtor.prototype.isNone = function() {
         return !1
-      }, e.prototype[Symbol.iterator] = function() {
-        var r = Object(this.value);
-        return Symbol.iterator in r ? r[Symbol.iterator]() : {
+      }, SomeCtor.prototype[Symbol.iterator] = function() {
+        var iterable = Object(this.value);
+        return Symbol.iterator in iterable ? iterable[Symbol.iterator]() : {
           next: function() {
             return {
               done: !0,
@@ -1015,80 +1015,80 @@
             }
           }
         }
-      }, e.prototype.unwrapOr = function(r) {
+      }, SomeCtor.prototype.unwrapOr = function(defaultValue) {
         return this.value
-      }, e.prototype.expect = function(r) {
+      }, SomeCtor.prototype.expect = function(message) {
         return this.value
-      }, e.prototype.unwrap = function() {
+      }, SomeCtor.prototype.unwrap = function() {
         return this.value
-      }, e.prototype.map = function(r) {
-        return y(r(this.value))
-      }, e.prototype.mapOr = function(r, t) {
-        return t(this.value)
-      }, e.prototype.mapOrElse = function(r, t) {
-        return t(this.value)
-      }, e.prototype.or = function(r) {
+      }, SomeCtor.prototype.map = function(mapFn) {
+        return some(mapFn(this.value))
+      }, SomeCtor.prototype.mapOr = function(defaultValue, mapFn) {
+        return mapFn(this.value)
+      }, SomeCtor.prototype.mapOrElse = function(defaultFn, mapFn) {
+        return mapFn(this.value)
+      }, SomeCtor.prototype.or = function(alternative) {
         return this
-      }, e.prototype.orElse = function(r) {
+      }, SomeCtor.prototype.orElse = function(alternativeFn) {
         return this
-      }, e.prototype.andThen = function(r) {
-        return r(this.value)
-      }, e.prototype.toResult = function(r) {
-        return f(this.value)
-      }, e.prototype.safeUnwrap = function() {
+      }, SomeCtor.prototype.andThen = function(mapFn) {
+        return mapFn(this.value)
+      }, SomeCtor.prototype.toResult = function(errorValue) {
+        return makeOk(this.value)
+      }, SomeCtor.prototype.safeUnwrap = function() {
         return this.value
-      }, e.prototype.toString = function() {
-        return "Some(".concat(D(this.value), ")")
-      }, e.EMPTY = new e(void 0), e
+      }, SomeCtor.prototype.toString = function() {
+        return "Some(".concat(describeValue(this.value), ")")
+      }, SomeCtor.EMPTY = new SomeCtor(void 0), SomeCtor
     }(),
-    y = Ce,
-    j;
-  (function(e) {
-    function r() {
-      for (var a = [], o = 0; o < arguments.length; o++) a[o] = arguments[
-      o];
-      for (var i = [], s = 0, u = a; s < u.length; s++) {
-        var l = u[s];
-        if (l.isSome()) i.push(l.value);
-        else return l
+    some = SomeOption,
+    optionStatics;
+  (function(optionNamespace) {
+    function allOptions() {
+      for (var args = [], argIndex = 0; argIndex < arguments.length; argIndex++) args[argIndex] = arguments[
+      argIndex];
+      for (var values = [], index = 0, options = args; index < options.length; index++) {
+        var option = options[index];
+        if (option.isSome()) values.push(option.value);
+        else return option
       }
-      return y(i)
+      return some(values)
     }
-    e.all = r;
+    optionNamespace.all = allOptions;
 
-    function t() {
-      for (var a = [], o = 0; o < arguments.length; o++) a[o] = arguments[
-      o];
-      for (var i = 0, s = a; i < s.length; i++) {
-        var u = s[i];
-        return u.isSome(), u
+    function anyOption() {
+      for (var args = [], argIndex = 0; argIndex < arguments.length; argIndex++) args[argIndex] = arguments[
+      argIndex];
+      for (var index = 0, options = args; index < options.length; index++) {
+        var option = options[index];
+        return option.isSome(), option
       }
-      return d
+      return noneValue
     }
-    e.any = t;
+    optionNamespace.any = anyOption;
 
-    function n(a) {
-      return a instanceof y || a === d
+    function isOption(value) {
+      return value instanceof some || value === noneValue
     }
-    e.isOption = n
-  })(j || (j = {}));
-  var ke = function() {
-    function e(r) {
-      if (!(this instanceof e)) return new e(r);
-      this.error = r;
-      var t = new Error()
+    optionNamespace.isOption = isOption
+  })(optionStatics || (optionStatics = {}));
+  var ErrResult = function() {
+    function ErrCtor(error) {
+      if (!(this instanceof ErrCtor)) return new ErrCtor(error);
+      this.error = error;
+      var stackLines = new Error()
         .stack.split(`
 `)
         .slice(2);
-      t && t.length > 0 && t[0].includes("ErrImpl") && t.shift(), this
-        ._stack = t.join(`
+      stackLines && stackLines.length > 0 && stackLines[0].includes("ErrImpl") && stackLines.shift(), this
+        ._stack = stackLines.join(`
 `)
     }
-    return e.prototype.isOk = function() {
+    return ErrCtor.prototype.isOk = function() {
       return !1
-    }, e.prototype.isErr = function() {
+    }, ErrCtor.prototype.isErr = function() {
       return !0
-    }, e.prototype[Symbol.iterator] = function() {
+    }, ErrCtor.prototype[Symbol.iterator] = function() {
       return {
         next: function() {
           return {
@@ -1097,46 +1097,46 @@
           }
         }
       }
-    }, e.prototype.else = function(r) {
-      return r
-    }, e.prototype.unwrapOr = function(r) {
-      return r
-    }, e.prototype.expect = function(r) {
-      throw new Error("".concat(r, " - Error: ")
-        .concat(D(this.error), `
+    }, ErrCtor.prototype.else = function(defaultValue) {
+      return defaultValue
+    }, ErrCtor.prototype.unwrapOr = function(defaultValue) {
+      return defaultValue
+    }, ErrCtor.prototype.expect = function(message) {
+      throw new Error("".concat(message, " - Error: ")
+        .concat(describeValue(this.error), `
 `)
         .concat(this._stack), {
           cause: this.error
         })
-    }, e.prototype.expectErr = function(r) {
+    }, ErrCtor.prototype.expectErr = function(message) {
       return this.error
-    }, e.prototype.unwrap = function() {
-      throw new Error("Tried to unwrap Error: ".concat(D(this.error), `
+    }, ErrCtor.prototype.unwrap = function() {
+      throw new Error("Tried to unwrap Error: ".concat(describeValue(this.error), `
 `)
         .concat(this._stack), {
           cause: this.error
         })
-    }, e.prototype.unwrapErr = function() {
+    }, ErrCtor.prototype.unwrapErr = function() {
       return this.error
-    }, e.prototype.map = function(r) {
+    }, ErrCtor.prototype.map = function(mapFn) {
       return this
-    }, e.prototype.andThen = function(r) {
+    }, ErrCtor.prototype.andThen = function(mapFn) {
       return this
-    }, e.prototype.mapErr = function(r) {
-      return new x(r(this.error))
-    }, e.prototype.mapOr = function(r, t) {
-      return r
-    }, e.prototype.mapOrElse = function(r, t) {
-      return r(this.error)
-    }, e.prototype.or = function(r) {
-      return r
-    }, e.prototype.orElse = function(r) {
-      return r(this.error)
-    }, e.prototype.toOption = function() {
-      return d
-    }, e.prototype.toString = function() {
-      return "Err(".concat(D(this.error), ")")
-    }, Object.defineProperty(e.prototype, "stack", {
+    }, ErrCtor.prototype.mapErr = function(errorMapFn) {
+      return new err(errorMapFn(this.error))
+    }, ErrCtor.prototype.mapOr = function(defaultValue, mapFn) {
+      return defaultValue
+    }, ErrCtor.prototype.mapOrElse = function(defaultFn, mapFn) {
+      return defaultFn(this.error)
+    }, ErrCtor.prototype.or = function(alternative) {
+      return alternative
+    }, ErrCtor.prototype.orElse = function(alternativeFn) {
+      return alternativeFn(this.error)
+    }, ErrCtor.prototype.toOption = function() {
+      return noneValue
+    }, ErrCtor.prototype.toString = function() {
+      return "Err(".concat(describeValue(this.error), ")")
+    }, Object.defineProperty(ErrCtor.prototype, "stack", {
       get: function() {
         return "".concat(this, `
 `)
@@ -1144,23 +1144,23 @@
       },
       enumerable: !1,
       configurable: !0
-    }), e.prototype.toAsyncResult = function() {
-      return new $(this)
-    }, e.EMPTY = new e(void 0), e
+    }), ErrCtor.prototype.toAsyncResult = function() {
+      return new AsyncResult(this)
+    }, ErrCtor.EMPTY = new ErrCtor(void 0), ErrCtor
   }();
-  var x = ke,
-    Ne = function() {
-      function e(r) {
-        if (!(this instanceof e)) return new e(r);
-        this.value = r
+  var err = ErrResult,
+    OkResult = function() {
+      function OkCtor(value) {
+        if (!(this instanceof OkCtor)) return new OkCtor(value);
+        this.value = value
       }
-      return e.prototype.isOk = function() {
+      return OkCtor.prototype.isOk = function() {
         return !0
-      }, e.prototype.isErr = function() {
+      }, OkCtor.prototype.isErr = function() {
         return !1
-      }, e.prototype[Symbol.iterator] = function() {
-        var r = Object(this.value);
-        return Symbol.iterator in r ? r[Symbol.iterator]() : {
+      }, OkCtor.prototype[Symbol.iterator] = function() {
+        var iterable = Object(this.value);
+        return Symbol.iterator in iterable ? iterable[Symbol.iterator]() : {
           next: function() {
             return {
               done: !0,
@@ -1168,474 +1168,474 @@
             }
           }
         }
-      }, e.prototype.else = function(r) {
+      }, OkCtor.prototype.else = function(defaultValue) {
         return this.value
-      }, e.prototype.unwrapOr = function(r) {
+      }, OkCtor.prototype.unwrapOr = function(defaultValue) {
         return this.value
-      }, e.prototype.expect = function(r) {
+      }, OkCtor.prototype.expect = function(message) {
         return this.value
-      }, e.prototype.expectErr = function(r) {
-        throw new Error(r)
-      }, e.prototype.unwrap = function() {
+      }, OkCtor.prototype.expectErr = function(message) {
+        throw new Error(message)
+      }, OkCtor.prototype.unwrap = function() {
         return this.value
-      }, e.prototype.unwrapErr = function() {
-        throw new Error("Tried to unwrap Ok: ".concat(D(this.value)), {
+      }, OkCtor.prototype.unwrapErr = function() {
+        throw new Error("Tried to unwrap Ok: ".concat(describeValue(this.value)), {
           cause: this.value
         })
-      }, e.prototype.map = function(r) {
-        return new f(r(this.value))
-      }, e.prototype.andThen = function(r) {
-        return r(this.value)
-      }, e.prototype.mapErr = function(r) {
+      }, OkCtor.prototype.map = function(mapFn) {
+        return new makeOk(mapFn(this.value))
+      }, OkCtor.prototype.andThen = function(mapFn) {
+        return mapFn(this.value)
+      }, OkCtor.prototype.mapErr = function(errorMapFn) {
         return this
-      }, e.prototype.mapOr = function(r, t) {
-        return t(this.value)
-      }, e.prototype.mapOrElse = function(r, t) {
-        return t(this.value)
-      }, e.prototype.or = function(r) {
+      }, OkCtor.prototype.mapOr = function(defaultValue, mapFn) {
+        return mapFn(this.value)
+      }, OkCtor.prototype.mapOrElse = function(defaultFn, mapFn) {
+        return mapFn(this.value)
+      }, OkCtor.prototype.or = function(alternative) {
         return this
-      }, e.prototype.orElse = function(r) {
+      }, OkCtor.prototype.orElse = function(alternativeFn) {
         return this
-      }, e.prototype.toOption = function() {
-        return y(this.value)
-      }, e.prototype.safeUnwrap = function() {
+      }, OkCtor.prototype.toOption = function() {
+        return some(this.value)
+      }, OkCtor.prototype.safeUnwrap = function() {
         return this.value
-      }, e.prototype.toString = function() {
-        return "Ok(".concat(D(this.value), ")")
-      }, e.prototype.toAsyncResult = function() {
-        return new $(this)
-      }, e.EMPTY = new e(void 0), e
+      }, OkCtor.prototype.toString = function() {
+        return "Ok(".concat(describeValue(this.value), ")")
+      }, OkCtor.prototype.toAsyncResult = function() {
+        return new AsyncResult(this)
+      }, OkCtor.EMPTY = new OkCtor(void 0), OkCtor
     }();
-  var f = Ne,
-    W;
-  (function(e) {
-    function r() {
-      for (var i = [], s = 0; s < arguments.length; s++) i[s] = arguments[
-      s];
-      for (var u = [], l = 0, h = i; l < h.length; l++) {
-        var A = h[l];
-        if (A.isOk()) u.push(A.value);
-        else return A
+  var makeOk = OkResult,
+    resultStatics;
+  (function(resultNamespace) {
+    function allResults() {
+      for (var args = [], argIndex = 0; argIndex < arguments.length; argIndex++) args[argIndex] = arguments[
+      argIndex];
+      for (var values = [], index = 0, results = args; index < results.length; index++) {
+        var result = results[index];
+        if (result.isOk()) values.push(result.value);
+        else return result
       }
-      return new f(u)
+      return new makeOk(values)
     }
-    e.all = r;
+    resultNamespace.all = allResults;
 
-    function t() {
-      for (var i = [], s = 0; s < arguments.length; s++) i[s] = arguments[
-      s];
-      for (var u = [], l = 0, h = i; l < h.length; l++) {
-        var A = h[l];
-        if (A.isOk()) return A;
-        u.push(A.error)
+    function anyResult() {
+      for (var args = [], argIndex = 0; argIndex < arguments.length; argIndex++) args[argIndex] = arguments[
+      argIndex];
+      for (var errors = [], index = 0, results = args; index < results.length; index++) {
+        var result = results[index];
+        if (result.isOk()) return result;
+        errors.push(result.error)
       }
-      return new x(u)
+      return new err(errors)
     }
-    e.any = t;
+    resultNamespace.any = anyResult;
 
-    function n(i) {
+    function wrap(operation) {
       try {
-        return new f(i())
-      } catch (s) {
-        return new x(s)
+        return new makeOk(operation())
+      } catch (error) {
+        return new err(error)
       }
     }
-    e.wrap = n;
+    resultNamespace.wrap = wrap;
 
-    function a(i) {
+    function wrapAsync(operation) {
       try {
-        return i()
-          .then(function(s) {
-            return new f(s)
+        return operation()
+          .then(function(resolvedValue) {
+            return new makeOk(resolvedValue)
           })
-          .catch(function(s) {
-            return new x(s)
+          .catch(function(error) {
+            return new err(error)
           })
-      } catch (s) {
-        return Promise.resolve(new x(s))
+      } catch (error) {
+        return Promise.resolve(new err(error))
       }
     }
-    e.wrapAsync = a;
+    resultNamespace.wrapAsync = wrapAsync;
 
-    function o(i) {
-      return i instanceof x || i instanceof f
+    function isResult(value) {
+      return value instanceof err || value instanceof makeOk
     }
-    e.isResult = o
-  })(W || (W = {}));
-  var oe = function(e, r, t, n) {
-      function a(o) {
-        return o instanceof t ? o : new t(function(i) {
-          i(o)
+    resultNamespace.isResult = isResult
+  })(resultStatics || (resultStatics = {}));
+  var runAsync = function(thisArg, argsList, PromiseCtor, generatorFn) {
+      function adopt(value) {
+        return value instanceof PromiseCtor ? value : new PromiseCtor(function(resolve) {
+          resolve(value)
         })
       }
-      return new(t || (t = Promise))(function(o, i) {
-        function s(h) {
+      return new(PromiseCtor || (PromiseCtor = Promise))(function(resolve, reject) {
+        function fulfilled(value) {
           try {
-            l(n.next(h))
-          } catch (A) {
-            i(A)
+            step(generatorFn.next(value))
+          } catch (error) {
+            reject(error)
           }
         }
 
-        function u(h) {
+        function rejected(reason) {
           try {
-            l(n.throw(h))
-          } catch (A) {
-            i(A)
+            step(generatorFn.throw(reason))
+          } catch (error) {
+            reject(error)
           }
         }
 
-        function l(h) {
-          h.done ? o(h.value) : a(h.value)
-            .then(s, u)
+        function step(result) {
+          result.done ? resolve(result.value) : adopt(result.value)
+            .then(fulfilled, rejected)
         }
-        l((n = n.apply(e, r || []))
+        step((generatorFn = generatorFn.apply(thisArg, argsList || []))
           .next())
       })
     },
-    ne = function(e, r) {
-      var t = {
+    runGenerator = function(thisArg, bodyFn) {
+      var state = {
           label: 0,
           sent: function() {
-            if (o[0] & 1) throw o[1];
-            return o[1]
+            if (currentOp[0] & 1) throw currentOp[1];
+            return currentOp[1]
           },
           trys: [],
           ops: []
         },
-        n, a, o, i;
-      return i = {
-        next: s(0),
-        throw: s(1),
-        return: s(2)
-      }, typeof Symbol == "function" && (i[Symbol.iterator] = function() {
+        executing, pendingGenerator, currentOp, iterator;
+      return iterator = {
+        next: makeVerb(0),
+        throw: makeVerb(1),
+        return: makeVerb(2)
+      }, typeof Symbol == "function" && (iterator[Symbol.iterator] = function() {
         return this
-      }), i;
+      }), iterator;
 
-      function s(l) {
-        return function(h) {
-          return u([l, h])
+      function makeVerb(verbCode) {
+        return function(sentValue) {
+          return step([verbCode, sentValue])
         }
       }
 
-      function u(l) {
-        if (n) throw new TypeError("Generator is already executing.");
-        for (; i && (i = 0, l[0] && (t = 0)), t;) try {
-          if (n = 1, a && (o = l[0] & 2 ? a.return : l[0] ? a.throw || ((o =
-              a.return) && o.call(a), 0) : a.next) && !(o = o.call(a, l[1]))
-            .done) return o;
-          switch (a = 0, o && (l = [l[0] & 2, o.value]), l[0]) {
+      function step(opEntry) {
+        if (executing) throw new TypeError("Generator is already executing.");
+        for (; iterator && (iterator = 0, opEntry[0] && (state = 0)), state;) try {
+          if (executing = 1, pendingGenerator && (currentOp = opEntry[0] & 2 ? pendingGenerator.return : opEntry[0] ? pendingGenerator.throw || ((currentOp =
+              pendingGenerator.return) && currentOp.call(pendingGenerator), 0) : pendingGenerator.next) && !(currentOp = currentOp.call(pendingGenerator, opEntry[1]))
+            .done) return currentOp;
+          switch (pendingGenerator = 0, currentOp && (opEntry = [opEntry[0] & 2, currentOp.value]), opEntry[0]) {
             case 0:
             case 1:
-              o = l;
+              currentOp = opEntry;
               break;
             case 4:
-              return t.label++, {
-                value: l[1],
+              return state.label++, {
+                value: opEntry[1],
                 done: !1
               };
             case 5:
-              t.label++, a = l[1], l = [0];
+              state.label++, pendingGenerator = opEntry[1], opEntry = [0];
               continue;
             case 7:
-              l = t.ops.pop(), t.trys.pop();
+              opEntry = state.ops.pop(), state.trys.pop();
               continue;
             default:
-              if (o = t.trys, !(o = o.length > 0 && o[o.length - 1]) && (l[
-                  0] === 6 || l[0] === 2)) {
-                t = 0;
+              if (currentOp = state.trys, !(currentOp = currentOp.length > 0 && currentOp[currentOp.length - 1]) && (opEntry[
+                  0] === 6 || opEntry[0] === 2)) {
+                state = 0;
                 continue
               }
-              if (l[0] === 3 && (!o || l[1] > o[0] && l[1] < o[3])) {
-                t.label = l[1];
+              if (opEntry[0] === 3 && (!currentOp || opEntry[1] > currentOp[0] && opEntry[1] < currentOp[3])) {
+                state.label = opEntry[1];
                 break
               }
-              if (l[0] === 6 && t.label < o[1]) {
-                t.label = o[1], o = l;
+              if (opEntry[0] === 6 && state.label < currentOp[1]) {
+                state.label = currentOp[1], currentOp = opEntry;
                 break
               }
-              if (o && t.label < o[2]) {
-                t.label = o[2], t.ops.push(l);
+              if (currentOp && state.label < currentOp[2]) {
+                state.label = currentOp[2], state.ops.push(opEntry);
                 break
               }
-              o[2] && t.ops.pop(), t.trys.pop();
+              currentOp[2] && state.ops.pop(), state.trys.pop();
               continue
           }
-          l = r.call(e, t)
-        } catch (h) {
-          l = [6, h], a = 0
+          opEntry = bodyFn.call(thisArg, state)
+        } catch (error) {
+          opEntry = [6, error], pendingGenerator = 0
         } finally {
-          n = o = 0
+          executing = currentOp = 0
         }
-        if (l[0] & 5) throw l[1];
+        if (opEntry[0] & 5) throw opEntry[1];
         return {
-          value: l[0] ? l[1] : void 0,
+          value: opEntry[0] ? opEntry[1] : void 0,
           done: !0
         }
       }
     },
-    $ = function() {
-      function e(r) {
-        this.promise = Promise.resolve(r)
+    AsyncResult = function() {
+      function AsyncResultCtor(value) {
+        this.promise = Promise.resolve(value)
       }
-      return e.prototype.andThen = function(r) {
-        var t = this;
-        return this.thenInternal(function(n) {
-          return oe(t, void 0, void 0, function() {
-            var a;
-            return ne(this, function(o) {
-              return n.isErr() ? [2, n] : (a = r(n.value), [2,
-                a instanceof e ? a.promise : a
+      return AsyncResultCtor.prototype.andThen = function(mapFn) {
+        var self = this;
+        return this.thenInternal(function(result) {
+          return runAsync(self, void 0, void 0, function() {
+            var mapped;
+            return runGenerator(this, function(genState) {
+              return result.isErr() ? [2, result] : (mapped = mapFn(result.value), [2,
+                mapped instanceof AsyncResultCtor ? mapped.promise : mapped
               ])
             })
           })
         })
-      }, e.prototype.map = function(r) {
-        var t = this;
-        return this.thenInternal(function(n) {
-          return oe(t, void 0, void 0, function() {
-            var a;
-            return ne(this, function(o) {
-              switch (o.label) {
+      }, AsyncResultCtor.prototype.map = function(mapFn) {
+        var self = this;
+        return this.thenInternal(function(result) {
+          return runAsync(self, void 0, void 0, function() {
+            var okCtor;
+            return runGenerator(this, function(genState) {
+              switch (genState.label) {
                 case 0:
-                  return n.isErr() ? [2, n] : (a = f, [4, r(n
+                  return result.isErr() ? [2, result] : (okCtor = makeOk, [4, mapFn(result
                     .value)]);
                 case 1:
-                  return [2, a.apply(void 0, [o.sent()])]
+                  return [2, okCtor.apply(void 0, [genState.sent()])]
               }
             })
           })
         })
-      }, e.prototype.thenInternal = function(r) {
-        return new e(this.promise.then(r))
-      }, e
+      }, AsyncResultCtor.prototype.thenInternal = function(onResolve) {
+        return new AsyncResultCtor(this.promise.then(onResolve))
+      }, AsyncResultCtor
     }();
-  var ae = (e, r) => typeof e[r] == "string";
+  var isStringProperty = (targetObject, propertyName) => typeof targetObject[propertyName] == "string";
 
-  function M(e) {
+  function deserialize(serialized) {
     try {
-      if (ae(e, "__serializer_tag")) {
-        if (e.__serializer_tag === "primitive") return f(e
+      if (isStringProperty(serialized, "__serializer_tag")) {
+        if (serialized.__serializer_tag === "primitive") return makeOk(serialized
         .__serializer_value);
-        if (e.__serializer_tag === "regex") {
-          let n = new RegExp(e.__serializer_value);
-          return f(n)
-        } else if (e.__serializer_tag === "array") {
-          let n = [];
-          for (let a of e.__serializer_value) {
-            let o = M(a);
-            if (o.isErr()) return o;
-            n.push(o.unwrap())
+        if (serialized.__serializer_tag === "regex") {
+          let regex = new RegExp(serialized.__serializer_value);
+          return makeOk(regex)
+        } else if (serialized.__serializer_tag === "array") {
+          let items = [];
+          for (let element of serialized.__serializer_value) {
+            let elementResult = deserialize(element);
+            if (elementResult.isErr()) return elementResult;
+            items.push(elementResult.unwrap())
           }
-          return f(n)
-        } else if (e.__serializer_tag === "map") {
-          let n = [];
-          for (let a of e.__serializer_value) {
-            let o = M(a);
-            if (o.isErr()) return o;
-            n.push(o.unwrap())
+          return makeOk(items)
+        } else if (serialized.__serializer_tag === "map") {
+          let entries = [];
+          for (let element of serialized.__serializer_value) {
+            let elementResult = deserialize(element);
+            if (elementResult.isErr()) return elementResult;
+            entries.push(elementResult.unwrap())
           }
-          return f(new Map(n))
-        } else if (e.__serializer_tag === "set") {
-          let n = [];
-          for (let a of e.__serializer_value) {
-            let o = M(a);
-            if (o.isErr()) return o;
-            n.push(o.unwrap())
+          return makeOk(new Map(entries))
+        } else if (serialized.__serializer_tag === "set") {
+          let members = [];
+          for (let element of serialized.__serializer_value) {
+            let elementResult = deserialize(element);
+            if (elementResult.isErr()) return elementResult;
+            members.push(elementResult.unwrap())
           }
-          return f(new Set(n))
-        } else if (e.__serializer_tag === "result_ok") {
-          let n = e.__serializer_value,
-            a = M(n);
-          return a.isErr() ? a : f(f(a.unwrap()))
-        } else if (e.__serializer_tag === "result_err") {
-          let n = e.__serializer_value,
-            a = M(n);
-          return a.isErr() ? a : f(x(a.unwrap()))
-        } else if (e.__serializer_tag === "option_some") {
-          let n = e.__serializer_value,
-            a = M(n);
-          return a.isErr() ? a : f(y(a.unwrap()))
-        } else if (e.__serializer_tag === "option_none") return f(d)
+          return makeOk(new Set(members))
+        } else if (serialized.__serializer_tag === "result_ok") {
+          let innerValue = serialized.__serializer_value,
+            innerResult = deserialize(innerValue);
+          return innerResult.isErr() ? innerResult : makeOk(makeOk(innerResult.unwrap()))
+        } else if (serialized.__serializer_tag === "result_err") {
+          let innerValue = serialized.__serializer_value,
+            innerResult = deserialize(innerValue);
+          return innerResult.isErr() ? innerResult : makeOk(err(innerResult.unwrap()))
+        } else if (serialized.__serializer_tag === "option_some") {
+          let innerValue = serialized.__serializer_value,
+            innerResult = deserialize(innerValue);
+          return innerResult.isErr() ? innerResult : makeOk(some(innerResult.unwrap()))
+        } else if (serialized.__serializer_tag === "option_none") return makeOk(noneValue)
       }
-      let r = typeof e;
-      if (r === "string" || r === "number" || r === "boolean" || r ===
-        "undefined" || Array.isArray(e) || e == null) return x(
+      let valueType = typeof serialized;
+      if (valueType === "string" || valueType === "number" || valueType === "boolean" || valueType ===
+        "undefined" || Array.isArray(serialized) || serialized == null) return err(
         "This object was not serialized with Serialize");
-      let t = {};
-      for (let n of Object.keys(e))
-        if (typeof n == "string") {
-          let a = M(e[n]);
-          if (a.isErr()) return a;
-          t[n] = a.unwrap()
-        } return f(t)
+      let plainObject = {};
+      for (let propKey of Object.keys(serialized))
+        if (typeof propKey == "string") {
+          let propResult = deserialize(serialized[propKey]);
+          if (propResult.isErr()) return propResult;
+          plainObject[propKey] = propResult.unwrap()
+        } return makeOk(plainObject)
     } catch {
-      return x("Failed to inspect object. Not JSON?")
+      return err("Failed to inspect object. Not JSON?")
     }
   }
 
-  function E(e) {
-    let r = typeof e;
-    if (r === "string" || r === "number" || r === "boolean" || r ===
-      "undefined" || e == null) return f({
+  function serialize(value) {
+    let valueType = typeof value;
+    if (valueType === "string" || valueType === "number" || valueType === "boolean" || valueType ===
+      "undefined" || value == null) return makeOk({
       __serializer_tag: "primitive",
-      __serializer_value: e
+      __serializer_value: value
     });
-    if (e instanceof RegExp) return f({
+    if (value instanceof RegExp) return makeOk({
       __serializer_tag: "regex",
-      __serializer_value: e.source
+      __serializer_value: value.source
     });
-    if (Array.isArray(e)) {
-      let t = e.map(o => E(o)),
-        n = t.as_iter()
-        .find(o => o.isErr());
-      if (n.isSome()) return n.unwrap();
-      let a = t.as_iter()
-        .map(o => o.unwrap())
+    if (Array.isArray(value)) {
+      let itemResults = value.map(item => serialize(item)),
+        firstError = itemResults.as_iter()
+        .find(itemResult => itemResult.isErr());
+      if (firstError.isSome()) return firstError.unwrap();
+      let serializedItems = itemResults.as_iter()
+        .map(itemResult => itemResult.unwrap())
         .toArray();
-      return f({
+      return makeOk({
         __serializer_tag: "array",
-        __serializer_value: a
+        __serializer_value: serializedItems
       })
-    } else if (e instanceof Map) {
-      let t = [...e.entries()].map(o => E(o)),
-        n = t.as_iter()
-        .find(o => o.isErr());
-      if (n.isSome()) return n.unwrap();
-      let a = t.as_iter()
-        .map(o => o.unwrap())
+    } else if (value instanceof Map) {
+      let itemResults = [...value.entries()].map(entry => serialize(entry)),
+        firstError = itemResults.as_iter()
+        .find(itemResult => itemResult.isErr());
+      if (firstError.isSome()) return firstError.unwrap();
+      let serializedItems = itemResults.as_iter()
+        .map(itemResult => itemResult.unwrap())
         .toArray();
-      return f({
+      return makeOk({
         __serializer_tag: "map",
-        __serializer_value: a
+        __serializer_value: serializedItems
       })
-    } else if (e instanceof Set) {
-      let t = [...e.values()].map(o => E(o)),
-        n = t.as_iter()
-        .find(o => o.isErr());
-      if (n.isSome()) return n.unwrap();
-      let a = t.as_iter()
-        .map(o => o.unwrap())
+    } else if (value instanceof Set) {
+      let itemResults = [...value.values()].map(member => serialize(member)),
+        firstError = itemResults.as_iter()
+        .find(itemResult => itemResult.isErr());
+      if (firstError.isSome()) return firstError.unwrap();
+      let serializedItems = itemResults.as_iter()
+        .map(itemResult => itemResult.unwrap())
         .toArray();
-      return f({
+      return makeOk({
         __serializer_tag: "set",
-        __serializer_value: a
+        __serializer_value: serializedItems
       })
-    } else if (W.isResult(e))
-      if (e.isOk()) {
-        let t = e.unwrap(),
-          n = E(t);
-        return n.isErr() ? n : f({
+    } else if (resultStatics.isResult(value))
+      if (value.isOk()) {
+        let innerValue = value.unwrap(),
+          serializedInner = serialize(innerValue);
+        return serializedInner.isErr() ? serializedInner : makeOk({
           __serializer_tag: "result_ok",
-          __serializer_value: n.unwrap()
+          __serializer_value: serializedInner.unwrap()
         })
       } else {
-        let t = e.unwrapErr(),
-          n = E(t);
-        return n.isErr() ? n : f({
+        let innerError = value.unwrapErr(),
+          serializedInner = serialize(innerError);
+        return serializedInner.isErr() ? serializedInner : makeOk({
           __serializer_tag: "result_err",
-          __serializer_value: n.unwrap()
+          __serializer_value: serializedInner.unwrap()
         })
       }
-    else if (j.isOption(e))
-      if (e.isSome()) {
-        let t = e.unwrap(),
-          n = E(t);
-        return n.isErr() ? n : f({
+    else if (optionStatics.isOption(value))
+      if (value.isSome()) {
+        let innerValue = value.unwrap(),
+          serializedInner = serialize(innerValue);
+        return serializedInner.isErr() ? serializedInner : makeOk({
           __serializer_tag: "option_some",
-          __serializer_value: n.unwrap()
+          __serializer_value: serializedInner.unwrap()
         })
-      } else return f({
+      } else return makeOk({
         __serializer_tag: "option_none"
       });
-    else if (r === "object") {
-      let t = {},
-        n = e;
-      for (let a of Object.keys(e)) {
-        let o = n[a],
-          i = E(o);
-        if (i.isErr()) continue;
-        let s = i.unwrap();
-        t[a] = s
+    else if (valueType === "object") {
+      let serializedObject = {},
+        source = value;
+      for (let propKey of Object.keys(value)) {
+        let propValue = source[propKey],
+          propResult = serialize(propValue);
+        if (propResult.isErr()) continue;
+        let serializedProp = propResult.unwrap();
+        serializedObject[propKey] = serializedProp
       }
-      return f(t)
-    } else return x("Unsupported value")
+      return makeOk(serializedObject)
+    } else return err("Unsupported value")
   }
 
-  function v(e) {
-    return Object.assign(e.prototype, {
-      find: function(r) {
-        for (let t of this)
-          if (r(t)) return y(t);
-        return d
+  function withIteratorHelpers(generatorFn) {
+    return Object.assign(generatorFn.prototype, {
+      find: function(predicate) {
+        for (let element of this)
+          if (predicate(element)) return some(element);
+        return noneValue
       },
-      count: function(r) {
-        return this.reduce((t, n) => (r(n) && t++, t), 0)
+      count: function(predicate) {
+        return this.reduce((count, element) => (predicate(element) && count++, count), 0)
       },
-      reduce: function(r, t) {
-        let n = t;
-        for (let a of this) n = r(n, a);
-        return n
+      reduce: function(reducer, initial) {
+        let accumulator = initial;
+        for (let element of this) accumulator = reducer(accumulator, element);
+        return accumulator
       },
-      every: function(r) {
-        return !this.any(t => !r(t))
+      every: function(predicate) {
+        return !this.any(element => !predicate(element))
       },
-      any: function(r) {
-        for (let t of this)
-          if (r(t)) return !0;
+      any: function(predicate) {
+        for (let element of this)
+          if (predicate(element)) return !0;
         return !1
       },
-      map: function(r) {
-        return this.filterMap(t => y(r(t)))
+      map: function(mapFn) {
+        return this.filterMap(element => some(mapFn(element)))
       },
-      filter: function(r) {
-        return this.filterMap(t => r(t) ? y(t) : d)
+      filter: function(predicate) {
+        return this.filterMap(element => predicate(element) ? some(element) : noneValue)
       },
       enumerate: function() {
-        let r = this;
-        return v(function*() {
-          let t = 0;
-          for (let n of r) yield [t, n], t++
+        let self = this;
+        return withIteratorHelpers(function*() {
+          let index = 0;
+          for (let element of self) yield [index, element], index++
         })()
       },
-      filterMap: function(r) {
-        let t = this;
-        return v(function*() {
-          for (let n of t) {
-            let a = r(n);
-            a.isSome() && (yield a.unwrap())
+      filterMap: function(mapFn) {
+        let self = this;
+        return withIteratorHelpers(function*() {
+          for (let element of self) {
+            let mapped = mapFn(element);
+            mapped.isSome() && (yield mapped.unwrap())
           }
         })()
       },
-      sort: function(r) {
-        let t = this.toArray();
-        return t.sort(r), t
+      sort: function(comparator) {
+        let sortedArray = this.toArray();
+        return sortedArray.sort(comparator), sortedArray
       },
       toArray: function() {
         return [...this]
       }
-    }), e
+    }), generatorFn
   }
   Array.prototype.as_iter || (Array.prototype.as_iter = function() {
-    let e = this;
-    return v(function*() {
-      for (let r of e) yield r
+    let collection = this;
+    return withIteratorHelpers(function*() {
+      for (let element of collection) yield element
     })()
   });
   Set.prototype.as_iter || (Set.prototype.as_iter = function() {
-    let e = this;
-    return v(function*() {
-      for (let r of e) yield r
+    let collection = this;
+    return withIteratorHelpers(function*() {
+      for (let element of collection) yield element
     })()
   });
   Map.prototype.as_iter || (Map.prototype.as_iter = function() {
-    let e = this;
-    return v(function*() {
-      for (let r of e) yield r
+    let collection = this;
+    return withIteratorHelpers(function*() {
+      for (let element of collection) yield element
     })()
   });
-  var R = /.^/,
-    B = {
+  var neverMatchRegex = /.^/,
+    videoCodecs = {
       Av1: {
         name: "Av1",
         type: "video",
@@ -1651,7 +1651,7 @@
       H263: {
         name: "H263",
         type: "video",
-        mimetype: R,
+        mimetype: neverMatchRegex,
         defacto_container: "3gp"
       },
       H265: {
@@ -1669,13 +1669,13 @@
       MPEG1: {
         name: "MPEG1",
         type: "video",
-        mimetype: R,
+        mimetype: neverMatchRegex,
         defacto_container: "Mpeg"
       },
       MPEG2: {
         name: "MPEG2",
         type: "video",
-        mimetype: R,
+        mimetype: neverMatchRegex,
         defacto_container: "Mpeg"
       },
       Theora: {
@@ -1699,11 +1699,11 @@
       unknown: {
         name: "unknown",
         type: "video",
-        mimetype: R,
+        mimetype: neverMatchRegex,
         defacto_container: "Mp4"
       }
     },
-    ie = {
+    audioCodecs = {
       AAC: {
         name: "AAC",
         type: "audio",
@@ -1743,34 +1743,34 @@
       Wav: {
         name: "Wav",
         type: "audio",
-        mimetype: R,
+        mimetype: neverMatchRegex,
         defacto_container: "Wav"
       },
       unknown: {
         name: "unknown",
         type: "audio",
-        mimetype: R,
+        mimetype: neverMatchRegex,
         defacto_container: "Mp4"
       }
     },
-    se = v(function*() {
-      for (let e of Object.keys(B)) yield B[e]
+    videoCodecList = withIteratorHelpers(function*() {
+      for (let codecKey of Object.keys(videoCodecs)) yield videoCodecs[codecKey]
     }),
-    le = v(function*() {
-      for (let e of Object.keys(ie)) yield ie[e]
+    audioCodecList = withIteratorHelpers(function*() {
+      for (let codecKey of Object.keys(audioCodecs)) yield audioCodecs[codecKey]
     });
 
-  function G(e) {
-    return typeof e == "string" && e in B ? y(e) : d
+  function asVideoCodec(codecName) {
+    return typeof codecName == "string" && codecName in videoCodecs ? some(codecName) : noneValue
   }
-  var K = {
+  var containers = {
       Mp4: {
         name: "Mp4",
         extension: "mp4",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: d,
-          video: d
+          audio: noneValue,
+          video: noneValue
         },
         supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2",
           "unknown"
@@ -1783,16 +1783,16 @@
         extension: "mkv",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: d,
-          video: d
+          audio: noneValue,
+          video: noneValue
         },
-        supported_video_codecs: se()
-          .filter(e => e.name != "unknown")
-          .map(e => e.name)
+        supported_video_codecs: videoCodecList()
+          .filter(codec => codec.name != "unknown")
+          .map(codec => codec.name)
           .toArray(),
-        supported_audio_codecs: le()
-          .filter(e => e.name != "unknown")
-          .map(e => e.name)
+        supported_audio_codecs: audioCodecList()
+          .filter(codec => codec.name != "unknown")
+          .map(codec => codec.name)
           .toArray(),
         mimetype: /(?:x-)?matroska/i
       },
@@ -1801,8 +1801,8 @@
         extension: "webm",
         audio_only_extension: "oga",
         defacto_codecs: {
-          audio: d,
-          video: d
+          audio: noneValue,
+          video: noneValue
         },
         supported_video_codecs: ["H264", "VP8", "VP9", "Av1"],
         supported_audio_codecs: ["Opus", "Vorbis"],
@@ -1813,8 +1813,8 @@
         extension: "mt2s",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: d,
-          video: d
+          audio: noneValue,
+          video: noneValue
         },
         supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2",
           "VP9", "unknown"
@@ -1827,8 +1827,8 @@
         extension: "mp2t",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: y("MP3"),
-          video: y("H264")
+          audio: some("MP3"),
+          video: some("H264")
         },
         supported_video_codecs: ["MPEG2", "MPEG1"],
         supported_audio_codecs: ["MP3"],
@@ -1839,8 +1839,8 @@
         extension: "flv",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: d,
-          video: d
+          audio: noneValue,
+          video: noneValue
         },
         supported_video_codecs: ["H264"],
         supported_audio_codecs: ["AAC"],
@@ -1851,8 +1851,8 @@
         extension: "m4v",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: d,
-          video: d
+          audio: noneValue,
+          video: noneValue
         },
         supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2"],
         supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC"],
@@ -1864,8 +1864,8 @@
         other_extensions: ["aac"],
         audio_only_extension: "m4a",
         defacto_codecs: {
-          audio: y("AAC"),
-          video: d
+          audio: some("AAC"),
+          video: noneValue
         },
         supported_video_codecs: [],
         supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC", "unknown"],
@@ -1876,8 +1876,8 @@
         extension: "flac",
         audio_only_extension: "flac",
         defacto_codecs: {
-          audio: y("FLAC"),
-          video: d
+          audio: some("FLAC"),
+          video: noneValue
         },
         supported_video_codecs: [],
         supported_audio_codecs: ["FLAC"],
@@ -1888,8 +1888,8 @@
         extension: "mpeg",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: y("MP3"),
-          video: y("H264")
+          audio: some("MP3"),
+          video: some("H264")
         },
         supported_video_codecs: ["MPEG2", "MPEG1"],
         supported_audio_codecs: ["MP3"],
@@ -1900,8 +1900,8 @@
         extension: "ogv",
         audio_only_extension: "oga",
         defacto_codecs: {
-          audio: d,
-          video: d
+          audio: noneValue,
+          video: noneValue
         },
         supported_video_codecs: ["VP9", "VP8", "Theora"],
         supported_audio_codecs: ["Opus", "Vorbis", "FLAC"],
@@ -1912,8 +1912,8 @@
         extension: "wav",
         audio_only_extension: "wav",
         defacto_codecs: {
-          audio: y("Wav"),
-          video: d
+          audio: some("Wav"),
+          video: noneValue
         },
         supported_video_codecs: [],
         supported_audio_codecs: ["Wav", "PCM"],
@@ -1924,8 +1924,8 @@
         extension: "3gpp",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: d,
-          video: d
+          audio: noneValue,
+          video: noneValue
         },
         supported_video_codecs: ["H264", "H263", "MP4V", "VP8"],
         supported_audio_codecs: ["MP3", "AAC"],
@@ -1936,25 +1936,25 @@
         extension: "mov",
         audio_only_extension: "mp3",
         defacto_codecs: {
-          audio: d,
-          video: d
+          audio: noneValue,
+          video: noneValue
         },
         supported_video_codecs: ["MPEG1", "MPEG2"],
         supported_audio_codecs: [],
         mimetype: /(?:x-)?mov/i
       }
     },
-    Pe = v(function*() {
-      for (let e of Object.keys(K)) yield e
+    containerNameList = withIteratorHelpers(function*() {
+      for (let containerName of Object.keys(containers)) yield containerName
     }),
-    _r = v(function*() {
-      for (let e of Pe()) yield K[e]
+    containerList = withIteratorHelpers(function*() {
+      for (let containerName of containerNameList()) yield containers[containerName]
     });
 
-  function Y(e) {
-    return typeof e == "string" && e in K ? y(e) : d
+  function asContainer(containerName) {
+    return typeof containerName == "string" && containerName in containers ? some(containerName) : noneValue
   }
-  var ue = {
+  var videoQualities = {
     240: {
       id: "240",
       loose_name: "Small"
@@ -1988,24 +1988,24 @@
       loose_name: "8K"
     }
   };
-  var ce = v(function*() {
-      for (let e of Object.keys(ue)) yield e
+  var qualityIdList = withIteratorHelpers(function*() {
+      for (let qualityId of Object.keys(videoQualities)) yield qualityId
     }),
-    xr = v(function*() {
-      for (let e of ce()) yield ue[e]
+    qualityList = withIteratorHelpers(function*() {
+      for (let qualityId of qualityIdList()) yield videoQualities[qualityId]
     });
 
-  function U(e) {
-    if (typeof e == "string") return ce()
-      .find(r => r == e);
-    if (typeof e == "number") {
-      let r = e.toString();
-      return U(r)
+  function asVideoQuality(quality) {
+    if (typeof quality == "string") return qualityIdList()
+      .find(qualityId => qualityId == quality);
+    if (typeof quality == "number") {
+      let qualityString = quality.toString();
+      return asVideoQuality(qualityString)
     }
-    return d
+    return noneValue
   }
 
-  function Z() {
+  function defaultMediaPrefs() {
     return {
       prefer_60fps: !0,
       ignore_low_quality_hits: !0,
@@ -2019,85 +2019,85 @@
     }
   }
 
-  function me(e) {
-    return E(e)
+  function serializePrefs(prefs) {
+    return serialize(prefs)
       .unwrap()
   }
 
-  function de(e) {
-    let r = M(e)
+  function normalizePrefs(stored) {
+    let parsed = deserialize(stored)
       .unwrapOr({}),
-      t = Z(),
-      n = Y(r.container)
-      .unwrapOr(t.container),
-      a = G(r.video_codec)
-      .unwrapOr(t.video_codec),
-      o = U(r.best_video_quality)
-      .unwrapOr(t.best_video_quality),
-      i = U(r.lowest_video_quality)
-      .unwrapOr(t.lowest_video_quality),
-      s;
-    if ("prefered_video_quality" in r) {
-      let S = U(r.prefered_video_quality);
-      S.isSome() && (s = S.unwrap())
+      defaults = defaultMediaPrefs(),
+      container = asContainer(parsed.container)
+      .unwrapOr(defaults.container),
+      videoCodec = asVideoCodec(parsed.video_codec)
+      .unwrapOr(defaults.video_codec),
+      bestQuality = asVideoQuality(parsed.best_video_quality)
+      .unwrapOr(defaults.best_video_quality),
+      lowestQuality = asVideoQuality(parsed.lowest_video_quality)
+      .unwrapOr(defaults.lowest_video_quality),
+      preferedQuality;
+    if ("prefered_video_quality" in parsed) {
+      let preferedQualityOpt = asVideoQuality(parsed.prefered_video_quality);
+      preferedQualityOpt.isSome() && (preferedQuality = preferedQualityOpt.unwrap())
     }
-    let u = t.max_variants;
-    if (typeof r.max_variants == "number") {
-      let S = r.max_variants;
-      Number.isInteger(S) && S <= 11 && S > 0 && (u = S)
+    let maxVariants = defaults.max_variants;
+    if (typeof parsed.max_variants == "number") {
+      let variantsValue = parsed.max_variants;
+      Number.isInteger(variantsValue) && variantsValue <= 11 && variantsValue > 0 && (maxVariants = variantsValue)
     }
-    let l = t.prefer_60fps;
-    typeof r.prefer_60fps == "boolean" && (l = r.prefer_60fps);
-    let h = t.ignore_low_quality_hits;
-    typeof r.ignore_low_quality_hits == "boolean" && (h = r
+    let prefer60fps = defaults.prefer_60fps;
+    typeof parsed.prefer_60fps == "boolean" && (prefer60fps = parsed.prefer_60fps);
+    let ignoreLowQuality = defaults.ignore_low_quality_hits;
+    typeof parsed.ignore_low_quality_hits == "boolean" && (ignoreLowQuality = parsed
       .ignore_low_quality_hits);
-    let A = [];
-    if (Array.isArray(r.ignored_containers))
-      for (let S of r.ignored_containers) {
-        let I = Y(S);
-        I.isSome() && A.push(I.unwrap())
+    let ignoredContainers = [];
+    if (Array.isArray(parsed.ignored_containers))
+      for (let ignoredContainerName of parsed.ignored_containers) {
+        let validatedContainer = asContainer(ignoredContainerName);
+        validatedContainer.isSome() && ignoredContainers.push(validatedContainer.unwrap())
       }
-    let N = [];
-    if (Array.isArray(r.ignored_video_codecs))
-      for (let S of r.ignored_video_codecs) {
-        let I = G(S);
-        I.isSome() && N.push(I.unwrap())
+    let ignoredCodecs = [];
+    if (Array.isArray(parsed.ignored_video_codecs))
+      for (let ignoredCodecName of parsed.ignored_video_codecs) {
+        let validatedCodec = asVideoCodec(ignoredCodecName);
+        validatedCodec.isSome() && ignoredCodecs.push(validatedCodec.unwrap())
       }
-    let O = {
-      prefer_60fps: l,
-      ignore_low_quality_hits: h,
-      container: n,
-      max_variants: u,
-      video_codec: a,
-      lowest_video_quality: i,
-      best_video_quality: o,
-      ignored_containers: A,
-      ignored_video_codecs: N
+    let normalized = {
+      prefer_60fps: prefer60fps,
+      ignore_low_quality_hits: ignoreLowQuality,
+      container: container,
+      max_variants: maxVariants,
+      video_codec: videoCodec,
+      lowest_video_quality: lowestQuality,
+      best_video_quality: bestQuality,
+      ignored_containers: ignoredContainers,
+      ignored_video_codecs: ignoredCodecs
     };
-    return typeof s < "u" && (O.prefered_video_quality = s), O
+    return typeof preferedQuality < "u" && (normalized.prefered_video_quality = preferedQuality), normalized
   }
-  var Me = re(Q(), 1);
-  async function fe(e) {
-    await pe.storage[e.where].remove(e.name)
+  var browserPolyfillModule = toEsm(requirePolyfill(), 1);
+  async function clearStoredPref(prefDescriptor) {
+    await browserPolyfill.storage[prefDescriptor.where].remove(prefDescriptor.name)
   }
-  var ge = {
+  var mediaUserPrefDescriptor = {
     name: "media_user_pref",
     where: "local",
-    default: () => Z(),
+    default: () => defaultMediaPrefs(),
     hooks: {
-      setter: e => me(e),
-      getter: e => de(e)
+      setter: prefs => serializePrefs(prefs),
+      getter: stored => normalizePrefs(stored)
     }
   };
   weh.is_safe.then(() => {
-    let e = combineReducers({
+    let rootReducer = combineReducers({
         prefs: prefsSettingsReducer
       }),
-      r = createStore(e);
-    listenPrefs(r), window.UseNewUIButton = class extends React
+      store = createStore(rootReducer);
+    listenPrefs(store), window.UseNewUIButton = class extends React
     .Component {
-      constructor(o) {
-        super(o), this.state = {}
+      constructor(props) {
+        super(props), this.state = {}
       }
       enableNewUI() {
         return () => browser.storage.local.set({
@@ -2115,8 +2115,8 @@
       }
     };
     window.CompactViewCheckbox = class extends React.Component {
-      constructor(o) {
-        super(o), this.state = {
+      constructor(props) {
+        super(props), this.state = {
           isCompactViewEnabled: !0
         }, this.handleStorageChange = this.handleStorageChange.bind(this),
           this.syncCompactViewPreference = this.syncCompactViewPreference.bind(
@@ -2131,24 +2131,24 @@
       }
       async syncCompactViewPreference() {
         let {
-          use_wide_ui: o = !1
+          use_wide_ui: useWideUi = !1
         } = await browser.storage.local.get("use_wide_ui");
         this.setState({
-          isCompactViewEnabled: !o
+          isCompactViewEnabled: !useWideUi
         })
       }
-      handleStorageChange(o, i) {
-        if (i !== "local" || !o.use_wide_ui) return;
-        let s = typeof o.use_wide_ui.newValue == "boolean" ? o.use_wide_ui
+      handleStorageChange(changes, areaName) {
+        if (areaName !== "local" || !changes.use_wide_ui) return;
+        let newWideUi = typeof changes.use_wide_ui.newValue == "boolean" ? changes.use_wide_ui
           .newValue : !1;
         this.setState({
-          isCompactViewEnabled: !s
+          isCompactViewEnabled: !newWideUi
         })
       }
       setCompactView() {
-        return o => {
+        return event => {
           browser.storage.local.set({
-            use_wide_ui: !o.target.checked
+            use_wide_ui: !event.target.checked
           })
         }
       }
@@ -2174,78 +2174,78 @@
       }
     };
 
-    function t(...o) {
+    function rpcCaller(...rpcArgs) {
       return () => {
-        weh.rpc.call(...o)
+        weh.rpc.call(...rpcArgs)
       }
     }
-    let n = {
+    let directoryInputMixin = {
       renderInput: function() {
-        var o = this;
+        var self = this;
         return React.createElement("div", {
           className: "input-group",
-          id: "weh-param-" + o.paramIndex
+          id: "weh-param-" + self.paramIndex
         }, React.createElement("input", {
-          ref: i => {
-            i && (i.value = o.state.value)
+          ref: inputEl => {
+            inputEl && (inputEl.value = self.state.value)
           },
-          onChange: n.onChange.bind(o),
+          onChange: directoryInputMixin.onChange.bind(self),
           className: "form-control"
         }), React.createElement("span", {
           className: "input-group-btn"
         }, React.createElement("button", {
           className: "btn",
-          onClick: () => n.selectDirectory.call(o)
+          onClick: () => directoryInputMixin.selectDirectory.call(self)
         }, weh._("change"))))
       },
       selectDirectory: function() {
-        var o = this;
+        var self = this;
         weh.rpc.call("selectDirectory", this.state.value)
-          .then(i => {
-            i && o.setCustomValue(i.directory)
+          .then(selection => {
+            selection && self.setCustomValue(selection.directory)
           })
       },
-      onChange: function(o) {
-        var i = this,
-          s = o.target;
-        weh.rpc.call("coappProxy", "path.homeJoin", s.value)
-          .then(u => (s.value = u, i.setCustomValue(u), weh.rpc.call(
-            "coappProxy", "fs.stat", u)))
-          .then(u => {
-            if (!u || u.mode & !1) throw new Error;
-            s.style.backgroundColor = "#e8ffe8"
+      onChange: function(event) {
+        var self = this,
+          inputEl = event.target;
+        weh.rpc.call("coappProxy", "path.homeJoin", inputEl.value)
+          .then(homePath => (inputEl.value = homePath, self.setCustomValue(homePath), weh.rpc.call(
+            "coappProxy", "fs.stat", homePath)))
+          .then(stat => {
+            if (!stat || stat.mode & !1) throw new Error;
+            inputEl.style.backgroundColor = "#e8ffe8"
           })
           .catch(() => {
-            s.style.backgroundColor = "#ffe8e8"
+            inputEl.style.backgroundColor = "#ffe8e8"
           })
       }
     };
-    class a extends React.Component {
-      constructor(i) {
-        super(i), this.state = {
+    class SettingsPage extends React.Component {
+      constructor(props) {
+        super(props), this.state = {
           activeTab: "general",
           moreOpen: !1,
           conversion: void 0,
           modal: null
         }, this.fileInputChange = this.fileInputChange.bind(this)
       }
-      setActiveTab(i) {
+      setActiveTab(tabName) {
         this.setState({
-          activeTab: i,
+          activeTab: tabName,
           conversion: !1
         })
       }
-      local(i, ...s) {
-        var u = this;
+      local(methodName, ...methodArgs) {
+        var self = this;
         return () => {
-          u[i].apply(u, s)
+          self[methodName].apply(self, methodArgs)
         }
       }
       toggleMore() {
-        var i = this;
+        var self = this;
         return () => {
-          i.setState({
-            moreOpen: !i.state.moreOpen
+          self.setState({
+            moreOpen: !self.state.moreOpen
           })
         }
       }
@@ -2255,18 +2255,18 @@
         })
       }
       conversion() {
-        var i = this;
+        var self = this;
         return () => {
-          i.setState({
+          self.setState({
             activeTab: "general",
             conversion: !0
           })
         }
       }
       reloadAddon() {
-        var i = this;
+        var self = this;
         return () => {
-          i.setState({
+          self.setState({
             modal: {
               title: weh._("confirmation_required"),
               body: weh._("reload_addon_confirm"),
@@ -2276,7 +2276,7 @@
                 click: (() => {
                     this.closeModal()
                   })
-                  .bind(i)
+                  .bind(self)
               }, {
                 text: weh._("reload_addon"),
                 color: "danger",
@@ -2284,33 +2284,33 @@
                     weh.rpc.call("reloadAddon"), this
                       .closeModal()
                   })
-                  .bind(i)
+                  .bind(self)
               }]
             }
           })
         }
       }
       import() {
-        var i = this;
+        var self = this;
         return () => {
-          i.fileInput.click()
+          self.fileInput.click()
         }
       }
       reset() {
-        var i = this,
-          s = {
+        var self = this,
+          resetOptions = {
             prefs: !0,
             backlist: !1,
             outputconfigs: !1
           };
 
-        function u(l) {
-          return h => {
-            s[l] = h.target.checked
+        function makeOptionToggler(optionKey) {
+          return event => {
+            resetOptions[optionKey] = event.target.checked
           }
         }
         return () => {
-          i.setState({
+          self.setState({
             modal: {
               title: weh._("reset_settings"),
               body: React.createElement("div", {
@@ -2318,8 +2318,8 @@
                 }, React.createElement("div", {
                   className: "form-group row"
                 }, React.createElement("input", {
-                  defaultChecked: s.prefs,
-                  onChange: u("prefs"),
+                  defaultChecked: resetOptions.prefs,
+                  onChange: makeOptionToggler("prefs"),
                   className: "form-control",
                   type: "checkbox",
                   id: "reset-prefs"
@@ -2330,8 +2330,8 @@
                 .createElement("div", {
                   className: "form-group row"
                 }, React.createElement("input", {
-                  defaultChecked: s.blacklist,
-                  onChange: u("blacklist"),
+                  defaultChecked: resetOptions.blacklist,
+                  onChange: makeOptionToggler("blacklist"),
                   className: "form-control",
                   type: "checkbox",
                   id: "reset-blacklist"
@@ -2342,8 +2342,8 @@
                   "div", {
                     className: "form-group row"
                   }, React.createElement("input", {
-                    defaultChecked: s.smartnaming,
-                    onChange: u("smartnaming"),
+                    defaultChecked: resetOptions.smartnaming,
+                    onChange: makeOptionToggler("smartnaming"),
                     className: "form-control",
                     type: "checkbox",
                     id: "reset-smartnaming"
@@ -2354,8 +2354,8 @@
                 .createElement("div", {
                   className: "form-group row"
                 }, React.createElement("input", {
-                  defaultChecked: s.outputconfigs,
-                  onChange: u("outputconfigs"),
+                  defaultChecked: resetOptions.outputconfigs,
+                  onChange: makeOptionToggler("outputconfigs"),
                   className: "form-control",
                   type: "checkbox",
                   id: "reset-outputconfigs"
@@ -2366,8 +2366,8 @@
                 .createElement("div", {
                   className: "form-group row"
                 }, React.createElement("input", {
-                  defaultChecked: s.convrules,
-                  onChange: u("convrules"),
+                  defaultChecked: resetOptions.convrules,
+                  onChange: makeOptionToggler("convrules"),
                   className: "form-control",
                   type: "checkbox",
                   id: "reset-convrules"
@@ -2378,8 +2378,8 @@
                 .createElement("div", {
                   className: "form-group row"
                 }, React.createElement("input", {
-                  defaultChecked: s[MUP_KEY],
-                  onChange: u(MUP_KEY),
+                  defaultChecked: resetOptions[MUP_KEY],
+                  onChange: makeOptionToggler(MUP_KEY),
                   className: "form-control",
                   type: "checkbox",
                   id: "reset-media-user-prefs"
@@ -2390,8 +2390,8 @@
                 .createElement("div", {
                   className: "form-group row"
                 }, React.createElement("input", {
-                  defaultChecked: s.license,
-                  onChange: u("license"),
+                  defaultChecked: resetOptions.license,
+                  onChange: makeOptionToggler("license"),
                   className: "form-control",
                   type: "checkbox",
                   id: "reset-license"
@@ -2405,58 +2405,58 @@
                 click: (() => {
                     this.closeModal()
                   })
-                  .bind(i)
+                  .bind(self)
               }, {
                 text: weh._("reset_settings"),
                 color: "danger",
                 click: (() => {
-                    this.doReset(s), this.closeModal()
+                    this.doReset(resetOptions), this.closeModal()
                   })
-                  .bind(i)
+                  .bind(self)
               }]
             }
           })
         }
       }
-      doReset(i) {
-        i.prefs && (r.dispatch({
+      doReset(resetOptions) {
+        resetOptions.prefs && (store.dispatch({
             type: "PREFS_RESET"
-          }), r.dispatch({
+          }), store.dispatch({
             type: "PREFS_UPDATED",
             payload: {}
-          }), r.dispatch({
+          }), store.dispatch({
             type: "PREFS_SAVE",
             payload: {}
-          })), i.blacklist && weh.rpc.call("setBlacklist", {}), i
-          .smartnaming && weh.rpc.call("setSmartName", {}), i
-          .outputconfigs && weh.rpc.call("setOutputConfigs", {}), i
-          .convrules && weh.rpc.call("setConversionRules", []), i[
-            MUP_KEY] && fe(ge), i.license && weh.rpc.call(
+          })), resetOptions.blacklist && weh.rpc.call("setBlacklist", {}), resetOptions
+          .smartnaming && weh.rpc.call("setSmartName", {}), resetOptions
+          .outputconfigs && weh.rpc.call("setOutputConfigs", {}), resetOptions
+          .convrules && weh.rpc.call("setConversionRules", []), resetOptions[
+            MUP_KEY] && clearStoredPref(mediaUserPrefDescriptor), resetOptions.license && weh.rpc.call(
             "setLicense", null)
       }
-      fileInputChange(i) {
-        var s = this,
-          u = s.fileInput.files[0];
-        if (u) {
-          var l = new FileReader;
-          l.onload = h => {
+      fileInputChange(event) {
+        var self = this,
+          selectedFile = self.fileInput.files[0];
+        if (selectedFile) {
+          var reader = new FileReader;
+          reader.onload = loadEvent => {
             try {
-              var A = JSON.parse(h.target.result);
-              weh.rpc.call("importSettings", A)
-                .then(N => {
-                  Object.keys(N)
-                    .forEach(O => {
-                      r.dispatch({
+              var parsedSettings = JSON.parse(loadEvent.target.result);
+              weh.rpc.call("importSettings", parsedSettings)
+                .then(updatedPrefs => {
+                  Object.keys(updatedPrefs)
+                    .forEach(prefName => {
+                      store.dispatch({
                         type: "PREF_UPDATE",
                         payload: {
-                          prefName: O,
-                          value: N[O]
+                          prefName: prefName,
+                          value: updatedPrefs[prefName]
                         }
                       })
                     })
                 })
             } catch {
-              s.setState({
+              self.setState({
                 modal: {
                   title: weh._("error"),
                   body: weh._("import_invalid_format"),
@@ -2466,19 +2466,19 @@
                     click: (() => {
                         this.closeModal()
                       })
-                      .bind(s)
+                      .bind(self)
                   }]
                 }
               })
             }
-          }, l.readAsText(u)
+          }, reader.readAsText(selectedFile)
         }
       }
-      setFileInput(i) {
-        var s = this;
-        return u => {
-          u && u.removeEventListener("change", s.fileInputChange), s
-            .fileInput = u, u && u.addEventListener("change", s
+      setFileInput(refElement) {
+        var self = this;
+        return node => {
+          node && node.removeEventListener("change", self.fileInputChange), self
+            .fileInput = node, node && node.addEventListener("change", self
               .fileInputChange)
         }
       }
@@ -2531,7 +2531,7 @@
           prefName: "coappDownloads"
         }), React.createElement(WehParam, {
           prefName: "lastDownloadDirectory",
-          renderInput: n.renderInput
+          renderInput: directoryInputMixin.renderInput
         }), React.createElement(WehParam, {
           prefName: "rememberLastDir"
         }), React.createElement(WehParam, {
@@ -2674,34 +2674,34 @@
               onClick: this.local("setActiveTab", "gallery")
             }, weh._("gallery")), React.createElement(
               DropdownItem, {
-                onClick: t("editConverterConfigs")
+                onClick: rpcCaller("editConverterConfigs")
               }, weh._("conversion_outputs")), React
             .createElement(DropdownItem, {
-              onClick: t("editConversionRules")
+              onClick: rpcCaller("editConversionRules")
             }, weh._("conversion_rules")), React.createElement(
               DropdownItem, {
-                onClick: t("editBlacklist")
+                onClick: rpcCaller("editBlacklist")
               }, weh._("blacklist")), React.createElement(
               DropdownItem, {
-                onClick: t("editSmartName")
+                onClick: rpcCaller("editSmartName")
               }, weh._("smartnaming_rules")), React
             .createElement(DropdownItem, {
-              onClick: t("editMediaUserPrefs")
+              onClick: rpcCaller("editMediaUserPrefs")
             }, weh._("video_qualities")), React.createElement(
               DropdownItem, {
                 onClick: this.conversion()
               }, weh._("licensing")), React.createElement(
               DropdownItem, {
-                onClick: t("openTranslation")
+                onClick: rpcCaller("openTranslation")
               }, weh._("translation")), weh.unsafe_prefs
             .coappShellEnabled && React.createElement(
               DropdownItem, {
-                onClick: t("openCoapp")
+                onClick: rpcCaller("openCoapp")
               }, weh._("coapp")), React.createElement(
               DropdownItem, {
                 divider: !0
               }), React.createElement(DropdownItem, {
-              onClick: t("exportSettings")
+              onClick: rpcCaller("exportSettings")
             }, weh._("export")), React.createElement(
               DropdownItem, {
                 onClick: this.import()
@@ -2764,8 +2764,8 @@
       }
     }
     render(React.createElement(Provider, {
-        store: r
-      }, React.createElement(a, null)), document.getElementById("root")),
+        store: store
+      }, React.createElement(SettingsPage, null)), document.getElementById("root")),
       weh.setPageTitle(weh._("settings"))
   });
 })();

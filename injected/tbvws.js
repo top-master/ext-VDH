@@ -1,54 +1,54 @@
 "use strict";
 (() => {
-  var I = Object.defineProperty;
-  var ae = Object.getOwnPropertyDescriptor;
-  var oe = Object.getOwnPropertyNames;
-  var le = Object.prototype.hasOwnProperty;
-  var ge = (r, e) => () => (r && (e = r(r = 0)), e);
-  var M = (r, e) => () => (e || r((e = {
+  var defineProperty = Object.defineProperty;
+  var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var getOwnPropNames = Object.getOwnPropertyNames;
+  var hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+  var defineLazyModule = (initModule, cachedModule) => () => (initModule && (cachedModule = initModule(initModule = 0)), cachedModule);
+  var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
         exports: {}
       })
-      .exports, e), e.exports),
-    me = (r, e) => {
-      for (var t in e) I(r, t, {
-        get: e[t],
+      .exports, cachedExports), cachedExports.exports),
+    defineExports = (target, source) => {
+      for (var key in source) defineProperty(target, key, {
+        get: source[key],
         enumerable: !0
       })
     },
-    ce = (r, e, t, i) => {
-      if (e && typeof e == "object" || typeof e == "function")
-        for (let n of oe(e)) !le.call(r, n) && n !== t && I(r, n, {
-          get: () => e[n],
-          enumerable: !(i = ae(e, n)) || i.enumerable
+    copyProps = (targetObj, from, except, desc) => {
+      if (from && typeof from == "object" || typeof from == "function")
+        for (let key of getOwnPropNames(from)) !hasOwnPropertyRef.call(targetObj, key) && key !== except && defineProperty(targetObj, key, {
+          get: () => from[key],
+          enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable
         });
-      return r
+      return targetObj
     };
-  var Ae = r => ce(I({}, "__esModule", {
+  var toCommonjs = mod => copyProps(defineProperty({}, "__esModule", {
     value: !0
-  }), r);
-  var D = M((j, V) => {
-    (function(r, e) {
+  }), mod);
+  var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
+    (function(globalScope, factory) {
       if (typeof define == "function" && define.amd) define(
-        "webextension-polyfill", ["module"], e);
-      else if (typeof j < "u") e(V);
+        "webextension-polyfill", ["module"], factory);
+      else if (typeof polyfillExports < "u") factory(polyfillModule);
       else {
-        var t = {
+        var moduleShim = {
           exports: {}
         };
-        e(t), r.browser = t.exports
+        factory(moduleShim), globalScope.browser = moduleShim.exports
       }
     })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self :
-      j,
-      function(r) {
+      polyfillExports,
+      function(browserGlobal) {
         "use strict";
         if (!globalThis.chrome?.runtime?.id) throw new Error(
           "This script should only be loaded in a browser extension.");
         if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
             globalThis.browser) !== Object.prototype) {
-          let e =
+          let messagePortClosedMessage =
             "The message port closed before a response was received.",
-            t = i => {
-              let n = {
+            wrapApis = chromeApi => {
+              let apiMetadata = {
                 alarms: {
                   clear: {
                     minArgs: 0,
@@ -720,206 +720,206 @@
                   }
                 }
               };
-              if (Object.keys(n)
+              if (Object.keys(apiMetadata)
                 .length === 0) throw new Error(
                 "api-metadata.json has not been included in browser-polyfill"
                 );
-              class s extends WeakMap {
-                constructor(o, m = void 0) {
-                  super(m), this.createItem = o
+              class DefaultWeakMap extends WeakMap {
+                constructor(createItem, entries = void 0) {
+                  super(entries), this.createItem = createItem
                 }
-                get(o) {
-                  return this.has(o) || this.set(o, this.createItem(o)),
-                    super.get(o)
+                get(key) {
+                  return this.has(key) || this.set(key, this.createItem(key)),
+                    super.get(key)
                 }
               }
-              let g = a => a && typeof a == "object" && typeof a.then ==
+              let isThenable = value => value && typeof value == "object" && typeof value.then ==
                 "function",
-                p = (a, o) => (...m) => {
-                  i.runtime.lastError ? a.reject(new Error(i.runtime
-                      .lastError.message)) : o.singleCallbackArg || m
-                    .length <= 1 && o.singleCallbackArg !== !1 ? a
-                    .resolve(m[0]) : a.resolve(m)
+                makeCallback = (promiseCallbacks, metadata) => (...callbackArgs) => {
+                  chromeApi.runtime.lastError ? promiseCallbacks.reject(new Error(chromeApi.runtime
+                      .lastError.message)) : metadata.singleCallbackArg || callbackArgs
+                    .length <= 1 && metadata.singleCallbackArg !== !1 ? promiseCallbacks
+                    .resolve(callbackArgs[0]) : promiseCallbacks.resolve(callbackArgs)
                 },
-                A = a => a == 1 ? "argument" : "arguments",
-                u = (a, o) => function(c, ...x) {
-                  if (x.length < o.minArgs) throw new Error(
-                    `Expected at least ${o.minArgs} ${A(o.minArgs)} for ${a}(), got ${x.length}`
+                pluralizeArgs = count => count == 1 ? "argument" : "arguments",
+                wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (x.length > o.maxArgs) throw new Error(
-                    `Expected at most ${o.maxArgs} ${A(o.maxArgs)} for ${a}(), got ${x.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((w, b) => {
-                    if (o.fallbackToNoCallback) try {
-                      c[a](...x, p({
-                        resolve: w,
-                        reject: b
-                      }, o))
-                    } catch (l) {
+                  return new Promise((resolve, reject) => {
+                    if (metadata.fallbackToNoCallback) try {
+                      apiTarget[name](...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
+                    } catch (error) {
                       console.warn(
-                          `${a} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                          l), c[a](...x), o.fallbackToNoCallback = !
-                        1, o.noCallback = !0, w()
-                    } else o.noCallback ? (c[a](...x), w()) : c[a](
-                      ...x, p({
-                        resolve: w,
-                        reject: b
-                      }, o))
+                          `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                          error), apiTarget[name](...args), metadata.fallbackToNoCallback = !
+                        1, metadata.noCallback = !0, resolve()
+                    } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](
+                      ...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
                   })
                 },
-                f = (a, o, m) => new Proxy(o, {
-                  apply(c, x, w) {
-                    return m.call(x, a, ...w)
+                wrapMethod = (target, method, wrapper) => new Proxy(method, {
+                  apply(fnTarget, thisArg, callArgs) {
+                    return wrapper.call(thisArg, target, ...callArgs)
                   }
                 }),
-                C = Function.call.bind(Object.prototype.hasOwnProperty),
-                S = (a, o = {}, m = {}) => {
-                  let c = Object.create(null),
-                    x = {
-                      has(b, l) {
-                        return l in a || l in c
+                hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty),
+                wrapObject = (target, wrappers = {}, metadata = {}) => {
+                  let cache = Object.create(null),
+                    handler = {
+                      has(proxyTarget, prop) {
+                        return prop in target || prop in cache
                       },
-                      get(b, l, y) {
-                        if (l in c) return c[l];
-                        if (!(l in a)) return;
-                        let d = a[l];
-                        if (typeof d == "function")
-                          if (typeof o[l] == "function") d = f(a, a[l],
-                            o[l]);
-                          else if (C(m, l)) {
-                          let v = u(l, m[l]);
-                          d = f(a, a[l], v)
-                        } else d = d.bind(a);
-                        else if (typeof d == "object" && d !== null && (
-                            C(o, l) || C(m, l))) d = S(d, o[l], m[l]);
-                        else if (C(m, "*")) d = S(d, o[l], m["*"]);
-                        else return Object.defineProperty(c, l, {
+                      get(proxyTarget, prop, receiver) {
+                        if (prop in cache) return cache[prop];
+                        if (!(prop in target)) return;
+                        let value = target[prop];
+                        if (typeof value == "function")
+                          if (typeof wrappers[prop] == "function") value = wrapMethod(target, target[prop],
+                            wrappers[prop]);
+                          else if (hasOwnProperty(metadata, prop)) {
+                          let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
+                          value = wrapMethod(target, target[prop], wrappedFn)
+                        } else value = value.bind(target);
+                        else if (typeof value == "object" && value !== null && (
+                            hasOwnProperty(wrappers, prop) || hasOwnProperty(metadata, prop))) value = wrapObject(value, wrappers[prop], metadata[prop]);
+                        else if (hasOwnProperty(metadata, "*")) value = wrapObject(value, wrappers[prop], metadata["*"]);
+                        else return Object.defineProperty(cache, prop, {
                           configurable: !0,
                           enumerable: !0,
                           get() {
-                            return a[l]
+                            return target[prop]
                           },
-                          set(v) {
-                            a[l] = v
+                          set(newValue) {
+                            target[prop] = newValue
                           }
-                        }), d;
-                        return c[l] = d, d
+                        }), value;
+                        return cache[prop] = value, value
                       },
-                      set(b, l, y, d) {
-                        return l in c ? c[l] = y : a[l] = y, !0
+                      set(proxyTarget, prop, value, receiver) {
+                        return prop in cache ? cache[prop] = value : target[prop] = value, !0
                       },
-                      defineProperty(b, l, y) {
-                        return Reflect.defineProperty(c, l, y)
+                      defineProperty(proxyTarget, prop, desc) {
+                        return Reflect.defineProperty(cache, prop, desc)
                       },
-                      deleteProperty(b, l) {
-                        return Reflect.deleteProperty(c, l)
+                      deleteProperty(proxyTarget, prop) {
+                        return Reflect.deleteProperty(cache, prop)
                       }
                     },
-                    w = Object.create(a);
-                  return new Proxy(w, x)
+                    proxyBase = Object.create(target);
+                  return new Proxy(proxyBase, handler)
                 },
-                $ = a => ({
-                  addListener(o, m, ...c) {
-                    o.addListener(a.get(m), ...c)
+                wrapEvent = wrapperMap => ({
+                  addListener(target, listener, ...args) {
+                    target.addListener(wrapperMap.get(listener), ...args)
                   },
-                  hasListener(o, m) {
-                    return o.hasListener(a.get(m))
+                  hasListener(target, listener) {
+                    return target.hasListener(wrapperMap.get(listener))
                   },
-                  removeListener(o, m) {
-                    o.removeListener(a.get(m))
+                  removeListener(target, listener) {
+                    target.removeListener(wrapperMap.get(listener))
                   }
                 }),
-                se = new s(a => typeof a != "function" ? a : function(m) {
-                  let c = S(m, {}, {
+                onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
+                  let wrappedRequest = wrapObject(request, {}, {
                     getContent: {
                       minArgs: 0,
                       maxArgs: 0
                     }
                   });
-                  a(c)
+                  listener(wrappedRequest)
                 }),
-                q = new s(a => typeof a != "function" ? a : function(m, c,
-                  x) {
-                  let w = !1,
-                    b, l = new Promise(_ => {
-                      b = function(E) {
-                        w = !0, _(E)
+                onMessageWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(message, sender,
+                  sendResponse) {
+                  let responseSent = !1,
+                    resolveResponse, responsePromise = new Promise(resolvePromise => {
+                      resolveResponse = function(response) {
+                        responseSent = !0, resolvePromise(response)
                       }
                     }),
-                    y;
+                    result;
                   try {
-                    y = a(m, c, b)
-                  } catch (_) {
-                    y = Promise.reject(_)
+                    result = listener(message, sender, resolveResponse)
+                  } catch (error) {
+                    result = Promise.reject(error)
                   }
-                  let d = y !== !0 && g(y);
-                  if (y !== !0 && !d && !w) return !1;
-                  let v = _ => {
-                    _.then(E => {
-                        x(E)
-                      }, E => {
-                        let L;
-                        E && (E instanceof Error || typeof E
-                            .message == "string") ? L = E.message :
-                          L = "An unexpected error occurred", x({
+                  let resultIsThenable = result !== !0 && isThenable(result);
+                  if (result !== !0 && !resultIsThenable && !responseSent) return !1;
+                  let sendResolvedResponse = resultPromise => {
+                    resultPromise.then(response => {
+                        sendResponse(response)
+                      }, error => {
+                        let errorMessage;
+                        error && (error instanceof Error || typeof error
+                            .message == "string") ? errorMessage = error.message :
+                          errorMessage = "An unexpected error occurred", sendResponse({
                             __mozWebExtensionPolyfillReject__: !0,
-                            message: L
+                            message: errorMessage
                           })
                       })
-                      .catch(E => {
+                      .catch(replyError => {
                         console.error(
                           "Failed to send onMessage rejected reply",
-                          E)
+                          replyError)
                       })
                   };
-                  return v(d ? y : l), !0
+                  return sendResolvedResponse(resultIsThenable ? result : responsePromise), !0
                 }),
-                ne = ({
-                  reject: a,
-                  resolve: o
-                }, m) => {
-                  i.runtime.lastError ? i.runtime.lastError.message ===
-                    e ? o() : a(new Error(i.runtime.lastError.message)) :
-                    m && m.__mozWebExtensionPolyfillReject__ ? a(
-                      new Error(m.message)) : o(m)
+                processResponse = ({
+                  reject: reject,
+                  resolve: resolve
+                }, response) => {
+                  chromeApi.runtime.lastError ? chromeApi.runtime.lastError.message ===
+                    messagePortClosedMessage ? resolve() : reject(new Error(chromeApi.runtime.lastError.message)) :
+                    response && response.__mozWebExtensionPolyfillReject__ ? reject(
+                      new Error(response.message)) : resolve(response)
                 },
-                B = (a, o, m, ...c) => {
-                  if (c.length < o.minArgs) throw new Error(
-                    `Expected at least ${o.minArgs} ${A(o.minArgs)} for ${a}(), got ${c.length}`
+                wrapSendMessage = (name, metadata, apiTarget, ...args) => {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (c.length > o.maxArgs) throw new Error(
-                    `Expected at most ${o.maxArgs} ${A(o.maxArgs)} for ${a}(), got ${c.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((x, w) => {
-                    let b = ne.bind(null, {
-                      resolve: x,
-                      reject: w
+                  return new Promise((resolve, reject) => {
+                    let boundCallback = processResponse.bind(null, {
+                      resolve: resolve,
+                      reject: reject
                     });
-                    c.push(b), m.sendMessage(...c)
+                    args.push(boundCallback), apiTarget.sendMessage(...args)
                   })
                 },
-                ie = {
+                staticWrappers = {
                   devtools: {
                     network: {
-                      onRequestFinished: $(se)
+                      onRequestFinished: wrapEvent(onRequestFinishedWrappers)
                     }
                   },
                   runtime: {
-                    onMessage: $(q),
-                    onMessageExternal: $(q),
-                    sendMessage: B.bind(null, "sendMessage", {
+                    onMessage: wrapEvent(onMessageWrappers),
+                    onMessageExternal: wrapEvent(onMessageWrappers),
+                    sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                       minArgs: 1,
                       maxArgs: 3
                     })
                   },
                   tabs: {
-                    sendMessage: B.bind(null, "sendMessage", {
+                    sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                       minArgs: 2,
                       maxArgs: 3
                     })
                   }
                 },
-                O = {
+                settingMetadata = {
                   clear: {
                     minArgs: 1,
                     maxArgs: 1
@@ -933,368 +933,368 @@
                     maxArgs: 1
                   }
                 };
-              return n.privacy = {
+              return apiMetadata.privacy = {
                 network: {
-                  "*": O
+                  "*": settingMetadata
                 },
                 services: {
-                  "*": O
+                  "*": settingMetadata
                 },
                 websites: {
-                  "*": O
+                  "*": settingMetadata
                 }
-              }, S(i, ie, n)
+              }, wrapObject(chromeApi, staticWrappers, apiMetadata)
             };
-          r.exports = t(chrome)
-        } else r.exports = globalThis.browser
+          browserGlobal.exports = wrapApis(chrome)
+        } else browserGlobal.exports = globalThis.browser
       })
   });
-  var H = M((Ne, k) => {
+  var requireWehCore = defineCommonjsModule((wehCoreExports, wehCoreModule) => {
     "use strict";
-    k.exports.browser = D();
-    var T;
+    wehCoreModule.exports.browser = requirePolyfill();
+    var cachedBrowserType;
     typeof browser > "u" && typeof chrome < "u" && chrome.runtime ?
-      /\bOPR\//.test(navigator.userAgent) ? T = "opera" : T = "chrome" :
-      /\bEdge\//.test(navigator.userAgent) ? T = "edge" : T = "firefox", k
-      .exports.browserType = T, typeof k.exports.browser.action > "u" && (
-        k.exports.browser.action = k.exports.browser.browserAction), k
-      .exports.isBrowser = (...r) => {
-        for (let e = 0; e < r.length; e++)
-          if (r[e] == k.exports.browserType) return !0;
+      /\bOPR\//.test(navigator.userAgent) ? cachedBrowserType = "opera" : cachedBrowserType = "chrome" :
+      /\bEdge\//.test(navigator.userAgent) ? cachedBrowserType = "edge" : cachedBrowserType = "firefox", wehCoreModule
+      .exports.browserType = cachedBrowserType, typeof wehCoreModule.exports.browser.action > "u" && (
+        wehCoreModule.exports.browser.action = wehCoreModule.exports.browser.browserAction), wehCoreModule
+      .exports.isBrowser = (...browserNames) => {
+        for (let index = 0; index < browserNames.length; index++)
+          if (browserNames[index] == wehCoreModule.exports.browserType) return !0;
         return !1
-      }, k.exports.error = r => {
-        console.groupCollapsed(r.message), r.stack && console.error(r
+      }, wehCoreModule.exports.error = errorValue => {
+        console.groupCollapsed(errorValue.message), errorValue.stack && console.error(errorValue
           .stack), console.groupEnd()
       }
   });
-  var K = M((Re, W) => {
+  var requireRpc = defineCommonjsModule((rpcExports, rpcModule) => {
     "use strict";
-    var F = class {
+    var Rpc = class {
       constructor() {
         this.replyId = 0, this.replies = {}, this.listeners = {}, this
           .hook = this.nullHook, this.debugLevel = 0, this
           .useTarget = !1, this.logger = console, this.posts = {}
       }
-      setPost(e, t) {
-        typeof e == "string" ? this.posts[e] = t : this.post = e
+      setPost(peerOrPostFn, postFn) {
+        typeof peerOrPostFn == "string" ? this.posts[peerOrPostFn] = postFn : this.post = peerOrPostFn
       }
-      setUseTarget(e) {
-        this.useTarget = e
+      setUseTarget(useTarget) {
+        this.useTarget = useTarget
       }
-      setDebugLevel(e) {
-        this.debugLevel = e
+      setDebugLevel(debugLevel) {
+        this.debugLevel = debugLevel
       }
-      setHook(e) {
-        let t = this,
-          i = Date.now();
+      setHook(hook) {
+        let self = this,
+          startTime = Date.now();
 
-        function n() {
+        function now() {
           return typeof window < "u" && typeof window.performance <
-            "u" ? window.performance.now() : Date.now() - i
+            "u" ? window.performance.now() : Date.now() - startTime
         }
-        e ? this.hook = s => {
-          s.timestamp = n();
+        hook ? this.hook = hookArg => {
+          hookArg.timestamp = now();
           try {
-            e(s)
-          } catch (g) {
-            t.logger.warn("Hoor error", g)
+            hook(hookArg)
+          } catch (error) {
+            self.logger.warn("Hoor error", error)
           }
         } : this.hook = this.nullHook
       }
       nullHook() {}
       call() {
-        let e = this,
-          t, i, n, s, g = Array.prototype.slice.call(arguments);
-        return typeof g[0] == "function" && (t = g.shift()), e
-          .useTarget ? [i, n, ...s] = g : [n, ...s] = g, new Promise(
-            function(p, A) {
-              let u = ++e.replyId;
-              e.debugLevel >= 2 && e.logger.info("rpc #" + u,
-                "call =>", n, s), e.hook({
+        let self = this,
+          postFn, peer, method, args, callArgs = Array.prototype.slice.call(arguments);
+        return typeof callArgs[0] == "function" && (postFn = callArgs.shift()), self
+          .useTarget ? [peer, method, ...args] = callArgs : [method, ...args] = callArgs, new Promise(
+            function(resolve, reject) {
+              let replyId = ++self.replyId;
+              self.debugLevel >= 2 && self.logger.info("rpc #" + replyId,
+                "call =>", method, args), self.hook({
                 type: "call",
-                callee: i,
-                rid: u,
-                method: n,
-                args: s
-              }), e.replies[u] = {
-                resolve: p,
-                reject: A,
-                peer: i
+                callee: peer,
+                rid: replyId,
+                method: method,
+                args: args
+              }), self.replies[replyId] = {
+                resolve: resolve,
+                reject: reject,
+                peer: peer
               };
-              let f = t || e.useTarget && e.posts[i] || e.post;
-              e.useTarget ? f(i, {
+              let post = postFn || self.useTarget && self.posts[peer] || self.post;
+              self.useTarget ? post(peer, {
                 type: "weh#rpc",
-                _request: u,
-                _method: n,
-                _args: [...s]
-              }) : f({
+                _request: replyId,
+                _method: method,
+                _args: [...args]
+              }) : post({
                 type: "weh#rpc",
-                _request: u,
-                _method: n,
-                _args: [...s]
+                _request: replyId,
+                _method: method,
+                _args: [...args]
               })
             })
       }
-      receive(e, t, i) {
-        let n = this;
-        if (e._request) Promise.resolve()
+      receive(message, sendReply, caller) {
+        let self = this;
+        if (message._request) Promise.resolve()
           .then(() => {
-            let s = n.listeners[e._method];
-            if (typeof s == "function") return n.debugLevel >= 2 &&
-              n.logger.info("rpc #" + e._request, "serve <= ", e
-                ._method, e._args), n.hook({
+            let listener = self.listeners[message._method];
+            if (typeof listener == "function") return self.debugLevel >= 2 &&
+              self.logger.info("rpc #" + message._request, "serve <= ", message
+                ._method, message._args), self.hook({
                 type: "call",
-                caller: i,
-                rid: e._request,
-                method: e._method,
-                args: e._args
-              }), Promise.resolve(s.apply(null, e._args))
-              .then(g => (n.hook({
+                caller: caller,
+                rid: message._request,
+                method: message._method,
+                args: message._args
+              }), Promise.resolve(listener.apply(null, message._args))
+              .then(result => (self.hook({
                 type: "reply",
-                caller: i,
-                rid: e._request,
-                result: g
-              }), g))
-              .catch(g => {
-                throw n.hook({
+                caller: caller,
+                rid: message._request,
+                result: result
+              }), result))
+              .catch(error => {
+                throw self.hook({
                   type: "reply",
-                  caller: i,
-                  rid: e._request,
-                  error: g.message
-                }), g
+                  caller: caller,
+                  rid: message._request,
+                  error: error.message
+                }), error
               });
-            throw new Error("Method " + e._method +
+            throw new Error("Method " + message._method +
               " is not a function")
           })
-          .then(s => {
-            n.debugLevel >= 2 && n.logger.info("rpc #" + e._request,
-              "serve => ", s), t({
+          .then(result => {
+            self.debugLevel >= 2 && self.logger.info("rpc #" + message._request,
+              "serve => ", result), sendReply({
               type: "weh#rpc",
-              _reply: e._request,
-              _result: s
+              _reply: message._request,
+              _result: result
             })
           })
-          .catch(s => {
-            n.debugLevel >= 1 && n.logger.info("rpc #" + e._request,
-              "serve => !", s.message), t({
+          .catch(error => {
+            self.debugLevel >= 1 && self.logger.info("rpc #" + message._request,
+              "serve => !", error.message), sendReply({
               type: "weh#rpc",
-              _reply: e._request,
-              _error: s.message
+              _reply: message._request,
+              _error: error.message
             })
           });
-        else if (e._reply) {
-          let s = n.replies[e._reply];
-          delete n.replies[e._reply], s ? e._error ? (n.debugLevel >=
-            1 && n.logger.info("rpc #" + e._reply, "call <= !", e
-              ._error), n.hook({
+        else if (message._reply) {
+          let pending = self.replies[message._reply];
+          delete self.replies[message._reply], pending ? message._error ? (self.debugLevel >=
+            1 && self.logger.info("rpc #" + message._reply, "call <= !", message
+              ._error), self.hook({
               type: "reply",
-              callee: s.peer,
-              rid: e._reply,
-              error: e._error
-            }), s.reject(new Error(e._error))) : (n.debugLevel >=
-            2 && n.logger.info("rpc #" + e._reply, "call <= ", e
-              ._result), n.hook({
+              callee: pending.peer,
+              rid: message._reply,
+              error: message._error
+            }), pending.reject(new Error(message._error))) : (self.debugLevel >=
+            2 && self.logger.info("rpc #" + message._reply, "call <= ", message
+              ._result), self.hook({
               type: "reply",
-              callee: s.peer,
-              rid: e._reply,
-              result: e._result
-            }), s.resolve(e._result)) : n.logger.error(
+              callee: pending.peer,
+              rid: message._reply,
+              result: message._result
+            }), pending.resolve(message._result)) : self.logger.error(
             "Missing reply handler")
         }
       }
-      listen(e) {
-        Object.assign(this.listeners, e)
+      listen(listeners) {
+        Object.assign(this.listeners, listeners)
       }
     };
-    W.exports = new F
+    rpcModule.exports = new Rpc
   });
-  var z = M(($e, Z) => {
+  var requireAppTab = defineCommonjsModule((appTabExports, appTabModule) => {
     "use strict";
-    var h = H(),
-      J = h.browser;
-    h.rpc = K();
-    h.uiName = window._wehPanelName;
-    h.uiName || (h.uiName = "injected-" + Math.round(Math.random() *
+    var weh = requireWehCore(),
+      wehBrowser = weh.browser;
+    weh.rpc = requireRpc();
+    weh.uiName = window._wehPanelName;
+    weh.uiName || (weh.uiName = "injected-" + Math.round(Math.random() *
     1e9));
-    var ue = "weh:" + J.runtime.id + ":" + h.uiName,
-      P = J.runtime.connect({
-        name: ue
+    var wehKey = "weh:" + wehBrowser.runtime.id + ":" + weh.uiName,
+      port = wehBrowser.runtime.connect({
+        name: wehKey
       });
-    h.rpc.setPost(P.postMessage.bind(P));
-    P.onMessage.addListener(r => {
-      h.rpc.receive(r, P.postMessage.bind(P))
+    weh.rpc.setPost(port.postMessage.bind(port));
+    port.onMessage.addListener(message => {
+      weh.rpc.receive(message, port.postMessage.bind(port))
     });
-    h.rpc.listen({
+    weh.rpc.listen({
       setPrefs: () => {},
       close: () => {}
     });
-    h.is_safe = (async () => {
-      await h.rpc.call("appStarted", {
-        uiName: h.uiName
-      }), await h.rpc.call("appReady", {
-        uiName: h.uiName
+    weh.is_safe = (async () => {
+      await weh.rpc.call("appStarted", {
+        uiName: weh.uiName
+      }), await weh.rpc.call("appReady", {
+        uiName: weh.uiName
       })
     })();
-    Z.exports = h
+    appTabModule.exports = weh
   });
-  var G = {};
-  me(G, {
-    SmartNameEvaluate: () => de
+  var smartNameCache = {};
+  defineExports(smartNameCache, {
+    SmartNameEvaluate: () => evaluateSmartName
   });
 
-  function de(r) {
-    let e = r.xpath,
-      t = null;
+  function evaluateSmartName(spec) {
+    let xpath = spec.xpath,
+      result = null;
 
-    function i() {
-      if (t = t && t.trim() || "", t && r.regexp) {
-        let s = new RegExp(r.regexp, "m")
-          .exec(t);
-        s ? typeof s[1] < "u" ? t = s[1] || "" : t = s[0] || "" : t = ""
+    function matchRegex() {
+      if (result = result && result.trim() || "", result && spec.regexp) {
+        let regex = new RegExp(spec.regexp, "m")
+          .exec(result);
+        regex ? typeof regex[1] < "u" ? result = regex[1] || "" : result = regex[0] || "" : result = ""
       }
     }
-    switch (r.mode) {
+    switch (spec.mode) {
       case "page-title":
-        e = "/html/head/title/text()";
+        xpath = "/html/head/title/text()";
       case "page-content":
-        t = document.evaluate(e, document, null, XPathResult.STRING_TYPE,
+        result = document.evaluate(xpath, document, null, XPathResult.STRING_TYPE,
             null)
           .stringValue || null;
         break;
       case "obfuscated":
-        return new Promise((n, s) => {
+        return new Promise((resolve, reject) => {
           crypto.subtle.digest("SHA-256", new TextEncoder("utf-8")
               .encode(window.location.href))
-            .then(g => {
-              t = Array.from(new Uint8Array(g))
+            .then(hashBuffer => {
+              result = Array.from(new Uint8Array(hashBuffer))
                 .slice(0, 16)
-                .map(A => ("00" + A.toString(16))
+                .map(byte => ("00" + byte.toString(16))
                   .slice(-2))
-                .join(""), i(), n(t)
+                .join(""), matchRegex(), resolve(result)
             })
-            .catch(s)
+            .catch(reject)
         });
       case "header-url":
-        if (t = r.headerFilename || r.urlFilename, !t) {
-          let n = fe.exec(window.location.href);
-          n ? t = n[1] : t = ""
+        if (result = spec.headerFilename || spec.urlFilename, !result) {
+          let match = pageUrlRegex.exec(window.location.href);
+          match ? result = match[1] : result = ""
         }
         break;
       default:
-        t = ""
+        result = ""
     }
-    return i(), t.length > 128 && (t = t.substr(0, 64)), t
+    return matchRegex(), result.length > 128 && (result = result.substr(0, 64)), result
   }
-  var fe, X = ge(() => {
+  var pageUrlRegex, initPageUrlRegex = defineLazyModule(() => {
     "use strict";
-    fe = new RegExp(
+    pageUrlRegex = new RegExp(
       "^.*?:/?/?[^/]+/(?:[^/]*/)*([^#\\?/]+?)(?:\\.[a-zA-Z0-9]{1,5})?(?:$|#|\\?|/)"
       )
   });
-  var xe = z(),
+  var weh = requireAppTab(),
     {
-      SmartNameEvaluate: pe
-    } = (X(), Ae(G)),
-    N = "youtube",
-    Y = "YouTube",
-    he = new RegExp('"(?:apiKey|innertubeApiKey)"s*:s*"(.*?)["]'),
-    we = new RegExp("/(?:watch.*v=|embed/|shorts/)([^&\\?]+)"),
-    Q = new RegExp("/base\\.js$"),
-    be = new RegExp(
+      SmartNameEvaluate: evaluateSmartNameHandler
+    } = (initPageUrlRegex(), toCommonjs(smartNameCache)),
+    PLATFORM = "youtube",
+    PLATFORM_NAME = "YouTube",
+    apiKeyRegex = new RegExp('"(?:apiKey|innertubeApiKey)"s*:s*"(.*?)["]'),
+    videoIdRegex = new RegExp("/(?:watch.*v=|embed/|shorts/)([^&\\?]+)"),
+    baseJsRegex = new RegExp("/base\\.js$"),
+    baseJsVersionRegex = new RegExp(
       '\\.get\\("n"\\)\\)&&\\(b=([a-zA-Z0-9$]+)(?:\\[(\\d+)\\])?\\([a-zA-Z0-9]\\)'
       ),
-    ye = new URLSearchParams(window.location.search)
+    urlParams = new URLSearchParams(window.location.search)
     .get("vdh-bulk"),
-    R = null,
-    U = null;
+    cachedApiKey = null,
+    cachedBaseJs = null;
 
-  function Ee(r) {
-    let e = we.exec(window.location.href);
-    return r.videoId = e && e[1] || null, r
+  function extractVideoId(url) {
+    let match = videoIdRegex.exec(window.location.href);
+    return url.videoId = match && match[1] || null, url
   }
-  async function ke(r) {
-    if (R) return r.baseJs = R, r;
-    let e = document.getElementsByTagName("link"),
-      t = null;
-    for (let i = 0; i < e.length && !t; i++) {
-      let s = e[i].getAttribute("href");
-      s && Q.test(s) && (t = new URL(s, window.location.origin)
+  async function findBaseJsUrl(pageUrl) {
+    if (cachedApiKey) return pageUrl.baseJs = cachedApiKey, pageUrl;
+    let links = document.getElementsByTagName("link"),
+      baseJsUrl = null;
+    for (let linkIndex = 0; linkIndex < links.length && !baseJsUrl; linkIndex++) {
+      let href = links[linkIndex].getAttribute("href");
+      href && baseJsRegex.test(href) && (baseJsUrl = new URL(href, window.location.origin)
         .href)
     }
-    if (!t) {
-      let i = document.querySelectorAll("[data-version]");
-      for (let n = 0; n < i.length && !t; n++) {
-        let g = i[n].getAttribute("data-version");
-        g && Q.test(g) && (t = new URL(g, window.location.origin)
+    if (!baseJsUrl) {
+      let versionedElements = document.querySelectorAll("[data-version]");
+      for (let elemIndex = 0; elemIndex < versionedElements.length && !baseJsUrl; elemIndex++) {
+        let version = versionedElements[elemIndex].getAttribute("data-version");
+        version && baseJsRegex.test(version) && (baseJsUrl = new URL(version, window.location.origin)
           .href)
       }
     }
-    if (!t) return console.log("VDH ExtractBaseJS: no base.js ref"), r;
+    if (!baseJsUrl) return console.log("VDH ExtractBaseJS: no base.js ref"), pageUrl;
     try {
-      let i = await fetch(t);
-      if (!i.ok) throw new Error(
-        `request to ${t} returns ${i.status} ${i.statusText}`);
-      let n = await i.text(),
-        s = be.exec(n)[1];
-      return s = new RegExp(`var ${s}\\s*=\\s*\\[(.+?)\\]\\s*[,;]`)
-        .exec(n)[1], R = new RegExp(
-          `${s}\\s*=\\s*function\\s*\\(([\\w$]+)\\)\\s*{(.+?}\\s*return\\ [\\w$]+.join\\(""\\))};`,
+      let response = await fetch(baseJsUrl);
+      if (!response.ok) throw new Error(
+        `request to ${baseJsUrl} returns ${response.status} ${response.statusText}`);
+      let scriptText = await response.text(),
+        apiKey = baseJsVersionRegex.exec(scriptText)[1];
+      return apiKey = new RegExp(`var ${apiKey}\\s*=\\s*\\[(.+?)\\]\\s*[,;]`)
+        .exec(scriptText)[1], cachedApiKey = new RegExp(
+          `${apiKey}\\s*=\\s*function\\s*\\(([\\w$]+)\\)\\s*{(.+?}\\s*return\\ [\\w$]+.join\\(""\\))};`,
           "s")
-        .exec(n)[2], r.baseJs = R, r
-    } catch (i) {
-      return console.error("VDH ExtractBaseJS: getting base.js", i), null
+        .exec(scriptText)[2], pageUrl.baseJs = cachedApiKey, pageUrl
+    } catch (error) {
+      return console.error("VDH ExtractBaseJS: getting base.js", error), null
     }
   }
 
-  function ee(r, e = document) {
-    let t = null;
-    if ([...e.getElementsByTagName("script")].forEach(n => {
-        if (!n.getAttribute("nonce")) return;
-        let s = n.textContent,
-          g = s.indexOf("{"),
-          p = s.indexOf("};");
-        if (g >= 0 && p >= 0) {
-          let A = s.substring(g, p + 1);
+  function extractPlayerResponse(key, doc = document) {
+    let playerResponse = null;
+    if ([...doc.getElementsByTagName("script")].forEach(script => {
+        if (!script.getAttribute("nonce")) return;
+        let content = script.textContent,
+          start = content.indexOf("{"),
+          end = content.indexOf("};");
+        if (start >= 0 && end >= 0) {
+          let json = content.substring(start, end + 1);
           try {
-            let u = JSON.parse(A);
-            u.streamingData && (t && console.log(
-              "VDH initial multiple candidates"), t = u)
+            let parsed = JSON.parse(json);
+            parsed.streamingData && (playerResponse && console.log(
+              "VDH initial multiple candidates"), playerResponse = parsed)
           } catch {}
         }
-      }), t && t.videoDetails && t.videoDetails.videoId == r.videoId && t
+      }), playerResponse && playerResponse.videoDetails && playerResponse.videoDetails.videoId == key.videoId && playerResponse
       .streamingData) {
-      let n = t.streamingData.formats || [],
-        s = t.streamingData.adaptiveFormats || [];
-      (n.length || s.length) && (r.videoDetails = t.videoDetails, r.formats =
-        n, r.adaptiveFormats = s, n.concat(s)
-        .forEach(g => {
-          g.url && (r.gotVariantUrl = !0)
+      let formats = playerResponse.streamingData.formats || [],
+        adaptiveFormats = playerResponse.streamingData.adaptiveFormats || [];
+      (formats.length || adaptiveFormats.length) && (key.videoDetails = playerResponse.videoDetails, key.formats =
+        formats, key.adaptiveFormats = adaptiveFormats, formats.concat(adaptiveFormats)
+        .forEach(format => {
+          format.url && (key.gotVariantUrl = !0)
         }))
     }
-    return r
+    return key
   }
-  async function ve(r, e) {
-    let t = /^(https?:\/\/[^\/]+)/.exec(window.location.href)[1],
-      i = {
-        Origin: t,
+  async function fetchPlayerData(params, videoId) {
+    let origin = /^(https?:\/\/[^\/]+)/.exec(window.location.href)[1],
+      context = {
+        Origin: origin,
         "Content-Type": "application/json"
       };
-    i[`X-${Y}-Client-Name`] = "3";
-    let n = `${t}/${N}i/v1/player?key=${r.apiKey}&prettyPrint=false`,
-      s;
-    e == "android" ? s = {
+    context[`X-${PLATFORM_NAME}-Client-Name`] = "3";
+    let apiUrl = `${origin}/${PLATFORM}i/v1/player?key=${params.apiKey}&prettyPrint=false`,
+      playerData;
+    videoId == "android" ? playerData = {
       context: {
         client: {
           clientName: "ANDROID",
           clientVersion: "17.31.35",
           androidSdkVersion: 30,
-          userAgent: `com.google.android.${N}/17.31.35 (Linux; U; Android 11) gzip`,
+          userAgent: `com.google.android.${PLATFORM}/17.31.35 (Linux; U; Android 11) gzip`,
           hl: "en",
           timeZone: "UTC",
           utcOffsetMinutes: 0
         }
       },
-      videoId: r.videoId,
+      videoId: params.videoId,
       params: "CgIQBg==",
       playbackContext: {
         contentPlaybackContext: {
@@ -1303,7 +1303,7 @@
       },
       contentCheckOk: !0,
       racyCheckOk: !0
-    } : e == "tvep" ? s = {
+    } : videoId == "tvep" ? playerData = {
       context: {
         client: {
           clientName: "TVHTML5_SIMPLY_EMBEDDED_PLAYER",
@@ -1313,10 +1313,10 @@
           utcOffsetMinutes: 0
         },
         thirdParty: {
-          embedUrl: `https://www.${N}.com/`
+          embedUrl: `https://www.${PLATFORM}.com/`
         }
       },
-      videoId: r.videoId,
+      videoId: params.videoId,
       playbackContext: {
         contentPlaybackContext: {
           html5Preference: "HTML5_PREF_WANTS",
@@ -1325,27 +1325,27 @@
       },
       contentCheckOk: !0,
       racyCheckOk: !0
-    } : e == "web" ? s = {
-      videoId: r.videoId,
+    } : videoId == "web" ? playerData = {
+      videoId: params.videoId,
       context: {
         client: {
           clientName: "WEB",
           clientVersion: "2.20230810.05.00"
         }
       }
-    } : s = {
+    } : playerData = {
       context: {
         client: {
           clientName: "IOS",
           clientVersion: "17.33.2",
           deviceModel: "iPhone14,3",
-          userAgent: `com.google.ios.${N}/17.33.2 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)`,
+          userAgent: `com.google.ios.${PLATFORM}/17.33.2 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)`,
           hl: "en",
           timeZone: "UTC",
           utcOffsetMinutes: 0
         }
       },
-      videoId: r.videoId,
+      videoId: params.videoId,
       playbackContext: {
         contentPlaybackContext: {
           html5Preference: "HTML5_PREF_WANTS"
@@ -1353,155 +1353,155 @@
       },
       contentCheckOk: !0,
       racyCheckOk: !0
-    }, i["User-Agent"] = s.context.client.userAgent, i[
-      `X-${Y}-Client-Version`] = s.context.client.clientVersion;
+    }, context["User-Agent"] = playerData.context.client.userAgent, context[
+      `X-${PLATFORM_NAME}-Client-Version`] = playerData.context.client.clientVersion;
     try {
-      if (s = await (await fetch(n, {
+      if (playerData = await (await fetch(apiUrl, {
           method: "POST",
-          headers: i,
-          body: JSON.stringify(s)
+          headers: context,
+          body: JSON.stringify(playerData)
         }))
-        .json(), s.videoDetails) {
-        let p = s.streamingData && s.streamingData.formats || [],
-          A = s.streamingData && s.streamingData.adaptiveFormats || [];
-        (p.length || A.length) && (r.videoDetails = s.videoDetails, r
-          .formats = p, r.adaptiveFormats = A), s.streamingData && s
-          .streamingData.hlsManifestUrl && (r.hlsManifestUrl = s
+        .json(), playerData.videoDetails) {
+        let formats = playerData.streamingData && playerData.streamingData.formats || [],
+          adaptiveFormats = playerData.streamingData && playerData.streamingData.adaptiveFormats || [];
+        (formats.length || adaptiveFormats.length) && (params.videoDetails = playerData.videoDetails, params
+          .formats = formats, params.adaptiveFormats = adaptiveFormats), playerData.streamingData && playerData
+          .streamingData.hlsManifestUrl && (params.hlsManifestUrl = playerData
             .streamingData.hlsManifestUrl)
       }
-    } catch (g) {
-      console.log("VDH: getting player data", g)
+    } catch (error) {
+      console.log("VDH: getting player data", error)
     }
-    return r
+    return params
   }
 
-  function _e(r) {
-    if (U) return r.apiKey = U, r;
-    let e = document.getElementsByTagName("script"),
-      t = null;
-    for (let i = 0; i < e.length && !t; i++) {
-      let s = e[i].textContent,
-        g = he.exec(s);
-      g && (t = g[1])
+  function extractApiKey(doc) {
+    if (cachedBaseJs) return doc.apiKey = cachedBaseJs, doc;
+    let scripts = document.getElementsByTagName("script"),
+      apiKey = null;
+    for (let scriptIndex = 0; scriptIndex < scripts.length && !apiKey; scriptIndex++) {
+      let content = scripts[scriptIndex].textContent,
+        match = apiKeyRegex.exec(content);
+      match && (apiKey = match[1])
     }
-    return U = t, r.apiKey = t, r
+    return cachedBaseJs = apiKey, doc.apiKey = apiKey, doc
   }
-  async function Te(r, e) {
-    return r.title = r.videoDetails && r.videoDetails.title || e, window
-      ._$vdhSmartNameSpecs ? new Promise((t, i) => {
+  async function gatherVideoInfo(videoInfo, options) {
+    return videoInfo.title = videoInfo.videoDetails && videoInfo.videoDetails.title || options, window
+      ._$vdhSmartNameSpecs ? new Promise((resolve, reject) => {
         setTimeout(() => {
           try {
-            let n = pe(window._$vdhSmartNameSpecs);
-            r.title = n || r.title
+            let smartName = evaluateSmartNameHandler(window._$vdhSmartNameSpecs);
+            videoInfo.title = smartName || videoInfo.title
           } finally {
-            t(r)
+            resolve(videoInfo)
           }
         }, window._$vdhSmartNameSpecs.delay)
-      }) : r
+      }) : videoInfo
   }
 
-  function Pe(r) {
-    let e = new Set(r.map(i => Object.keys(i))
+  function mergeVideoData(items) {
+    let keys = new Set(items.map(item => Object.keys(item))
         .flat()),
-      t = {};
-    return e.forEach(i => {
-      if (i == "source") return;
-      let n = r.filter(s => typeof s[i] < "u");
-      if (i == "formats" || i == "adaptiveFormats") {
-        let s = new Set,
-          g = n.map(A => {
-            let u = {};
-            return A[i].forEach(f => {
-              u[f.itag] = f
-            }), s = new Set([...s, ...Object.keys(u)]), u
+      merged = {};
+    return keys.forEach(key => {
+      if (key == "source") return;
+      let defined = items.filter(candidate => typeof candidate[key] < "u");
+      if (key == "formats" || key == "adaptiveFormats") {
+        let seen = new Set,
+          mapped = defined.map(entry => {
+            let obj = {};
+            return entry[key].forEach(sub => {
+              obj[sub.itag] = sub
+            }), seen = new Set([...seen, ...Object.keys(obj)]), obj
           }),
-          p = [];
-        s.forEach(A => {
-          let u = g.filter(f => !!f[A]);
-          p.push(Object.assign({}, ...u.map(f => f[A])))
-        }), t[i] = p
-      } else i == "videoDetails" ? t.videoDetails = Object.assign({}, ...r
-        .map(s => s.videoDetails)) : t[i] = n[n.length - 1][i]
-    }), t
+          results = [];
+        seen.forEach(subKey => {
+          let withKey = mapped.filter(entry => !!entry[subKey]);
+          results.push(Object.assign({}, ...withKey.map(entry => entry[subKey])))
+        }), merged[key] = results
+      } else key == "videoDetails" ? merged.videoDetails = Object.assign({}, ...items
+        .map(entry => entry.videoDetails)) : merged[key] = defined[defined.length - 1][key]
+    }), merged
   }
-  async function re(r) {
-    if (window._$vdhSupportChallenge && await ke(r), r.baseJs && ee(r), r
-      .baseJs && (!r.videoDetails || !r.gotVariantUrl)) {
-      let t = await (await fetch(window.location.href))
+  async function fetchPageDoc(url) {
+    if (window._$vdhSupportChallenge && await findBaseJsUrl(url), url.baseJs && extractPlayerResponse(url), url
+      .baseJs && (!url.videoDetails || !url.gotVariantUrl)) {
+      let html = await (await fetch(window.location.href))
         .text(),
-        n = new DOMParser()
-        .parseFromString(t, "text/html");
-      ee(r, n)
+        doc = new DOMParser()
+        .parseFromString(html, "text/html");
+      extractPlayerResponse(url, doc)
     }
-    return r.source = "local", r
+    return url.source = "local", url
   }
 
-  function Ce(r) {
-    return _e(r), r.apiKey ? window._$vdhExtractMethod.split("_")
-      .filter(e => e != "page")
+  function collectModes(specs) {
+    return extractApiKey(specs), specs.apiKey ? window._$vdhExtractMethod.split("_")
+      .filter(mode => mode != "page")
       .reverse()
-      .map(e => ve({
-        source: e,
-        videoId: r.videoId,
-        apiKey: r.apiKey
+      .map(mode => fetchPlayerData({
+        source: mode,
+        videoId: specs.videoId,
+        apiKey: specs.apiKey
       })) : []
   }
-  async function te() {
-    let r = new RegExp("^page"),
-      e = new RegExp("page$"),
-      t = {};
+  async function detectVideos() {
+    let pageRegex = new RegExp("^page"),
+      pageEndRegex = new RegExp("page$"),
+      specsByMode = {};
     try {
-      if (Ee(t), !t.videoId) throw new Error;
-      let i = [],
-        n = !1;
-      e.test(window._$vdhExtractMethod) && (i.push(re(t)), n = !0);
-      let s = Ce(t);
-      i.push(...s), r.test(window._$vdhExtractMethod) && !n && i.push(re(
-      t));
-      let p = (await Promise.allSettled(i))
-        .filter(f => f.status == "fulfilled")
-        .map(f => f.value);
-      Object.assign(t, Pe(p));
-      let A = document.querySelector("meta[property='og:image']")
+      if (extractVideoId(specsByMode), !specsByMode.videoId) throw new Error;
+      let promises = [],
+        hasPage = !1;
+      pageEndRegex.test(window._$vdhExtractMethod) && (promises.push(fetchPageDoc(specsByMode)), hasPage = !0);
+      let smartNameSpec = collectModes(specsByMode);
+      promises.push(...smartNameSpec), pageRegex.test(window._$vdhExtractMethod) && !hasPage && promises.push(fetchPageDoc(
+      specsByMode));
+      let settledResults = (await Promise.allSettled(promises))
+        .filter(settled => settled.status == "fulfilled")
+        .map(settled => settled.value);
+      Object.assign(specsByMode, mergeVideoData(settledResults));
+      let ogImage = document.querySelector("meta[property='og:image']")
         ?.getAttribute("content"),
-        u = document.querySelector("link[as='image']")
+        linkImage = document.querySelector("link[as='image']")
         ?.getAttribute("href");
-      if (t.videoDetails) {
-        await Te(t, "No title");
-        let f = Object.assign({}, window._$vdhData, {
-          videoId: t.videoId,
-          thumbnailUrl: A ?? u,
+      if (specsByMode.videoDetails) {
+        await gatherVideoInfo(specsByMode, "No title");
+        let data = Object.assign({}, window._$vdhData, {
+          videoId: specsByMode.videoId,
+          thumbnailUrl: ogImage ?? linkImage,
           pageTitle: document.title,
           pageUrl: window.location.href,
           topUrl: window === window.top ? window.location.href : window
             ._$vdhTopUrl,
-          title: t.title,
-          videoDetails: t.videoDetails,
-          formats: t.formats || [],
-          adaptiveFormats: t.adaptiveFormats || [],
-          bulk: ye,
-          baseJs: t.baseJs,
-          hlsManifestUrl: t.hlsManifestUrl
+          title: specsByMode.title,
+          videoDetails: specsByMode.videoDetails,
+          formats: specsByMode.formats || [],
+          adaptiveFormats: specsByMode.adaptiveFormats || [],
+          bulk: urlParams,
+          baseJs: specsByMode.baseJs,
+          hlsManifestUrl: specsByMode.hlsManifestUrl
         });
-        xe.rpc.call("tbvwsDetectedVideo", f)
+        weh.rpc.call("tbvwsDetectedVideo", data)
       }
-    } catch (i) {
-      t.videoId && console.log("VDH ProcessPage:", i)
+    } catch (error) {
+      specsByMode.videoId && console.log("VDH ProcessPage:", error)
     }
   }
 
-  function Se() {
-    let r = document.location.href,
-      e = document.querySelector("body"),
-      t = new MutationObserver(function(n) {
-        r != document.location.href && (r = document.location.href, te())
+  function observePage() {
+    let currentUrl = document.location.href,
+      body = document.querySelector("body"),
+      observer = new MutationObserver(function(mutations) {
+        currentUrl != document.location.href && (currentUrl = document.location.href, detectVideos())
       }),
-      i = {
+      observerOptions = {
         childList: !0,
         subtree: !0
       };
-    t.observe(e, i)
+    observer.observe(body, observerOptions)
   }
-  Se();
-  te();
+  observePage();
+  detectVideos();
 })();

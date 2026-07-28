@@ -1,8 +1,8 @@
 "use strict";
 (() => {
   weh.is_safe.then(() => {
-    let n = combineReducers({
-        data: (e = {
+    let rootReducer = combineReducers({
+        data: (state = {
           mode: "page-title",
           domains: [],
           domain: "",
@@ -10,29 +10,29 @@
           xpath: null,
           regex: null,
           delay: 0
-        }, a) => {
-          switch (a.type) {
+        }, action) => {
+          switch (action.type) {
             case "SET_DATA":
-              e = Object.assign({}, e, a.payload);
+              state = Object.assign({}, state, action.payload);
               break
           }
-          return e
+          return state
         }
       }),
-      o = createStore(n);
+      store = createStore(rootReducer);
     weh.rpc.listen({
-      setData: e => {
-        o.dispatch({
+      setData: payload => {
+        store.dispatch({
           type: "SET_DATA",
-          payload: e
+          payload: payload
         })
       }
     });
-    var d = connect((e, a) => ({
-      data: e.data
+    var SmartNameDefiner = connect((state, ownProps) => ({
+      data: state.data
     }))(class extends React.Component {
-      constructor(e) {
-        super(e), this.state = {
+      constructor(props) {
+        super(props), this.state = {
           selected: "",
           mode: "page-title",
           domain: "",
@@ -46,119 +46,119 @@
           delayClass: ""
         }
       }
-      componentWillReceiveProps(e) {
-        e.data.mode == "page-content" && e.data.xpath !== this.state
-          .xpath && weh.rpc.call("selectSmartNameXPath", e.data.ref,
-            e.data.xpath);
-        for (var a = [], l = e.data.domain.split("."), s = 0; s < l
-          .length - 1; s++) a.push(l.slice(s)
+      componentWillReceiveProps(nextProps) {
+        nextProps.data.mode == "page-content" && nextProps.data.xpath !== this.state
+          .xpath && weh.rpc.call("selectSmartNameXPath", nextProps.data.ref,
+            nextProps.data.xpath);
+        for (var domainSuffixes = [], domainParts = nextProps.data.domain.split("."), index = 0; index < domainParts
+          .length - 1; index++) domainSuffixes.push(domainParts.slice(index)
           .join("."));
-        var t = a[0];
-        a.indexOf(this.state.domain) >= 0 && (t = this.state
+        var defaultDomain = domainSuffixes[0];
+        domainSuffixes.indexOf(this.state.domain) >= 0 && (defaultDomain = this.state
         .domain);
-        var r = this;
+        var self = this;
         this.setState({
           selected: "",
-          mode: e.data.mode || "page-content",
-          xpath: e.data.xpath,
+          mode: nextProps.data.mode || "page-content",
+          xpath: nextProps.data.xpath,
           xpathClass: "",
           regexp: ".*",
           regexpClass: "",
-          domains: a,
-          domain: t
+          domains: domainSuffixes,
+          domain: defaultDomain
         }, () => {
-          r.evaluate(e)
+          self.evaluate(nextProps)
         }), window.addEventListener("beforeunload", () => {
-          weh.rpc.call("closedSmartNameDefiner", r.props.data
+          weh.rpc.call("closedSmartNameDefiner", self.props.data
             .ref)
         })
       }
-      evaluate(e) {
-        e = e || this.props;
-        var a = this;
-        weh.rpc.call("evaluateSmartName", e.data.ref, {
+      evaluate(props) {
+        props = props || this.props;
+        var self = this;
+        weh.rpc.call("evaluateSmartName", props.data.ref, {
             mode: this.state.mode,
             xpath: this.state.xpath,
             regexp: this.state.regexp
           })
-          .then(l => {
-            a.setState({
-              selected: l || ""
+          .then(selected => {
+            self.setState({
+              selected: selected || ""
             })
           })
-          .catch(l => {
-            a.setState({
+          .catch(error => {
+            self.setState({
               selected: ""
             })
           })
       }
       save() {
-        var e = this;
+        var self = this;
         return () => {
           weh.rpc.call("addSmartNameRule", {
-              domain: e.state.domain,
-              mode: e.state.mode,
-              xpath: e.state.xpath,
-              regexp: e.state.regexp,
-              delay: e.state.delay
+              domain: self.state.domain,
+              mode: self.state.mode,
+              xpath: self.state.xpath,
+              regexp: self.state.regexp,
+              delay: self.state.delay
             })
             .then(() => {
               weh.rpc.call("closeSmartNameDefiner")
             })
         }
       }
-      onChange(e) {
-        var a = this;
-        return l => {
-          if (e === "advanced") return a.setState({
-            advanced: l.target.checked
+      onChange(field) {
+        var self = this;
+        return event => {
+          if (field === "advanced") return self.setState({
+            advanced: event.target.checked
           });
-          var s = l.target.value,
-            t = {},
-            r = !1;
-          switch (e) {
+          var value = event.target.value,
+            update = {},
+            hasError = !1;
+          switch (field) {
             case "mode":
-              t.mode = s;
+              update.mode = value;
               break;
             case "xpath":
-              t.xpath = s;
+              update.xpath = value;
               try {
-                document.evaluate(s, document, null, XPathResult
-                    .STRING_TYPE, null), t.xpathClass = "", weh
-                  .rpc.call("selectSmartNameXPath", a.props.data
-                    .ref, s)
+                document.evaluate(value, document, null, XPathResult
+                    .STRING_TYPE, null), update.xpathClass = "", weh
+                  .rpc.call("selectSmartNameXPath", self.props.data
+                    .ref, value)
               } catch {
-                t.xpathClass = "error", r = !0
+                update.xpathClass = "error", hasError = !0
               }
               break;
             case "regexp":
-              t.regexp = s;
+              update.regexp = value;
               try {
-                new RegExp(s), t.regexpClass = ""
+                new RegExp(value), update.regexpClass = ""
               } catch {
-                t.regexpClass = "error", r = !0
+                update.regexpClass = "error", hasError = !0
               }
               break;
             case "domain":
-              t.domain = s;
+              update.domain = value;
               break;
             case "delay":
-              t.delay = s, /^[0-9]+$/.test(s) ? t.delayClass =
-                "" : t.delayClass = "error";
+              update.delay = value, /^[0-9]+$/.test(value) ? update.delayClass =
+                "" : update.delayClass = "error";
               break
           }
-          a.setState(t, () => {
-            !r && ["mode", "xpath", "regexp"].indexOf(e) >=
-              0 && a.evaluate()
+          self.setState(update, () => {
+            !hasError && ["mode", "xpath", "regexp"].indexOf(field) >=
+              0 && self.evaluate()
           })
         }
       }
       renderParams() {
-        var e = this.state.domains.map(a => React.createElement(
+        var domainOptions = this.state.domains.map(domain => React.createElement(
           "option", {
-            key: a,
-            value: a
-          }, a));
+            key: domain,
+            value: domain
+          }, domain));
         return React.createElement("div", {
             className: "container"
           }, React.createElement("div", {
@@ -170,7 +170,7 @@
               className: "form-control col-sm-8",
               onChange: this.onChange("domain"),
               value: this.state.domain
-            }, e)), React.createElement("div", {
+            }, domainOptions)), React.createElement("div", {
             className: "form-group row"
           }, React.createElement("select", {
               className: "form-control col-sm-12",
@@ -267,10 +267,10 @@
       }
     });
     render(React.createElement(Provider, {
-          store: o
+          store: store
         }, React.createElement("div", {
           className: "weh-shf"
-        }, React.createElement(d, null))), document.getElementById(
+        }, React.createElement(SmartNameDefiner, null))), document.getElementById(
         "root")), weh.setPageTitle(weh._("smartname_define")), weh
       .trigger("smartname-define")
   });

@@ -1,119 +1,119 @@
 "use strict";
 (() => {
   weh.is_safe.then(async () => {
-    let g = await weh.prefs,
-      b = combineReducers({
-        prefs: g.reducer,
-        configs: (e = {}, t) => {
-          switch (t.type) {
+    let prefs = await weh.prefs,
+      rootReducer = combineReducers({
+        prefs: prefs.reducer,
+        configs: (state = {}, action) => {
+          switch (action.type) {
             case "SET_CONFIGS":
-              e = t.payload;
+              state = action.payload;
               break;
             case "UPDATE_CONFIG":
-              e = Object.assign({}, e, {
-                  [t.payload.id]: t.payload
-                }), weh.rpc.call("setOutputConfigs", e)
-                .then(d);
+              state = Object.assign({}, state, {
+                  [action.payload.id]: action.payload
+                }), weh.rpc.call("setOutputConfigs", state)
+                .then(loadConfigs);
               break;
             case "REMOVE_CONFIG":
-              e = Object.assign({}, e), delete e[t.payload], weh.rpc
-                .call("setOutputConfigs", e)
-                .then(d);
+              state = Object.assign({}, state), delete state[action.payload], weh.rpc
+                .call("setOutputConfigs", state)
+                .then(loadConfigs);
               break
           }
-          return e
+          return state
         },
-        config: (e = null, t) => {
-          switch (t.type) {
+        config: (state = null, action) => {
+          switch (action.type) {
             case "SET_CONFIG":
-              e = t.payload;
+              state = action.payload;
               break
           }
-          return e
+          return state
         },
-        formats: (e = [], t) => {
-          switch (t.type) {
+        formats: (state = [], action) => {
+          switch (action.type) {
             case "SET_FORMATS":
-              e = t.payload;
+              state = action.payload;
               break
           }
-          return e
+          return state
         },
-        codecs: (e = [], t) => {
-          switch (t.type) {
+        codecs: (state = [], action) => {
+          switch (action.type) {
             case "SET_CODECS":
-              e = t.payload;
+              state = action.payload;
               break
           }
-          return e
+          return state
         }
       }),
-      r = createStore(b);
-    g.reduxDispatch(r);
+      store = createStore(rootReducer);
+    prefs.reduxDispatch(store);
 
-    function d() {
+    function loadConfigs() {
       return weh.rpc.call("getOutputConfigs")
-        .then(e => {
-          r.dispatch({
+        .then(configs => {
+          store.dispatch({
             type: "SET_CONFIGS",
-            payload: e
+            payload: configs
           })
         })
     }
-    d(), weh.rpc.call("getFormats")
-      .then(e => {
-        r.dispatch({
+    loadConfigs(), weh.rpc.call("getFormats")
+      .then(formats => {
+        store.dispatch({
           type: "SET_FORMATS",
-          payload: Object.keys(e)
+          payload: Object.keys(formats)
             .sort()
-            .map(t => Object.assign({}, e[t], {
-              name: t
+            .map(formatName => Object.assign({}, formats[formatName], {
+              name: formatName
             }))
         })
       }), weh.rpc.call("getCodecs")
-      .then(e => {
-        r.dispatch({
+      .then(codecs => {
+        store.dispatch({
           type: "SET_CODECS",
-          payload: Object.keys(e)
+          payload: Object.keys(codecs)
             .sort()
-            .map(t => Object.assign({}, e[t], {
-              name: t
+            .map(codecName => Object.assign({}, codecs[codecName], {
+              name: codecName
             }))
         })
       });
-    let h = decodeURIComponent(new URL(document.URL)
+    let selectedConfigId = decodeURIComponent(new URL(document.URL)
       .hash.substr(1));
-    h && r.dispatch({
+    selectedConfigId && store.dispatch({
       type: "SET_CONFIG",
-      payload: h
+      payload: selectedConfigId
     });
-    var _ = connect((e, t) => ({
-      prefs: e.prefs,
-      configs: e.configs,
-      config: e.config,
-      formats: e.formats,
-      codecs: e.codecs
+    var ConvOutputEditor = connect((state, ownProps) => ({
+      prefs: state.prefs,
+      configs: state.configs,
+      config: state.config,
+      formats: state.formats,
+      codecs: state.codecs
     }))(class extends React.Component {
-      constructor(e) {
-        super(e), this.state = Object.assign({
+      constructor(props) {
+        super(props), this.state = Object.assign({
           actionButtonsOpen: !1,
           resetConfirmOpen: !1,
           activeTab: "general"
-        }, this.stateFromProps(e))
+        }, this.stateFromProps(props))
       }
-      componentWillReceiveProps(e) {
-        var t = this,
-          o = this.state && this.state.configId || e.config;
-        (!o || !e.configs[o]) && (o = Object.keys(e.configs)
-          .sort((i, l) => (i = e.configs[i], l = e.configs[l], i
-            .title < l.title ? -1 : i.title > l.title ? 1 : 0))[0]
-          ), this.setState(this.stateFromProps(e, o))
+      componentWillReceiveProps(nextProps) {
+        var self = this,
+          configId = this.state && this.state.configId || nextProps.config;
+        (!configId || !nextProps.configs[configId]) && (configId = Object.keys(nextProps.configs)
+          .sort((keyA, keyB) => (keyA = nextProps.configs[keyA], keyB = nextProps.configs[keyB], keyA
+            .title < keyB.title ? -1 : keyA.title > keyB.title ? 1 : 0))[0]
+          ), this.setState(this.stateFromProps(nextProps, configId))
       }
-      stateFromProps(e, t) {
-        return e = e || this.props, t = t || this.state && this
-          .state.configId || e.config || "", {
-            configId: t,
-            config: Object.assign({}, e.configs[t])
+      stateFromProps(props, configId) {
+        return props = props || this.props, configId = configId || this.state && this
+          .state.configId || props.config || "", {
+            configId: configId,
+            config: Object.assign({}, props.configs[configId])
           }
       }
       toggleActionButtons() {
@@ -126,45 +126,45 @@
           resetConfirmOpen: !this.state.resetConfirmOpen
         })
       }
-      setActiveTab(e) {
+      setActiveTab(tab) {
         this.setState({
-          activeTab: e
+          activeTab: tab
         })
       }
-      local(e, ...t) {
-        var o = this;
+      local(methodName, ...args) {
+        var self = this;
         return () => {
-          o[e].apply(o, t)
+          self[methodName].apply(self, args)
         }
       }
       changeConfig() {
-        var e = this;
-        return t => {
-          var o = t.target.value;
-          e.setState(e.stateFromProps(e.props, o))
+        var self = this;
+        return event => {
+          var value = event.target.value;
+          self.setState(self.stateFromProps(self.props, value))
         }
       }
       changeTitle() {
-        var e = this;
-        return t => {
-          e.setState({
-            config: Object.assign({}, e.state.config, {
-              title: t.target.value
+        var self = this;
+        return event => {
+          self.setState({
+            config: Object.assign({}, self.state.config, {
+              title: event.target.value
             })
           })
         }
       }
       duplicate() {
-        var e = "" + Date.now(),
-          t = Object.assign({}, this.state.config, {
+        var newId = "" + Date.now(),
+          newConfig = Object.assign({}, this.state.config, {
             params: Object.assign({}, this.state.config.params),
             readonly: !1,
             title: weh._("copy_of", this.state.config.title),
-            id: e
+            id: newId
           });
         this.setState({
-          configId: e,
-          config: t
+          configId: newId,
+          config: newConfig
         })
       }
       reset() {
@@ -173,197 +173,197 @@
         })
       }
       doReset() {
-        var e = this;
+        var self = this;
         weh.rpc.call("resetOutputConfigs")
           .then(() => {
-            e.setState({
+            self.setState({
               resetConfirmOpen: !1
-            }), d()
+            }), loadConfigs()
           })
       }
       shouldSave() {
         if (!this.state.configId) return !1;
-        var e = this.props.configs[this.state.configId];
-        return e ? !deepEqual(e, this.state.config) : !0
+        var savedConfig = this.props.configs[this.state.configId];
+        return savedConfig ? !deepEqual(savedConfig, this.state.config) : !0
       }
       canReset() {
         if (!this.props.configs[this.state.configId]) return !0;
-        for (var e = Object.keys(this.props.configs), t = 0; t < e
-          .length; t++)
-          if (!this.props.configs[e[t]].readonly) return !0;
+        for (var configKeys = Object.keys(this.props.configs), index = 0; index < configKeys
+          .length; index++)
+          if (!this.props.configs[configKeys[index]].readonly) return !0;
         return !1
       }
       save() {
-        r.dispatch({
+        store.dispatch({
           type: "UPDATE_CONFIG",
           payload: this.state.config
         })
       }
       remove() {
-        r.dispatch({
+        store.dispatch({
           type: "REMOVE_CONFIG",
           payload: this.state.config.id
         })
       }
       create() {
-        var e = "" + Date.now(),
-          t = {
-            id: e,
+        var newId = "" + Date.now(),
+          newConfig = {
+            id: newId,
             title: weh._("custom_output"),
             ext: "xxx",
             readonly: !1,
             params: {}
           };
         this.setState({
-          configId: e,
-          config: t
+          configId: newId,
+          config: newConfig
         })
       }
-      renderParameterList(e) {
+      renderParameterList(section) {
         if (!this.state.config.params) return null;
-        var t = this;
-        let o = [{
+        var self = this;
+        let booleanOptions = [{
           label: weh._("yes"),
           value: !0
         }, {
           label: weh._("no"),
           value: !1
         }];
-        var i = this.getParameters()[e],
-          l = [];
-        return this.state.config.readonly ? i.forEach(a => {
-          var n = "";
-          if (a.paramValue) {
-            if (n = t.state.config.params[a.paramValue],
-              typeof n > "u") return
-          } else if (a.configValue && (n = t.state.config[a
-              .configValue], typeof n > "u" || n === null))
+        var params = this.getParameters()[section],
+          elements = [];
+        return this.state.config.readonly ? params.forEach(param => {
+          var value = "";
+          if (param.paramValue) {
+            if (value = self.state.config.params[param.paramValue],
+              typeof value > "u") return
+          } else if (param.configValue && (value = self.state.config[param
+              .configValue], typeof value > "u" || value === null))
             return;
-          l.push(React.createElement("div", {
-            key: a.paramValue || a.configValue,
+          elements.push(React.createElement("div", {
+            key: param.paramValue || param.configValue,
             className: "param"
           }, React.createElement("div", {
             className: "paramname"
-          }, weh._(a.label)), React.createElement(
+          }, weh._(param.label)), React.createElement(
           "div", {
             className: "paramvalue"
-          }, n)))
-        }) : i.forEach(a => {
-          var n = "",
-            f = !0;
-          a.paramValue ? (n = t.state.config.params[a
-              .paramValue], typeof n > "u" && (f = !1)) : a
-            .configValue && (n = t.state.config[a
-              .configValue]), a.type == "boolean" && (n = !!
-            n);
-          var p = [],
-            u;
-          (a.type == "select" || a.type == "boolean") && (p =
-            a.options, a.type == "boolean" && (p = o), p = p
-            .map(c => {
-              var s, v;
-              return typeof c == "object" ? (s = c.value,
-                  v = c.label) : (s = c, v = c), typeof u >
-                "u" && (u = s), React.createElement(
+          }, value)))
+        }) : params.forEach(param => {
+          var value = "",
+            isEnabled = !0;
+          param.paramValue ? (value = self.state.config.params[param
+              .paramValue], typeof value > "u" && (isEnabled = !1)) : param
+            .configValue && (value = self.state.config[param
+              .configValue]), param.type == "boolean" && (value = !!
+            value);
+          var optionElements = [],
+            firstValue;
+          (param.type == "select" || param.type == "boolean") && (optionElements =
+            param.options, param.type == "boolean" && (optionElements = booleanOptions), optionElements = optionElements
+            .map(option => {
+              var optionValue, optionLabel;
+              return typeof option == "object" ? (optionValue = option.value,
+                  optionLabel = option.label) : (optionValue = option, optionLabel = option), typeof firstValue >
+                "u" && (firstValue = optionValue), React.createElement(
                   "option", {
-                    key: "" + s,
-                    value: s
-                  }, v)
+                    key: "" + optionValue,
+                    value: optionValue
+                  }, optionLabel)
             }));
 
-          function w() {
-            return c => {
-              var s = Object.assign({}, t.state.config
+          function makeToggleHandler() {
+            return event => {
+              var newParams = Object.assign({}, self.state.config
                 .params);
-              if (c.target.checked) switch (a.type) {
+              if (event.target.checked) switch (param.type) {
                 case "string":
-                  s[a.paramValue] = "";
+                  newParams[param.paramValue] = "";
                   break;
                 case "select":
-                  s[a.paramValue] = u;
+                  newParams[param.paramValue] = firstValue;
                   break;
                 case "boolean":
-                  s[a.paramValue] = !0;
+                  newParams[param.paramValue] = !0;
                   break
-              } else delete s[a.paramValue];
-              t.setState({
-                config: Object.assign({}, t.state
+              } else delete newParams[param.paramValue];
+              self.setState({
+                config: Object.assign({}, self.state
                   .config, {
-                    params: s
+                    params: newParams
                   })
               })
             }
           }
 
-          function m() {
-            return c => {
-              var s = Object.assign({}, t.state.config);
-              a.paramValue ? (s.params = Object.assign({}, s
-                    .params), s.params[a.paramValue] = c
-                  .target.value) : s[a.configValue] = c
-                .target.value, a.type == "boolean" && (s[a
-                    .configValue] = s[a.configValue] ===
-                  "true"), t.setState({
-                  config: s
+          function makeValueHandler() {
+            return event => {
+              var newConfig = Object.assign({}, self.state.config);
+              param.paramValue ? (newConfig.params = Object.assign({}, newConfig
+                    .params), newConfig.params[param.paramValue] = event
+                  .target.value) : newConfig[param.configValue] = event
+                .target.value, param.type == "boolean" && (newConfig[param
+                    .configValue] = newConfig[param.configValue] ===
+                  "true"), self.setState({
+                  config: newConfig
                 })
             }
           }
-          var y = a.style || {};
-          (n === null || typeof n > "u") && (n = ""), l.push(
+          var inputStyle = param.style || {};
+          (value === null || typeof value > "u") && (value = ""), elements.push(
             React.createElement("div", {
-              key: "" + a.paramValue + "/" + a
+              key: "" + param.paramValue + "/" + param
                 .configValue,
               className: "param"
             }, React.createElement("div", {
               className: "paramname"
-            }, weh._(a.label)), React.createElement(
+            }, weh._(param.label)), React.createElement(
               "div", {
                 className: "paramedit"
               }, React.createElement("span", {
                 style: {
-                  display: f ? "none" : "inline-block"
+                  display: isEnabled ? "none" : "inline-block"
                 }
-              }, n), a.type === "string" && React
+              }, value), param.type === "string" && React
               .createElement("div", {
                 style: {
-                  display: f ? "inline-block" : "none"
+                  display: isEnabled ? "inline-block" : "none"
                 }
               }, React.createElement("input", {
-                value: n,
-                onChange: m(),
-                style: y,
+                value: value,
+                onChange: makeValueHandler(),
+                style: inputStyle,
                 type: "text"
-              })), (a.type === "select" || a.type ==
+              })), (param.type === "select" || param.type ==
                 "boolean") && React.createElement("div", {
                 style: {
-                  display: f ? "inline-block" : "none"
+                  display: isEnabled ? "inline-block" : "none"
                 }
               }, React.createElement("select", {
-                onChange: m(),
-                style: y,
+                onChange: makeValueHandler(),
+                style: inputStyle,
                 className: "form-control",
-                value: n
-              }, p)), a.paramValue && React.createElement(
+                value: value
+              }, optionElements)), param.paramValue && React.createElement(
                 "input", {
-                  onChange: w(),
+                  onChange: makeToggleHandler(),
                   type: "checkbox",
-                  checked: f
+                  checked: isEnabled
                 }))))
         }), React.createElement("div", {
           className: "paramlist"
-        }, l)
+        }, elements)
       }
       render() {
-        var e = this,
-          t = Object.keys(this.props.configs)
-          .sort((i, l) => (i = e.props.configs[i], l = e.props
-            .configs[l], i.title < l.title ? -1 : i.title > l
+        var self = this,
+          configOptions = Object.keys(this.props.configs)
+          .sort((keyA, keyB) => (keyA = self.props.configs[keyA], keyB = self.props
+            .configs[keyB], keyA.title < keyB.title ? -1 : keyA.title > keyB
             .title ? 1 : 0))
-          .map(i => React.createElement("option", {
-            key: i,
-            value: i
-          }, e.props.configs[i].title)),
-          o = this.shouldSave();
+          .map(configKey => React.createElement("option", {
+            key: configKey,
+            value: configKey
+          }, self.props.configs[configKey].title)),
+          canSave = this.shouldSave();
         return React.createElement("div", {
             className: "convconfs"
           }, React.createElement("div", {
@@ -377,7 +377,7 @@
               }, !this.props.configs[this.state.configId] &&
               React.createElement("option", {
                 value: "this.state.configId"
-              }, this.state.config.title), t)), React
+              }, this.state.config.title), configOptions)), React
             .createElement("div", {
               className: "confname"
             }, React.createElement("input", {
@@ -390,11 +390,11 @@
               className: "form-control"
             })), React.createElement("div", {
                 className: "btn-group btn-primary"
-              }, o && React.createElement(Button, {
+              }, canSave && React.createElement(Button, {
                 onClick: this.local("save"),
                 type: "button",
                 color: "success"
-              }, weh._("convconf_save")), !o && React
+              }, weh._("convconf_save")), !canSave && React
               .createElement(Button, {
                 onClick: this.local("duplicate"),
                 type: "button",
@@ -405,7 +405,7 @@
                 toggle: this.local("toggleActionButtons")
               }, React.createElement(DropdownToggle, {
                 caret: !0,
-                color: o ? "success" : "secondary"
+                color: canSave ? "success" : "secondary"
               }), React.createElement(DropdownMenu, null,
                 React.createElement(DropdownItem, null), React
                 .createElement(DropdownItem, {
@@ -466,21 +466,21 @@
               onClick: this.local("doReset")
             }, weh._("convconf_reset")), " ")))
       }
-      getEncodingCodecs(e) {
-        return this.props.codecs.filter(t => t.t = e)
-          .map(t => t.name)
+      getEncodingCodecs(codecType) {
+        return this.props.codecs.filter(codec => codec.t = codecType)
+          .map(codec => codec.name)
       }
       getEncodingFormats() {
-        return this.props.formats.filter(e => !!e.e)
-          .map(e => e.name)
+        return this.props.formats.filter(format => !!format.e)
+          .map(format => format.name)
       }
       getParameters() {
-        let e = ["vcd", "svcd", "dvd", "dv", "dv50"],
-          t = ["", "pal-", "ntsc-", "film-"];
-        var o = [];
-        return e.forEach(l => {
-          t.forEach(a => {
-            o.push(a + l)
+        let baseTargets = ["vcd", "svcd", "dvd", "dv", "dv50"],
+          targetPrefixes = ["", "pal-", "ntsc-", "film-"];
+        var targets = [];
+        return baseTargets.forEach(baseTarget => {
+          targetPrefixes.forEach(prefix => {
+            targets.push(prefix + baseTarget)
           })
         }), {
           general: [{
@@ -514,7 +514,7 @@
             label: "convconf_target",
             type: "select",
             paramValue: "target",
-            options: o
+            options: targets
           }, {
             label: "convconf_rate",
             type: "string",
@@ -592,14 +592,14 @@
       }
     });
     render(React.createElement(Provider, {
-        store: r
+        store: store
       }, React.createElement("div", {
         className: "weh-shf"
       }, React.createElement("div", null, React.createElement(
         WehHeader, {
           title: weh._("conversion_outputs")
         }), React.createElement("main", null, React
-        .createElement(_, null))))), document.getElementById("root")),
+        .createElement(ConvOutputEditor, null))))), document.getElementById("root")),
       weh.setPageTitle(weh._("conversion_outputs"))
   });
 })();

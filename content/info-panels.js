@@ -1,43 +1,43 @@
 "use strict";
 (() => {
-  var l = Object.defineProperty;
-  var w = Object.getOwnPropertyDescriptor;
-  var _ = Object.getOwnPropertyNames;
-  var f = Object.prototype.hasOwnProperty;
-  var c = (i, t) => () => (i && (t = i(i = 0)), t);
-  var g = (i, t) => () => (t || i((t = {
+  var defineProperty = Object.defineProperty;
+  var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var getOwnPropNames = Object.getOwnPropertyNames;
+  var hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+  var defineLazyModule = (initModule, cachedModule) => () => (initModule && (cachedModule = initModule(initModule = 0)), cachedModule);
+  var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
         exports: {}
       })
-      .exports, t), t.exports),
-    d = (i, t) => {
-      for (var e in t) l(i, e, {
-        get: t[e],
+      .exports, cachedExports), cachedExports.exports),
+    defineExports = (target, source) => {
+      for (var key in source) defineProperty(target, key, {
+        get: source[key],
         enumerable: !0
       })
     },
-    y = (i, t, e, s) => {
-      if (t && typeof t == "object" || typeof t == "function")
-        for (let n of _(t)) !f.call(i, n) && n !== e && l(i, n, {
-          get: () => t[n],
-          enumerable: !(s = w(t, n)) || s.enumerable
+    copyProps = (targetObj, from, except, desc) => {
+      if (from && typeof from == "object" || typeof from == "function")
+        for (let key of getOwnPropNames(from)) !hasOwnPropertyRef.call(targetObj, key) && key !== except && defineProperty(targetObj, key, {
+          get: () => from[key],
+          enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable
         });
-      return i
+      return targetObj
     };
-  var h = i => y(l({}, "__esModule", {
+  var toCommonjs = mod => copyProps(defineProperty({}, "__esModule", {
     value: !0
-  }), i);
-  var u = {};
-  d(u, {
-    info: () => k
+  }), mod);
+  var versionNs = {};
+  defineExports(versionNs, {
+    info: () => versionInfo
   });
-  var k, p = c(() => {
+  var versionInfo, initVersion = defineLazyModule(() => {
     "use strict";
-    k = {
+    versionInfo = {
       lastVersion: "2.0.19"
     }
   });
-  var v = g((N, C) => {
-    C.exports = {
+  var requireBuildInfo = defineCommonjsModule((buildExports, buildModule) => {
+    buildModule.exports = {
       prod: !0,
       channel: "stable",
       buildDate: "2024-10-15",
@@ -49,15 +49,15 @@
       }
     }
   });
-  var b = {};
-  d(b, {
-    LicInfoPanelComponent: () => o
+  var licPanelNs = {};
+  defineExports(licPanelNs, {
+    LicInfoPanelComponent: () => LicInfoPanelComponent
   });
-  var o, m = c(() => {
+  var LicInfoPanelComponent, initLicPanel = defineLazyModule(() => {
     "use strict";
-    o = class extends React.Component {
-      constructor(t) {
-        super(t), this.state = {
+    LicInfoPanelComponent = class extends React.Component {
+      constructor(props) {
+        super(props), this.state = {
           status: "verifying",
           email: null,
           key: null,
@@ -69,40 +69,40 @@
         this.check()
       }
       check() {
-        var t = this;
-        t.setState({
+        var self = this;
+        self.setState({
             status: "verifying",
             email: null,
             key: null
           }), weh.rpc.call("checkLicense")
-          .then(e => {
-            t.setState(e)
+          .then(license => {
+            self.setState(license)
           })
-          .catch(e => {
-            console.error("Error checking license", e)
+          .catch(error => {
+            console.error("Error checking license", error)
           })
       }
       onLicKeyChanged() {
-        var t = this;
-        return e => {
-          t.setState({
-            editKey: e.target.value
+        var self = this;
+        return event => {
+          self.setState({
+            editKey: event.target.value
           })
         }
       }
       onLicKeyPressed() {
-        var t = this;
-        return e => {
-          e.key == "Enter" ? t.register() : e.key == "Escape" && t
+        var self = this;
+        return event => {
+          event.key == "Enter" ? self.register() : event.key == "Escape" && self
             .setState({
               editing: !1
             })
         }
       }
       registerEdit() {
-        var t = this;
+        var self = this;
         return () => {
-          t.setState({
+          self.setState({
             editing: !0,
             editKey: ""
           })
@@ -110,46 +110,46 @@
       }
       getLicense() {
         return () => {
-          let t = v()
+          let browserTarget = requireBuildInfo()
             .buildOptions.browser,
-            s = "https://www.downloadhelper.net/convert" + (t ?
-              "?browser=" + encodeURIComponent(t) : "");
-          weh.rpc.call("goto", s)
+            convertUrl = "https://www.downloadhelper.net/convert" + (browserTarget ?
+              "?browser=" + encodeURIComponent(browserTarget) : "");
+          weh.rpc.call("goto", convertUrl)
         }
       }
       cancelRegister() {
-        var t = this;
+        var self = this;
         return () => {
-          t.setState({
+          self.setState({
             editing: !1
           })
         }
       }
       register() {
-        var t = this;
+        var self = this;
         this.setState({
             editing: !1,
             status: "verifying"
           }), this.validate(this.state.editKey.trim())
-          .catch(e => {
-            t.setState({
+          .catch(error => {
+            self.setState({
               status: "error",
-              error: e.message
+              error: error.message
             })
           })
       }
-      validate(t) {
-        var e = this;
-        return weh.rpc.call("validateLicense", t)
-          .then(s => {
-            s && s.status == "nocoapp" ? e.setState({
+      validate(key) {
+        var self = this;
+        return weh.rpc.call("validateLicense", key)
+          .then(result => {
+            result && result.status == "nocoapp" ? self.setState({
               status: "nocoapp",
-              key: s.key
-            }) : e.check()
+              key: result.key
+            }) : self.check()
           })
       }
       render() {
-        let t = {
+        let statusesWithKey = {
           unverified: 1,
           locked: 1,
           accepted: 1,
@@ -158,8 +158,8 @@
           error: 1,
           mismatch: 1
         };
-        var e = weh._("lic_status_" + this.state.status),
-          s = React.createElement("div", {
+        var statusLabel = weh._("lic_status_" + this.state.status),
+          panel = React.createElement("div", {
               className: "lic-info-panel"
             }, this.state.editing && React.createElement("div", {
               className: "input-license"
@@ -168,7 +168,7 @@
               value: this.state.editKey,
               onChange: this.onLicKeyChanged(),
               onKeyDown: this.onLicKeyPressed()
-            })), !this.state.editing && t[this.state.status] && this
+            })), !this.state.editing && statusesWithKey[this.state.status] && this
             .state.key && React.createElement("div", {
               className: "license-details"
             }, React.createElement("table", null, React
@@ -235,34 +235,34 @@
                 }, weh._("validate_license"))))));
         return React.createElement("div", null, React.createElement(
           CollapsibleSection, {
-            title: e,
-            content: s,
+            title: statusLabel,
+            content: panel,
             open: this.props.open
           }))
       }
     };
-    window.LicInfoPanel = o
+    window.LicInfoPanel = LicInfoPanelComponent
   });
   weh.is_safe.then(() => {
     let {
-      info: i
-    } = (p(), h(u));
-    m(), window.CollapsibleSection = class extends React.Component {
-      constructor(t) {
-        super(t), this.state = {
+      info: versionExport
+    } = (initVersion(), toCommonjs(versionNs));
+    initLicPanel(), window.CollapsibleSection = class extends React.Component {
+      constructor(props) {
+        super(props), this.state = {
           open: this.props.open || !1
         }
       }
-      componentWillReceiveProps(t) {
-        t.open != this.props.open && this.setState({
-          open: !!t.open
+      componentWillReceiveProps(nextProps) {
+        nextProps.open != this.props.open && this.setState({
+          open: !!nextProps.open
         })
       }
       toggle() {
-        var t = this;
+        var self = this;
         return () => {
-          t.setState({
-            open: !t.state.open
+          self.setState({
+            open: !self.state.open
           })
         }
       }
@@ -284,28 +284,28 @@
           CardBody, null, this.props.content))))
       }
     }, window.AddonInfoPanel = class extends React.Component {
-      constructor(t) {
-        super(t), this.state = {
+      constructor(props) {
+        super(props), this.state = {
           manifest: browser.runtime.getManifest(),
           build: null
         };
-        var e = this;
+        var self = this;
         weh.rpc.call("getBuild")
-          .then(s => {
-            e.setState({
-              build: s
+          .then(build => {
+            self.setState({
+              build: build
             })
           })
       }
       render() {
-        var t = this;
-        let e = this.state.manifest.version_name || this.state
+        var self = this;
+        let version = this.state.manifest.version_name || this.state
           .manifest.version,
-          s = this.state.build ? " (" + this.state.build.channel +
+          channelSuffix = this.state.build ? " (" + this.state.build.channel +
           ")" : "",
-          n = React.createElement("div", null, React.createElement(
+          content = React.createElement("div", null, React.createElement(
               "div", null, this.state.manifest.name), React
-            .createElement("div", null, weh._("version", e) + s),
+            .createElement("div", null, weh._("version", version) + channelSuffix),
             React.createElement("div", null, weh._("browser_locale",
               browser.i18n.getUILanguage())), this.state.build &&
             React.createElement("div", null, React.createElement(
@@ -318,41 +318,41 @@
                 "build_options", Object.keys(this.state.build
                   .buildOptions)
                 .sort()
-                .map(r => r + "=" + t.state.build.buildOptions[r])
+                .map(optionKey => optionKey + "=" + self.state.build.buildOptions[optionKey])
                 .join(", "))))),
-          a = this.state.manifest.name + " " + e + s;
+          title = this.state.manifest.name + " " + version + channelSuffix;
         return React.createElement(CollapsibleSection, {
-          title: a,
-          content: n
+          title: title,
+          content: content
         })
       }
     }, window.PlatformInfoPanel = class extends React.Component {
-      constructor(t) {
-        super(t), this.state = {
+      constructor(props) {
+        super(props), this.state = {
           platform: null,
           browser: null
         };
-        var e = this;
+        var self = this;
         browser.runtime.getBrowserInfo && browser.runtime
           .getBrowserInfo()
-          .then(s => {
-            e.setState({
-              browser: s
+          .then(browserInfo => {
+            self.setState({
+              browser: browserInfo
             })
           }), browser.runtime.getPlatformInfo()
-          .then(s => {
-            e.setState({
-              platform: s
+          .then(platformInfo => {
+            self.setState({
+              platform: platformInfo
             })
           })
       }
-      capitalize(t) {
-        return t.substring(0, 1)
-          .toUpperCase() + t.substring(1)
+      capitalize(text) {
+        return text.substring(0, 1)
+          .toUpperCase() + text.substring(1)
       }
       render() {
-        let t = weh._("platform"),
-          e = React.createElement("div", null, this.state.platform &&
+        let title = weh._("platform"),
+          content = React.createElement("div", null, this.state.platform &&
             React.createElement("div", null, weh._("platform_info", [
               this.capitalize(this.state.platform.os), this.state
               .platform.arch
@@ -362,13 +362,13 @@
               ])) || React.createElement("div", null, navigator
               .userAgent));
         return React.createElement(CollapsibleSection, {
-          title: t,
-          content: e
+          title: title,
+          content: content
         })
       }
     }, window.CoAppInfoPanel = class extends React.Component {
-      constructor(t) {
-        super(t), this.state = {
+      constructor(props) {
+        super(props), this.state = {
           status: null,
           info: null,
           error: null
@@ -377,52 +377,52 @@
       componentWillMount() {
         this.check()
       }
-      async check(t) {
-        var e = this;
-        let s = await weh.prefs;
-        e.setState({
+      async check(restart) {
+        var self = this;
+        let prefs = await weh.prefs;
+        self.setState({
             status: null,
             info: null,
             error: null
           }), Promise.resolve()
           .then(() => {
-            if (t) return weh.rpc.call("coappProxy", "quit")
+            if (restart) return weh.rpc.call("coappProxy", "quit")
               .catch(() => {})
-              .then(() => new Promise((n, a) => {
+              .then(() => new Promise((resolve, reject) => {
                 setTimeout(() => {
-                  n()
-                }, s.coappRestartDelay)
+                  resolve()
+                }, prefs.coappRestartDelay)
               }))
           })
           .then(() => {
             weh.rpc.call("checkCoApp")
-              .then(n => {
-                e.setState(Object.assign({
+              .then(status => {
+                self.setState(Object.assign({
                   status: null,
                   info: null,
                   error: null
-                }, n))
+                }, status))
               })
           })
       }
-      isMinimumVersion(t, e) {
-        for (var s = t.split(".")
-            .map(r => parseInt(r)), n = e.split(".")
-            .map(r => parseInt(r)), a = 0; a < s.length; a++) {
-          if (typeof n[a] > "u" || s[a] > n[a]) return !0;
-          if (s[a] < n[a]) return !1
+      isMinimumVersion(version, minVersion) {
+        for (var versionParts = version.split(".")
+            .map(part => parseInt(part)), minParts = minVersion.split(".")
+            .map(part => parseInt(part)), index = 0; index < versionParts.length; index++) {
+          if (typeof minParts[index] > "u" || versionParts[index] > minParts[index]) return !0;
+          if (versionParts[index] < minParts[index]) return !1
         }
         return !0
       }
       render() {
-        var t = !1,
-          e;
-        this.state.status === null ? e = weh._("coapp_unchecked") :
+        var isOutdated = !1,
+          statusLabel;
+        this.state.status === null ? statusLabel = weh._("coapp_unchecked") :
           this.state.status ? this.isMinimumVersion(this.state.info
-            .version, i.lastVersion) ? e = weh._("coapp_installed") :
-          (e = weh._("coapp_outdated"), t = !0) : e = weh._(
+            .version, versionExport.lastVersion) ? statusLabel = weh._("coapp_installed") :
+          (statusLabel = weh._("coapp_outdated"), isOutdated = !0) : statusLabel = weh._(
             "coapp_not_installed");
-        var s = React.createElement("div", null, this.state.error &&
+        var panel = React.createElement("div", null, this.state.error &&
           React.createElement("div", null, weh._("coapp_error"),
             "  ", React.createElement("em", null, this.state.error
               .message || this.state.error), ". ", React
@@ -433,8 +433,8 @@
           .createElement("div", null, React.createElement("div",
             null, weh._("coapp_found"), "  ", React.createElement(
               "em", null, this.state.info.displayName, " ", this
-              .state.info.version)), t && React.createElement(
-            "div", null, weh._("coapp_latest_version", i
+              .state.info.version)), isOutdated && React.createElement(
+            "div", null, weh._("coapp_latest_version", versionExport
               .lastVersion)), React.createElement("div", null, weh
             ._("coapp_path"), "  ", React.createElement("em",
               null, this.state.info.binary))), React.createElement(
@@ -447,15 +447,15 @@
             .createElement("button", {
               className: "btn btn-outline-primary",
               onClick: () => weh.rpc.call("installCoApp")
-            }, weh._("coapp_install")), t && React.createElement(
+            }, weh._("coapp_install")), isOutdated && React.createElement(
               "button", {
                 className: "btn btn-outline-primary",
                 onClick: () => weh.rpc.call("installCoApp")
               }, weh._("coapp_update"))));
         return React.createElement("div", null, React.createElement(
           CollapsibleSection, {
-            title: e,
-            content: s
+            title: statusLabel,
+            content: panel
           }))
       }
     }

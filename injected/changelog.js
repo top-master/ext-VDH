@@ -1,51 +1,51 @@
 "use strict";
 (() => {
-  var W = Object.create;
-  var R = Object.defineProperty;
-  var I = Object.getOwnPropertyDescriptor;
-  var D = Object.getOwnPropertyNames;
-  var U = Object.getPrototypeOf,
-    z = Object.prototype.hasOwnProperty;
-  var G = (m, t) => () => (t || m((t = {
+  var objectCreate = Object.create;
+  var defineProperty = Object.defineProperty;
+  var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var getOwnPropNames = Object.getOwnPropertyNames;
+  var getPrototypeOf = Object.getPrototypeOf,
+    hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+  var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
       exports: {}
     })
-    .exports, t), t.exports);
-  var Z = (m, t, c, u) => {
-    if (t && typeof t == "object" || typeof t == "function")
-      for (let d of D(t)) !z.call(m, d) && d !== c && R(m, d, {
-        get: () => t[d],
-        enumerable: !(u = I(t, d)) || u.enumerable
+    .exports, cachedExports), cachedExports.exports);
+  var copyProps = (targetObj, from, except, desc) => {
+    if (from && typeof from == "object" || typeof from == "function")
+      for (let key of getOwnPropNames(from)) !hasOwnPropertyRef.call(targetObj, key) && key !== except && defineProperty(targetObj, key, {
+        get: () => from[key],
+        enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable
       });
-    return m
+    return targetObj
   };
-  var H = (m, t, c) => (c = m != null ? W(U(m)) : {}, Z(t || !m || !m
-    .__esModule ? R(c, "default", {
-      value: m,
+  var toEsm = (mod, isNodeMode, target) => (target = mod != null ? objectCreate(getPrototypeOf(mod)) : {}, copyProps(isNodeMode || !mod || !mod
+    .__esModule ? defineProperty(target, "default", {
+      value: mod,
       enumerable: !0
-    }) : c, m));
-  var L = G((C, F) => {
-    (function(m, t) {
+    }) : target, mod));
+  var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
+    (function(globalScope, factory) {
       if (typeof define == "function" && define.amd) define(
-        "webextension-polyfill", ["module"], t);
-      else if (typeof C < "u") t(F);
+        "webextension-polyfill", ["module"], factory);
+      else if (typeof polyfillExports < "u") factory(polyfillModule);
       else {
-        var c = {
+        var moduleShim = {
           exports: {}
         };
-        t(c), m.browser = c.exports
+        factory(moduleShim), globalScope.browser = moduleShim.exports
       }
     })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self :
-      C,
-      function(m) {
+      polyfillExports,
+      function(browserGlobal) {
         "use strict";
         if (!globalThis.chrome?.runtime?.id) throw new Error(
           "This script should only be loaded in a browser extension.");
         if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
             globalThis.browser) !== Object.prototype) {
-          let t =
+          let messagePortClosedMessage =
             "The message port closed before a response was received.",
-            c = u => {
-              let d = {
+            wrapApis = chromeApi => {
+              let apiMetadata = {
                 alarms: {
                   clear: {
                     minArgs: 0,
@@ -717,206 +717,206 @@
                   }
                 }
               };
-              if (Object.keys(d)
+              if (Object.keys(apiMetadata)
                 .length === 0) throw new Error(
                 "api-metadata.json has not been included in browser-polyfill"
                 );
-              class E extends WeakMap {
-                constructor(s, n = void 0) {
-                  super(n), this.createItem = s
+              class DefaultWeakMap extends WeakMap {
+                constructor(createItem, entries = void 0) {
+                  super(entries), this.createItem = createItem
                 }
-                get(s) {
-                  return this.has(s) || this.set(s, this.createItem(s)),
-                    super.get(s)
+                get(key) {
+                  return this.has(key) || this.set(key, this.createItem(key)),
+                    super.get(key)
                 }
               }
-              let O = e => e && typeof e == "object" && typeof e.then ==
+              let isThenable = value => value && typeof value == "object" && typeof value.then ==
                 "function",
-                M = (e, s) => (...n) => {
-                  u.runtime.lastError ? e.reject(new Error(u.runtime
-                      .lastError.message)) : s.singleCallbackArg || n
-                    .length <= 1 && s.singleCallbackArg !== !1 ? e
-                    .resolve(n[0]) : e.resolve(n)
+                makeCallback = (promiseCallbacks, metadata) => (...callbackArgs) => {
+                  chromeApi.runtime.lastError ? promiseCallbacks.reject(new Error(chromeApi.runtime
+                      .lastError.message)) : metadata.singleCallbackArg || callbackArgs
+                    .length <= 1 && metadata.singleCallbackArg !== !1 ? promiseCallbacks
+                    .resolve(callbackArgs[0]) : promiseCallbacks.resolve(callbackArgs)
                 },
-                h = e => e == 1 ? "argument" : "arguments",
-                $ = (e, s) => function(g, ...a) {
-                  if (a.length < s.minArgs) throw new Error(
-                    `Expected at least ${s.minArgs} ${h(s.minArgs)} for ${e}(), got ${a.length}`
+                pluralizeArgs = count => count == 1 ? "argument" : "arguments",
+                wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (a.length > s.maxArgs) throw new Error(
-                    `Expected at most ${s.maxArgs} ${h(s.maxArgs)} for ${e}(), got ${a.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((A, o) => {
-                    if (s.fallbackToNoCallback) try {
-                      g[e](...a, M({
-                        resolve: A,
-                        reject: o
-                      }, s))
-                    } catch (r) {
+                  return new Promise((resolve, reject) => {
+                    if (metadata.fallbackToNoCallback) try {
+                      apiTarget[name](...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
+                    } catch (error) {
                       console.warn(
-                          `${e} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                          r), g[e](...a), s.fallbackToNoCallback = !
-                        1, s.noCallback = !0, A()
-                    } else s.noCallback ? (g[e](...a), A()) : g[e](
-                      ...a, M({
-                        resolve: A,
-                        reject: o
-                      }, s))
+                          `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                          error), apiTarget[name](...args), metadata.fallbackToNoCallback = !
+                        1, metadata.noCallback = !0, resolve()
+                    } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](
+                      ...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
                   })
                 },
-                P = (e, s, n) => new Proxy(s, {
-                  apply(g, a, A) {
-                    return n.call(a, e, ...A)
+                wrapMethod = (target, method, wrapper) => new Proxy(method, {
+                  apply(fnTarget, thisArg, callArgs) {
+                    return wrapper.call(thisArg, target, ...callArgs)
                   }
                 }),
-                w = Function.call.bind(Object.prototype.hasOwnProperty),
-                p = (e, s = {}, n = {}) => {
-                  let g = Object.create(null),
-                    a = {
-                      has(o, r) {
-                        return r in e || r in g
+                hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty),
+                wrapObject = (target, wrappers = {}, metadata = {}) => {
+                  let cache = Object.create(null),
+                    handler = {
+                      has(proxyTarget, prop) {
+                        return prop in target || prop in cache
                       },
-                      get(o, r, l) {
-                        if (r in g) return g[r];
-                        if (!(r in e)) return;
-                        let i = e[r];
-                        if (typeof i == "function")
-                          if (typeof s[r] == "function") i = P(e, e[r],
-                            s[r]);
-                          else if (w(n, r)) {
-                          let f = $(r, n[r]);
-                          i = P(e, e[r], f)
-                        } else i = i.bind(e);
-                        else if (typeof i == "object" && i !== null && (
-                            w(s, r) || w(n, r))) i = p(i, s[r], n[r]);
-                        else if (w(n, "*")) i = p(i, s[r], n["*"]);
-                        else return Object.defineProperty(g, r, {
+                      get(proxyTarget, prop, receiver) {
+                        if (prop in cache) return cache[prop];
+                        if (!(prop in target)) return;
+                        let value = target[prop];
+                        if (typeof value == "function")
+                          if (typeof wrappers[prop] == "function") value = wrapMethod(target, target[prop],
+                            wrappers[prop]);
+                          else if (hasOwnProperty(metadata, prop)) {
+                          let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
+                          value = wrapMethod(target, target[prop], wrappedFn)
+                        } else value = value.bind(target);
+                        else if (typeof value == "object" && value !== null && (
+                            hasOwnProperty(wrappers, prop) || hasOwnProperty(metadata, prop))) value = wrapObject(value, wrappers[prop], metadata[prop]);
+                        else if (hasOwnProperty(metadata, "*")) value = wrapObject(value, wrappers[prop], metadata["*"]);
+                        else return Object.defineProperty(cache, prop, {
                           configurable: !0,
                           enumerable: !0,
                           get() {
-                            return e[r]
+                            return target[prop]
                           },
-                          set(f) {
-                            e[r] = f
+                          set(newValue) {
+                            target[prop] = newValue
                           }
-                        }), i;
-                        return g[r] = i, i
+                        }), value;
+                        return cache[prop] = value, value
                       },
-                      set(o, r, l, i) {
-                        return r in g ? g[r] = l : e[r] = l, !0
+                      set(proxyTarget, prop, value, receiver) {
+                        return prop in cache ? cache[prop] = value : target[prop] = value, !0
                       },
-                      defineProperty(o, r, l) {
-                        return Reflect.defineProperty(g, r, l)
+                      defineProperty(proxyTarget, prop, desc) {
+                        return Reflect.defineProperty(cache, prop, desc)
                       },
-                      deleteProperty(o, r) {
-                        return Reflect.deleteProperty(g, r)
+                      deleteProperty(proxyTarget, prop) {
+                        return Reflect.deleteProperty(cache, prop)
                       }
                     },
-                    A = Object.create(e);
-                  return new Proxy(A, a)
+                    proxyBase = Object.create(target);
+                  return new Proxy(proxyBase, handler)
                 },
-                k = e => ({
-                  addListener(s, n, ...g) {
-                    s.addListener(e.get(n), ...g)
+                wrapEvent = wrapperMap => ({
+                  addListener(target, listener, ...args) {
+                    target.addListener(wrapperMap.get(listener), ...args)
                   },
-                  hasListener(s, n) {
-                    return s.hasListener(e.get(n))
+                  hasListener(target, listener) {
+                    return target.hasListener(wrapperMap.get(listener))
                   },
-                  removeListener(s, n) {
-                    s.removeListener(e.get(n))
+                  removeListener(target, listener) {
+                    target.removeListener(wrapperMap.get(listener))
                   }
                 }),
-                j = new E(e => typeof e != "function" ? e : function(n) {
-                  let g = p(n, {}, {
+                onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
+                  let wrappedRequest = wrapObject(request, {}, {
                     getContent: {
                       minArgs: 0,
                       maxArgs: 0
                     }
                   });
-                  e(g)
+                  listener(wrappedRequest)
                 }),
-                S = new E(e => typeof e != "function" ? e : function(n, g,
-                  a) {
-                  let A = !1,
-                    o, r = new Promise(b => {
-                      o = function(x) {
-                        A = !0, b(x)
+                onMessageWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(message, sender,
+                  sendResponse) {
+                  let responseSent = !1,
+                    resolveResponse, responsePromise = new Promise(resolvePromise => {
+                      resolveResponse = function(response) {
+                        responseSent = !0, resolvePromise(response)
                       }
                     }),
-                    l;
+                    result;
                   try {
-                    l = e(n, g, o)
-                  } catch (b) {
-                    l = Promise.reject(b)
+                    result = listener(message, sender, resolveResponse)
+                  } catch (error) {
+                    result = Promise.reject(error)
                   }
-                  let i = l !== !0 && O(l);
-                  if (l !== !0 && !i && !A) return !1;
-                  let f = b => {
-                    b.then(x => {
-                        a(x)
-                      }, x => {
-                        let T;
-                        x && (x instanceof Error || typeof x
-                            .message == "string") ? T = x.message :
-                          T = "An unexpected error occurred", a({
+                  let resultIsThenable = result !== !0 && isThenable(result);
+                  if (result !== !0 && !resultIsThenable && !responseSent) return !1;
+                  let sendResolvedResponse = resultPromise => {
+                    resultPromise.then(response => {
+                        sendResponse(response)
+                      }, error => {
+                        let errorMessage;
+                        error && (error instanceof Error || typeof error
+                            .message == "string") ? errorMessage = error.message :
+                          errorMessage = "An unexpected error occurred", sendResponse({
                             __mozWebExtensionPolyfillReject__: !0,
-                            message: T
+                            message: errorMessage
                           })
                       })
-                      .catch(x => {
+                      .catch(replyError => {
                         console.error(
                           "Failed to send onMessage rejected reply",
-                          x)
+                          replyError)
                       })
                   };
-                  return f(i ? l : r), !0
+                  return sendResolvedResponse(resultIsThenable ? result : responsePromise), !0
                 }),
-                B = ({
-                  reject: e,
-                  resolve: s
-                }, n) => {
-                  u.runtime.lastError ? u.runtime.lastError.message ===
-                    t ? s() : e(new Error(u.runtime.lastError.message)) :
-                    n && n.__mozWebExtensionPolyfillReject__ ? e(
-                      new Error(n.message)) : s(n)
+                processResponse = ({
+                  reject: reject,
+                  resolve: resolve
+                }, response) => {
+                  chromeApi.runtime.lastError ? chromeApi.runtime.lastError.message ===
+                    messagePortClosedMessage ? resolve() : reject(new Error(chromeApi.runtime.lastError.message)) :
+                    response && response.__mozWebExtensionPolyfillReject__ ? reject(
+                      new Error(response.message)) : resolve(response)
                 },
-                N = (e, s, n, ...g) => {
-                  if (g.length < s.minArgs) throw new Error(
-                    `Expected at least ${s.minArgs} ${h(s.minArgs)} for ${e}(), got ${g.length}`
+                wrapSendMessage = (name, metadata, apiTarget, ...args) => {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (g.length > s.maxArgs) throw new Error(
-                    `Expected at most ${s.maxArgs} ${h(s.maxArgs)} for ${e}(), got ${g.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((a, A) => {
-                    let o = B.bind(null, {
-                      resolve: a,
-                      reject: A
+                  return new Promise((resolve, reject) => {
+                    let boundCallback = processResponse.bind(null, {
+                      resolve: resolve,
+                      reject: reject
                     });
-                    g.push(o), n.sendMessage(...g)
+                    args.push(boundCallback), apiTarget.sendMessage(...args)
                   })
                 },
-                q = {
+                staticWrappers = {
                   devtools: {
                     network: {
-                      onRequestFinished: k(j)
+                      onRequestFinished: wrapEvent(onRequestFinishedWrappers)
                     }
                   },
                   runtime: {
-                    onMessage: k(S),
-                    onMessageExternal: k(S),
-                    sendMessage: N.bind(null, "sendMessage", {
+                    onMessage: wrapEvent(onMessageWrappers),
+                    onMessageExternal: wrapEvent(onMessageWrappers),
+                    sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                       minArgs: 1,
                       maxArgs: 3
                     })
                   },
                   tabs: {
-                    sendMessage: N.bind(null, "sendMessage", {
+                    sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                       minArgs: 2,
                       maxArgs: 3
                     })
                   }
                 },
-                y = {
+                settingMetadata = {
                   clear: {
                     minArgs: 1,
                     maxArgs: 1
@@ -930,33 +930,33 @@
                     maxArgs: 1
                   }
                 };
-              return d.privacy = {
+              return apiMetadata.privacy = {
                 network: {
-                  "*": y
+                  "*": settingMetadata
                 },
                 services: {
-                  "*": y
+                  "*": settingMetadata
                 },
                 websites: {
-                  "*": y
+                  "*": settingMetadata
                 }
-              }, p(u, q, d)
+              }, wrapObject(chromeApi, staticWrappers, apiMetadata)
             };
-          m.exports = c(chrome)
-        } else m.exports = globalThis.browser
+          browserGlobal.exports = wrapApis(chrome)
+        } else browserGlobal.exports = globalThis.browser
       })
   });
-  var v = H(L(), 1);
-  var _ = "google";
+  var browserPolyfill = toEsm(requirePolyfill(), 1);
+  var buildTarget = "google";
 
-  function K(m) {
-    v.default.runtime.sendMessage(m)
+  function sendToBackground(message) {
+    browserPolyfill.default.runtime.sendMessage(message)
   }
-  K("request_license_status");
-  v.default.runtime.onMessage.addListener(async m => {
-    if ("license_status" in m) {
-      let t = m.license_status;
-      _ == "mozilla" && ("unneeded" in t || "unset" in t) && document
+  sendToBackground("request_license_status");
+  browserPolyfill.default.runtime.onMessage.addListener(async message => {
+    if ("license_status" in message) {
+      let licenseStatus = message.license_status;
+      buildTarget == "mozilla" && ("unneeded" in licenseStatus || "unset" in licenseStatus) && document
         .body.classList.add("show-donation")
     }
   });

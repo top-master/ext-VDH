@@ -1,11 +1,11 @@
 "use strict";
 (() => {
-  var M = (r, e) => () => (e || r((e = {
+  var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
       exports: {}
     })
-    .exports, e), e.exports);
-  var I = M((ut, D) => {
-    D.exports = {
+    .exports, cachedExports), cachedExports.exports);
+  var configModule = defineCommonjsModule((moduleExports, moduleObject) => {
+    moduleObject.exports = {
       prod: !0,
       channel: "stable",
       buildDate: "2024-10-15",
@@ -18,20 +18,20 @@
     }
   });
 
-  function T(r) {
-    var e = String(r);
-    if (e === "[object Object]") try {
-      e = JSON.stringify(r)
+  function toDisplayString(sourceValue) {
+    var stringified = String(sourceValue);
+    if (stringified === "[object Object]") try {
+      stringified = JSON.stringify(sourceValue)
     } catch {}
-    return e
+    return stringified
   }
-  var C = function() {
-      function r() {}
-      return r.prototype.isSome = function() {
+  var NoneImpl = function() {
+      function NoneClass() {}
+      return NoneClass.prototype.isSome = function() {
         return !1
-      }, r.prototype.isNone = function() {
+      }, NoneClass.prototype.isNone = function() {
         return !0
-      }, r.prototype[Symbol.iterator] = function() {
+      }, NoneClass.prototype[Symbol.iterator] = function() {
         return {
           next: function() {
             return {
@@ -40,44 +40,44 @@
             }
           }
         }
-      }, r.prototype.unwrapOr = function(e) {
-        return e
-      }, r.prototype.expect = function(e) {
-        throw new Error("".concat(e))
-      }, r.prototype.unwrap = function() {
+      }, NoneClass.prototype.unwrapOr = function(fallbackValue) {
+        return fallbackValue
+      }, NoneClass.prototype.expect = function(errorMessage) {
+        throw new Error("".concat(errorMessage))
+      }, NoneClass.prototype.unwrap = function() {
         throw new Error("Tried to unwrap None")
-      }, r.prototype.map = function(e) {
+      }, NoneClass.prototype.map = function(mapFn) {
         return this
-      }, r.prototype.mapOr = function(e, o) {
-        return e
-      }, r.prototype.mapOrElse = function(e, o) {
-        return e()
-      }, r.prototype.or = function(e) {
-        return e
-      }, r.prototype.orElse = function(e) {
-        return e()
-      }, r.prototype.andThen = function(e) {
+      }, NoneClass.prototype.mapOr = function(defaultValue, mapFn) {
+        return defaultValue
+      }, NoneClass.prototype.mapOrElse = function(defaultFn, mapFn) {
+        return defaultFn()
+      }, NoneClass.prototype.or = function(alternative) {
+        return alternative
+      }, NoneClass.prototype.orElse = function(alternativeFn) {
+        return alternativeFn()
+      }, NoneClass.prototype.andThen = function(thenFn) {
         return this
-      }, r.prototype.toResult = function(e) {
-        return y(e)
-      }, r.prototype.toString = function() {
+      }, NoneClass.prototype.toResult = function(errorValue) {
+        return ErrResult(errorValue)
+      }, NoneClass.prototype.toString = function() {
         return "None"
-      }, r
+      }, NoneClass
     }(),
-    b = new C;
-  Object.freeze(b);
-  var H = function() {
-      function r(e) {
-        if (!(this instanceof r)) return new r(e);
-        this.value = e
+    noneSingleton = new NoneImpl;
+  Object.freeze(noneSingleton);
+  var SomeImpl = function() {
+      function SomeClass(wrappedValue) {
+        if (!(this instanceof SomeClass)) return new SomeClass(wrappedValue);
+        this.value = wrappedValue
       }
-      return r.prototype.isSome = function() {
+      return SomeClass.prototype.isSome = function() {
         return !0
-      }, r.prototype.isNone = function() {
+      }, SomeClass.prototype.isNone = function() {
         return !1
-      }, r.prototype[Symbol.iterator] = function() {
-        var e = Object(this.value);
-        return Symbol.iterator in e ? e[Symbol.iterator]() : {
+      }, SomeClass.prototype[Symbol.iterator] = function() {
+        var boxedValue = Object(this.value);
+        return Symbol.iterator in boxedValue ? boxedValue[Symbol.iterator]() : {
           next: function() {
             return {
               done: !0,
@@ -85,80 +85,80 @@
             }
           }
         }
-      }, r.prototype.unwrapOr = function(e) {
+      }, SomeClass.prototype.unwrapOr = function(fallbackValue) {
         return this.value
-      }, r.prototype.expect = function(e) {
+      }, SomeClass.prototype.expect = function(errorMessage) {
         return this.value
-      }, r.prototype.unwrap = function() {
+      }, SomeClass.prototype.unwrap = function() {
         return this.value
-      }, r.prototype.map = function(e) {
-        return v(e(this.value))
-      }, r.prototype.mapOr = function(e, o) {
-        return o(this.value)
-      }, r.prototype.mapOrElse = function(e, o) {
-        return o(this.value)
-      }, r.prototype.or = function(e) {
+      }, SomeClass.prototype.map = function(mapFn) {
+        return Some(mapFn(this.value))
+      }, SomeClass.prototype.mapOr = function(defaultValue, mapFn) {
+        return mapFn(this.value)
+      }, SomeClass.prototype.mapOrElse = function(defaultFn, mapFn) {
+        return mapFn(this.value)
+      }, SomeClass.prototype.or = function(alternative) {
         return this
-      }, r.prototype.orElse = function(e) {
+      }, SomeClass.prototype.orElse = function(alternativeFn) {
         return this
-      }, r.prototype.andThen = function(e) {
-        return e(this.value)
-      }, r.prototype.toResult = function(e) {
-        return m(this.value)
-      }, r.prototype.safeUnwrap = function() {
+      }, SomeClass.prototype.andThen = function(thenFn) {
+        return thenFn(this.value)
+      }, SomeClass.prototype.toResult = function(errorValue) {
+        return OkResult(this.value)
+      }, SomeClass.prototype.safeUnwrap = function() {
         return this.value
-      }, r.prototype.toString = function() {
-        return "Some(".concat(T(this.value), ")")
-      }, r.EMPTY = new r(void 0), r
+      }, SomeClass.prototype.toString = function() {
+        return "Some(".concat(toDisplayString(this.value), ")")
+      }, SomeClass.EMPTY = new SomeClass(void 0), SomeClass
     }(),
-    v = H,
-    E;
-  (function(r) {
-    function e() {
-      for (var u = [], s = 0; s < arguments.length; s++) u[s] = arguments[
-      s];
-      for (var p = [], h = 0, n = u; h < n.length; h++) {
-        var t = n[h];
-        if (t.isSome()) p.push(t.value);
-        else return t
+    Some = SomeImpl,
+    OptionHelpers;
+  (function(optionNamespace) {
+    function collectAllSome() {
+      for (var optionArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) optionArgs[argIndex] = arguments[
+      argIndex];
+      for (var someValues = [], optionIndex = 0, optionList = optionArgs; optionIndex < optionList.length; optionIndex++) {
+        var optionItem = optionList[optionIndex];
+        if (optionItem.isSome()) someValues.push(optionItem.value);
+        else return optionItem
       }
-      return v(p)
+      return Some(someValues)
     }
-    r.all = e;
+    optionNamespace.all = collectAllSome;
 
-    function o() {
-      for (var u = [], s = 0; s < arguments.length; s++) u[s] = arguments[
-      s];
-      for (var p = 0, h = u; p < h.length; p++) {
-        var n = h[p];
-        return n.isSome(), n
+    function firstSomeOption() {
+      for (var optionArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) optionArgs[argIndex] = arguments[
+      argIndex];
+      for (var optionIndex = 0, optionList = optionArgs; optionIndex < optionList.length; optionIndex++) {
+        var optionItem = optionList[optionIndex];
+        return optionItem.isSome(), optionItem
       }
-      return b
+      return noneSingleton
     }
-    r.any = o;
+    optionNamespace.any = firstSomeOption;
 
-    function l(u) {
-      return u instanceof v || u === b
+    function isOption(candidate) {
+      return candidate instanceof Some || candidate === noneSingleton
     }
-    r.isOption = l
-  })(E || (E = {}));
-  var j = function() {
-    function r(e) {
-      if (!(this instanceof r)) return new r(e);
-      this.error = e;
-      var o = new Error()
+    optionNamespace.isOption = isOption
+  })(OptionHelpers || (OptionHelpers = {}));
+  var ErrImpl = function() {
+    function ErrClass(errorInput) {
+      if (!(this instanceof ErrClass)) return new ErrClass(errorInput);
+      this.error = errorInput;
+      var stackLines = new Error()
         .stack.split(`
 `)
         .slice(2);
-      o && o.length > 0 && o[0].includes("ErrImpl") && o.shift(), this
-        ._stack = o.join(`
+      stackLines && stackLines.length > 0 && stackLines[0].includes("ErrImpl") && stackLines.shift(), this
+        ._stack = stackLines.join(`
 `)
     }
-    return r.prototype.isOk = function() {
+    return ErrClass.prototype.isOk = function() {
       return !1
-    }, r.prototype.isErr = function() {
+    }, ErrClass.prototype.isErr = function() {
       return !0
-    }, r.prototype[Symbol.iterator] = function() {
+    }, ErrClass.prototype[Symbol.iterator] = function() {
       return {
         next: function() {
           return {
@@ -167,46 +167,46 @@
           }
         }
       }
-    }, r.prototype.else = function(e) {
-      return e
-    }, r.prototype.unwrapOr = function(e) {
-      return e
-    }, r.prototype.expect = function(e) {
-      throw new Error("".concat(e, " - Error: ")
-        .concat(T(this.error), `
+    }, ErrClass.prototype.else = function(fallbackResult) {
+      return fallbackResult
+    }, ErrClass.prototype.unwrapOr = function(fallbackValue) {
+      return fallbackValue
+    }, ErrClass.prototype.expect = function(errorMessage) {
+      throw new Error("".concat(errorMessage, " - Error: ")
+        .concat(toDisplayString(this.error), `
 `)
         .concat(this._stack), {
           cause: this.error
         })
-    }, r.prototype.expectErr = function(e) {
+    }, ErrClass.prototype.expectErr = function(errorMessage) {
       return this.error
-    }, r.prototype.unwrap = function() {
-      throw new Error("Tried to unwrap Error: ".concat(T(this.error), `
+    }, ErrClass.prototype.unwrap = function() {
+      throw new Error("Tried to unwrap Error: ".concat(toDisplayString(this.error), `
 `)
         .concat(this._stack), {
           cause: this.error
         })
-    }, r.prototype.unwrapErr = function() {
+    }, ErrClass.prototype.unwrapErr = function() {
       return this.error
-    }, r.prototype.map = function(e) {
+    }, ErrClass.prototype.map = function(mapFn) {
       return this
-    }, r.prototype.andThen = function(e) {
+    }, ErrClass.prototype.andThen = function(thenFn) {
       return this
-    }, r.prototype.mapErr = function(e) {
-      return new y(e(this.error))
-    }, r.prototype.mapOr = function(e, o) {
-      return e
-    }, r.prototype.mapOrElse = function(e, o) {
-      return e(this.error)
-    }, r.prototype.or = function(e) {
-      return e
-    }, r.prototype.orElse = function(e) {
-      return e(this.error)
-    }, r.prototype.toOption = function() {
-      return b
-    }, r.prototype.toString = function() {
-      return "Err(".concat(T(this.error), ")")
-    }, Object.defineProperty(r.prototype, "stack", {
+    }, ErrClass.prototype.mapErr = function(mapErrFn) {
+      return new ErrResult(mapErrFn(this.error))
+    }, ErrClass.prototype.mapOr = function(defaultValue, mapFn) {
+      return defaultValue
+    }, ErrClass.prototype.mapOrElse = function(defaultFn, mapFn) {
+      return defaultFn(this.error)
+    }, ErrClass.prototype.or = function(alternative) {
+      return alternative
+    }, ErrClass.prototype.orElse = function(alternativeFn) {
+      return alternativeFn(this.error)
+    }, ErrClass.prototype.toOption = function() {
+      return noneSingleton
+    }, ErrClass.prototype.toString = function() {
+      return "Err(".concat(toDisplayString(this.error), ")")
+    }, Object.defineProperty(ErrClass.prototype, "stack", {
       get: function() {
         return "".concat(this, `
 `)
@@ -214,23 +214,23 @@
       },
       enumerable: !1,
       configurable: !0
-    }), r.prototype.toAsyncResult = function() {
-      return new O(this)
-    }, r.EMPTY = new r(void 0), r
+    }), ErrClass.prototype.toAsyncResult = function() {
+      return new ResultAsync(this)
+    }, ErrClass.EMPTY = new ErrClass(void 0), ErrClass
   }();
-  var y = j,
-    R = function() {
-      function r(e) {
-        if (!(this instanceof r)) return new r(e);
-        this.value = e
+  var ErrResult = ErrImpl,
+    OkImpl = function() {
+      function OkClass(wrappedValue) {
+        if (!(this instanceof OkClass)) return new OkClass(wrappedValue);
+        this.value = wrappedValue
       }
-      return r.prototype.isOk = function() {
+      return OkClass.prototype.isOk = function() {
         return !0
-      }, r.prototype.isErr = function() {
+      }, OkClass.prototype.isErr = function() {
         return !1
-      }, r.prototype[Symbol.iterator] = function() {
-        var e = Object(this.value);
-        return Symbol.iterator in e ? e[Symbol.iterator]() : {
+      }, OkClass.prototype[Symbol.iterator] = function() {
+        var boxedValue = Object(this.value);
+        return Symbol.iterator in boxedValue ? boxedValue[Symbol.iterator]() : {
           next: function() {
             return {
               done: !0,
@@ -238,333 +238,333 @@
             }
           }
         }
-      }, r.prototype.else = function(e) {
+      }, OkClass.prototype.else = function(fallbackResult) {
         return this.value
-      }, r.prototype.unwrapOr = function(e) {
+      }, OkClass.prototype.unwrapOr = function(fallbackValue) {
         return this.value
-      }, r.prototype.expect = function(e) {
+      }, OkClass.prototype.expect = function(errorMessage) {
         return this.value
-      }, r.prototype.expectErr = function(e) {
-        throw new Error(e)
-      }, r.prototype.unwrap = function() {
+      }, OkClass.prototype.expectErr = function(errorMessage) {
+        throw new Error(errorMessage)
+      }, OkClass.prototype.unwrap = function() {
         return this.value
-      }, r.prototype.unwrapErr = function() {
-        throw new Error("Tried to unwrap Ok: ".concat(T(this.value)), {
+      }, OkClass.prototype.unwrapErr = function() {
+        throw new Error("Tried to unwrap Ok: ".concat(toDisplayString(this.value)), {
           cause: this.value
         })
-      }, r.prototype.map = function(e) {
-        return new m(e(this.value))
-      }, r.prototype.andThen = function(e) {
-        return e(this.value)
-      }, r.prototype.mapErr = function(e) {
+      }, OkClass.prototype.map = function(mapFn) {
+        return new OkResult(mapFn(this.value))
+      }, OkClass.prototype.andThen = function(thenFn) {
+        return thenFn(this.value)
+      }, OkClass.prototype.mapErr = function(mapErrFn) {
         return this
-      }, r.prototype.mapOr = function(e, o) {
-        return o(this.value)
-      }, r.prototype.mapOrElse = function(e, o) {
-        return o(this.value)
-      }, r.prototype.or = function(e) {
+      }, OkClass.prototype.mapOr = function(defaultValue, mapFn) {
+        return mapFn(this.value)
+      }, OkClass.prototype.mapOrElse = function(defaultFn, mapFn) {
+        return mapFn(this.value)
+      }, OkClass.prototype.or = function(alternative) {
         return this
-      }, r.prototype.orElse = function(e) {
+      }, OkClass.prototype.orElse = function(alternativeFn) {
         return this
-      }, r.prototype.toOption = function() {
-        return v(this.value)
-      }, r.prototype.safeUnwrap = function() {
+      }, OkClass.prototype.toOption = function() {
+        return Some(this.value)
+      }, OkClass.prototype.safeUnwrap = function() {
         return this.value
-      }, r.prototype.toString = function() {
-        return "Ok(".concat(T(this.value), ")")
-      }, r.prototype.toAsyncResult = function() {
-        return new O(this)
-      }, r.EMPTY = new r(void 0), r
+      }, OkClass.prototype.toString = function() {
+        return "Ok(".concat(toDisplayString(this.value), ")")
+      }, OkClass.prototype.toAsyncResult = function() {
+        return new ResultAsync(this)
+      }, OkClass.EMPTY = new OkClass(void 0), OkClass
     }();
-  var m = R,
-    k;
-  (function(r) {
-    function e() {
-      for (var p = [], h = 0; h < arguments.length; h++) p[h] = arguments[
-      h];
-      for (var n = [], t = 0, i = p; t < i.length; t++) {
-        var a = i[t];
-        if (a.isOk()) n.push(a.value);
-        else return a
+  var OkResult = OkImpl,
+    ResultHelpers;
+  (function(resultNamespace) {
+    function collectAllOk() {
+      for (var resultArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) resultArgs[argIndex] = arguments[
+      argIndex];
+      for (var okValues = [], resultIndex = 0, resultList = resultArgs; resultIndex < resultList.length; resultIndex++) {
+        var resultItem = resultList[resultIndex];
+        if (resultItem.isOk()) okValues.push(resultItem.value);
+        else return resultItem
       }
-      return new m(n)
+      return new OkResult(okValues)
     }
-    r.all = e;
+    resultNamespace.all = collectAllOk;
 
-    function o() {
-      for (var p = [], h = 0; h < arguments.length; h++) p[h] = arguments[
-      h];
-      for (var n = [], t = 0, i = p; t < i.length; t++) {
-        var a = i[t];
-        if (a.isOk()) return a;
-        n.push(a.error)
+    function firstOkResult() {
+      for (var resultArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) resultArgs[argIndex] = arguments[
+      argIndex];
+      for (var collectedErrors = [], resultIndex = 0, resultList = resultArgs; resultIndex < resultList.length; resultIndex++) {
+        var resultItem = resultList[resultIndex];
+        if (resultItem.isOk()) return resultItem;
+        collectedErrors.push(resultItem.error)
       }
-      return new y(n)
+      return new ErrResult(collectedErrors)
     }
-    r.any = o;
+    resultNamespace.any = firstOkResult;
 
-    function l(p) {
+    function wrapSync(operation) {
       try {
-        return new m(p())
-      } catch (h) {
-        return new y(h)
+        return new OkResult(operation())
+      } catch (caughtError) {
+        return new ErrResult(caughtError)
       }
     }
-    r.wrap = l;
+    resultNamespace.wrap = wrapSync;
 
-    function u(p) {
+    function wrapAsync(operation) {
       try {
-        return p()
-          .then(function(h) {
-            return new m(h)
+        return operation()
+          .then(function(resolvedValue) {
+            return new OkResult(resolvedValue)
           })
-          .catch(function(h) {
-            return new y(h)
+          .catch(function(caughtError) {
+            return new ErrResult(caughtError)
           })
-      } catch (h) {
-        return Promise.resolve(new y(h))
+      } catch (caughtError) {
+        return Promise.resolve(new ErrResult(caughtError))
       }
     }
-    r.wrapAsync = u;
+    resultNamespace.wrapAsync = wrapAsync;
 
-    function s(p) {
-      return p instanceof y || p instanceof m
+    function isResult(candidate) {
+      return candidate instanceof ErrResult || candidate instanceof OkResult
     }
-    r.isResult = s
-  })(k || (k = {}));
-  var S = function(r, e, o, l) {
-      function u(s) {
-        return s instanceof o ? s : new o(function(p) {
-          p(s)
+    resultNamespace.isResult = isResult
+  })(ResultHelpers || (ResultHelpers = {}));
+  var runAsyncGenerator = function(thisArg, argsArray, promiseCtor, generator) {
+      function adopt(maybePromise) {
+        return maybePromise instanceof promiseCtor ? maybePromise : new promiseCtor(function(resolveInner) {
+          resolveInner(maybePromise)
         })
       }
-      return new(o || (o = Promise))(function(s, p) {
-        function h(i) {
+      return new(promiseCtor || (promiseCtor = Promise))(function(resolveOuter, rejectOuter) {
+        function onFulfilled(sentValue) {
           try {
-            t(l.next(i))
-          } catch (a) {
-            p(a)
+            stepGenerator(generator.next(sentValue))
+          } catch (caughtError) {
+            rejectOuter(caughtError)
           }
         }
 
-        function n(i) {
+        function onRejected(thrownValue) {
           try {
-            t(l.throw(i))
-          } catch (a) {
-            p(a)
+            stepGenerator(generator.throw(thrownValue))
+          } catch (caughtError) {
+            rejectOuter(caughtError)
           }
         }
 
-        function t(i) {
-          i.done ? s(i.value) : u(i.value)
-            .then(h, n)
+        function stepGenerator(stepResult) {
+          stepResult.done ? resolveOuter(stepResult.value) : adopt(stepResult.value)
+            .then(onFulfilled, onRejected)
         }
-        t((l = l.apply(r, e || []))
+        stepGenerator((generator = generator.apply(thisArg, argsArray || []))
           .next())
       })
     },
-    N = function(r, e) {
-      var o = {
+    runGenerator = function(thisArg, bodyFn) {
+      var generatorState = {
           label: 0,
           sent: function() {
-            if (s[0] & 1) throw s[1];
-            return s[1]
+            if (sentResult[0] & 1) throw sentResult[1];
+            return sentResult[1]
           },
           trys: [],
           ops: []
         },
-        l, u, s, p;
-      return p = {
-        next: h(0),
-        throw: h(1),
-        return: h(2)
-      }, typeof Symbol == "function" && (p[Symbol.iterator] = function() {
+        executing, yieldedIterator, sentResult, generatorObject;
+      return generatorObject = {
+        next: makeVerb(0),
+        throw: makeVerb(1),
+        return: makeVerb(2)
+      }, typeof Symbol == "function" && (generatorObject[Symbol.iterator] = function() {
         return this
-      }), p;
+      }), generatorObject;
 
-      function h(t) {
-        return function(i) {
-          return n([t, i])
+      function makeVerb(opCode) {
+        return function(opValue) {
+          return step([opCode, opValue])
         }
       }
 
-      function n(t) {
-        if (l) throw new TypeError("Generator is already executing.");
-        for (; p && (p = 0, t[0] && (o = 0)), o;) try {
-          if (l = 1, u && (s = t[0] & 2 ? u.return : t[0] ? u.throw || ((s =
-              u.return) && s.call(u), 0) : u.next) && !(s = s.call(u, t[1]))
-            .done) return s;
-          switch (u = 0, s && (t = [t[0] & 2, s.value]), t[0]) {
+      function step(operation) {
+        if (executing) throw new TypeError("Generator is already executing.");
+        for (; generatorObject && (generatorObject = 0, operation[0] && (generatorState = 0)), generatorState;) try {
+          if (executing = 1, yieldedIterator && (sentResult = operation[0] & 2 ? yieldedIterator.return : operation[0] ? yieldedIterator.throw || ((sentResult =
+              yieldedIterator.return) && sentResult.call(yieldedIterator), 0) : yieldedIterator.next) && !(sentResult = sentResult.call(yieldedIterator, operation[1]))
+            .done) return sentResult;
+          switch (yieldedIterator = 0, sentResult && (operation = [operation[0] & 2, sentResult.value]), operation[0]) {
             case 0:
             case 1:
-              s = t;
+              sentResult = operation;
               break;
             case 4:
-              return o.label++, {
-                value: t[1],
+              return generatorState.label++, {
+                value: operation[1],
                 done: !1
               };
             case 5:
-              o.label++, u = t[1], t = [0];
+              generatorState.label++, yieldedIterator = operation[1], operation = [0];
               continue;
             case 7:
-              t = o.ops.pop(), o.trys.pop();
+              operation = generatorState.ops.pop(), generatorState.trys.pop();
               continue;
             default:
-              if (s = o.trys, !(s = s.length > 0 && s[s.length - 1]) && (t[
-                  0] === 6 || t[0] === 2)) {
-                o = 0;
+              if (sentResult = generatorState.trys, !(sentResult = sentResult.length > 0 && sentResult[sentResult.length - 1]) && (operation[
+                  0] === 6 || operation[0] === 2)) {
+                generatorState = 0;
                 continue
               }
-              if (t[0] === 3 && (!s || t[1] > s[0] && t[1] < s[3])) {
-                o.label = t[1];
+              if (operation[0] === 3 && (!sentResult || operation[1] > sentResult[0] && operation[1] < sentResult[3])) {
+                generatorState.label = operation[1];
                 break
               }
-              if (t[0] === 6 && o.label < s[1]) {
-                o.label = s[1], s = t;
+              if (operation[0] === 6 && generatorState.label < sentResult[1]) {
+                generatorState.label = sentResult[1], sentResult = operation;
                 break
               }
-              if (s && o.label < s[2]) {
-                o.label = s[2], o.ops.push(t);
+              if (sentResult && generatorState.label < sentResult[2]) {
+                generatorState.label = sentResult[2], generatorState.ops.push(operation);
                 break
               }
-              s[2] && o.ops.pop(), o.trys.pop();
+              sentResult[2] && generatorState.ops.pop(), generatorState.trys.pop();
               continue
           }
-          t = e.call(r, o)
-        } catch (i) {
-          t = [6, i], u = 0
+          operation = bodyFn.call(thisArg, generatorState)
+        } catch (caughtError) {
+          operation = [6, caughtError], yieldedIterator = 0
         } finally {
-          l = s = 0
+          executing = sentResult = 0
         }
-        if (t[0] & 5) throw t[1];
+        if (operation[0] & 5) throw operation[1];
         return {
-          value: t[0] ? t[1] : void 0,
+          value: operation[0] ? operation[1] : void 0,
           done: !0
         }
       }
     },
-    O = function() {
-      function r(e) {
-        this.promise = Promise.resolve(e)
+    ResultAsync = function() {
+      function ResultAsyncClass(resultInput) {
+        this.promise = Promise.resolve(resultInput)
       }
-      return r.prototype.andThen = function(e) {
-        var o = this;
-        return this.thenInternal(function(l) {
-          return S(o, void 0, void 0, function() {
-            var u;
-            return N(this, function(s) {
-              return l.isErr() ? [2, l] : (u = e(l.value), [2,
-                u instanceof r ? u.promise : u
+      return ResultAsyncClass.prototype.andThen = function(thenFn) {
+        var component = this;
+        return this.thenInternal(function(innerResult) {
+          return runAsyncGenerator(component, void 0, void 0, function() {
+            var nextResult;
+            return runGenerator(this, function(genState) {
+              return innerResult.isErr() ? [2, innerResult] : (nextResult = thenFn(innerResult.value), [2,
+                nextResult instanceof ResultAsyncClass ? nextResult.promise : nextResult
               ])
             })
           })
         })
-      }, r.prototype.map = function(e) {
-        var o = this;
-        return this.thenInternal(function(l) {
-          return S(o, void 0, void 0, function() {
-            var u;
-            return N(this, function(s) {
-              switch (s.label) {
+      }, ResultAsyncClass.prototype.map = function(mapFn) {
+        var component = this;
+        return this.thenInternal(function(innerResult) {
+          return runAsyncGenerator(component, void 0, void 0, function() {
+            var okConstructor;
+            return runGenerator(this, function(genState) {
+              switch (genState.label) {
                 case 0:
-                  return l.isErr() ? [2, l] : (u = m, [4, e(l
+                  return innerResult.isErr() ? [2, innerResult] : (okConstructor = OkResult, [4, mapFn(innerResult
                     .value)]);
                 case 1:
-                  return [2, u.apply(void 0, [s.sent()])]
+                  return [2, okConstructor.apply(void 0, [genState.sent()])]
               }
             })
           })
         })
-      }, r.prototype.thenInternal = function(e) {
-        return new r(this.promise.then(e))
-      }, r
+      }, ResultAsyncClass.prototype.thenInternal = function(onResolved) {
+        return new ResultAsyncClass(this.promise.then(onResolved))
+      }, ResultAsyncClass
     }();
 
-  function _(r) {
-    return Object.assign(r.prototype, {
-      find: function(e) {
-        for (let o of this)
-          if (e(o)) return v(o);
-        return b
+  function augmentIterable(iterableClass) {
+    return Object.assign(iterableClass.prototype, {
+      find: function(predicate) {
+        for (let element of this)
+          if (predicate(element)) return Some(element);
+        return noneSingleton
       },
-      count: function(e) {
-        return this.reduce((o, l) => (e(l) && o++, o), 0)
+      count: function(predicate) {
+        return this.reduce((runningCount, element) => (predicate(element) && runningCount++, runningCount), 0)
       },
-      reduce: function(e, o) {
-        let l = o;
-        for (let u of this) l = e(l, u);
-        return l
+      reduce: function(reducer, initialValue) {
+        let accumulator = initialValue;
+        for (let element of this) accumulator = reducer(accumulator, element);
+        return accumulator
       },
-      every: function(e) {
-        return !this.any(o => !e(o))
+      every: function(predicate) {
+        return !this.any(element => !predicate(element))
       },
-      any: function(e) {
-        for (let o of this)
-          if (e(o)) return !0;
+      any: function(predicate) {
+        for (let element of this)
+          if (predicate(element)) return !0;
         return !1
       },
-      map: function(e) {
-        return this.filterMap(o => v(e(o)))
+      map: function(mapFn) {
+        return this.filterMap(element => Some(mapFn(element)))
       },
-      filter: function(e) {
-        return this.filterMap(o => e(o) ? v(o) : b)
+      filter: function(predicate) {
+        return this.filterMap(element => predicate(element) ? Some(element) : noneSingleton)
       },
       enumerate: function() {
-        let e = this;
-        return _(function*() {
-          let o = 0;
-          for (let l of e) yield [o, l], o++
+        let sourceIterable = this;
+        return augmentIterable(function*() {
+          let elementIndex = 0;
+          for (let element of sourceIterable) yield [elementIndex, element], elementIndex++
         })()
       },
-      filterMap: function(e) {
-        let o = this;
-        return _(function*() {
-          for (let l of o) {
-            let u = e(l);
-            u.isSome() && (yield u.unwrap())
+      filterMap: function(mapToOption) {
+        let sourceIterable = this;
+        return augmentIterable(function*() {
+          for (let element of sourceIterable) {
+            let mappedOption = mapToOption(element);
+            mappedOption.isSome() && (yield mappedOption.unwrap())
           }
         })()
       },
-      sort: function(e) {
-        let o = this.toArray();
-        return o.sort(e), o
+      sort: function(comparator) {
+        let sortedArray = this.toArray();
+        return sortedArray.sort(comparator), sortedArray
       },
       toArray: function() {
         return [...this]
       }
-    }), r
+    }), iterableClass
   }
   Array.prototype.as_iter || (Array.prototype.as_iter = function() {
-    let r = this;
-    return _(function*() {
-      for (let e of r) yield e
+    let sourceArray = this;
+    return augmentIterable(function*() {
+      for (let element of sourceArray) yield element
     })()
   });
   Set.prototype.as_iter || (Set.prototype.as_iter = function() {
-    let r = this;
-    return _(function*() {
-      for (let e of r) yield e
+    let sourceSet = this;
+    return augmentIterable(function*() {
+      for (let element of sourceSet) yield element
     })()
   });
   Map.prototype.as_iter || (Map.prototype.as_iter = function() {
-    let r = this;
-    return _(function*() {
-      for (let e of r) yield e
+    let sourceMap = this;
+    return augmentIterable(function*() {
+      for (let element of sourceMap) yield element
     })()
   });
   weh.is_safe.then(() => {
-    let r = new RegExp("([\\d\\.]+)\\s*(\\S+)"),
-      e = new Set;
+    let numberUnitRegex = new RegExp("([\\d\\.]+)\\s*(\\S+)"),
+      highlightedSelectors = new Set;
     window.addEventListener("unload", () => {
-      for (let n of e) weh.rpc.call("galleryUnhighlight", n)
+      for (let selectorAttr of highlightedSelectors) weh.rpc.call("galleryUnhighlight", selectorAttr)
     });
-    let o = I()
+    let buildOptions = configModule()
       .buildOptions || {};
-    o.browser != "firefox" && (document.querySelector("html")
+    buildOptions.browser != "firefox" && (document.querySelector("html")
       .style.width = "500px");
 
-    function l() {
+    function makeEmptyCounters() {
       return {
         active: 0,
         inactive: 0,
@@ -574,7 +574,7 @@
       }
     }
 
-    function u(n = {
+    function appStateReducer(state = {
       hits: [],
       hits_for_current_section: [],
       progress: {},
@@ -583,210 +583,210 @@
       logs: [],
       embed: null,
       maxHeight: void 0
-    }, t) {
-      switch (t.type) {
+    }, action) {
+      switch (action.type) {
         case "setActionHit":
-          n = Object.assign({}, n, {
-            actionHit: t.payload
+          state = Object.assign({}, state, {
+            actionHit: action.payload
           });
           break;
         case "clearActionHit":
-          n = Object.assign({}, n, {
+          state = Object.assign({}, state, {
             actionHit: null,
             embed: null
           });
           break;
         case "updateData":
-          n = Object.assign({}, n, t.payload);
+          state = Object.assign({}, state, action.payload);
           break;
         case "embed":
-          n = Object.assign({}, n, {
-            embed: t.payload
+          state = Object.assign({}, state, {
+            embed: action.payload
           });
           break;
         case "setMaxHeight":
-          n = Object.assign({}, n, {
-            maxHeight: t.payload
+          state = Object.assign({}, state, {
+            maxHeight: action.payload
           });
           break
       }
-      return n
+      return state
     }
-    let s = createStore(u);
+    let store = createStore(appStateReducer);
     weh.rpc.listen({
-        hits: n => {
-          s.dispatch({
+        hits: hitsPayload => {
+          store.dispatch({
             type: "updateData",
             payload: {
-              hits: n
+              hits: hitsPayload
             }
           })
         },
-        progress: n => {
-          s.dispatch({
+        progress: progressPayload => {
+          store.dispatch({
             type: "updateData",
             payload: {
-              progress: n
+              progress: progressPayload
             }
           })
         },
-        logs: n => {
-          s.dispatch({
+        logs: logsPayload => {
+          store.dispatch({
             type: "updateData",
             payload: {
-              logs: n
+              logs: logsPayload
             }
           })
         },
-        copyToClipboard: n => {
-          var t = document.createElement("input");
-          document.body.appendChild(t), t.value = n, t.select(),
-            document.execCommand("Copy"), document.body.removeChild(t)
+        copyToClipboard: clipboardText => {
+          var inputElement = document.createElement("input");
+          document.body.appendChild(inputElement), inputElement.value = clipboardText, inputElement.select(),
+            document.execCommand("Copy"), document.body.removeChild(inputElement)
         },
-        embed: n => {
-          s.dispatch({
+        embed: embedPayload => {
+          store.dispatch({
             type: "embed",
-            payload: n
+            payload: embedPayload
           })
         }
-      }), weh.prefs.then(n => {
-        let t = i => {
-          let a;
-          switch (o.browser) {
+      }), weh.prefs.then(prefs => {
+        let updateMaxHeight = leftOverHeight => {
+          let maxHeightCap;
+          switch (buildOptions.browser) {
             case "chrome":
-              a = 590;
+              maxHeightCap = 590;
               break;
             case "edge":
-              a = 500;
+              maxHeightCap = 500;
               break;
             default:
-              a = 600
+              maxHeightCap = 600
           }
           browser.windows.getLastFocused()
-            .then(c => {
-              s.dispatch({
+            .then(focusedWindow => {
+              store.dispatch({
                 type: "setMaxHeight",
-                payload: "" + Math.min(a, c.height - i) + "px"
+                payload: "" + Math.min(maxHeightCap, focusedWindow.height - leftOverHeight) + "px"
               })
             })
         };
-        n.on("popupHeightLeftOver", (i, a) => t(a)), t(n
+        prefs.on("popupHeightLeftOver", (messageName, leftOverHeight) => updateMaxHeight(leftOverHeight)), updateMaxHeight(prefs
           .popupHeightLeftOver)
       }), weh.rpc.call("getMainData")
-      .then(n => {
-        s.dispatch({
+      .then(mainData => {
+        store.dispatch({
           type: "updateData",
-          payload: n
+          payload: mainData
         })
       });
-    var p = connect((n, t) => ({
-      hits: n.hits || [],
-      progress: n.progress || {},
-      actionHit: n.actionHit || null,
-      actions: n.actions || {},
-      logs: n.logs || [],
-      embed: n.embed || null,
-      maxHeight: n.maxHeight || void 0
-    }), n => bindActionCreators({}, n))(class extends React.Component {
-      constructor(n) {
-        super(n), this.state = {
+    var ConnectedApp = connect((reduxState, ownProps) => ({
+      hits: reduxState.hits || [],
+      progress: reduxState.progress || {},
+      actionHit: reduxState.actionHit || null,
+      actions: reduxState.actions || {},
+      logs: reduxState.logs || [],
+      embed: reduxState.embed || null,
+      maxHeight: reduxState.maxHeight || void 0
+    }), dispatchFn => bindActionCreators({}, dispatchFn))(class extends React.Component {
+      constructor(initialProps) {
+        super(initialProps), this.state = {
           section: "active",
           hits: [],
           hits_for_current_section: [],
-          counters: l(),
+          counters: makeEmptyCounters(),
           actionHit: null
         }, this.call = this.call.bind(this)
       }
-      componentWillReceiveProps(n) {
-        this.buildGroups(n.hits), this.setState({
-          actionHit: n.actionHit
+      componentWillReceiveProps(nextProps) {
+        this.buildGroups(nextProps.hits), this.setState({
+          actionHit: nextProps.actionHit
         })
       }
-      call(...n) {
+      call(...rpcArgs) {
         return () => {
-          weh.rpc.call(...n)
+          weh.rpc.call(...rpcArgs)
         }
       }
       canClear() {
-        for (let n of this.state.hits)
-          for (let t of n)
-            if (t.status == "active" || t.status == "inactive" || t
+        for (let hitGroup of this.state.hits)
+          for (let hit of hitGroup)
+            if (hit.status == "active" || hit.status == "inactive" || hit
               .status == "orphan") return !0;
         return !1
       }
-      buildGroups(n, t) {
-        t = t || this.state.section;
-        let i = {
-          counters: l()
+      buildGroups(allHitGroups, section) {
+        section = section || this.state.section;
+        let nextState = {
+          counters: makeEmptyCounters()
         };
-        if (!n) {
-          i.hits = [], i.hits_for_current_section = [], this
-            .setState(i);
+        if (!allHitGroups) {
+          nextState.hits = [], nextState.hits_for_current_section = [], this
+            .setState(nextState);
           return
         }
-        for (let c of n)
-          for (let f of c) i.counters[f.status]++;
-        let a = n.as_iter()
-          .map(c => c.as_iter()
-            .filter(f => f.status == t)
+        for (let hitGroup of allHitGroups)
+          for (let hit of hitGroup) nextState.counters[hit.status]++;
+        let sectionGroups = allHitGroups.as_iter()
+          .map(hitGroup => hitGroup.as_iter()
+            .filter(hit => hit.status == section)
             .toArray())
-          .filter(c => c.length > 0)
+          .filter(hitGroup => hitGroup.length > 0)
           .toArray();
-        for (let c of a) c[0].primary = !0;
-        i.hits_for_current_section = a, i.hits = n, this.setState(i)
+        for (let hitGroup of sectionGroups) hitGroup[0].primary = !0;
+        nextState.hits_for_current_section = sectionGroups, nextState.hits = allHitGroups, this.setState(nextState)
       }
-      logDetails(n) {
+      logDetails(logKey) {
         return () => {
-          weh.rpc.call("logDetails", n)
+          weh.rpc.call("logDetails", logKey)
         }
       }
-      command(n) {
-        var t = this;
-        return i => {
-          i.stopPropagation();
-          var a = i.shiftKey,
-            c = t.state.actionHit;
-          c && weh.rpc.call("actionCommand", n, c.id)
-            .then(f => {
-              !a && !f ? n == "copyurl" ? setTimeout(() =>
-                  window.close(), 500) : window.close() : n ==
-                "deletehit" && s.dispatch({
+      command(commandName) {
+        var component = this;
+        return clickEvent => {
+          clickEvent.stopPropagation();
+          var shiftKeyHeld = clickEvent.shiftKey,
+            actionHit = component.state.actionHit;
+          actionHit && weh.rpc.call("actionCommand", commandName, actionHit.id)
+            .then(commandResult => {
+              !shiftKeyHeld && !commandResult ? commandName == "copyurl" ? setTimeout(() =>
+                  window.close(), 500) : window.close() : commandName ==
+                "deletehit" && store.dispatch({
                   type: "clearActionHit"
                 })
-            }), t.asDefaultInput && t.asDefaultInput.checked && (
-              weh.unsafe_prefs["default-action-" + (t.props
-                .actions[n].catPriority || 0)] = n)
+            }), component.asDefaultInput && component.asDefaultInput.checked && (
+              weh.unsafe_prefs["default-action-" + (component.props
+                .actions[commandName].catPriority || 0)] = commandName)
         }
       }
       renderActions() {
         if (!this.state.actionHit || this.props.embed) return null;
-        var n = this,
-          t = (this.state.actionHit.actions || [])
-          .map(i => React.createElement("div", {
-            key: i,
+        var component = this,
+          actionElements = (this.state.actionHit.actions || [])
+          .map(actionName => React.createElement("div", {
+            key: actionName,
             className: "vdh-container click action"
           }, React.createElement("div", {
-            onClick: this.command(i)
+            onClick: this.command(actionName)
           }, React.createElement("div", {
             className: "action-thumbnail"
           }, React.createElement("img", {
-            src: n.props.actions[i].icon
+            src: component.props.actions[actionName].icon
           })), React.createElement("div", {
             className: "action-details"
           }, React.createElement("div", {
             className: "action-title"
-          }, n.props.actions[i].title), React.createElement(
+          }, component.props.actions[actionName].title), React.createElement(
             "div", {
               className: "action-descr"
-            }, n.props.actions[i].description)))));
+            }, component.props.actions[actionName].description)))));
         return React.createElement("div", {
           className: "actions"
-        }, t, React.createElement("div", {
+        }, actionElements, React.createElement("div", {
           className: "default-check"
         }, React.createElement("input", {
           id: "checkbox1",
           type: "checkbox",
-          ref: i => this.asDefaultInput = i
+          ref: inputNode => this.asDefaultInput = inputNode
         }), React.createElement("label", {
           htmlFor: "checkbox1"
         }, weh._("action_as_default"))))
@@ -798,20 +798,20 @@
         }) : null
       }
       renderLog() {
-        var n = this,
-          t = this.props.logs.map(i => React.createElement("div", {
-              key: i.key,
-              className: "vdh-log vdh-log-" + i.type
-            }, i.videoTitle && React.createElement("div", {
+        var component = this,
+          logElements = this.props.logs.map(logEntry => React.createElement("div", {
+              key: logEntry.key,
+              className: "vdh-log vdh-log-" + logEntry.type
+            }, logEntry.videoTitle && React.createElement("div", {
               className: "log-video-title"
-            }, i.videoTitle), i.message, i.details && React
+            }, logEntry.videoTitle), logEntry.message, logEntry.details && React
             .createElement("a", {
-              onClick: n.logDetails(i.key),
+              onClick: component.logDetails(logEntry.key),
               href: "#"
             }, weh._("details_parenthesis"))));
         return React.createElement("div", {
           className: "logs"
-        }, t)
+        }, logElements)
       }
       renderNoHit() {
         return this.state.section == "active" ? React.createElement(
@@ -829,36 +829,36 @@
         if (this.state.section == "log") return this.renderLog();
         if (this.state.hits_for_current_section.length == 0)
         return this.renderNoHit();
-        let n = this;
+        let component = this;
         return React.createElement("div", {
           className: "has-media"
-        }, this.state.hits_for_current_section.map(t => {
-          let i = t[0],
-            a = t.length == 1,
+        }, this.state.hits_for_current_section.map(hitGroup => {
+          let primaryHit = hitGroup[0],
+            isSingleHit = hitGroup.length == 1,
             // TODO(thumbnails): Static review of changes after 01f84f4 found that the
             // default popup/sidebar path was not touched in that range, but this legacy
             // popup still ignores `thumbnailUrl2`. Even if the background serializer starts
             // forwarding the resolved fallback thumbnail, this consumer will keep dropping
             // it until the fallback chain accepts the same field names as the hit producer.
-            c = i.thumbnailUrl ?? i.thumbnail ??
+            thumbnailUrl = primaryHit.thumbnailUrl ?? primaryHit.thumbnail ??
             "./images/no-thumbnail.png";
           return React.createElement("div", {
-            key: i.group,
-            className: (a ? "hit-group-single" : "") +
+            key: primaryHit.group,
+            className: (isSingleHit ? "hit-group-single" : "") +
               " hit-group"
           }, React.createElement("div", {
             className: "hit-thumbnail"
           }, React.createElement("img", {
-            src: c
-          })), React.createElement("div", null, t.map(
-          f => {
-            let g = n.props.actions[f.actions[0]],
-              d = n.props.progress[f.id];
-            return React.createElement(h, {
-              key: f.id,
-              hit: f,
-              progress: d,
-              defaultAction: g
+            src: thumbnailUrl
+          })), React.createElement("div", null, hitGroup.map(
+          hit => {
+            let defaultAction = component.props.actions[hit.actions[0]],
+              hitProgress = component.props.progress[hit.id];
+            return React.createElement(HitView, {
+              key: hit.id,
+              hit: hit,
+              progress: hitProgress,
+              defaultAction: defaultAction
             })
           })))
         }))
@@ -877,7 +877,7 @@
           title: weh._("about")
         }, React.createElement("img", {
           src: "images/icon-about-64.png"
-        })), o.browser == "firefox" && React.createElement(
+        })), buildOptions.browser == "firefox" && React.createElement(
           "button", {
             onClick: this.call("openSites"),
             title: weh._("supported_sites")
@@ -910,63 +910,63 @@
             src: "images/icon-action-delete-64.png"
           }))))
       }
-      setSection(n) {
-        var t = this;
+      setSection(section) {
+        var component = this;
         return () => {
-          t.buildGroups(t.state.hits, n), t.setState({
-            section: n
+          component.buildGroups(component.state.hits, section), component.setState({
+            section: section
           })
         }
       }
       clearLogs() {
-        var n = this;
+        var component = this;
         return () => {
           weh.rpc.call("clearLogs")
-            .then(n.setSection("active"))
+            .then(component.setSection("active"))
         }
       }
-      shouldDisplayGroupText(n) {
-        if (this.state.section == n || n == "log" && this.props.logs
+      shouldDisplayGroupText(section) {
+        if (this.state.section == section || section == "log" && this.props.logs
           .length == 0) return !1;
-        for (var t = Object.keys(this.state.counters), i = 0; i < t
-          .length; i++) {
-          var a = t[i],
-            c = this.state.counters[a];
-          if (a == n && c == 0 || a != n && a != this.state
-            .section && c > 0) return !1
+        for (var counterKeys = Object.keys(this.state.counters), keyIndex = 0; keyIndex < counterKeys
+          .length; keyIndex++) {
+          var counterKey = counterKeys[keyIndex],
+            counterValue = this.state.counters[counterKey];
+          if (counterKey == section && counterValue == 0 || counterKey != section && counterKey != this.state
+            .section && counterValue > 0) return !1
         }
-        return !(n != "log" && this.props.logs.length > 0)
+        return !(section != "log" && this.props.logs.length > 0)
       }
-      showGroupBadge(n, t) {
-        var i = "",
-          a = 0,
-          c = n;
-        if (this.state.section == n) return null;
-        if (n == "log") {
-          if (a = this.props.logs.length, a == 0) return null;
-          var f = this.props.logs.filter(g => g.type == "error");
-          f.length > 0 ? (i = weh._("errors"), a = f.length, n =
-            "error") : i = weh._("logs")
+      showGroupBadge(section, labelKey) {
+        var badgeTitle = "",
+          badgeCount = 0,
+          targetSection = section;
+        if (this.state.section == section) return null;
+        if (section == "log") {
+          if (badgeCount = this.props.logs.length, badgeCount == 0) return null;
+          var errorLogs = this.props.logs.filter(logEntry => logEntry.type == "error");
+          errorLogs.length > 0 ? (badgeTitle = weh._("errors"), badgeCount = errorLogs.length, section =
+            "error") : badgeTitle = weh._("logs")
         } else {
-          if (this.state.counters[n] == 0) return;
-          i = weh._(t), a = this.state.counters[n]
+          if (this.state.counters[section] == 0) return;
+          badgeTitle = weh._(labelKey), badgeCount = this.state.counters[section]
         }
         return React.createElement("div", {
-          className: "click group group-" + n,
-          onClick: this.setSection(c),
-          title: i
+          className: "click group group-" + section,
+          onClick: this.setSection(targetSection),
+          title: badgeTitle
         }, React.createElement("div", null, React.createElement(
-          "div", null, a)))
+          "div", null, badgeCount)))
       }
-      showGroupText(n, t) {
-        if (this.shouldDisplayGroupText(n)) {
-          var i = this.props.logs.filter(a => a.type == "error")
+      showGroupText(section, labelKey) {
+        if (this.shouldDisplayGroupText(section)) {
+          var errorCount = this.props.logs.filter(logEntry => logEntry.type == "error")
             .length;
-          return n == "log" && i > 0 && (t = "errors"), React
+          return section == "log" && errorCount > 0 && (labelKey = "errors"), React
             .createElement("div", {
               className: "click group-text",
-              onClick: this.setSection(n)
-            }, weh._(t))
+              onClick: this.setSection(section)
+            }, weh._(labelKey))
         } else return null
       }
       renderFooterGroups() {
@@ -1000,7 +1000,7 @@
       }
       clearActionHit() {
         return () => {
-          s.dispatch({
+          store.dispatch({
             type: "clearActionHit"
           })
         }
@@ -1037,13 +1037,13 @@
             })), this.renderFooter()))
       }
     });
-    class h extends React.Component {
-      constructor(t) {
-        super(t), this.action = this.action.bind(this), this
+    class HitView extends React.Component {
+      constructor(initialProps) {
+        super(initialProps), this.action = this.action.bind(this), this
           .state = {}
       }
-      componentWillReceiveProps(t) {
-        this.orphanTimer || this.updateOrphanTimer(t)
+      componentWillReceiveProps(nextProps) {
+        this.orphanTimer || this.updateOrphanTimer(nextProps)
       }
       componentDidMount() {
         this.orphanTimer || this.updateOrphanTimer()
@@ -1052,94 +1052,94 @@
         this.orphanTimer && (clearTimeout(this.orphanTimer), this
           .orphanTimer = null)
       }
-      updateOrphanTimer(t) {
-        if (t = t || this.props, this.orphanTimer = null, this.props
+      updateOrphanTimer(nextProps) {
+        if (nextProps = nextProps || this.props, this.orphanTimer = null, this.props
           .hit.status == "orphan") {
-          var i = Date.now(),
-            a = this.props.hit.orphanT0,
-            c = this.props.hit.orphanT;
+          var nowMs = Date.now(),
+            orphanStart = this.props.hit.orphanT0,
+            orphanEnd = this.props.hit.orphanT;
           this.setState({
-            orphanTimer: Math.max(0, Math.min(100, 100 * (c - i) /
-              (c - a)))
+            orphanTimer: Math.max(0, Math.min(100, 100 * (orphanEnd - nowMs) /
+              (orphanEnd - orphanStart)))
           }), this.orphanTimer = setTimeout(this.updateOrphanTimer
             .bind(this), 1e3)
         }
       }
-      action(t) {}
+      action(actionEvent) {}
       getClass() {
         return ""
       }
-      durationString(t) {
-        t = ~~t;
-        var i = Math.floor(t / 3600),
-          a = Math.floor(t % 3600 / 60),
-          c = t % 60;
-        return i > 0 ? i + ":" + ("00" + a)
-          .substr(-2) + ":" + ("00" + c)
-          .substr(-2) : a + ":" + ("00" + c)
+      durationString(totalSeconds) {
+        totalSeconds = ~~totalSeconds;
+        var hours = Math.floor(totalSeconds / 3600),
+          minutes = Math.floor(totalSeconds % 3600 / 60),
+          seconds = totalSeconds % 60;
+        return hours > 0 ? hours + ":" + ("00" + minutes)
+          .substr(-2) + ":" + ("00" + seconds)
+          .substr(-2) : minutes + ":" + ("00" + seconds)
           .substr(-2)
       }
       description() {
-        var t = this.props.hit;
-        if (t.description) return t.description;
-        var i = [];
-        let a = t.operation === "downloading",
-          c = t.raw_bitrate ?? 0;
-        if (a) {
-          let d = this.props.progress;
-          if (t.opStartDate && typeof d == "number" && d >= 0) {
-            if (d === 1 / 0) i.push(weh._("live_stream"));
-            else if (i.push(d + "%"), d > 0) {
-              let x = (Date.now() - t.opStartDate) / d * (100 - d);
-              x = Math.max(0, Math.floor(x / 1e3)), i.push(this
-                .durationString(x))
+        var hit = this.props.hit;
+        if (hit.description) return hit.description;
+        var descriptionParts = [];
+        let isDownloading = hit.operation === "downloading",
+          rawBitrate = hit.raw_bitrate ?? 0;
+        if (isDownloading) {
+          let progressPercent = this.props.progress;
+          if (hit.opStartDate && typeof progressPercent == "number" && progressPercent >= 0) {
+            if (progressPercent === 1 / 0) descriptionParts.push(weh._("live_stream"));
+            else if (descriptionParts.push(progressPercent + "%"), progressPercent > 0) {
+              let remainingMs = (Date.now() - hit.opStartDate) / progressPercent * (100 - progressPercent);
+              remainingMs = Math.max(0, Math.floor(remainingMs / 1e3)), descriptionParts.push(this
+                .durationString(remainingMs))
             }
           }
-          if (c > 0) {
-            let w = "";
-            c < 1048576 ? w = weh._("KB", (~~(10 * c / 1024) / 10)
-              .toString()) + "/s" : w = weh._("MB", (~~(10 * c /
+          if (rawBitrate > 0) {
+            let speedText = "";
+            rawBitrate < 1048576 ? speedText = weh._("KB", (~~(10 * rawBitrate / 1024) / 10)
+              .toString()) + "/s" : speedText = weh._("MB", (~~(10 * rawBitrate /
                 1048576) / 10)
-              .toString()) + "/s", i.push(w)
+              .toString()) + "/s", descriptionParts.push(speedText)
           }
         }
-        if (!a) {
-          if (t.size && i.push(t.size), t.quality) {
-            let w = weh._("quality_" + t.quality);
-            w == "" && (w = t.quality.toUpperCase()), i.push(w)
+        if (!isDownloading) {
+          if (hit.size && descriptionParts.push(hit.size), hit.quality) {
+            let qualityLabel = weh._("quality_" + hit.quality);
+            qualityLabel == "" && (qualityLabel = hit.quality.toUpperCase()), descriptionParts.push(qualityLabel)
           }
-          if (typeof t.duration == "number" && i.push(this
-              .durationString(t.duration)), t.bitrate) {
-            var f = t.bitrate,
-              g = "bps";
-            t.bitrate > 1e7 ? (g = "Mbps", f = Math.round(t.bitrate /
-                1e6)) : t.bitrate > 1e6 ? (g = "Mbps", f = Math.round(
-                t.bitrate / 1e5) / 10) : t.bitrate > 1e4 ? (g =
-                "Kbps", f = Math.round(t.bitrate / 1e3)) : t.bitrate >
-              1e3 && (g = "Kbps", f = Math.round(t.bitrate / 100) /
-                10), i.push(f + g)
+          if (typeof hit.duration == "number" && descriptionParts.push(this
+              .durationString(hit.duration)), hit.bitrate) {
+            var bitrateValue = hit.bitrate,
+              bitrateUnit = "bps";
+            hit.bitrate > 1e7 ? (bitrateUnit = "Mbps", bitrateValue = Math.round(hit.bitrate /
+                1e6)) : hit.bitrate > 1e6 ? (bitrateUnit = "Mbps", bitrateValue = Math.round(
+                hit.bitrate / 1e5) / 10) : hit.bitrate > 1e4 ? (bitrateUnit =
+                "Kbps", bitrateValue = Math.round(hit.bitrate / 1e3)) : hit.bitrate >
+              1e3 && (bitrateUnit = "Kbps", bitrateValue = Math.round(hit.bitrate / 100) /
+                10), descriptionParts.push(bitrateValue + bitrateUnit)
           }
-          let d = this.lengthString();
-          d && i.push(d), t.extension && (t.originalExt && t
-              .originalExt != t.extension && i.push(t.originalExt
-                .toUpperCase() + ">" + t.extension.toUpperCase()), i
-              .push(t.extension.toUpperCase())), t.descrPrefix && i
-            .push(t.descrPrefix), t.mediaDomain && i.push(weh._(
-              "from_domain", [t.mediaDomain]))
+          let lengthLabel = this.lengthString();
+          lengthLabel && descriptionParts.push(lengthLabel), hit.extension && (hit.originalExt && hit
+              .originalExt != hit.extension && descriptionParts.push(hit.originalExt
+                .toUpperCase() + ">" + hit.extension.toUpperCase()), descriptionParts
+              .push(hit.extension.toUpperCase())), hit.descrPrefix && descriptionParts
+            .push(hit.descrPrefix), hit.mediaDomain && descriptionParts.push(weh._(
+              "from_domain", [hit.mediaDomain]))
         }
-        return i.join(" - ")
+        return descriptionParts.join(" - ")
       }
       lengthString() {
-        var t = this.props.hit;
-        return t.length ? t.length > 1024 * 1024 ? weh._("MB", [Math
-          .round(t.length * 10 / (1024 * 1024)) / 10
-        ]) : t.length > 1024 ? weh._("KB", [Math.round(t.length *
-          10 / 1024) / 10]) : weh._("Bytes", [t.length]) : null
+        var hit = this.props.hit;
+        return hit.length ? hit.length > 1024 * 1024 ? weh._("MB", [Math
+          .round(hit.length * 10 / (1024 * 1024)) / 10
+        ]) : hit.length > 1024 ? weh._("KB", [Math.round(hit.length *
+          10 / 1024) / 10]) : weh._("Bytes", [hit.length]) : null
       }
       titleClass() {
-        var t = ["hit-title-text"];
-        return t.push("hit-title-text-" + weh.unsafe_prefs.titleMode),
-          t.join(" ")
+        var titleClassNames = ["hit-title-text"];
+        return titleClassNames.push("hit-title-text-" + weh.unsafe_prefs.titleMode),
+          titleClassNames.join(" ")
       }
       progress() {
         return this.props.progress == 1 / 0 ? {
@@ -1156,63 +1156,63 @@
         }
       }
       moreActions() {
-        var t = this;
-        return i => {
-          i.stopPropagation(), s.dispatch({
+        var component = this;
+        return clickEvent => {
+          clickEvent.stopPropagation(), store.dispatch({
             type: "setActionHit",
-            payload: t.props.hit
+            payload: component.props.hit
           })
         }
       }
-      call(...t) {
+      call(...rpcArgs) {
         return () => {
-          weh.rpc.call(...t)
+          weh.rpc.call(...rpcArgs)
         }
       }
       callDefault() {
-        var t = this;
-        return i => {
-          i.stopPropagation();
-          var a = i.shiftKey;
-          let c = t.props.hit.actions[0];
-          weh.rpc.call("actionCommand", c, t.props.hit.id)
-            .then(f => {
-              !a && !f && (c == "copyurl" ? setTimeout(() =>
+        var component = this;
+        return clickEvent => {
+          clickEvent.stopPropagation();
+          var shiftKeyHeld = clickEvent.shiftKey;
+          let defaultActionName = component.props.hit.actions[0];
+          weh.rpc.call("actionCommand", defaultActionName, component.props.hit.id)
+            .then(commandResult => {
+              !shiftKeyHeld && !commandResult && (defaultActionName == "copyurl" ? setTimeout(() =>
                 window.close(), 500) : window.close())
             })
         }
       }
       onMouseEnter() {
-        var t = this;
+        var component = this;
         return () => {
-          e.add(t.props.hit.selectorAttr), weh.rpc.call(
-            "galleryHighlight", t.props.hit.selectorAttr)
+          highlightedSelectors.add(component.props.hit.selectorAttr), weh.rpc.call(
+            "galleryHighlight", component.props.hit.selectorAttr)
         }
       }
       onMouseLeave() {
-        var t = this;
+        var component = this;
         return () => {
-          e.delete(t.props.hit.selectorAttr), weh.rpc.call(
-            "galleryUnhighlight", t.props.hit.selectorAttr)
+          highlightedSelectors.delete(component.props.hit.selectorAttr), weh.rpc.call(
+            "galleryUnhighlight", component.props.hit.selectorAttr)
         }
       }
       render() {
-        var t = this.props.hit;
+        var hit = this.props.hit;
         return React.createElement("div", {
           className: "click hit " + this.getClass(),
-          onMouseEnter: t.mouseTrack && this.onMouseEnter(),
-          onMouseLeave: t.mouseTrack && this.onMouseLeave(),
+          onMouseEnter: hit.mouseTrack && this.onMouseEnter(),
+          onMouseLeave: hit.mouseTrack && this.onMouseLeave(),
           onClick: this.callDefault()
         }, React.createElement("div", {
           className: "vdh-container"
         }, React.createElement("div", null, React.createElement(
           "div", {
             className: "vdh-fullwidth hit-descr"
-          }, t.primary && React.createElement("div", {
+          }, hit.primary && React.createElement("div", {
             className: "hit-title"
           }, React.createElement("div", {
             className: this.titleClass()
-          }, t.title)), React.createElement("div", {
+          }, hit.title)), React.createElement("div", {
               className: "hit-summary"
             }, this.props.defaultAction && React
             .createElement("div", {
@@ -1222,22 +1222,22 @@
               .createElement("img", {
                 className: "default-action",
                 src: this.props.defaultAction.icon
-              }))), t.primary && weh.unsafe_prefs
-            .hitsGotoTab && t.topUrl && t.status ==
+              }))), hit.primary && weh.unsafe_prefs
+            .hitsGotoTab && hit.topUrl && hit.status ==
             "inactive" && React.createElement("img", {
               className: "hit-descr-button",
               src: "images/icon-gototab-64.png",
               title: weh._("hit_go_to_tab"),
-              onClick: this.call("gotoTab", t.topUrl)
-            }), t.operation && React.createElement("span", {
+              onClick: this.call("gotoTab", hit.topUrl)
+            }), hit.operation && React.createElement("span", {
               className: "hit-operation"
-            }, weh._(t.operation) + " - "), this.description()
-            ), t.status == "running" && React.createElement(
+            }, weh._(hit.operation) + " - "), this.description()
+            ), hit.status == "running" && React.createElement(
             "div", {
               className: "hit-progress"
             }, React.createElement("div", {
               style: this.progress()
-            })), t.status == "orphan" && React.createElement(
+            })), hit.status == "orphan" && React.createElement(
             "div", {
               className: "hit-progress hit-orphan"
             }, React.createElement("div", {
@@ -1253,7 +1253,7 @@
       }
     }
     render(React.createElement(Provider, {
-      store: s
-    }, React.createElement(p, null)), document.getElementById("root"))
+      store: store
+    }, React.createElement(ConnectedApp, null)), document.getElementById("root"))
   });
 })();

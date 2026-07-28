@@ -1,31 +1,31 @@
 "use strict";
 (() => {
   weh.is_safe.then(() => {
-    function o(e = [], a) {
-      switch (a.type) {
+    function smartNameReducer(state = [], action) {
+      switch (action.type) {
         case "SET_SMARTNAME_DATA":
-          e = a.payload;
+          state = action.payload;
           break
       }
-      return e
+      return state
     }
-    window.store = createStore(o);
+    window.store = createStore(smartNameReducer);
 
-    function l() {
+    function loadRules() {
       return weh.rpc.call("getSmartNameRules")
-        .then(e => {
+        .then(rules => {
           window.store.dispatch({
             type: "SET_SMARTNAME_DATA",
-            payload: e
+            payload: rules
           })
         })
     }
-    l();
-    var i = connect((e, a) => ({
-      rules: e || []
+    loadRules();
+    var SmartNameEditor = connect((state, ownProps) => ({
+      rules: state || []
     }))(class extends React.Component {
-      constructor(e) {
-        super(e), this.state = {
+      constructor(props) {
+        super(props), this.state = {
           rule: null,
           newRule: !1,
           xpathClass: "",
@@ -35,9 +35,9 @@
         }
       }
       addRule() {
-        var e = this;
+        var self = this;
         return () => {
-          e.setState({
+          self.setState({
             rule: {
               domain: "",
               mode: "page-title",
@@ -50,41 +50,41 @@
         }
       }
       cancelInput() {
-        var e = this;
+        var self = this;
         return () => {
-          e.setState({
+          self.setState({
             rule: null
           })
         }
       }
-      removeRule(e) {
-        var a = this;
-        return r => {
-          r.stopPropagation(), weh.rpc.call("removeFromSmartName",
-              [e])
-            .then(() => l())
+      removeRule(ruleKey) {
+        var self = this;
+        return event => {
+          event.stopPropagation(), weh.rpc.call("removeFromSmartName",
+              [ruleKey])
+            .then(() => loadRules())
         }
       }
-      editRule(e) {
-        var a = this;
+      editRule(ruleKey) {
+        var self = this;
         return () => {
-          a.setState({
-            rule: Object.assign({}, a.props.rules[e]),
+          self.setState({
+            rule: Object.assign({}, self.props.rules[ruleKey]),
             newRule: !1
           })
         }
       }
       renderAll() {
-        var e = Object.keys(this.props.rules)
+        var ruleElements = Object.keys(this.props.rules)
           .sort()
-          .map(a => React.createElement("div", {
-              key: a,
+          .map(ruleKey => React.createElement("div", {
+              key: ruleKey,
               className: "domain",
-              onClick: this.editRule(a)
-            }, React.createElement("div", null, a), React
+              onClick: this.editRule(ruleKey)
+            }, React.createElement("div", null, ruleKey), React
             .createElement("div", {
               className: "delete",
-              onClick: this.removeRule(a)
+              onClick: this.removeRule(ruleKey)
             }, "X")));
         return React.createElement("div", {
           className: "all-rules"
@@ -97,72 +97,72 @@
         }, weh._("smartname_add_domain"))), React.createElement(
           "div", {
             className: "list-column"
-          }, e.length == 0 && React.createElement("div", {
+          }, ruleElements.length == 0 && React.createElement("div", {
             className: "empty"
-          }, weh._("smartname_empty")), e.length > 0 && React
+          }, weh._("smartname_empty")), ruleElements.length > 0 && React
           .createElement("div", {
             className: "list"
-          }, e)))
+          }, ruleElements)))
       }
       saveRule() {
-        var e = this;
+        var self = this;
         return () => {
-          weh.rpc.call("addSmartNameRule", e.state.rule)
+          weh.rpc.call("addSmartNameRule", self.state.rule)
             .then(() => {
-              l()
-            }), e.setState({
+              loadRules()
+            }), self.setState({
               rule: null
             })
         }
       }
       cancelRule() {
-        var e = this;
+        var self = this;
         return () => {
-          e.setState({
+          self.setState({
             rule: null
           })
         }
       }
-      onChange(e) {
-        var a = this;
-        return r => {
-          var s = r.target.value,
-            t = {
+      onChange(field) {
+        var self = this;
+        return event => {
+          var value = event.target.value,
+            update = {
               rule: {}
             },
-            n = !1;
-          switch (e) {
+            hasError = !1;
+          switch (field) {
             case "mode":
-              t.rule.mode = s;
+              update.rule.mode = value;
               break;
             case "xpath":
-              t.rule.xpath = s;
+              update.rule.xpath = value;
               try {
-                document.evaluate(s, document, null, XPathResult
-                  .STRING_TYPE, null), t.xpathClass = ""
+                document.evaluate(value, document, null, XPathResult
+                  .STRING_TYPE, null), update.xpathClass = ""
               } catch {
-                t.xpathClass = "error", n = !0
+                update.xpathClass = "error", hasError = !0
               }
               break;
             case "regexp":
-              t.rule.regexp = s;
+              update.rule.regexp = value;
               try {
-                new RegExp(s), t.regexpClass = ""
+                new RegExp(value), update.regexpClass = ""
               } catch {
-                t.regexpClass = "error", n = !0
+                update.regexpClass = "error", hasError = !0
               }
               break;
             case "domain":
-              t.rule.domain = s, /^\S+\.\S+$/.test(s) ? t
-                .domainClass = "" : t.domainClass = "error";
+              update.rule.domain = value, /^\S+\.\S+$/.test(value) ? update
+                .domainClass = "" : update.domainClass = "error";
               break;
             case "delay":
-              t.rule.delay = s, /^[0-9]+$/.test(s) ? t
-                .delayClass = "" : t.delayClass = "error";
+              update.rule.delay = value, /^[0-9]+$/.test(value) ? update
+                .delayClass = "" : update.delayClass = "error";
               break
           }
-          t.rule = Object.assign({}, a.state.rule, t.rule), a
-            .setState(Object.assign({}, a.state, t))
+          update.rule = Object.assign({}, self.state.rule, update.rule), self
+            .setState(Object.assign({}, self.state, update))
         }
       }
       renderRule() {
@@ -264,7 +264,7 @@
     });
     render(React.createElement(Provider, {
         store
-      }, React.createElement(i, null)), document.getElementById("root")),
+      }, React.createElement(SmartNameEditor, null)), document.getElementById("root")),
       weh.setPageTitle(weh._("smartnaming_rules"))
   });
 })();

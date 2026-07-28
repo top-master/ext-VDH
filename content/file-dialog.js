@@ -1,43 +1,43 @@
 "use strict";
 (() => {
   weh.is_safe.then(() => {
-    let a = createStore((t = null, e) => {
-      switch (e.type) {
+    let store = createStore((state = null, action) => {
+      switch (action.type) {
         case "SET_WEH_DATA":
-          t = Object.assign({}, t, {
-            wehData: e.payload
+          state = Object.assign({}, state, {
+            wehData: action.payload
           });
           break;
         case "SET_ERROR":
-          t = Object.assign({}, t, {
-            error: e.payload
+          state = Object.assign({}, state, {
+            error: action.payload
           });
           break
       }
-      return t
+      return state
     });
     weh.rpc.listen({
-      wehInitData: t => {
-        a.dispatch({
+      wehInitData: data => {
+        store.dispatch({
           type: "SET_WEH_DATA",
-          payload: t
+          payload: data
         })
       }
     });
-    var l = connect((t, e) => Object.assign({}, t && t.wehData || {}, {
-      error: t && t.error || null
-    }), t => bindActionCreators({
-      setError: e => ({
+    var FileDialog = connect((state, ownProps) => Object.assign({}, state && state.wehData || {}, {
+      error: state && state.error || null
+    }), dispatch => bindActionCreators({
+      setError: error => ({
         type: "SET_ERROR",
-        payload: e
+        payload: error
       }),
       clearError: () => ({
         type: "SET_ERROR",
         payload: null
       })
-    }, t))(class extends React.Component {
-      constructor(t) {
-        super(t), this.state = {
+    }, dispatch))(class extends React.Component {
+      constructor(props) {
+        super(props), this.state = {
           files: [],
           parents: [],
           parent: "",
@@ -52,80 +52,80 @@
           selectAll: !1
         }
       }
-      componentWillReceiveProps(t) {
-        var e = this,
-          r;
-        weh.rpc.call("coappProxy", "path.homeJoin", t.directory)
-          .then(s => (r = s, e.init(r)))
+      componentWillReceiveProps(nextProps) {
+        var self = this,
+          homeDir;
+        weh.rpc.call("coappProxy", "path.homeJoin", nextProps.directory)
+          .then(resolvedDir => (homeDir = resolvedDir, self.init(homeDir)))
           .then(() => {
-            !e.state.dirExits && t.createDir && e.setState({
+            !self.state.dirExits && nextProps.createDir && self.setState({
               modal: {
                 title: weh._("directory_not_exist"),
-                body: weh._("directory_not_exist_body", r),
+                body: weh._("directory_not_exist_body", homeDir),
                 buttons: [{
                   text: weh._("no"),
                   color: "secondary",
                   click: (() => {
                       weh.trigger(null)
                     })
-                    .bind(e)
+                    .bind(self)
                 }, {
                   text: weh._("yes"),
                   color: "primary",
                   click: (() => {
-                      this.createDirectory(r)
+                      this.createDirectory(homeDir)
                     })
-                    .bind(e)
+                    .bind(self)
                 }]
               }
             })
           })
       }
-      createDirectory(t) {
-        var e = this;
-        weh.rpc.call("coappProxy", "fs.mkdirp", t)
+      createDirectory(dir) {
+        var self = this;
+        weh.rpc.call("coappProxy", "fs.mkdirp", dir)
           .then(() => {
-            e.setState({
+            self.setState({
               modal: null
-            }), e.init(t)
+            }), self.init(dir)
           })
-          .catch(r => {
-            e.props.setError(r)
+          .catch(error => {
+            self.props.setError(error)
           })
       }
-      init(t) {
-        var e = this;
-        return weh.rpc.call("coappProxy", "fs.stat", t)
+      init(dir) {
+        var self = this;
+        return weh.rpc.call("coappProxy", "fs.stat", dir)
           .then(() => {
-            e.setState({
+            self.setState({
               dirExits: !0
             })
           })
           .catch(() => {
-            e.setState({
+            self.setState({
               dirExits: !1
             })
           })
-          .then(() => e.props.uniqueFilename ? weh.rpc.call(
-              "coappProxy", "makeUniqueFileName", t, this.props
+          .then(() => self.props.uniqueFilename ? weh.rpc.call(
+              "coappProxy", "makeUniqueFileName", dir, this.props
               .filename)
-            .then(r => {
-              e.setState({
-                directory: r.directory,
-                filename: r.fileName
+            .then(uniqueResult => {
+              self.setState({
+                directory: uniqueResult.directory,
+                filename: uniqueResult.fileName
               })
-            }) : weh.rpc.call("coappProxy", "path.homeJoin", t)
-            .then(r => {
-              e.setState({
-                directory: r || t,
-                filename: e.props.filename
+            }) : weh.rpc.call("coappProxy", "path.homeJoin", dir)
+            .then(resolvedDir => {
+              self.setState({
+                directory: resolvedDir || dir,
+                filename: self.props.filename
               })
             })
-            .catch(r => {
-              e.props.setError(r)
+            .catch(error => {
+              self.props.setError(error)
             }))
           .then(() => {
-            e.update(t)
+            self.update(dir)
           })
       }
       getTitle() {
@@ -133,7 +133,7 @@
       }
       getModalData() {
         if (!this.props.error) return this.state.modal;
-        var t = this;
+        var self = this;
         return {
           title: weh._("error"),
           body: this.props.error.message,
@@ -143,173 +143,173 @@
             click: (() => {
                 this.props.clearError()
               })
-              .bind(t)
+              .bind(self)
           }]
         }
       }
-      updateFiles(t) {
-        var e = this;
-        return e.state.dirExits ? weh.rpc.call("coappProxy",
-            "listFiles", t)
-          .then(r => {
-            r = r.filter(s => !!s), e.setState({
-              files: r
+      updateFiles(dir) {
+        var self = this;
+        return self.state.dirExits ? weh.rpc.call("coappProxy",
+            "listFiles", dir)
+          .then(files => {
+            files = files.filter(file => !!file), self.setState({
+              files: files
             })
           })
-          .catch(r => {
-            e.props.setError(r)
-          }) : (e.setState({
+          .catch(error => {
+            self.props.setError(error)
+          }) : (self.setState({
             files: []
           }), Promise.resolve())
       }
-      updateParents(t) {
-        var e = this;
-        return weh.rpc.call("coappProxy", "getParents", t)
-          .then(r => {
-            e.setState({
-              parents: r
+      updateParents(dir) {
+        var self = this;
+        return weh.rpc.call("coappProxy", "getParents", dir)
+          .then(parents => {
+            self.setState({
+              parents: parents
             })
           })
-          .catch(r => {
-            e.props.setError(r)
+          .catch(error => {
+            self.props.setError(error)
           })
       }
-      update(t) {
-        var e = this;
-        return e.setState({
+      update(dir) {
+        var self = this;
+        return self.setState({
             parent: "",
-            directory: t,
+            directory: dir,
             selected: {},
             selectAll: !1
-          }), e.updateFiles(t)
-          .then(() => e.updateParents(t))
+          }), self.updateFiles(dir)
+          .then(() => self.updateParents(dir))
       }
-      updateState(t) {
-        this.setState(t)
+      updateState(newState) {
+        this.setState(newState)
       }
       toParent() {
-        var t = this;
-        return e => {
-          t.init(e.target.value)
+        var self = this;
+        return event => {
+          self.init(event.target.value)
         }
       }
-      getSize(t) {
-        return t < 1024 ? weh._("Bytes", t) : t < 1024 * 1e3 ? weh
-          ._("KB", Math.round(t / 100) / 10) : t < 1024 * 1e3 *
-          1e3 ? weh._("MB", Math.round(t / 1e5) / 10) : weh._("GB",
-            Math.round(t / 1e8) / 10)
+      getSize(bytes) {
+        return bytes < 1024 ? weh._("Bytes", bytes) : bytes < 1024 * 1e3 ? weh
+          ._("KB", Math.round(bytes / 100) / 10) : bytes < 1024 * 1e3 *
+          1e3 ? weh._("MB", Math.round(bytes / 1e5) / 10) : weh._("GB",
+            Math.round(bytes / 1e8) / 10)
       }
-      getDate(t) {
-        var e = new Date,
-          r = new Date(t);
-        return e.getDate() == r.getDate() && e.getMonth() == r
-          .getMonth() && e.getFullYear() == r.getFullYear() ? r
-          .getHours() + ":" + ("00" + r.getMinutes())
-          .substr(-2, 2) : r.toLocaleDateString()
+      getDate(timestamp) {
+        var nowDate = new Date,
+          fileDate = new Date(timestamp);
+        return nowDate.getDate() == fileDate.getDate() && nowDate.getMonth() == fileDate
+          .getMonth() && nowDate.getFullYear() == fileDate.getFullYear() ? fileDate
+          .getHours() + ":" + ("00" + fileDate.getMinutes())
+          .substr(-2, 2) : fileDate.toLocaleDateString()
       }
       sort() {
-        var t = this;
-        return (e, r) => t.state.sortField == "size" ? (e[1].size -
-            r[1].size) * t.state.sortDir : t.state.sortField ==
-          "date" ? (new Date(e[1].mtime)
-            .getTime() - new Date(r[1].mtime)
-            .getTime()) * t.state.sortDir : e[0] == r[0] ? 0 : e[0]
-          .toLowerCase() > r[0].toLowerCase() ? t.state.sortDir : -t
+        var self = this;
+        return (fileA, fileB) => self.state.sortField == "size" ? (fileA[1].size -
+            fileB[1].size) * self.state.sortDir : self.state.sortField ==
+          "date" ? (new Date(fileA[1].mtime)
+            .getTime() - new Date(fileB[1].mtime)
+            .getTime()) * self.state.sortDir : fileA[0] == fileB[0] ? 0 : fileA[0]
+          .toLowerCase() > fileB[0].toLowerCase() ? self.state.sortDir : -self
           .state.sortDir
       }
-      setSort(t) {
-        var e = this;
+      setSort(field) {
+        var self = this;
         return () => {
-          e.state.sortField == t ? e.setState({
-            sortDir: -e.state.sortDir
-          }) : e.setState({
-            sortField: t,
+          self.state.sortField == field ? self.setState({
+            sortDir: -self.state.sortDir
+          }) : self.setState({
+            sortField: field,
             sortDir: 1
           })
         }
       }
-      showSort(t) {
-        return this.state.sortField == t ? this.state.sortDir == 1 ?
+      showSort(field) {
+        return this.state.sortField == field ? this.state.sortDir == 1 ?
           "\u25B2" : "\u25BC" : ""
       }
-      gotoDir(t) {
-        var e = this;
+      gotoDir(dir) {
+        var self = this;
         return () => {
-          e.update(t)
+          self.update(dir)
         }
       }
       filenameChanged() {
-        var t = this;
-        return e => {
-          t.setState({
-            filename: e.target.value
+        var self = this;
+        return event => {
+          self.setState({
+            filename: event.target.value
           })
         }
       }
       filenameKeyPressed() {
-        var t = this;
-        return e => {
-          e.key == "Enter" ? t.defaultAction() : e.key ==
+        var self = this;
+        return event => {
+          event.key == "Enter" ? self.defaultAction() : event.key ==
             "Escape" && weh.trigger(null)
         }
       }
       onKeyDown() {
-        var t = this;
-        return e => {
-          e.key == "Enter" ? t.defaultAction() : e.key ==
+        var self = this;
+        return event => {
+          event.key == "Enter" ? self.defaultAction() : event.key ==
             "Escape" && weh.trigger(null)
         }
       }
       selectAllChanged() {
-        var t = this;
+        var self = this;
         return () => {
-          var e = {};
-          t.state.selectAll || t.state.files.forEach(([r, s]) => {
-            s.dir || (e[r] = !0)
-          }), t.setState({
-            selected: e,
-            selectAll: !t.state.selectAll
+          var selection = {};
+          self.state.selectAll || self.state.files.forEach(([name, entry]) => {
+            entry.dir || (selection[name] = !0)
+          }), self.setState({
+            selected: selection,
+            selectAll: !self.state.selectAll
           })
         }
       }
       canDefaultAction() {
-        var t = this;
+        var self = this;
         if (this.props.outputConfigs) {
           if (!this.state.outputConfig) return !1;
-          var e = Object.keys(t.state.selected)
-            .filter(r => !!t.state.selected[r]);
-          return e.length > 0
+          var selectedNames = Object.keys(self.state.selected)
+            .filter(name => !!self.state.selected[name]);
+          return selectedNames.length > 0
         } else return this.props.dirOnly ? !!this.state.directory :
           !!(this.state.filename && this.state.directory)
       }
       defaultAction() {
-        var t = this,
-          e = [this.state.directory];
-        this.state.filename && e.push(this.state.filename), weh.rpc
-          .call("coappProxy", "path.homeJoin", ...e)
-          .then(r => {
-            var s = {
-              fileName: t.state.filename,
-              directory: t.state.directory,
-              filePath: r
+        var self = this,
+          pathParts = [this.state.directory];
+        this.state.filename && pathParts.push(this.state.filename), weh.rpc
+          .call("coappProxy", "path.homeJoin", ...pathParts)
+          .then(filePath => {
+            var result = {
+              fileName: self.state.filename,
+              directory: self.state.directory,
+              filePath: filePath
             };
-            t.props.outputConfigs && (s.selected = Object.keys(t
+            self.props.outputConfigs && (result.selected = Object.keys(self
                   .state.selected)
-                .filter(i => !!t.state.selected[i]), s
-                .outputConfig = t.state.outputConfig, delete s
-                .fileName, delete s.filePath), t.props
+                .filter(name => !!self.state.selected[name]), result
+                .outputConfig = self.state.outputConfig, delete result
+                .fileName, delete result.filePath), self.props
               .confirmOverwrite ? weh.rpc.call("coappProxy",
-                "fs.stat", r)
+                "fs.stat", filePath)
               .then(() => {
-                t.setState({
+                self.setState({
                   modal: {
                     title: weh._("confirmation_required"),
-                    body: weh._("overwrite_file", r),
+                    body: weh._("overwrite_file", filePath),
                     buttons: [{
                       text: weh._("no"),
                       color: "secondary",
                       click: () => {
-                        t.setState({
+                        self.setState({
                           modal: null
                         })
                       }
@@ -317,61 +317,61 @@
                       text: weh._("yes"),
                       color: "primary",
                       click: () => {
-                        t.setState({
+                        self.setState({
                           modal: null
-                        }), weh.trigger(s)
+                        }), weh.trigger(result)
                       }
                     }]
                   }
                 })
               })
               .catch(() => {
-                weh.trigger(s)
-              }) : weh.trigger(s)
+                weh.trigger(result)
+              }) : weh.trigger(result)
           })
       }
       callDefaultAction() {
-        var t = this;
+        var self = this;
         return () => {
-          t.defaultAction()
+          self.defaultAction()
         }
       }
       cancel() {
-        var t = this;
+        var self = this;
         return () => {
           weh.trigger(null)
         }
       }
-      fileClicked(t) {
-        var e = this;
-        return r => {
-          e.setState({
-            filename: t
-          }), e.props.selectMultiple && e.setState({
-            selected: Object.assign({}, e.state.selected, {
-              [t]: !e.state.selected[t]
+      fileClicked(filename) {
+        var self = this;
+        return event => {
+          self.setState({
+            filename: filename
+          }), self.props.selectMultiple && self.setState({
+            selected: Object.assign({}, self.state.selected, {
+              [filename]: !self.state.selected[filename]
             })
           })
         }
       }
       newSubDirectory() {
-        var t = this,
-          e = null;
+        var self = this,
+          inputEl = null;
         return () => {
-          t.setState({
+          self.setState({
             modal: {
               title: weh._("new_sub_directory"),
               body: React.createElement("input", {
                 type: "text",
                 className: "form-control",
-                ref: r => e = r,
+                ref: element => inputEl = element,
                 placeholder: weh._("sub_directory_name")
               }),
               buttons: [{
                 text: weh._("cancel"),
                 color: "secondary",
                 click: () => {
-                  t.setState({
+                  self.setState({
                     modal: null
                   })
                 }
@@ -379,67 +379,67 @@
                 text: weh._("create"),
                 color: "primary",
                 click: () => {
-                  t.setState({
+                  self.setState({
                     modal: null
-                  }), t.createSubDirectory(e.value)
+                  }), self.createSubDirectory(inputEl.value)
                 }
               }]
             }
           })
         }
       }
-      createSubDirectory(t) {
-        var e = this,
-          r;
-        weh.rpc.call("coappProxy", "path.homeJoin", e.state
-            .directory, t)
-          .then(s => (r = s, weh.rpc.call("coappProxy", "fs.mkdirp",
-            r)))
+      createSubDirectory(name) {
+        var self = this,
+          dirPath;
+        weh.rpc.call("coappProxy", "path.homeJoin", self.state
+            .directory, name)
+          .then(resolvedPath => (dirPath = resolvedPath, weh.rpc.call("coappProxy", "fs.mkdirp",
+            dirPath)))
           .then(() => {
-            e.init(r)
+            self.init(dirPath)
           })
-          .catch(s => {
-            e.props.setError(s)
+          .catch(error => {
+            self.props.setError(error)
           })
       }
       render() {
-        var t = this,
-          e = this.state.files.sort(this.sort())
-          .map(s => s[1].dir ? React.createElement("tr", {
+        var self = this,
+          fileRows = this.state.files.sort(this.sort())
+          .map(entry => entry[1].dir ? React.createElement("tr", {
                 className: "dir-entry",
-                key: s[0],
-                onClick: this.gotoDir(s[1].path)
+                key: entry[0],
+                onClick: this.gotoDir(entry[1].path)
               }, React.createElement("td", null, React
                 .createElement("img", {
                   src: "images/folder.png"
                 })), React.createElement("td", null, React
-                .createElement("div", null, s[0])), !t.props
+                .createElement("div", null, entry[0])), !self.props
               .noSizeColumn && React.createElement("td", null),
-              React.createElement("td", null, t.getDate(new Date(s[
-                1].mtime)))) : t.props.dirOnly ? null : React
+              React.createElement("td", null, self.getDate(new Date(entry[
+                1].mtime)))) : self.props.dirOnly ? null : React
             .createElement("tr", {
                 className: "file-entry",
-                key: s[0],
-                selectedfile: "" + (!t.props.selectMultiple && t
-                  .state.filename === s[0]),
-                onClick: t.fileClicked(s[0])
-              }, React.createElement("td", null, t.props
+                key: entry[0],
+                selectedfile: "" + (!self.props.selectMultiple && self
+                  .state.filename === entry[0]),
+                onClick: self.fileClicked(entry[0])
+              }, React.createElement("td", null, self.props
                 .selectMultiple && React.createElement("input", {
                   type: "checkbox",
-                  checked: !!t.state.selected[s[0]],
+                  checked: !!self.state.selected[entry[0]],
                   className: "form-control"
                 })), React.createElement("td", null, React
-                .createElement("div", null, s[0])), !t.props
-              .noSizeColumn && React.createElement("td", null, t
-                .getSize(s[1].size)), React.createElement("td",
-                null, t.getDate(new Date(s[1].mtime))))),
-          r = this.state.parents.map(s => React.createElement(
+                .createElement("div", null, entry[0])), !self.props
+              .noSizeColumn && React.createElement("td", null, self
+                .getSize(entry[1].size)), React.createElement("td",
+                null, self.getDate(new Date(entry[1].mtime))))),
+          parentLinks = this.state.parents.map(parent => React.createElement(
             "option", {
-              key: s,
-              value: s
-            }, s));
+              key: parent,
+              value: parent
+            }, parent));
         return this.props.upDir && this.state.parents.length > 0 &&
-          !/^[A-Z]:\\$/.test(this.state.directory) && e.unshift(
+          !/^[A-Z]:\\$/.test(this.state.directory) && fileRows.unshift(
             React.createElement("tr", {
                 className: "dir-entry",
                 key: this.state.parents[0],
@@ -449,7 +449,7 @@
                   src: "images/folder.png"
                 })), React.createElement("td", null, React
                 .createElement("div", null, "..")), React
-              .createElement("td", null))), r.unshift(React
+              .createElement("td", null))), parentLinks.unshift(React
             .createElement("option", {
               key: "",
               value: ""
@@ -463,11 +463,11 @@
             }), React.createElement("main", null, React
             .createElement("div", {
                 className: "top-line"
-              }, r.length > 0 && React.createElement("select", {
+              }, parentLinks.length > 0 && React.createElement("select", {
                 value: this.state.parent,
                 onChange: this.toParent(),
                 className: "form-control"
-              }, r), this.state.filename !== null && this.props
+              }, parentLinks), this.state.filename !== null && this.props
               .editFileInput && React.createElement("input", {
                 value: this.state.filename,
                 onChange: this.filenameChanged(),
@@ -500,8 +500,8 @@
                         "div", null, React.createElement(
                           "input", {
                             type: "checkbox",
-                            checked: t.state.selectAll,
-                            onChange: t.selectAllChanged(),
+                            checked: self.state.selectAll,
+                            onChange: self.selectAllChanged(),
                             className: "form-control"
                           }))), React.createElement("th", {
                       onClick: this.setSort("name")
@@ -519,10 +519,10 @@
                     }, React.createElement("div", null, this
                       .showSort("date"), " ", weh._(
                         "file_dialog_date"))))), React
-                .createElement("tbody", null, e)))), this.props
+                .createElement("tbody", null, fileRows)))), this.props
             .outputConfigs && React.createElement("div", {
               className: "bottom-component"
-            }, React.createElement(n, {
+            }, React.createElement(OutputConfigSelector, {
               updateState: this.updateState.bind(this),
               cancel: this.cancel()
                 .bind(this)
@@ -544,64 +544,64 @@
             }))
       }
     });
-    class n extends React.Component {
-      constructor(e) {
-        super(e), this.state = {
+    class OutputConfigSelector extends React.Component {
+      constructor(props) {
+        super(props), this.state = {
           outputConfig: "",
           outputConfigs: {}
         };
-        var r = this;
-        weh.prefs.then(s => {
-          s.on("dlconvLastOutput", (i, o) => {
-            r.setState({
-              outputConfig: o
-            }), r.props.updateState({
-              outputConfig: o
+        var self = this;
+        weh.prefs.then(prefs => {
+          prefs.on("dlconvLastOutput", (settingName, value) => {
+            self.setState({
+              outputConfig: value
+            }), self.props.updateState({
+              outputConfig: value
             })
           })
         })
       }
       componentWillMount() {
-        var e = this;
+        var self = this;
         weh.rpc.call("getOutputConfigs")
-          .then(r => {
-            e.setState({
-              outputConfigs: r
+          .then(configs => {
+            self.setState({
+              outputConfigs: configs
             })
           })
       }
       changeOutput() {
-        var e = this;
-        return r => {
-          e.setState({
-            outputConfig: r.target.value
-          }), e.props.updateState({
-            outputConfig: r.target.value
+        var self = this;
+        return event => {
+          self.setState({
+            outputConfig: event.target.value
+          }), self.props.updateState({
+            outputConfig: event.target.value
           })
         }
       }
       configOutputs() {
-        var e = this;
+        var self = this;
         return () => {
-          weh.rpc.call("editConverterConfigs", e.state
-            .outputConfig), e.props.cancel()
+          weh.rpc.call("editConverterConfigs", self.state
+            .outputConfig), self.props.cancel()
         }
       }
       render() {
-        var e = this,
-          r;
-        this.state.outputConfig ? r = this.state.outputConfigs : r =
+        var self = this,
+          configMap;
+        this.state.outputConfig ? configMap = this.state.outputConfigs : configMap =
           Object.assign({}, this.state.outputConfigs, {
             "": {
               title: weh._("select_output_config")
             }
           });
-        var s = Object.keys(r)
+        var configOptions = Object.keys(configMap)
           .sort()
-          .map(i => React.createElement("option", {
-            key: i,
-            value: i
-          }, r[i].title));
+          .map(configKey => React.createElement("option", {
+            key: configKey,
+            value: configKey
+          }, configMap[configKey].title));
         return React.createElement("div", {
           className: "output-conf-sel"
         }, React.createElement("span", null, weh._(
@@ -610,16 +610,16 @@
           className: "form-control",
           onChange: this.changeOutput(),
           value: this.state.outputConfig
-        }, s), React.createElement("a", {
+        }, configOptions), React.createElement("a", {
           href: "#",
           onClick: this.configOutputs()
         }, weh._("dlconv_output_details")))
       }
     }
     render(React.createElement(Provider, {
-      store: a
-    }, React.createElement(l, {
-      store: a
+      store: store
+    }, React.createElement(FileDialog, {
+      store: store
     })), document.getElementById("root"))
   });
 })();

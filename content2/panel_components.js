@@ -1,47 +1,47 @@
-var K = Object.create;
-var B = Object.defineProperty;
-var Z = Object.getOwnPropertyDescriptor;
-var G = Object.getOwnPropertyNames;
-var J = Object.getPrototypeOf,
-  X = Object.prototype.hasOwnProperty;
-var Q = (t, r) => () => (r || t((r = {
+var objectCreate = Object.create;
+var defineProperty = Object.defineProperty;
+var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var getOwnPropNames = Object.getOwnPropertyNames;
+var getPrototypeOf = Object.getPrototypeOf,
+  hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
     exports: {}
   })
-  .exports, r), r.exports);
-var Y = (t, r, e, s) => {
-  if (r && typeof r == "object" || typeof r == "function")
-    for (let o of G(r)) !X.call(t, o) && o !== e && B(t, o, {
-      get: () => r[o],
-      enumerable: !(s = Z(r, o)) || s.enumerable
+  .exports, cachedExports), cachedExports.exports);
+var copyProps = (targetObj, from, except, desc) => {
+  if (from && typeof from == "object" || typeof from == "function")
+    for (let key of getOwnPropNames(from)) !hasOwnPropertyRef.call(targetObj, key) && key !== except && defineProperty(targetObj, key, {
+      get: () => from[key],
+      enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable
     });
-  return t
+  return targetObj
 };
-var ee = (t, r, e) => (e = t != null ? K(J(t)) : {}, Y(r || !t || !t
-  .__esModule ? B(e, "default", {
-    value: t,
+var toEsm = (mod, isNodeMode, target) => (target = mod != null ? objectCreate(getPrototypeOf(mod)) : {}, copyProps(isNodeMode || !mod || !mod
+  .__esModule ? defineProperty(target, "default", {
+    value: mod,
     enumerable: !0
-  }) : e, t));
-var N = Q((M, I) => {
-  (function(t, r) {
+  }) : target, mod));
+var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
+  (function(globalScope, factory) {
     if (typeof define == "function" && define.amd) define(
-      "webextension-polyfill", ["module"], r);
-    else if (typeof M < "u") r(I);
+      "webextension-polyfill", ["module"], factory);
+    else if (typeof polyfillExports < "u") factory(polyfillModule);
     else {
-      var e = {
+      var moduleShim = {
         exports: {}
       };
-      r(e), t.browser = e.exports
+      factory(moduleShim), globalScope.browser = moduleShim.exports
     }
-  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : M,
-    function(t) {
+  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : polyfillExports,
+    function(browserGlobal) {
       "use strict";
       if (!globalThis.chrome?.runtime?.id) throw new Error(
         "This script should only be loaded in a browser extension.");
       if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
           globalThis.browser) !== Object.prototype) {
-        let r = "The message port closed before a response was received.",
-          e = s => {
-            let o = {
+        let messagePortClosedMessage = "The message port closed before a response was received.",
+          wrapApis = chromeApi => {
+            let apiMetadata = {
               alarms: {
                 clear: {
                   minArgs: 0,
@@ -713,205 +713,205 @@ var N = Q((M, I) => {
                 }
               }
             };
-            if (Object.keys(o)
+            if (Object.keys(apiMetadata)
               .length === 0) throw new Error(
               "api-metadata.json has not been included in browser-polyfill"
               );
-            class l extends WeakMap {
-              constructor(a, m = void 0) {
-                super(m), this.createItem = a
+            class DefaultWeakMap extends WeakMap {
+              constructor(createItem, entries = void 0) {
+                super(entries), this.createItem = createItem
               }
-              get(a) {
-                return this.has(a) || this.set(a, this.createItem(a)),
-                  super.get(a)
+              get(key) {
+                return this.has(key) || this.set(key, this.createItem(key)),
+                  super.get(key)
               }
             }
-            let c = n => n && typeof n == "object" && typeof n.then ==
+            let isThenable = value => value && typeof value == "object" && typeof value.then ==
               "function",
-              _ = (n, a) => (...m) => {
-                s.runtime.lastError ? n.reject(new Error(s.runtime.lastError
-                    .message)) : a.singleCallbackArg || m.length <= 1 && a
-                  .singleCallbackArg !== !1 ? n.resolve(m[0]) : n.resolve(m)
+              makeCallback = (promiseCallbacks, metadata) => (...callbackArgs) => {
+                chromeApi.runtime.lastError ? promiseCallbacks.reject(new Error(chromeApi.runtime.lastError
+                    .message)) : metadata.singleCallbackArg || callbackArgs.length <= 1 && metadata
+                  .singleCallbackArg !== !1 ? promiseCallbacks.resolve(callbackArgs[0]) : promiseCallbacks.resolve(callbackArgs)
               },
-              A = n => n == 1 ? "argument" : "arguments",
-              f = (n, a) => function(g, ...u) {
-                if (u.length < a.minArgs) throw new Error(
-                  `Expected at least ${a.minArgs} ${A(a.minArgs)} for ${n}(), got ${u.length}`
+              pluralizeArgs = count => count == 1 ? "argument" : "arguments",
+              wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
+                if (args.length < metadata.minArgs) throw new Error(
+                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                   );
-                if (u.length > a.maxArgs) throw new Error(
-                  `Expected at most ${a.maxArgs} ${A(a.maxArgs)} for ${n}(), got ${u.length}`
+                if (args.length > metadata.maxArgs) throw new Error(
+                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                   );
-                return new Promise((x, p) => {
-                  if (a.fallbackToNoCallback) try {
-                    g[n](...u, _({
-                      resolve: x,
-                      reject: p
-                    }, a))
-                  } catch (i) {
+                return new Promise((resolve, reject) => {
+                  if (metadata.fallbackToNoCallback) try {
+                    apiTarget[name](...args, makeCallback({
+                      resolve: resolve,
+                      reject: reject
+                    }, metadata))
+                  } catch (error) {
                     console.warn(
-                        `${n} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                        i), g[n](...u), a.fallbackToNoCallback = !1, a
-                      .noCallback = !0, x()
-                  } else a.noCallback ? (g[n](...u), x()) : g[n](...u,
-                    _({
-                      resolve: x,
-                      reject: p
-                    }, a))
+                        `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                        error), apiTarget[name](...args), metadata.fallbackToNoCallback = !1, metadata
+                      .noCallback = !0, resolve()
+                  } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](...args,
+                    makeCallback({
+                      resolve: resolve,
+                      reject: reject
+                    }, metadata))
                 })
               },
-              h = (n, a, m) => new Proxy(a, {
-                apply(g, u, x) {
-                  return m.call(u, n, ...x)
+              wrapMethod = (target, method, wrapper) => new Proxy(method, {
+                apply(fnTarget, thisArg, callArgs) {
+                  return wrapper.call(thisArg, target, ...callArgs)
                 }
               }),
-              y = Function.call.bind(Object.prototype.hasOwnProperty),
-              S = (n, a = {}, m = {}) => {
-                let g = Object.create(null),
-                  u = {
-                    has(p, i) {
-                      return i in n || i in g
+              hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty),
+              wrapObject = (target, wrappers = {}, metadata = {}) => {
+                let cache = Object.create(null),
+                  handler = {
+                    has(proxyTarget, prop) {
+                      return prop in target || prop in cache
                     },
-                    get(p, i, b) {
-                      if (i in g) return g[i];
-                      if (!(i in n)) return;
-                      let d = n[i];
-                      if (typeof d == "function")
-                        if (typeof a[i] == "function") d = h(n, n[i], a[
-                          i]);
-                        else if (y(m, i)) {
-                        let C = f(i, m[i]);
-                        d = h(n, n[i], C)
-                      } else d = d.bind(n);
-                      else if (typeof d == "object" && d !== null && (y(a,
-                          i) || y(m, i))) d = S(d, a[i], m[i]);
-                      else if (y(m, "*")) d = S(d, a[i], m["*"]);
-                      else return Object.defineProperty(g, i, {
+                    get(proxyTarget, prop, receiver) {
+                      if (prop in cache) return cache[prop];
+                      if (!(prop in target)) return;
+                      let value = target[prop];
+                      if (typeof value == "function")
+                        if (typeof wrappers[prop] == "function") value = wrapMethod(target, target[prop], wrappers[
+                          prop]);
+                        else if (hasOwnProperty(metadata, prop)) {
+                        let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
+                        value = wrapMethod(target, target[prop], wrappedFn)
+                      } else value = value.bind(target);
+                      else if (typeof value == "object" && value !== null && (hasOwnProperty(wrappers,
+                          prop) || hasOwnProperty(metadata, prop))) value = wrapObject(value, wrappers[prop], metadata[prop]);
+                      else if (hasOwnProperty(metadata, "*")) value = wrapObject(value, wrappers[prop], metadata["*"]);
+                      else return Object.defineProperty(cache, prop, {
                         configurable: !0,
                         enumerable: !0,
                         get() {
-                          return n[i]
+                          return target[prop]
                         },
-                        set(C) {
-                          n[i] = C
+                        set(newValue) {
+                          target[prop] = newValue
                         }
-                      }), d;
-                      return g[i] = d, d
+                      }), value;
+                      return cache[prop] = value, value
                     },
-                    set(p, i, b, d) {
-                      return i in g ? g[i] = b : n[i] = b, !0
+                    set(proxyTarget, prop, value, receiver) {
+                      return prop in cache ? cache[prop] = value : target[prop] = value, !0
                     },
-                    defineProperty(p, i, b) {
-                      return Reflect.defineProperty(g, i, b)
+                    defineProperty(proxyTarget, prop, desc) {
+                      return Reflect.defineProperty(cache, prop, desc)
                     },
-                    deleteProperty(p, i) {
-                      return Reflect.deleteProperty(g, i)
+                    deleteProperty(proxyTarget, prop) {
+                      return Reflect.deleteProperty(cache, prop)
                     }
                   },
-                  x = Object.create(n);
-                return new Proxy(x, u)
+                  proxyBase = Object.create(target);
+                return new Proxy(proxyBase, handler)
               },
-              T = n => ({
-                addListener(a, m, ...g) {
-                  a.addListener(n.get(m), ...g)
+              wrapEvent = wrapperMap => ({
+                addListener(target, listener, ...args) {
+                  target.addListener(wrapperMap.get(listener), ...args)
                 },
-                hasListener(a, m) {
-                  return a.hasListener(n.get(m))
+                hasListener(target, listener) {
+                  return target.hasListener(wrapperMap.get(listener))
                 },
-                removeListener(a, m) {
-                  a.removeListener(n.get(m))
+                removeListener(target, listener) {
+                  target.removeListener(wrapperMap.get(listener))
                 }
               }),
-              H = new l(n => typeof n != "function" ? n : function(m) {
-                let g = S(m, {}, {
+              onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
+                let wrappedRequest = wrapObject(request, {}, {
                   getContent: {
                     minArgs: 0,
                     maxArgs: 0
                   }
                 });
-                n(g)
+                listener(wrappedRequest)
               }),
-              R = new l(n => typeof n != "function" ? n : function(m, g,
-              u) {
-                let x = !1,
-                  p, i = new Promise(k => {
-                    p = function(w) {
-                      x = !0, k(w)
+              onMessageWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(message, sender,
+              sendResponse) {
+                let responseSent = !1,
+                  resolveResponse, responsePromise = new Promise(resolvePromise => {
+                    resolveResponse = function(response) {
+                      responseSent = !0, resolvePromise(response)
                     }
                   }),
-                  b;
+                  result;
                 try {
-                  b = n(m, g, p)
-                } catch (k) {
-                  b = Promise.reject(k)
+                  result = listener(message, sender, resolveResponse)
+                } catch (error) {
+                  result = Promise.reject(error)
                 }
-                let d = b !== !0 && c(b);
-                if (b !== !0 && !d && !x) return !1;
-                let C = k => {
-                  k.then(w => {
-                      u(w)
-                    }, w => {
-                      let D;
-                      w && (w instanceof Error || typeof w.message ==
-                          "string") ? D = w.message : D =
-                        "An unexpected error occurred", u({
+                let resultIsThenable = result !== !0 && isThenable(result);
+                if (result !== !0 && !resultIsThenable && !responseSent) return !1;
+                let sendResolvedResponse = resultPromise => {
+                  resultPromise.then(response => {
+                      sendResponse(response)
+                    }, error => {
+                      let errorMessage;
+                      error && (error instanceof Error || typeof error.message ==
+                          "string") ? errorMessage = error.message : errorMessage =
+                        "An unexpected error occurred", sendResponse({
                           __mozWebExtensionPolyfillReject__: !0,
-                          message: D
+                          message: errorMessage
                         })
                     })
-                    .catch(w => {
+                    .catch(replyError => {
                       console.error(
-                        "Failed to send onMessage rejected reply", w
+                        "Failed to send onMessage rejected reply", replyError
                         )
                     })
                 };
-                return C(d ? b : i), !0
+                return sendResolvedResponse(resultIsThenable ? result : responsePromise), !0
               }),
-              z = ({
-                reject: n,
-                resolve: a
-              }, m) => {
-                s.runtime.lastError ? s.runtime.lastError.message === r ?
-                  a() : n(new Error(s.runtime.lastError.message)) : m && m
-                  .__mozWebExtensionPolyfillReject__ ? n(new Error(m
-                    .message)) : a(m)
+              processResponse = ({
+                reject: reject,
+                resolve: resolve
+              }, response) => {
+                chromeApi.runtime.lastError ? chromeApi.runtime.lastError.message === messagePortClosedMessage ?
+                  resolve() : reject(new Error(chromeApi.runtime.lastError.message)) : response && response
+                  .__mozWebExtensionPolyfillReject__ ? reject(new Error(response
+                    .message)) : resolve(response)
               },
-              F = (n, a, m, ...g) => {
-                if (g.length < a.minArgs) throw new Error(
-                  `Expected at least ${a.minArgs} ${A(a.minArgs)} for ${n}(), got ${g.length}`
+              wrapSendMessage = (name, metadata, apiTarget, ...args) => {
+                if (args.length < metadata.minArgs) throw new Error(
+                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                   );
-                if (g.length > a.maxArgs) throw new Error(
-                  `Expected at most ${a.maxArgs} ${A(a.maxArgs)} for ${n}(), got ${g.length}`
+                if (args.length > metadata.maxArgs) throw new Error(
+                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                   );
-                return new Promise((u, x) => {
-                  let p = z.bind(null, {
-                    resolve: u,
-                    reject: x
+                return new Promise((resolve, reject) => {
+                  let boundCallback = processResponse.bind(null, {
+                    resolve: resolve,
+                    reject: reject
                   });
-                  g.push(p), m.sendMessage(...g)
+                  args.push(boundCallback), apiTarget.sendMessage(...args)
                 })
               },
-              W = {
+              staticWrappers = {
                 devtools: {
                   network: {
-                    onRequestFinished: T(H)
+                    onRequestFinished: wrapEvent(onRequestFinishedWrappers)
                   }
                 },
                 runtime: {
-                  onMessage: T(R),
-                  onMessageExternal: T(R),
-                  sendMessage: F.bind(null, "sendMessage", {
+                  onMessage: wrapEvent(onMessageWrappers),
+                  onMessageExternal: wrapEvent(onMessageWrappers),
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 1,
                     maxArgs: 3
                   })
                 },
                 tabs: {
-                  sendMessage: F.bind(null, "sendMessage", {
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 2,
                     maxArgs: 3
                   })
                 }
               },
-              E = {
+              settingMetadata = {
                 clear: {
                   minArgs: 1,
                   maxArgs: 1
@@ -925,215 +925,215 @@ var N = Q((M, I) => {
                   maxArgs: 1
                 }
               };
-            return o.privacy = {
+            return apiMetadata.privacy = {
               network: {
-                "*": E
+                "*": settingMetadata
               },
               services: {
-                "*": E
+                "*": settingMetadata
               },
               websites: {
-                "*": E
+                "*": settingMetadata
               }
-            }, S(s, W, o)
+            }, wrapObject(chromeApi, staticWrappers, apiMetadata)
           };
-        t.exports = e(chrome)
-      } else t.exports = globalThis.browser
+        browserGlobal.exports = wrapApis(chrome)
+      } else browserGlobal.exports = globalThis.browser
     })
 });
-var O = ee(N(), 1);
+var polyfillNamespace = toEsm(requirePolyfill(), 1);
 
-function v(t) {
-  return t ? t.replaceAll("&", "&amp;")
+function escapeHtml(text) {
+  return text ? text.replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;") : ""
 }
 
-function $(t, r, e) {
-  let s = () => (console.error(`Requesting unknown i18n string ${t}`), t);
-  r = r.map(o => o.toString())
-    .map(v);
+function localizeMessage(messageKey, substitutions, localMessages) {
+  let reportMissing = () => (console.error(`Requesting unknown i18n string ${messageKey}`), messageKey);
+  substitutions = substitutions.map(substitution => substitution.toString())
+    .map(escapeHtml);
   try {
-    if (t in e) {
-      let o = e[t],
-        l = 1;
-      for (let c = 0; c < r.length; c++) o = o.replace(`$${l}`, r[c]);
-      return o
+    if (messageKey in localMessages) {
+      let resolvedMessage = localMessages[messageKey],
+        placeholderIndex = 1;
+      for (let argIndex = 0; argIndex < substitutions.length; argIndex++) resolvedMessage = resolvedMessage.replace(`$${placeholderIndex}`, substitutions[argIndex]);
+      return resolvedMessage
     } else {
-      let o = O.default.i18n.getMessage(t, r);
-      return o || s()
+      let browserMessage = polyfillNamespace.default.i18n.getMessage(messageKey, substitutions);
+      return browserMessage || reportMissing()
     }
   } catch {
-    return s()
+    return reportMissing()
   }
 }
 
-function j(t, r) {
-  for (let e of Array.from(t.querySelectorAll("[data-i18n]"))) {
-    let s = e.dataset.i18nArgs,
-      o = e.dataset.i18nAttr,
-      l;
-    s ? l = $(e.dataset.i18n, JSON.parse(s), r) : l = $(e.dataset.i18n, [], r),
-      o ? e.setAttribute(o, l) : e.textContent = l
+function applyI18n(rootElement, i18nMessages) {
+  for (let element of Array.from(rootElement.querySelectorAll("[data-i18n]"))) {
+    let i18nArgsRaw = element.dataset.i18nArgs,
+      i18nAttr = element.dataset.i18nAttr,
+      translatedText;
+    i18nArgsRaw ? translatedText = localizeMessage(element.dataset.i18n, JSON.parse(i18nArgsRaw), i18nMessages) : translatedText = localizeMessage(element.dataset.i18n, [], i18nMessages),
+      i18nAttr ? element.setAttribute(i18nAttr, translatedText) : element.textContent = translatedText
   }
 }
 
-function q(t) {
-  return t < 1048576 ? `${(t/1024).toFixed(0)}Kb` :
-    `${(t/1048576).toFixed(0)}Mb`
+function formatBytes(byteCount) {
+  return byteCount < 1048576 ? `${(byteCount/1024).toFixed(0)}Kb` :
+    `${(byteCount/1048576).toFixed(0)}Mb`
 }
 
-function P(t) {
-  let r = Math.floor(t / 3600);
-  t -= r * 3600;
-  let e = Math.floor(t / 60);
-  t -= e * 60;
-  let s = Math.round(t),
-    o = ("0" + r + ":")
+function formatDuration(totalSeconds) {
+  let hours = Math.floor(totalSeconds / 3600);
+  totalSeconds -= hours * 3600;
+  let minutes = Math.floor(totalSeconds / 60);
+  totalSeconds -= minutes * 60;
+  let seconds = Math.round(totalSeconds),
+    hoursText = ("0" + hours + ":")
     .slice(-3),
-    l = ("0" + e + ":")
+    minutesText = ("0" + minutes + ":")
     .slice(-3),
-    c = ("0" + s)
+    secondsText = ("0" + seconds)
     .slice(-2);
-  return o == "00:" && (o = ""), o + l + c
+  return hoursText == "00:" && (hoursText = ""), hoursText + minutesText + secondsText
 }
-var V = ["download", "copy", "download_as", "download_audio"];
+var downloadActionNames = ["download", "copy", "download_as", "download_audio"];
 
-function te(t, r) {
-  let e = document.querySelector(`[data-downloadable-id="${t}"]`),
-    s = e.querySelector("sl-progress-bar"),
-    o = e.querySelector(".span-percent"),
-    l = e.querySelector(".span-bitrate"),
-    c = e.querySelector(".span-downloading-duration");
-  e.classList.remove("progress-unknown"), typeof r != "string" ? (c
-    .textContent = P(r.duration_since_start / 1e3) + "s", e.querySelector(
+function UpdateProgress(downloadableId, progressInfo) {
+  let downloadElement = document.querySelector(`[data-downloadable-id="${downloadableId}"]`),
+    progressBar = downloadElement.querySelector("sl-progress-bar"),
+    percentSpan = downloadElement.querySelector(".span-percent"),
+    bitrateSpan = downloadElement.querySelector(".span-bitrate"),
+    durationSpan = downloadElement.querySelector(".span-downloading-duration");
+  downloadElement.classList.remove("progress-unknown"), typeof progressInfo != "string" ? (durationSpan
+    .textContent = formatDuration(progressInfo.duration_since_start / 1e3) + "s", downloadElement.querySelector(
       ".button-stop")
-    .removeAttribute("loading"), e.querySelector(".button-stop")
-    .removeAttribute("disabled"), l.removeAttribute("hidden"), l
+    .removeAttribute("loading"), downloadElement.querySelector(".button-stop")
+    .removeAttribute("disabled"), bitrateSpan.removeAttribute("hidden"), bitrateSpan
     .querySelector("sl-format-bytes")
-    .setAttribute("value", r.bitrate_bs.toString()), r.progress != "unknown" ?
-    (o.removeAttribute("hidden"), o.querySelector("sl-format-number")
-      .setAttribute("value", r.progress.toString()), s.removeAttribute(
-        "indeterminate"), s.setAttribute("value", (r.progress * 100)
-        .toString())) : (o.setAttribute("hidden", "true"), s.removeAttribute(
-      "value"), s.setAttribute("indeterminate", "true"), e.classList.add(
-      "progress-unknown"))) : (e.querySelector(".button-stop")
-    .setAttribute("loading", "true"), e.querySelector(".button-stop")
-    .setAttribute("disabled", "true"), l.setAttribute("hidden", "true"))
+    .setAttribute("value", progressInfo.bitrate_bs.toString()), progressInfo.progress != "unknown" ?
+    (percentSpan.removeAttribute("hidden"), percentSpan.querySelector("sl-format-number")
+      .setAttribute("value", progressInfo.progress.toString()), progressBar.removeAttribute(
+        "indeterminate"), progressBar.setAttribute("value", (progressInfo.progress * 100)
+        .toString())) : (percentSpan.setAttribute("hidden", "true"), progressBar.removeAttribute(
+      "value"), progressBar.setAttribute("indeterminate", "true"), downloadElement.classList.add(
+      "progress-unknown"))) : (downloadElement.querySelector(".button-stop")
+    .setAttribute("loading", "true"), downloadElement.querySelector(".button-stop")
+    .setAttribute("disabled", "true"), bitrateSpan.setAttribute("hidden", "true"))
 }
 
-function re(t, r) {
-  let e = t.core_media,
-    s = [],
-    o = e.container.extension;
-  e.av.video || (o = e.container.audio_only_extension), s.push(
-    `<span class="variant-container">${o}</span>`);
-  let l = $("v9_panel_downloadable_variant_no_details", [], r);
-  if (e.av.video) {
-    if (e.av.video.quality.isSome()) {
-      let c = e.av.video.quality.unwrap() + "p";
-      s.push(`<span class="variant-quality _${c}">${c}</span>`)
+function renderVariant(variant, localMessages) {
+  let coreMedia = variant.core_media,
+    variantParts = [],
+    containerExt = coreMedia.container.extension;
+  coreMedia.av.video || (containerExt = coreMedia.container.audio_only_extension), variantParts.push(
+    `<span class="variant-container">${containerExt}</span>`);
+  let differentiatorText = localizeMessage("v9_panel_downloadable_variant_no_details", [], localMessages);
+  if (coreMedia.av.video) {
+    if (coreMedia.av.video.quality.isSome()) {
+      let qualityLabel = coreMedia.av.video.quality.unwrap() + "p";
+      variantParts.push(`<span class="variant-quality _${qualityLabel}">${qualityLabel}</span>`)
     }
-    if (e.av.video.dimensions.isSome()) {
-      let c = e.av.video.dimensions.unwrap();
-      l = `${c.width}x${c.height}`, e.av.video.bitrate.isSome() && (l +=
-        ` ${q(e.av.video.bitrate.unwrap())}/s`)
-    } else e.content_length.isSome() ? l = q(e.content_length.unwrap()) : e.av
-      .video.bitrate.isSome() && (l += `${q(e.av.video.bitrate.unwrap())}/s`)
+    if (coreMedia.av.video.dimensions.isSome()) {
+      let dimensions = coreMedia.av.video.dimensions.unwrap();
+      differentiatorText = `${dimensions.width}x${dimensions.height}`, coreMedia.av.video.bitrate.isSome() && (differentiatorText +=
+        ` ${formatBytes(coreMedia.av.video.bitrate.unwrap())}/s`)
+    } else coreMedia.content_length.isSome() ? differentiatorText = formatBytes(coreMedia.content_length.unwrap()) : coreMedia.av
+      .video.bitrate.isSome() && (differentiatorText += `${formatBytes(coreMedia.av.video.bitrate.unwrap())}/s`)
   }
-  return s.push(`<span class="variant-differentiator">${l}</span>`), `<sl-menu-item class="menu-item-variant" data-variant-id="${t.id}" data-to-copy="${v(t.to_copy)}">
-    ${s.join("")}
+  return variantParts.push(`<span class="variant-differentiator">${differentiatorText}</span>`), `<sl-menu-item class="menu-item-variant" data-variant-id="${variant.id}" data-to-copy="${escapeHtml(variant.to_copy)}">
+    ${variantParts.join("")}
   </sl-menu-item>`
 }
 
-function be(t, r) {
-  t.dataset.defaultAction = r;
-  let e = t.querySelector("sl-menu-item.action-" + r),
-    s = e.querySelector("sl-icon")
+function UpdateDefaultAction(downloadElement, actionName) {
+  downloadElement.dataset.defaultAction = actionName;
+  let actionMenuItem = downloadElement.querySelector("sl-menu-item.action-" + actionName),
+    iconName = actionMenuItem.querySelector("sl-icon")
     .getAttribute("name"),
-    o = e.querySelector("span")
+    labelText = actionMenuItem.querySelector("span")
     .textContent,
-    l = t.querySelector(".button-group-actions > sl-button");
-  for (let c of V) l.classList.remove("action-" + c);
-  l.classList.add("action-" + r), l.querySelector("sl-icon")
-    .setAttribute("name", s), l.querySelector("span")
-    .textContent = o
+    actionButton = downloadElement.querySelector(".button-group-actions > sl-button");
+  for (let otherAction of downloadActionNames) actionButton.classList.remove("action-" + otherAction);
+  actionButton.classList.add("action-" + actionName), actionButton.querySelector("sl-icon")
+    .setAttribute("name", iconName), actionButton.querySelector("span")
+    .textContent = labelText
 }
 
-function U(t) {
-  let r = t.core_media.container.extension;
-  t.core_media.av.video || (r = t.core_media.container.audio_only_extension);
-  let e = `<span class="variant-container">${r}</span>`,
-    s = t.core_media.av.video,
-    o = e;
-  if (s && s.quality.isSome()) {
-    let c = s.quality.unwrap() + "p",
-      _ = `<span class="variant-quality _${c}">${c}</span>`;
-    o += _
-  } else if (t.core_media.content_length.isSome()) {
-    let l = t.core_media.content_length.unwrap();
-    o += `<span class="variant-quality">${q(l)}</span>`
+function RenderVariantButton(downloadable) {
+  let containerExt = downloadable.core_media.container.extension;
+  downloadable.core_media.av.video || (containerExt = downloadable.core_media.container.audio_only_extension);
+  let containerHtml = `<span class="variant-container">${containerExt}</span>`,
+    videoInfo = downloadable.core_media.av.video,
+    buttonHtml = containerHtml;
+  if (videoInfo && videoInfo.quality.isSome()) {
+    let qualityLabel = videoInfo.quality.unwrap() + "p",
+      qualityHtml = `<span class="variant-quality _${qualityLabel}">${qualityLabel}</span>`;
+    buttonHtml += qualityHtml
+  } else if (downloadable.core_media.content_length.isSome()) {
+    let contentLength = downloadable.core_media.content_length.unwrap();
+    buttonHtml += `<span class="variant-quality">${formatBytes(contentLength)}</span>`
   }
-  return o
+  return buttonHtml
 }
 
-function L(t, r) {
-  let e = [...t.variants.values()][0],
-    s = document.createElement("hbox");
-  s.classList.add("download"), s.dataset.selectedVariantId = e.id, s.dataset
-    .downloadableId = t.id, s.dataset.timestamp = t.timestamp.toString(), s
-    .dataset.toCopy = e.to_copy;
-  let o;
+function renderDownloadable(downloadable, localMessages) {
+  let firstVariant = [...downloadable.variants.values()][0],
+    downloadRow = document.createElement("hbox");
+  downloadRow.classList.add("download"), downloadRow.dataset.selectedVariantId = firstVariant.id, downloadRow.dataset
+    .downloadableId = downloadable.id, downloadRow.dataset.timestamp = downloadable.timestamp.toString(), downloadRow
+    .dataset.toCopy = firstVariant.to_copy;
+  let leftHtml;
   {
-    let A = e.core_media.duration,
-      f = "";
-    typeof A == "number" && (f = `<div class="duration">${P(A)}</div>`), o = `<hbox class="download-left" align="start" style="background-image:url('${v(t.thumbnail_url)}')">
-      <div class="favicon" style="background-image:url('${v(t.favicon_url)}')"></div>
-      ${f}
+    let duration = firstVariant.core_media.duration,
+      durationHtml = "";
+    typeof duration == "number" && (durationHtml = `<div class="duration">${formatDuration(duration)}</div>`), leftHtml = `<hbox class="download-left" align="start" style="background-image:url('${escapeHtml(downloadable.thumbnail_url)}')">
+      <div class="favicon" style="background-image:url('${escapeHtml(downloadable.favicon_url)}')"></div>
+      ${durationHtml}
     </hbox>`
   }
-  let l;
+  let topHtml;
   {
-    let A =
+    let progressFieldsHtml =
       `
       <span class="span-bitrate"><sl-format-bytes></sl-format-bytes>/s</span>
       <span class="span-downloading-duration"></span>
       <span size="small" class="span-percent"><sl-format-number type="percent"></sl-format-number></span>`,
-      f = '<sl-icon name="film"></sl-icon>';
-    e.core_media.av.video ? f =
+      mediaIconsHtml = '<sl-icon name="film"></sl-icon>';
+    firstVariant.core_media.av.video ? mediaIconsHtml =
       '<sl-icon name="film"></sl-icon><sl-icon name="plus"></sl-icon><sl-icon name="music-note-beamed"></sl-icon>' :
-      f = '<sl-icon name="music-note-beamed"></sl-icon>';
-    let h = `
+      mediaIconsHtml = '<sl-icon name="music-note-beamed"></sl-icon>';
+    let tagsHtml = `
       <hbox class="hbox-tags">
-        <sl-tag variant="primary" size="small">${e.core_media.builder}</sl-tag>
+        <sl-tag variant="primary" size="small">${firstVariant.core_media.builder}</sl-tag>
         <sl-tooltip content="Video & Audio">
-          <sl-tag variant="neutral" size="small">${f}</sl-tag>
+          <sl-tag variant="neutral" size="small">${mediaIconsHtml}</sl-tag>
         </sl-tooltip>
       </hbox>`,
-      y = v(t.page_title);
-    l = `
+      pageTitle = escapeHtml(downloadable.page_title);
+    topHtml = `
     <hbox class="download-top" align="center">
-      ${h}<div class="favicon" style="background-image:url('${v(t.favicon_url)}')"></div>
-      <p class="title" flex="1" title="${y}">${y}</p>
-      ${A}
+      ${tagsHtml}<div class="favicon" style="background-image:url('${escapeHtml(downloadable.favicon_url)}')"></div>
+      <p class="title" flex="1" title="${pageTitle}">${pageTitle}</p>
+      ${progressFieldsHtml}
       <sl-icon-button name="x" class="button-hide"></sl-icon-button>
     </hbox>`
   }
-  let c;
+  let bottomHtml;
   {
-    let A = "";
-    for (let S of t.variants.values()) A += re(S, r);
-    c = `
+    let variantsHtml = "";
+    for (let variant of downloadable.variants.values()) variantsHtml += renderVariant(variant, localMessages);
+    bottomHtml = `
       <hbox align="center" pack="end" class="download-bottom" flex="1">
         ${`
         <sl-dropdown stay-open-on-select="true" class="dropdown-variants">
           <sl-button slot="trigger" size="small" caret>
-            ${U(e)}
+            ${RenderVariantButton(firstVariant)}
           </sl-button>
           <sl-menu>
-            ${A}
+            ${variantsHtml}
             <sl-divider></sl-divider>
             <sl-menu-item type="checkbox" class="menu-prefer-quality"><span data-i18n="v9_panel_variant_menu_prefer_quality"></span></sl-menu-item>
             <sl-menu-item type="checkbox" class="menu-prefer-container"><span data-i18n="v9_panel_variant_menu_prefer_format"></span></sl-menu-item>
@@ -1168,60 +1168,60 @@ function L(t, r) {
         <!-- menu-actions from template -->
       </hbox>`
   }
-  s.innerHTML = `
-  ${o}
+  downloadRow.innerHTML = `
+  ${leftHtml}
   <vbox class="download-right" flex="1">
-    ${l}
-    ${c}
+    ${topHtml}
+    ${bottomHtml}
   </vbox>
   `;
-  let _ = document.querySelector("template")
+  let templateContent = document.querySelector("template")
     .content;
   {
-    let A = _.querySelector(".button-group-actions")
+    let actionsGroup = templateContent.querySelector(".button-group-actions")
       .cloneNode(!0),
-      f = _.querySelector(".menu-actions")
+      actionsMenu = templateContent.querySelector(".menu-actions")
       .cloneNode(!0),
-      h = s.querySelector(".download-bottom");
-    h.appendChild(A), h.appendChild(f)
+      downloadBottom = downloadRow.querySelector(".download-bottom");
+    downloadBottom.appendChild(actionsGroup), downloadBottom.appendChild(actionsMenu)
   }
-  return j(s, r), s
+  return applyI18n(downloadRow, localMessages), downloadRow
 }
 
-function fe(t, r) {
-  let e = document.querySelector(
-    `[data-downloadable-id="${t.downloadable.id}"]`);
-  return e || (e = L(t.downloadable, r), document.querySelector(
+function UpdateDownloading(downloadingInfo, localMessages) {
+  let downloadElement = document.querySelector(
+    `[data-downloadable-id="${downloadingInfo.downloadable.id}"]`);
+  return downloadElement || (downloadElement = renderDownloadable(downloadingInfo.downloadable, localMessages), document.querySelector(
       "#core-downloads")
-    .append(e)), e.setAttribute("status", "downloading"), te(t.downloadable
-    .id, t.progress), e
+    .append(downloadElement)), downloadElement.setAttribute("status", "downloading"), UpdateProgress(downloadingInfo.downloadable
+    .id, downloadingInfo.progress), downloadElement
 }
 
-function we(t, r) {
-  let e = document.querySelector(`[data-downloadable-id="${t.id}"]`);
-  e || (e = L(t, r), document.querySelector("#core-downloads")
-    .append(e)), e.setAttribute("status", "downloadable");
+function UpdateDownloadable(downloadable, localMessages) {
+  let downloadElement = document.querySelector(`[data-downloadable-id="${downloadable.id}"]`);
+  downloadElement || (downloadElement = renderDownloadable(downloadable, localMessages), document.querySelector("#core-downloads")
+    .append(downloadElement)), downloadElement.setAttribute("status", "downloadable");
   {
-    let s = e.dataset.selectedVariantId,
-      o = t.variants.get(s),
-      l = U(o),
-      c = e.querySelector(".dropdown-variants > sl-button");
-    c.innerHTML = l
+    let selectedVariantId = downloadElement.dataset.selectedVariantId,
+      selectedVariant = downloadable.variants.get(selectedVariantId),
+      variantButtonHtml = RenderVariantButton(selectedVariant),
+      dropdownButton = downloadElement.querySelector(".dropdown-variants > sl-button");
+    dropdownButton.innerHTML = variantButtonHtml
   }
-  return e
+  return downloadElement
 }
 
-function he(t, r) {
-  let e = document.querySelector(
-    `[data-downloadable-id="${t.downloadable.id}"]`);
-  e || (e = L(t.downloadable, r), document.querySelector("#core-downloads")
-    .append(e)), e.setAttribute("status", "downloaded");
-  let s = e.querySelector(".title");
-  return t.download_result.inbrowser ? (e.dataset.inBrowserDownloadId = t
-    .download_result.download_id.toString(), s.textContent = t.downloadable
-    .title) : s.textContent = t.download_result.filename, e
+function UpdateDownloaded(downloadedInfo, localMessages) {
+  let downloadElement = document.querySelector(
+    `[data-downloadable-id="${downloadedInfo.downloadable.id}"]`);
+  downloadElement || (downloadElement = renderDownloadable(downloadedInfo.downloadable, localMessages), document.querySelector("#core-downloads")
+    .append(downloadElement)), downloadElement.setAttribute("status", "downloaded");
+  let titleElement = downloadElement.querySelector(".title");
+  return downloadedInfo.download_result.inbrowser ? (downloadElement.dataset.inBrowserDownloadId = downloadedInfo
+    .download_result.download_id.toString(), titleElement.textContent = downloadedInfo.downloadable
+    .title) : titleElement.textContent = downloadedInfo.download_result.filename, downloadElement
 }
 export {
-  U as RenderVariantButton, be as UpdateDefaultAction, we as UpdateDownloadable,
-  he as UpdateDownloaded, fe as UpdateDownloading, te as UpdateProgress
+  RenderVariantButton as RenderVariantButton, UpdateDefaultAction as UpdateDefaultAction, UpdateDownloadable as UpdateDownloadable,
+  UpdateDownloaded as UpdateDownloaded, UpdateDownloading as UpdateDownloading, UpdateProgress as UpdateProgress
 };

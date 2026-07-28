@@ -1,47 +1,47 @@
-var st = Object.create;
-var Ne = Object.defineProperty;
-var lt = Object.getOwnPropertyDescriptor;
-var ut = Object.getOwnPropertyNames;
-var dt = Object.getPrototypeOf,
-  ct = Object.prototype.hasOwnProperty;
-var mt = (e, t) => () => (t || e((t = {
+var objectCreate = Object.create;
+var defineProperty = Object.defineProperty;
+var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var getOwnPropNames = Object.getOwnPropertyNames;
+var getPrototypeOf = Object.getPrototypeOf,
+  hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
     exports: {}
   })
-  .exports, t), t.exports);
-var pt = (e, t, o, n) => {
-  if (t && typeof t == "object" || typeof t == "function")
-    for (let r of ut(t)) !ct.call(e, r) && r !== o && Ne(e, r, {
-      get: () => t[r],
-      enumerable: !(n = lt(t, r)) || n.enumerable
+  .exports, cachedExports), cachedExports.exports);
+var copyProps = (targetObj, from, except, desc) => {
+  if (from && typeof from == "object" || typeof from == "function")
+    for (let key of getOwnPropNames(from)) !hasOwnPropertyRef.call(targetObj, key) && key !== except && defineProperty(targetObj, key, {
+      get: () => from[key],
+      enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable
     });
-  return e
+  return targetObj
 };
-var ae = (e, t, o) => (o = e != null ? st(dt(e)) : {}, pt(t || !e || !e
-  .__esModule ? Ne(o, "default", {
-    value: e,
+var toEsm = (mod, isNodeMode, target) => (target = mod != null ? objectCreate(getPrototypeOf(mod)) : {}, copyProps(isNodeMode || !mod || !mod
+  .__esModule ? defineProperty(target, "default", {
+    value: mod,
     enumerable: !0
-  }) : o, e));
-var Y = mt((_e, $e) => {
-  (function(e, t) {
+  }) : target, mod));
+var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
+  (function(globalScope, factory) {
     if (typeof define == "function" && define.amd) define(
-      "webextension-polyfill", ["module"], t);
-    else if (typeof _e < "u") t($e);
+      "webextension-polyfill", ["module"], factory);
+    else if (typeof polyfillExports < "u") factory(polyfillModule);
     else {
-      var o = {
+      var moduleShim = {
         exports: {}
       };
-      t(o), e.browser = o.exports
+      factory(moduleShim), globalScope.browser = moduleShim.exports
     }
-  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : _e,
-    function(e) {
+  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : polyfillExports,
+    function(browserGlobal) {
       "use strict";
       if (!globalThis.chrome?.runtime?.id) throw new Error(
         "This script should only be loaded in a browser extension.");
       if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
           globalThis.browser) !== Object.prototype) {
-        let t = "The message port closed before a response was received.",
-          o = n => {
-            let r = {
+        let messagePortClosedMessage = "The message port closed before a response was received.",
+          wrapApis = chromeApi => {
+            let apiMetadata = {
               alarms: {
                 clear: {
                   minArgs: 0,
@@ -713,205 +713,205 @@ var Y = mt((_e, $e) => {
                 }
               }
             };
-            if (Object.keys(r)
+            if (Object.keys(apiMetadata)
               .length === 0) throw new Error(
               "api-metadata.json has not been included in browser-polyfill"
               );
-            class a extends WeakMap {
-              constructor(p, _ = void 0) {
-                super(_), this.createItem = p
+            class DefaultWeakMap extends WeakMap {
+              constructor(createItem, entries = void 0) {
+                super(entries), this.createItem = createItem
               }
-              get(p) {
-                return this.has(p) || this.set(p, this.createItem(p)),
-                  super.get(p)
+              get(key) {
+                return this.has(key) || this.set(key, this.createItem(key)),
+                  super.get(key)
               }
             }
-            let i = m => m && typeof m == "object" && typeof m.then ==
+            let isThenable = value => value && typeof value == "object" && typeof value.then ==
               "function",
-              l = (m, p) => (..._) => {
-                n.runtime.lastError ? m.reject(new Error(n.runtime.lastError
-                    .message)) : p.singleCallbackArg || _.length <= 1 && p
-                  .singleCallbackArg !== !1 ? m.resolve(_[0]) : m.resolve(_)
+              makeCallback = (promiseCallbacks, metadata) => (...callbackArgs) => {
+                chromeApi.runtime.lastError ? promiseCallbacks.reject(new Error(chromeApi.runtime.lastError
+                    .message)) : metadata.singleCallbackArg || callbackArgs.length <= 1 && metadata
+                  .singleCallbackArg !== !1 ? promiseCallbacks.resolve(callbackArgs[0]) : promiseCallbacks.resolve(callbackArgs)
               },
-              u = m => m == 1 ? "argument" : "arguments",
-              s = (m, p) => function(h, ...E) {
-                if (E.length < p.minArgs) throw new Error(
-                  `Expected at least ${p.minArgs} ${u(p.minArgs)} for ${m}(), got ${E.length}`
+              pluralizeArgs = count => count == 1 ? "argument" : "arguments",
+              wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
+                if (args.length < metadata.minArgs) throw new Error(
+                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                   );
-                if (E.length > p.maxArgs) throw new Error(
-                  `Expected at most ${p.maxArgs} ${u(p.maxArgs)} for ${m}(), got ${E.length}`
+                if (args.length > metadata.maxArgs) throw new Error(
+                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                   );
-                return new Promise((I, V) => {
-                  if (p.fallbackToNoCallback) try {
-                    h[m](...E, l({
-                      resolve: I,
-                      reject: V
-                    }, p))
-                  } catch (g) {
+                return new Promise((resolve, reject) => {
+                  if (metadata.fallbackToNoCallback) try {
+                    apiTarget[name](...args, makeCallback({
+                      resolve: resolve,
+                      reject: reject
+                    }, metadata))
+                  } catch (error) {
                     console.warn(
-                        `${m} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                        g), h[m](...E), p.fallbackToNoCallback = !1, p
-                      .noCallback = !0, I()
-                  } else p.noCallback ? (h[m](...E), I()) : h[m](...E,
-                    l({
-                      resolve: I,
-                      reject: V
-                    }, p))
+                        `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                        error), apiTarget[name](...args), metadata.fallbackToNoCallback = !1, metadata
+                      .noCallback = !0, resolve()
+                  } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](...args,
+                    makeCallback({
+                      resolve: resolve,
+                      reject: reject
+                    }, metadata))
                 })
               },
-              d = (m, p, _) => new Proxy(p, {
-                apply(h, E, I) {
-                  return _.call(E, m, ...I)
+              wrapMethod = (target, method, wrapper) => new Proxy(method, {
+                apply(fnTarget, thisArg, callArgs) {
+                  return wrapper.call(thisArg, target, ...callArgs)
                 }
               }),
-              c = Function.call.bind(Object.prototype.hasOwnProperty),
-              b = (m, p = {}, _ = {}) => {
-                let h = Object.create(null),
-                  E = {
-                    has(V, g) {
-                      return g in m || g in h
+              hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty),
+              wrapObject = (target, wrappers = {}, metadata = {}) => {
+                let cache = Object.create(null),
+                  handler = {
+                    has(proxyTarget, prop) {
+                      return prop in target || prop in cache
                     },
-                    get(V, g, P) {
-                      if (g in h) return h[g];
-                      if (!(g in m)) return;
-                      let T = m[g];
-                      if (typeof T == "function")
-                        if (typeof p[g] == "function") T = d(m, m[g], p[
-                          g]);
-                        else if (c(_, g)) {
-                        let K = s(g, _[g]);
-                        T = d(m, m[g], K)
-                      } else T = T.bind(m);
-                      else if (typeof T == "object" && T !== null && (c(p,
-                          g) || c(_, g))) T = b(T, p[g], _[g]);
-                      else if (c(_, "*")) T = b(T, p[g], _["*"]);
-                      else return Object.defineProperty(h, g, {
+                    get(proxyTarget, prop, receiver) {
+                      if (prop in cache) return cache[prop];
+                      if (!(prop in target)) return;
+                      let value = target[prop];
+                      if (typeof value == "function")
+                        if (typeof wrappers[prop] == "function") value = wrapMethod(target, target[prop], wrappers[
+                          prop]);
+                        else if (hasOwnProperty(metadata, prop)) {
+                        let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
+                        value = wrapMethod(target, target[prop], wrappedFn)
+                      } else value = value.bind(target);
+                      else if (typeof value == "object" && value !== null && (hasOwnProperty(wrappers,
+                          prop) || hasOwnProperty(metadata, prop))) value = wrapObject(value, wrappers[prop], metadata[prop]);
+                      else if (hasOwnProperty(metadata, "*")) value = wrapObject(value, wrappers[prop], metadata["*"]);
+                      else return Object.defineProperty(cache, prop, {
                         configurable: !0,
                         enumerable: !0,
                         get() {
-                          return m[g]
+                          return target[prop]
                         },
-                        set(K) {
-                          m[g] = K
+                        set(newValue) {
+                          target[prop] = newValue
                         }
-                      }), T;
-                      return h[g] = T, T
+                      }), value;
+                      return cache[prop] = value, value
                     },
-                    set(V, g, P, T) {
-                      return g in h ? h[g] = P : m[g] = P, !0
+                    set(proxyTarget, prop, value, receiver) {
+                      return prop in cache ? cache[prop] = value : target[prop] = value, !0
                     },
-                    defineProperty(V, g, P) {
-                      return Reflect.defineProperty(h, g, P)
+                    defineProperty(proxyTarget, prop, desc) {
+                      return Reflect.defineProperty(cache, prop, desc)
                     },
-                    deleteProperty(V, g) {
-                      return Reflect.deleteProperty(h, g)
+                    deleteProperty(proxyTarget, prop) {
+                      return Reflect.deleteProperty(cache, prop)
                     }
                   },
-                  I = Object.create(m);
-                return new Proxy(I, E)
+                  proxyBase = Object.create(target);
+                return new Proxy(proxyBase, handler)
               },
-              x = m => ({
-                addListener(p, _, ...h) {
-                  p.addListener(m.get(_), ...h)
+              wrapEvent = wrapperMap => ({
+                addListener(target, listener, ...args) {
+                  target.addListener(wrapperMap.get(listener), ...args)
                 },
-                hasListener(p, _) {
-                  return p.hasListener(m.get(_))
+                hasListener(target, listener) {
+                  return target.hasListener(wrapperMap.get(listener))
                 },
-                removeListener(p, _) {
-                  p.removeListener(m.get(_))
+                removeListener(target, listener) {
+                  target.removeListener(wrapperMap.get(listener))
                 }
               }),
-              M = new a(m => typeof m != "function" ? m : function(_) {
-                let h = b(_, {}, {
+              onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
+                let wrappedRequest = wrapObject(request, {}, {
                   getContent: {
                     minArgs: 0,
                     maxArgs: 0
                   }
                 });
-                m(h)
+                listener(wrappedRequest)
               }),
-              v = new a(m => typeof m != "function" ? m : function(_, h,
-              E) {
-                let I = !1,
-                  V, g = new Promise(ne => {
-                    V = function($) {
-                      I = !0, ne($)
+              onMessageWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(message, sender,
+              sendResponse) {
+                let responseSent = !1,
+                  resolveResponse, responsePromise = new Promise(resolvePromise => {
+                    resolveResponse = function(response) {
+                      responseSent = !0, resolvePromise(response)
                     }
                   }),
-                  P;
+                  result;
                 try {
-                  P = m(_, h, V)
-                } catch (ne) {
-                  P = Promise.reject(ne)
+                  result = listener(message, sender, resolveResponse)
+                } catch (error) {
+                  result = Promise.reject(error)
                 }
-                let T = P !== !0 && i(P);
-                if (P !== !0 && !T && !I) return !1;
-                let K = ne => {
-                  ne.then($ => {
-                      E($)
-                    }, $ => {
-                      let fe;
-                      $ && ($ instanceof Error || typeof $.message ==
-                          "string") ? fe = $.message : fe =
-                        "An unexpected error occurred", E({
+                let resultIsThenable = result !== !0 && isThenable(result);
+                if (result !== !0 && !resultIsThenable && !responseSent) return !1;
+                let sendResolvedResponse = resultPromise => {
+                  resultPromise.then(response => {
+                      sendResponse(response)
+                    }, error => {
+                      let errorMessage;
+                      error && (error instanceof Error || typeof error.message ==
+                          "string") ? errorMessage = error.message : errorMessage =
+                        "An unexpected error occurred", sendResponse({
                           __mozWebExtensionPolyfillReject__: !0,
-                          message: fe
+                          message: errorMessage
                         })
                     })
-                    .catch($ => {
+                    .catch(replyError => {
                       console.error(
-                        "Failed to send onMessage rejected reply", $
+                        "Failed to send onMessage rejected reply", replyError
                         )
                     })
                 };
-                return K(T ? P : g), !0
+                return sendResolvedResponse(resultIsThenable ? result : responsePromise), !0
               }),
-              qe = ({
-                reject: m,
-                resolve: p
-              }, _) => {
-                n.runtime.lastError ? n.runtime.lastError.message === t ?
-                  p() : m(new Error(n.runtime.lastError.message)) : _ && _
-                  .__mozWebExtensionPolyfillReject__ ? m(new Error(_
-                    .message)) : p(_)
+              processResponse = ({
+                reject: reject,
+                resolve: resolve
+              }, response) => {
+                chromeApi.runtime.lastError ? chromeApi.runtime.lastError.message === messagePortClosedMessage ?
+                  resolve() : reject(new Error(chromeApi.runtime.lastError.message)) : response && response
+                  .__mozWebExtensionPolyfillReject__ ? reject(new Error(response
+                    .message)) : resolve(response)
               },
-              me = (m, p, _, ...h) => {
-                if (h.length < p.minArgs) throw new Error(
-                  `Expected at least ${p.minArgs} ${u(p.minArgs)} for ${m}(), got ${h.length}`
+              wrapSendMessage = (name, metadata, apiTarget, ...args) => {
+                if (args.length < metadata.minArgs) throw new Error(
+                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                   );
-                if (h.length > p.maxArgs) throw new Error(
-                  `Expected at most ${p.maxArgs} ${u(p.maxArgs)} for ${m}(), got ${h.length}`
+                if (args.length > metadata.maxArgs) throw new Error(
+                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                   );
-                return new Promise((E, I) => {
-                  let V = qe.bind(null, {
-                    resolve: E,
-                    reject: I
+                return new Promise((resolve, reject) => {
+                  let boundCallback = processResponse.bind(null, {
+                    resolve: resolve,
+                    reject: reject
                   });
-                  h.push(V), _.sendMessage(...h)
+                  args.push(boundCallback), apiTarget.sendMessage(...args)
                 })
               },
-              oe = {
+              staticWrappers = {
                 devtools: {
                   network: {
-                    onRequestFinished: x(M)
+                    onRequestFinished: wrapEvent(onRequestFinishedWrappers)
                   }
                 },
                 runtime: {
-                  onMessage: x(v),
-                  onMessageExternal: x(v),
-                  sendMessage: me.bind(null, "sendMessage", {
+                  onMessage: wrapEvent(onMessageWrappers),
+                  onMessageExternal: wrapEvent(onMessageWrappers),
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 1,
                     maxArgs: 3
                   })
                 },
                 tabs: {
-                  sendMessage: me.bind(null, "sendMessage", {
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 2,
                     maxArgs: 3
                   })
                 }
               },
-              re = {
+              settingMetadata = {
                 clear: {
                   minArgs: 1,
                   maxArgs: 1
@@ -925,37 +925,37 @@ var Y = mt((_e, $e) => {
                   maxArgs: 1
                 }
               };
-            return r.privacy = {
+            return apiMetadata.privacy = {
               network: {
-                "*": re
+                "*": settingMetadata
               },
               services: {
-                "*": re
+                "*": settingMetadata
               },
               websites: {
-                "*": re
+                "*": settingMetadata
               }
-            }, b(n, oe, r)
+            }, wrapObject(chromeApi, staticWrappers, apiMetadata)
           };
-        e.exports = o(chrome)
-      } else e.exports = globalThis.browser
+        browserGlobal.exports = wrapApis(chrome)
+      } else browserGlobal.exports = globalThis.browser
     })
 });
 
-function z(e) {
-  var t = String(e);
-  if (t === "[object Object]") try {
-    t = JSON.stringify(e)
+function stringifyValue(value) {
+  var text = String(value);
+  if (text === "[object Object]") try {
+    text = JSON.stringify(value)
   } catch {}
-  return t
+  return text
 }
-var ft = function() {
-    function e() {}
-    return e.prototype.isSome = function() {
+var NoneImpl = function() {
+    function NoneClass() {}
+    return NoneClass.prototype.isSome = function() {
       return !1
-    }, e.prototype.isNone = function() {
+    }, NoneClass.prototype.isNone = function() {
       return !0
-    }, e.prototype[Symbol.iterator] = function() {
+    }, NoneClass.prototype[Symbol.iterator] = function() {
       return {
         next: function() {
           return {
@@ -964,44 +964,44 @@ var ft = function() {
           }
         }
       }
-    }, e.prototype.unwrapOr = function(t) {
-      return t
-    }, e.prototype.expect = function(t) {
-      throw new Error("".concat(t))
-    }, e.prototype.unwrap = function() {
+    }, NoneClass.prototype.unwrapOr = function(defaultValue) {
+      return defaultValue
+    }, NoneClass.prototype.expect = function(message) {
+      throw new Error("".concat(message))
+    }, NoneClass.prototype.unwrap = function() {
       throw new Error("Tried to unwrap None")
-    }, e.prototype.map = function(t) {
+    }, NoneClass.prototype.map = function(mapFn) {
       return this
-    }, e.prototype.mapOr = function(t, o) {
-      return t
-    }, e.prototype.mapOrElse = function(t, o) {
-      return t()
-    }, e.prototype.or = function(t) {
-      return t
-    }, e.prototype.orElse = function(t) {
-      return t()
-    }, e.prototype.andThen = function(t) {
+    }, NoneClass.prototype.mapOr = function(defaultValue, mapFn) {
+      return defaultValue
+    }, NoneClass.prototype.mapOrElse = function(defaultFn, mapFn) {
+      return defaultFn()
+    }, NoneClass.prototype.or = function(alternative) {
+      return alternative
+    }, NoneClass.prototype.orElse = function(alternativeFn) {
+      return alternativeFn()
+    }, NoneClass.prototype.andThen = function(thenFn) {
       return this
-    }, e.prototype.toResult = function(t) {
-      return D(t)
-    }, e.prototype.toString = function() {
+    }, NoneClass.prototype.toResult = function(errValue) {
+      return ErrResult(errValue)
+    }, NoneClass.prototype.toString = function() {
       return "None"
-    }, e
+    }, NoneClass
   }(),
-  f = new ft;
-Object.freeze(f);
-var gt = function() {
-    function e(t) {
-      if (!(this instanceof e)) return new e(t);
-      this.value = t
+  noneSingleton = new NoneImpl;
+Object.freeze(noneSingleton);
+var SomeImpl = function() {
+    function SomeClass(value) {
+      if (!(this instanceof SomeClass)) return new SomeClass(value);
+      this.value = value
     }
-    return e.prototype.isSome = function() {
+    return SomeClass.prototype.isSome = function() {
       return !0
-    }, e.prototype.isNone = function() {
+    }, SomeClass.prototype.isNone = function() {
       return !1
-    }, e.prototype[Symbol.iterator] = function() {
-      var t = Object(this.value);
-      return Symbol.iterator in t ? t[Symbol.iterator]() : {
+    }, SomeClass.prototype[Symbol.iterator] = function() {
+      var boxedValue = Object(this.value);
+      return Symbol.iterator in boxedValue ? boxedValue[Symbol.iterator]() : {
         next: function() {
           return {
             done: !0,
@@ -1009,78 +1009,78 @@ var gt = function() {
           }
         }
       }
-    }, e.prototype.unwrapOr = function(t) {
+    }, SomeClass.prototype.unwrapOr = function(defaultValue) {
       return this.value
-    }, e.prototype.expect = function(t) {
+    }, SomeClass.prototype.expect = function(message) {
       return this.value
-    }, e.prototype.unwrap = function() {
+    }, SomeClass.prototype.unwrap = function() {
       return this.value
-    }, e.prototype.map = function(t) {
-      return A(t(this.value))
-    }, e.prototype.mapOr = function(t, o) {
-      return o(this.value)
-    }, e.prototype.mapOrElse = function(t, o) {
-      return o(this.value)
-    }, e.prototype.or = function(t) {
+    }, SomeClass.prototype.map = function(mapFn) {
+      return Some(mapFn(this.value))
+    }, SomeClass.prototype.mapOr = function(defaultValue, mapFn) {
+      return mapFn(this.value)
+    }, SomeClass.prototype.mapOrElse = function(defaultFn, mapFn) {
+      return mapFn(this.value)
+    }, SomeClass.prototype.or = function(alternative) {
       return this
-    }, e.prototype.orElse = function(t) {
+    }, SomeClass.prototype.orElse = function(alternativeFn) {
       return this
-    }, e.prototype.andThen = function(t) {
-      return t(this.value)
-    }, e.prototype.toResult = function(t) {
-      return w(this.value)
-    }, e.prototype.safeUnwrap = function() {
+    }, SomeClass.prototype.andThen = function(thenFn) {
+      return thenFn(this.value)
+    }, SomeClass.prototype.toResult = function(errValue) {
+      return OkResult(this.value)
+    }, SomeClass.prototype.safeUnwrap = function() {
       return this.value
-    }, e.prototype.toString = function() {
-      return "Some(".concat(z(this.value), ")")
-    }, e.EMPTY = new e(void 0), e
+    }, SomeClass.prototype.toString = function() {
+      return "Some(".concat(stringifyValue(this.value), ")")
+    }, SomeClass.EMPTY = new SomeClass(void 0), SomeClass
   }(),
-  A = gt,
-  B;
-(function(e) {
-  function t() {
-    for (var r = [], a = 0; a < arguments.length; a++) r[a] = arguments[a];
-    for (var i = [], l = 0, u = r; l < u.length; l++) {
-      var s = u[l];
-      if (s.isSome()) i.push(s.value);
-      else return s
+  Some = SomeImpl,
+  OptionModule;
+(function(optionNs) {
+  function collectAll() {
+    for (var args = [], argIndex = 0; argIndex < arguments.length; argIndex++) args[argIndex] = arguments[argIndex];
+    for (var collected = [], itemIndex = 0, items = args; itemIndex < items.length; itemIndex++) {
+      var option = items[itemIndex];
+      if (option.isSome()) collected.push(option.value);
+      else return option
     }
-    return A(i)
+    return Some(collected)
   }
-  e.all = t;
+  optionNs.all = collectAll;
 
-  function o() {
-    for (var r = [], a = 0; a < arguments.length; a++) r[a] = arguments[a];
-    for (var i = 0, l = r; i < l.length; i++) {
-      var u = l[i];
-      return u.isSome(), u
+  function firstOption() {
+    for (var args = [], argIndex = 0; argIndex < arguments.length; argIndex++) args[argIndex] = arguments[argIndex];
+    for (var itemIndex = 0, items = args; itemIndex < items.length; itemIndex++) {
+      var option = items[itemIndex];
+      return option.isSome(), option
     }
-    return f
+    return noneSingleton
   }
-  e.any = o;
+  optionNs.any = firstOption;
 
-  function n(r) {
-    return r instanceof A || r === f
+  function isOption(candidate) {
+    return candidate instanceof Some || candidate === noneSingleton
   }
-  e.isOption = n
-})(B || (B = {}));
-var _t = function() {
-  function e(t) {
-    if (!(this instanceof e)) return new e(t);
-    this.error = t;
-    var o = new Error()
+  optionNs.isOption = isOption
+})(OptionModule || (OptionModule = {}));
+var ErrImpl = function() {
+  function ErrClass(error) {
+    if (!(this instanceof ErrClass)) return new ErrClass(error);
+    this.error = error;
+    var stackFrames = new Error()
       .stack.split(`
 `)
       .slice(2);
-    o && o.length > 0 && o[0].includes("ErrImpl") && o.shift(), this._stack =
-      o.join(`
+    stackFrames && stackFrames.length > 0 && stackFrames[0].includes("ErrImpl") && stackFrames.shift(), this._stack =
+      stackFrames.join(`
 `)
   }
-  return e.prototype.isOk = function() {
+  return ErrClass.prototype.isOk = function() {
     return !1
-  }, e.prototype.isErr = function() {
+  }, ErrClass.prototype.isErr = function() {
     return !0
-  }, e.prototype[Symbol.iterator] = function() {
+  }, ErrClass.prototype[Symbol.iterator] = function() {
     return {
       next: function() {
         return {
@@ -1089,46 +1089,46 @@ var _t = function() {
         }
       }
     }
-  }, e.prototype.else = function(t) {
-    return t
-  }, e.prototype.unwrapOr = function(t) {
-    return t
-  }, e.prototype.expect = function(t) {
-    throw new Error("".concat(t, " - Error: ")
-      .concat(z(this.error), `
+  }, ErrClass.prototype.else = function(defaultValue) {
+    return defaultValue
+  }, ErrClass.prototype.unwrapOr = function(defaultValue) {
+    return defaultValue
+  }, ErrClass.prototype.expect = function(message) {
+    throw new Error("".concat(message, " - Error: ")
+      .concat(stringifyValue(this.error), `
 `)
       .concat(this._stack), {
         cause: this.error
       })
-  }, e.prototype.expectErr = function(t) {
+  }, ErrClass.prototype.expectErr = function(message) {
     return this.error
-  }, e.prototype.unwrap = function() {
-    throw new Error("Tried to unwrap Error: ".concat(z(this.error), `
+  }, ErrClass.prototype.unwrap = function() {
+    throw new Error("Tried to unwrap Error: ".concat(stringifyValue(this.error), `
 `)
       .concat(this._stack), {
         cause: this.error
       })
-  }, e.prototype.unwrapErr = function() {
+  }, ErrClass.prototype.unwrapErr = function() {
     return this.error
-  }, e.prototype.map = function(t) {
+  }, ErrClass.prototype.map = function(mapFn) {
     return this
-  }, e.prototype.andThen = function(t) {
+  }, ErrClass.prototype.andThen = function(thenFn) {
     return this
-  }, e.prototype.mapErr = function(t) {
-    return new D(t(this.error))
-  }, e.prototype.mapOr = function(t, o) {
-    return t
-  }, e.prototype.mapOrElse = function(t, o) {
-    return t(this.error)
-  }, e.prototype.or = function(t) {
-    return t
-  }, e.prototype.orElse = function(t) {
-    return t(this.error)
-  }, e.prototype.toOption = function() {
-    return f
-  }, e.prototype.toString = function() {
-    return "Err(".concat(z(this.error), ")")
-  }, Object.defineProperty(e.prototype, "stack", {
+  }, ErrClass.prototype.mapErr = function(errMapFn) {
+    return new ErrResult(errMapFn(this.error))
+  }, ErrClass.prototype.mapOr = function(defaultValue, mapFn) {
+    return defaultValue
+  }, ErrClass.prototype.mapOrElse = function(defaultFn, mapFn) {
+    return defaultFn(this.error)
+  }, ErrClass.prototype.or = function(alternative) {
+    return alternative
+  }, ErrClass.prototype.orElse = function(alternativeFn) {
+    return alternativeFn(this.error)
+  }, ErrClass.prototype.toOption = function() {
+    return noneSingleton
+  }, ErrClass.prototype.toString = function() {
+    return "Err(".concat(stringifyValue(this.error), ")")
+  }, Object.defineProperty(ErrClass.prototype, "stack", {
     get: function() {
       return "".concat(this, `
 `)
@@ -1136,23 +1136,23 @@ var _t = function() {
     },
     enumerable: !1,
     configurable: !0
-  }), e.prototype.toAsyncResult = function() {
-    return new ge(this)
-  }, e.EMPTY = new e(void 0), e
+  }), ErrClass.prototype.toAsyncResult = function() {
+    return new AsyncResultImpl(this)
+  }, ErrClass.EMPTY = new ErrClass(void 0), ErrClass
 }();
-var D = _t,
-  wt = function() {
-    function e(t) {
-      if (!(this instanceof e)) return new e(t);
-      this.value = t
+var ErrResult = ErrImpl,
+  OkImpl = function() {
+    function OkClass(value) {
+      if (!(this instanceof OkClass)) return new OkClass(value);
+      this.value = value
     }
-    return e.prototype.isOk = function() {
+    return OkClass.prototype.isOk = function() {
       return !0
-    }, e.prototype.isErr = function() {
+    }, OkClass.prototype.isErr = function() {
       return !1
-    }, e.prototype[Symbol.iterator] = function() {
-      var t = Object(this.value);
-      return Symbol.iterator in t ? t[Symbol.iterator]() : {
+    }, OkClass.prototype[Symbol.iterator] = function() {
+      var boxedValue = Object(this.value);
+      return Symbol.iterator in boxedValue ? boxedValue[Symbol.iterator]() : {
         next: function() {
           return {
             done: !0,
@@ -1160,773 +1160,773 @@ var D = _t,
           }
         }
       }
-    }, e.prototype.else = function(t) {
+    }, OkClass.prototype.else = function(defaultValue) {
       return this.value
-    }, e.prototype.unwrapOr = function(t) {
+    }, OkClass.prototype.unwrapOr = function(defaultValue) {
       return this.value
-    }, e.prototype.expect = function(t) {
+    }, OkClass.prototype.expect = function(message) {
       return this.value
-    }, e.prototype.expectErr = function(t) {
-      throw new Error(t)
-    }, e.prototype.unwrap = function() {
+    }, OkClass.prototype.expectErr = function(message) {
+      throw new Error(message)
+    }, OkClass.prototype.unwrap = function() {
       return this.value
-    }, e.prototype.unwrapErr = function() {
-      throw new Error("Tried to unwrap Ok: ".concat(z(this.value)), {
+    }, OkClass.prototype.unwrapErr = function() {
+      throw new Error("Tried to unwrap Ok: ".concat(stringifyValue(this.value)), {
         cause: this.value
       })
-    }, e.prototype.map = function(t) {
-      return new w(t(this.value))
-    }, e.prototype.andThen = function(t) {
-      return t(this.value)
-    }, e.prototype.mapErr = function(t) {
+    }, OkClass.prototype.map = function(mapFn) {
+      return new OkResult(mapFn(this.value))
+    }, OkClass.prototype.andThen = function(thenFn) {
+      return thenFn(this.value)
+    }, OkClass.prototype.mapErr = function(errMapFn) {
       return this
-    }, e.prototype.mapOr = function(t, o) {
-      return o(this.value)
-    }, e.prototype.mapOrElse = function(t, o) {
-      return o(this.value)
-    }, e.prototype.or = function(t) {
+    }, OkClass.prototype.mapOr = function(defaultValue, mapFn) {
+      return mapFn(this.value)
+    }, OkClass.prototype.mapOrElse = function(defaultFn, mapFn) {
+      return mapFn(this.value)
+    }, OkClass.prototype.or = function(alternative) {
       return this
-    }, e.prototype.orElse = function(t) {
+    }, OkClass.prototype.orElse = function(alternativeFn) {
       return this
-    }, e.prototype.toOption = function() {
-      return A(this.value)
-    }, e.prototype.safeUnwrap = function() {
+    }, OkClass.prototype.toOption = function() {
+      return Some(this.value)
+    }, OkClass.prototype.safeUnwrap = function() {
       return this.value
-    }, e.prototype.toString = function() {
-      return "Ok(".concat(z(this.value), ")")
-    }, e.prototype.toAsyncResult = function() {
-      return new ge(this)
-    }, e.EMPTY = new e(void 0), e
+    }, OkClass.prototype.toString = function() {
+      return "Ok(".concat(stringifyValue(this.value), ")")
+    }, OkClass.prototype.toAsyncResult = function() {
+      return new AsyncResultImpl(this)
+    }, OkClass.EMPTY = new OkClass(void 0), OkClass
   }();
-var w = wt,
-  J;
-(function(e) {
-  function t() {
-    for (var i = [], l = 0; l < arguments.length; l++) i[l] = arguments[l];
-    for (var u = [], s = 0, d = i; s < d.length; s++) {
-      var c = d[s];
-      if (c.isOk()) u.push(c.value);
-      else return c
+var OkResult = OkImpl,
+  ResultModule;
+(function(resultNs) {
+  function collectAll() {
+    for (var args = [], argIndex = 0; argIndex < arguments.length; argIndex++) args[argIndex] = arguments[argIndex];
+    for (var collected = [], itemIndex = 0, items = args; itemIndex < items.length; itemIndex++) {
+      var result = items[itemIndex];
+      if (result.isOk()) collected.push(result.value);
+      else return result
     }
-    return new w(u)
+    return new OkResult(collected)
   }
-  e.all = t;
+  resultNs.all = collectAll;
 
-  function o() {
-    for (var i = [], l = 0; l < arguments.length; l++) i[l] = arguments[l];
-    for (var u = [], s = 0, d = i; s < d.length; s++) {
-      var c = d[s];
-      if (c.isOk()) return c;
-      u.push(c.error)
+  function firstOk() {
+    for (var args = [], argIndex = 0; argIndex < arguments.length; argIndex++) args[argIndex] = arguments[argIndex];
+    for (var errors = [], itemIndex = 0, items = args; itemIndex < items.length; itemIndex++) {
+      var result = items[itemIndex];
+      if (result.isOk()) return result;
+      errors.push(result.error)
     }
-    return new D(u)
+    return new ErrResult(errors)
   }
-  e.any = o;
+  resultNs.any = firstOk;
 
-  function n(i) {
+  function wrapResult(operation) {
     try {
-      return new w(i())
-    } catch (l) {
-      return new D(l)
+      return new OkResult(operation())
+    } catch (error) {
+      return new ErrResult(error)
     }
   }
-  e.wrap = n;
+  resultNs.wrap = wrapResult;
 
-  function r(i) {
+  function wrapAsyncResult(operation) {
     try {
-      return i()
-        .then(function(l) {
-          return new w(l)
+      return operation()
+        .then(function(value) {
+          return new OkResult(value)
         })
-        .catch(function(l) {
-          return new D(l)
+        .catch(function(error) {
+          return new ErrResult(error)
         })
-    } catch (l) {
-      return Promise.resolve(new D(l))
+    } catch (error) {
+      return Promise.resolve(new ErrResult(error))
     }
   }
-  e.wrapAsync = r;
+  resultNs.wrapAsync = wrapAsyncResult;
 
-  function a(i) {
-    return i instanceof D || i instanceof w
+  function isResult(candidate) {
+    return candidate instanceof ErrResult || candidate instanceof OkResult
   }
-  e.isResult = a
-})(J || (J = {}));
-var Le = function(e, t, o, n) {
-    function r(a) {
-      return a instanceof o ? a : new o(function(i) {
-        i(a)
+  resultNs.isResult = isResult
+})(ResultModule || (ResultModule = {}));
+var awaitAsync = function(thisArg, argsList, promiseCtor, generatorFn) {
+    function adopt(value) {
+      return value instanceof promiseCtor ? value : new promiseCtor(function(resolveInner) {
+        resolveInner(value)
       })
     }
-    return new(o || (o = Promise))(function(a, i) {
-      function l(d) {
+    return new(promiseCtor || (promiseCtor = Promise))(function(resolve, reject) {
+      function onFulfilled(value) {
         try {
-          s(n.next(d))
-        } catch (c) {
-          i(c)
+          step(generatorFn.next(value))
+        } catch (error) {
+          reject(error)
         }
       }
 
-      function u(d) {
+      function onRejected(value) {
         try {
-          s(n.throw(d))
-        } catch (c) {
-          i(c)
+          step(generatorFn.throw(value))
+        } catch (error) {
+          reject(error)
         }
       }
 
-      function s(d) {
-        d.done ? a(d.value) : r(d.value)
-          .then(l, u)
+      function step(result) {
+        result.done ? resolve(result.value) : adopt(result.value)
+          .then(onFulfilled, onRejected)
       }
-      s((n = n.apply(e, t || []))
+      step((generatorFn = generatorFn.apply(thisArg, argsList || []))
         .next())
     })
   },
-  je = function(e, t) {
-    var o = {
+  runGenerator = function(thisArg, body) {
+    var state = {
         label: 0,
         sent: function() {
-          if (a[0] & 1) throw a[1];
-          return a[1]
+          if (opResult[0] & 1) throw opResult[1];
+          return opResult[1]
         },
         trys: [],
         ops: []
       },
-      n, r, a, i;
-    return i = {
-      next: l(0),
-      throw: l(1),
-      return: l(2)
-    }, typeof Symbol == "function" && (i[Symbol.iterator] = function() {
+      executing, current, opResult, iteratorApi;
+    return iteratorApi = {
+      next: makeVerb(0),
+      throw: makeVerb(1),
+      return: makeVerb(2)
+    }, typeof Symbol == "function" && (iteratorApi[Symbol.iterator] = function() {
       return this
-    }), i;
+    }), iteratorApi;
 
-    function l(s) {
-      return function(d) {
-        return u([s, d])
+    function makeVerb(verbKind) {
+      return function(verbInput) {
+        return stepGenerator([verbKind, verbInput])
       }
     }
 
-    function u(s) {
-      if (n) throw new TypeError("Generator is already executing.");
-      for (; i && (i = 0, s[0] && (o = 0)), o;) try {
-        if (n = 1, r && (a = s[0] & 2 ? r.return : s[0] ? r.throw || ((a = r
-            .return) && a.call(r), 0) : r.next) && !(a = a.call(r, s[1]))
-          .done) return a;
-        switch (r = 0, a && (s = [s[0] & 2, a.value]), s[0]) {
+    function stepGenerator(genOp) {
+      if (executing) throw new TypeError("Generator is already executing.");
+      for (; iteratorApi && (iteratorApi = 0, genOp[0] && (state = 0)), state;) try {
+        if (executing = 1, current && (opResult = genOp[0] & 2 ? current.return : genOp[0] ? current.throw || ((opResult = current
+            .return) && opResult.call(current), 0) : current.next) && !(opResult = opResult.call(current, genOp[1]))
+          .done) return opResult;
+        switch (current = 0, opResult && (genOp = [genOp[0] & 2, opResult.value]), genOp[0]) {
           case 0:
           case 1:
-            a = s;
+            opResult = genOp;
             break;
           case 4:
-            return o.label++, {
-              value: s[1],
+            return state.label++, {
+              value: genOp[1],
               done: !1
             };
           case 5:
-            o.label++, r = s[1], s = [0];
+            state.label++, current = genOp[1], genOp = [0];
             continue;
           case 7:
-            s = o.ops.pop(), o.trys.pop();
+            genOp = state.ops.pop(), state.trys.pop();
             continue;
           default:
-            if (a = o.trys, !(a = a.length > 0 && a[a.length - 1]) && (s[
-                0] === 6 || s[0] === 2)) {
-              o = 0;
+            if (opResult = state.trys, !(opResult = opResult.length > 0 && opResult[opResult.length - 1]) && (genOp[
+                0] === 6 || genOp[0] === 2)) {
+              state = 0;
               continue
             }
-            if (s[0] === 3 && (!a || s[1] > a[0] && s[1] < a[3])) {
-              o.label = s[1];
+            if (genOp[0] === 3 && (!opResult || genOp[1] > opResult[0] && genOp[1] < opResult[3])) {
+              state.label = genOp[1];
               break
             }
-            if (s[0] === 6 && o.label < a[1]) {
-              o.label = a[1], a = s;
+            if (genOp[0] === 6 && state.label < opResult[1]) {
+              state.label = opResult[1], opResult = genOp;
               break
             }
-            if (a && o.label < a[2]) {
-              o.label = a[2], o.ops.push(s);
+            if (opResult && state.label < opResult[2]) {
+              state.label = opResult[2], state.ops.push(genOp);
               break
             }
-            a[2] && o.ops.pop(), o.trys.pop();
+            opResult[2] && state.ops.pop(), state.trys.pop();
             continue
         }
-        s = t.call(e, o)
-      } catch (d) {
-        s = [6, d], r = 0
+        genOp = body.call(thisArg, state)
+      } catch (error) {
+        genOp = [6, error], current = 0
       } finally {
-        n = a = 0
+        executing = opResult = 0
       }
-      if (s[0] & 5) throw s[1];
+      if (genOp[0] & 5) throw genOp[1];
       return {
-        value: s[0] ? s[1] : void 0,
+        value: genOp[0] ? genOp[1] : void 0,
         done: !0
       }
     }
   },
-  ge = function() {
-    function e(t) {
-      this.promise = Promise.resolve(t)
+  AsyncResultImpl = function() {
+    function AsyncResultClass(promiseValue) {
+      this.promise = Promise.resolve(promiseValue)
     }
-    return e.prototype.andThen = function(t) {
-      var o = this;
-      return this.thenInternal(function(n) {
-        return Le(o, void 0, void 0, function() {
-          var r;
-          return je(this, function(a) {
-            return n.isErr() ? [2, n] : (r = t(n.value), [2,
-              r instanceof e ? r.promise : r
+    return AsyncResultClass.prototype.andThen = function(thenFn) {
+      var self = this;
+      return this.thenInternal(function(result) {
+        return awaitAsync(self, void 0, void 0, function() {
+          var mapped;
+          return runGenerator(this, function(genState) {
+            return result.isErr() ? [2, result] : (mapped = thenFn(result.value), [2,
+              mapped instanceof AsyncResultClass ? mapped.promise : mapped
             ])
           })
         })
       })
-    }, e.prototype.map = function(t) {
-      var o = this;
-      return this.thenInternal(function(n) {
-        return Le(o, void 0, void 0, function() {
-          var r;
-          return je(this, function(a) {
-            switch (a.label) {
+    }, AsyncResultClass.prototype.map = function(mapFn) {
+      var self = this;
+      return this.thenInternal(function(result) {
+        return awaitAsync(self, void 0, void 0, function() {
+          var okCtor;
+          return runGenerator(this, function(genState) {
+            switch (genState.label) {
               case 0:
-                return n.isErr() ? [2, n] : (r = w, [4, t(n
+                return result.isErr() ? [2, result] : (okCtor = OkResult, [4, mapFn(result
                   .value)]);
               case 1:
-                return [2, r.apply(void 0, [a.sent()])]
+                return [2, okCtor.apply(void 0, [genState.sent()])]
             }
           })
         })
       })
-    }, e.prototype.thenInternal = function(t) {
-      return new e(this.promise.then(t))
-    }, e
+    }, AsyncResultClass.prototype.thenInternal = function(onResult) {
+      return new AsyncResultClass(this.promise.then(onResult))
+    }, AsyncResultClass
   }();
 
-function C(e) {
-  return Object.assign(e.prototype, {
-    find: function(t) {
-      for (let o of this)
-        if (t(o)) return A(o);
-      return f
+function defineIterableHelpers(iterableFactory) {
+  return Object.assign(iterableFactory.prototype, {
+    find: function(predicate) {
+      for (let item of this)
+        if (predicate(item)) return Some(item);
+      return noneSingleton
     },
-    count: function(t) {
-      return this.reduce((o, n) => (t(n) && o++, o), 0)
+    count: function(predicate) {
+      return this.reduce((count, item) => (predicate(item) && count++, count), 0)
     },
-    reduce: function(t, o) {
-      let n = o;
-      for (let r of this) n = t(n, r);
-      return n
+    reduce: function(reducer, initial) {
+      let accumulator = initial;
+      for (let item of this) accumulator = reducer(accumulator, item);
+      return accumulator
     },
-    every: function(t) {
-      return !this.any(o => !t(o))
+    every: function(predicate) {
+      return !this.any(item => !predicate(item))
     },
-    any: function(t) {
-      for (let o of this)
-        if (t(o)) return !0;
+    any: function(predicate) {
+      for (let item of this)
+        if (predicate(item)) return !0;
       return !1
     },
-    map: function(t) {
-      return this.filterMap(o => A(t(o)))
+    map: function(mapFn) {
+      return this.filterMap(item => Some(mapFn(item)))
     },
-    filter: function(t) {
-      return this.filterMap(o => t(o) ? A(o) : f)
+    filter: function(predicate) {
+      return this.filterMap(item => predicate(item) ? Some(item) : noneSingleton)
     },
     enumerate: function() {
-      let t = this;
-      return C(function*() {
-        let o = 0;
-        for (let n of t) yield [o, n], o++
+      let source = this;
+      return defineIterableHelpers(function*() {
+        let index = 0;
+        for (let item of source) yield [index, item], index++
       })()
     },
-    filterMap: function(t) {
-      let o = this;
-      return C(function*() {
-        for (let n of o) {
-          let r = t(n);
-          r.isSome() && (yield r.unwrap())
+    filterMap: function(mapFn) {
+      let source = this;
+      return defineIterableHelpers(function*() {
+        for (let item of source) {
+          let mapped = mapFn(item);
+          mapped.isSome() && (yield mapped.unwrap())
         }
       })()
     },
-    sort: function(t) {
-      let o = this.toArray();
-      return o.sort(t), o
+    sort: function(comparator) {
+      let sorted = this.toArray();
+      return sorted.sort(comparator), sorted
     },
     toArray: function() {
       return [...this]
     }
-  }), e
+  }), iterableFactory
 }
 Array.prototype.as_iter || (Array.prototype.as_iter = function() {
-  let e = this;
-  return C(function*() {
-    for (let t of e) yield t
+  let source = this;
+  return defineIterableHelpers(function*() {
+    for (let item of source) yield item
   })()
 });
 Set.prototype.as_iter || (Set.prototype.as_iter = function() {
-  let e = this;
-  return C(function*() {
-    for (let t of e) yield t
+  let source = this;
+  return defineIterableHelpers(function*() {
+    for (let item of source) yield item
   })()
 });
 Map.prototype.as_iter || (Map.prototype.as_iter = function() {
-  let e = this;
-  return C(function*() {
-    for (let t of e) yield t
+  let source = this;
+  return defineIterableHelpers(function*() {
+    for (let item of source) yield item
   })()
 });
-var k = ae(Y(), 1);
-var W = ae(Y(), 1);
-var le = "google";
+var browserRuntimeApi = toEsm(requirePolyfill(), 1);
+var browserSidebarApi = toEsm(requirePolyfill(), 1);
+var browserTarget = "google";
 
-function we(e, t, o) {
-  let n = le == "mozilla";
-  if (!n && (chrome.sidePanel && chrome.sidePanel.setPanelBehavior ? (chrome
+function configurePanelBehavior(enablePanel, windowId, applyNow) {
+  let isMozilla = browserTarget == "mozilla";
+  if (!isMozilla && (chrome.sidePanel && chrome.sidePanel.setPanelBehavior ? (chrome
       .sidePanel.setOptions({
-        enabled: e
+        enabled: enablePanel
       }), chrome.sidePanel.setPanelBehavior({
-        openPanelOnActionClick: e
-      })) : e = !1, o))
-    if (e) t != 0 && chrome.sidePanel?.open?.({
-      windowId: t
+        openPanelOnActionClick: enablePanel
+      })) : enablePanel = !1, applyNow))
+    if (enablePanel) windowId != 0 && chrome.sidePanel?.open?.({
+      windowId: windowId
     });
     else try {
       chrome.action.openPopup()
     } catch {}
-  n && !e && (W.default.browserAction.setPopup({
+  isMozilla && !enablePanel && (browserSidebarApi.default.browserAction.setPopup({
     popup: "/content2/popup.html"
-  }), W.default.sidebarAction.setPanel({
+  }), browserSidebarApi.default.sidebarAction.setPanel({
     panel: null
-  }), o && W.default.sidebarAction.close()), n && e && (W.default
+  }), applyNow && browserSidebarApi.default.sidebarAction.close()), isMozilla && enablePanel && (browserSidebarApi.default
     .browserAction.setPopup({
       popup: null
-    }), W.default.sidebarAction.setPanel({
+    }), browserSidebarApi.default.sidebarAction.setPanel({
       panel: "/content2/sidebar.html"
-    }), o && W.default.sidebarAction.open())
+    }), applyNow && browserSidebarApi.default.sidebarAction.open())
 }
-var Re = ae(Y(), 1);
+var browserI18nApi = toEsm(requirePolyfill(), 1);
 
-function F(e) {
-  return e ? e.replaceAll("&", "&amp;")
+function escapeHtml(text) {
+  return text ? text.replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;") : ""
 }
 
-function Q(e, t, o) {
-  let n = () => (console.error(`Requesting unknown i18n string ${e}`), e);
-  t = t.map(r => r.toString())
-    .map(F);
+function localizeMessage(messageKey, substitutions, overrides) {
+  let reportUnknown = () => (console.error(`Requesting unknown i18n string ${messageKey}`), messageKey);
+  substitutions = substitutions.map(substitution => substitution.toString())
+    .map(escapeHtml);
   try {
-    if (e in o) {
-      let r = o[e],
-        a = 1;
-      for (let i = 0; i < t.length; i++) r = r.replace(`$${a}`, t[i]);
-      return r
+    if (messageKey in overrides) {
+      let template = overrides[messageKey],
+        placeholderIndex = 1;
+      for (let argIndex = 0; argIndex < substitutions.length; argIndex++) template = template.replace(`$${placeholderIndex}`, substitutions[argIndex]);
+      return template
     } else {
-      let r = Re.default.i18n.getMessage(e, t);
-      return r || n()
+      let translated = browserI18nApi.default.i18n.getMessage(messageKey, substitutions);
+      return translated || reportUnknown()
     }
   } catch {
-    return n()
+    return reportUnknown()
   }
 }
 
-function ue(e, t) {
-  for (let o of Array.from(e.querySelectorAll("[data-i18n]"))) {
-    let n = o.dataset.i18nArgs,
-      r = o.dataset.i18nAttr,
-      a;
-    n ? a = Q(o.dataset.i18n, JSON.parse(n), t) : a = Q(o.dataset.i18n, [], t),
-      r ? o.setAttribute(r, a) : o.textContent = a
+function applyI18n(root, overrides) {
+  for (let element of Array.from(root.querySelectorAll("[data-i18n]"))) {
+    let argsJson = element.dataset.i18nArgs,
+      attrName = element.dataset.i18nAttr,
+      translatedText;
+    argsJson ? translatedText = localizeMessage(element.dataset.i18n, JSON.parse(argsJson), overrides) : translatedText = localizeMessage(element.dataset.i18n, [], overrides),
+      attrName ? element.setAttribute(attrName, translatedText) : element.textContent = translatedText
   }
 }
-var He = (e, t) => typeof e[t] == "string";
+var hasStringProp = (obj, prop) => typeof obj[prop] == "string";
 
-function q(e) {
+function deserialize(input) {
   try {
-    if (He(e, "__serializer_tag")) {
-      if (e.__serializer_tag === "primitive") return w(e.__serializer_value);
-      if (e.__serializer_tag === "regex") {
-        let n = new RegExp(e.__serializer_value);
-        return w(n)
-      } else if (e.__serializer_tag === "array") {
-        let n = [];
-        for (let r of e.__serializer_value) {
-          let a = q(r);
-          if (a.isErr()) return a;
-          n.push(a.unwrap())
+    if (hasStringProp(input, "__serializer_tag")) {
+      if (input.__serializer_tag === "primitive") return OkResult(input.__serializer_value);
+      if (input.__serializer_tag === "regex") {
+        let pattern = new RegExp(input.__serializer_value);
+        return OkResult(pattern)
+      } else if (input.__serializer_tag === "array") {
+        let items = [];
+        for (let entry of input.__serializer_value) {
+          let decoded = deserialize(entry);
+          if (decoded.isErr()) return decoded;
+          items.push(decoded.unwrap())
         }
-        return w(n)
-      } else if (e.__serializer_tag === "map") {
-        let n = [];
-        for (let r of e.__serializer_value) {
-          let a = q(r);
-          if (a.isErr()) return a;
-          n.push(a.unwrap())
+        return OkResult(items)
+      } else if (input.__serializer_tag === "map") {
+        let items = [];
+        for (let entry of input.__serializer_value) {
+          let decoded = deserialize(entry);
+          if (decoded.isErr()) return decoded;
+          items.push(decoded.unwrap())
         }
-        return w(new Map(n))
-      } else if (e.__serializer_tag === "set") {
-        let n = [];
-        for (let r of e.__serializer_value) {
-          let a = q(r);
-          if (a.isErr()) return a;
-          n.push(a.unwrap())
+        return OkResult(new Map(items))
+      } else if (input.__serializer_tag === "set") {
+        let items = [];
+        for (let entry of input.__serializer_value) {
+          let decoded = deserialize(entry);
+          if (decoded.isErr()) return decoded;
+          items.push(decoded.unwrap())
         }
-        return w(new Set(n))
-      } else if (e.__serializer_tag === "result_ok") {
-        let n = e.__serializer_value,
-          r = q(n);
-        return r.isErr() ? r : w(w(r.unwrap()))
-      } else if (e.__serializer_tag === "result_err") {
-        let n = e.__serializer_value,
-          r = q(n);
-        return r.isErr() ? r : w(D(r.unwrap()))
-      } else if (e.__serializer_tag === "option_some") {
-        let n = e.__serializer_value,
-          r = q(n);
-        return r.isErr() ? r : w(A(r.unwrap()))
-      } else if (e.__serializer_tag === "option_none") return w(f)
+        return OkResult(new Set(items))
+      } else if (input.__serializer_tag === "result_ok") {
+        let inner = input.__serializer_value,
+          decoded = deserialize(inner);
+        return decoded.isErr() ? decoded : OkResult(OkResult(decoded.unwrap()))
+      } else if (input.__serializer_tag === "result_err") {
+        let inner = input.__serializer_value,
+          decoded = deserialize(inner);
+        return decoded.isErr() ? decoded : OkResult(ErrResult(decoded.unwrap()))
+      } else if (input.__serializer_tag === "option_some") {
+        let inner = input.__serializer_value,
+          decoded = deserialize(inner);
+        return decoded.isErr() ? decoded : OkResult(Some(decoded.unwrap()))
+      } else if (input.__serializer_tag === "option_none") return OkResult(noneSingleton)
     }
-    let t = typeof e;
-    if (t === "string" || t === "number" || t === "boolean" || t ===
-      "undefined" || Array.isArray(e) || e == null) return D(
+    let valueType = typeof input;
+    if (valueType === "string" || valueType === "number" || valueType === "boolean" || valueType ===
+      "undefined" || Array.isArray(input) || input == null) return ErrResult(
       "This object was not serialized with Serialize");
-    let o = {};
-    for (let n of Object.keys(e))
-      if (typeof n == "string") {
-        let r = q(e[n]);
-        if (r.isErr()) return r;
-        o[n] = r.unwrap()
-      } return w(o)
+    let decodedObj = {};
+    for (let prop of Object.keys(input))
+      if (typeof prop == "string") {
+        let decodedProp = deserialize(input[prop]);
+        if (decodedProp.isErr()) return decodedProp;
+        decodedObj[prop] = decodedProp.unwrap()
+      } return OkResult(decodedObj)
   } catch {
-    return D("Failed to inspect object. Not JSON?")
+    return ErrResult("Failed to inspect object. Not JSON?")
   }
 }
 
-function N(e) {
-  let t = typeof e;
-  if (t === "string" || t === "number" || t === "boolean" || t ===
-    "undefined" || e == null) return w({
+function serialize(value) {
+  let valueType = typeof value;
+  if (valueType === "string" || valueType === "number" || valueType === "boolean" || valueType ===
+    "undefined" || value == null) return OkResult({
     __serializer_tag: "primitive",
-    __serializer_value: e
+    __serializer_value: value
   });
-  if (e instanceof RegExp) return w({
+  if (value instanceof RegExp) return OkResult({
     __serializer_tag: "regex",
-    __serializer_value: e.source
+    __serializer_value: value.source
   });
-  if (Array.isArray(e)) {
-    let o = e.map(a => N(a)),
-      n = o.as_iter()
-      .find(a => a.isErr());
-    if (n.isSome()) return n.unwrap();
-    let r = o.as_iter()
-      .map(a => a.unwrap())
+  if (Array.isArray(value)) {
+    let serializedItems = value.map(item => serialize(item)),
+      firstError = serializedItems.as_iter()
+      .find(serialized => serialized.isErr());
+    if (firstError.isSome()) return firstError.unwrap();
+    let values = serializedItems.as_iter()
+      .map(serialized => serialized.unwrap())
       .toArray();
-    return w({
+    return OkResult({
       __serializer_tag: "array",
-      __serializer_value: r
+      __serializer_value: values
     })
-  } else if (e instanceof Map) {
-    let o = [...e.entries()].map(a => N(a)),
-      n = o.as_iter()
-      .find(a => a.isErr());
-    if (n.isSome()) return n.unwrap();
-    let r = o.as_iter()
-      .map(a => a.unwrap())
+  } else if (value instanceof Map) {
+    let serializedEntries = [...value.entries()].map(entry => serialize(entry)),
+      firstError = serializedEntries.as_iter()
+      .find(serialized => serialized.isErr());
+    if (firstError.isSome()) return firstError.unwrap();
+    let values = serializedEntries.as_iter()
+      .map(serialized => serialized.unwrap())
       .toArray();
-    return w({
+    return OkResult({
       __serializer_tag: "map",
-      __serializer_value: r
+      __serializer_value: values
     })
-  } else if (e instanceof Set) {
-    let o = [...e.values()].map(a => N(a)),
-      n = o.as_iter()
-      .find(a => a.isErr());
-    if (n.isSome()) return n.unwrap();
-    let r = o.as_iter()
-      .map(a => a.unwrap())
+  } else if (value instanceof Set) {
+    let serializedValues = [...value.values()].map(item => serialize(item)),
+      firstError = serializedValues.as_iter()
+      .find(serialized => serialized.isErr());
+    if (firstError.isSome()) return firstError.unwrap();
+    let values = serializedValues.as_iter()
+      .map(serialized => serialized.unwrap())
       .toArray();
-    return w({
+    return OkResult({
       __serializer_tag: "set",
-      __serializer_value: r
+      __serializer_value: values
     })
-  } else if (J.isResult(e))
-    if (e.isOk()) {
-      let o = e.unwrap(),
-        n = N(o);
-      return n.isErr() ? n : w({
+  } else if (ResultModule.isResult(value))
+    if (value.isOk()) {
+      let okValue = value.unwrap(),
+        serialized = serialize(okValue);
+      return serialized.isErr() ? serialized : OkResult({
         __serializer_tag: "result_ok",
-        __serializer_value: n.unwrap()
+        __serializer_value: serialized.unwrap()
       })
     } else {
-      let o = e.unwrapErr(),
-        n = N(o);
-      return n.isErr() ? n : w({
+      let errValue = value.unwrapErr(),
+        serialized = serialize(errValue);
+      return serialized.isErr() ? serialized : OkResult({
         __serializer_tag: "result_err",
-        __serializer_value: n.unwrap()
+        __serializer_value: serialized.unwrap()
       })
     }
-  else if (B.isOption(e))
-    if (e.isSome()) {
-      let o = e.unwrap(),
-        n = N(o);
-      return n.isErr() ? n : w({
+  else if (OptionModule.isOption(value))
+    if (value.isSome()) {
+      let someValue = value.unwrap(),
+        serialized = serialize(someValue);
+      return serialized.isErr() ? serialized : OkResult({
         __serializer_tag: "option_some",
-        __serializer_value: n.unwrap()
+        __serializer_value: serialized.unwrap()
       })
-    } else return w({
+    } else return OkResult({
       __serializer_tag: "option_none"
     });
-  else if (t === "object") {
-    let o = {},
-      n = e;
-    for (let r of Object.keys(e)) {
-      let a = n[r],
-        i = N(a);
-      if (i.isErr()) continue;
-      let l = i.unwrap();
-      o[r] = l
+  else if (valueType === "object") {
+    let serializedObj = {},
+      source = value;
+    for (let prop of Object.keys(value)) {
+      let propValue = source[prop],
+        serializedProp = serialize(propValue);
+      if (serializedProp.isErr()) continue;
+      let unwrapped = serializedProp.unwrap();
+      serializedObj[prop] = unwrapped
     }
-    return w(o)
-  } else return D("Unsupported value")
+    return OkResult(serializedObj)
+  } else return ErrResult("Unsupported value")
 }
 
-function H(e) {
-  if (typeof e > "u") return "undef";
-  if (typeof e == "string" || typeof e == "number" || typeof e == "boolean" ||
-    e == null) return e;
-  if (e instanceof RegExp) return e.source;
-  if (Array.isArray(e)) return e.map(H);
-  if (e instanceof Map) return [...e.values()].map(H);
-  if (e instanceof Set) return [...e.values()].map(H);
-  if (J.isResult(e)) return e.isOk() ? H(e.unwrap()) : H(e.unwrapErr());
-  if (B.isOption(e)) return e.isSome() ? H(e.unwrap()) : "None";
-  if (typeof e == "object") {
-    let t = {},
-      o = e;
-    for (let n of Object.keys(e)) {
-      let r = o[n];
-      t[n] = H(r)
+function toPlainValue(value) {
+  if (typeof value > "u") return "undef";
+  if (typeof value == "string" || typeof value == "number" || typeof value == "boolean" ||
+    value == null) return value;
+  if (value instanceof RegExp) return value.source;
+  if (Array.isArray(value)) return value.map(toPlainValue);
+  if (value instanceof Map) return [...value.values()].map(toPlainValue);
+  if (value instanceof Set) return [...value.values()].map(toPlainValue);
+  if (ResultModule.isResult(value)) return value.isOk() ? toPlainValue(value.unwrap()) : toPlainValue(value.unwrapErr());
+  if (OptionModule.isOption(value)) return value.isSome() ? toPlainValue(value.unwrap()) : "None";
+  if (typeof value == "object") {
+    let plainObj = {},
+      source = value;
+    for (let prop of Object.keys(value)) {
+      let propValue = source[prop];
+      plainObj[prop] = toPlainValue(propValue)
     }
-    return t
+    return plainObj
   } else return "???"
 }
 
-function Ue(e, t) {
-  let o = new Map,
-    n = [];
+function buildDownloadableRows(state, viewOptions) {
+  let tabGroups = new Map,
+    rows = [];
   {
-    for (let u of e.downloadable.values()) {
-      o.has(u.tab_id) || o.set(u.tab_id, {
+    for (let downloadable of state.downloadable.values()) {
+      tabGroups.has(downloadable.tab_id) || tabGroups.set(downloadable.tab_id, {
         downloadables: [],
         filter_out_low_quality: !1
       });
-      let s = o.get(u.tab_id);
-      s.downloadables.push(u), u.is_low_quality || (s.filter_out_low_quality = !
+      let group = tabGroups.get(downloadable.tab_id);
+      group.downloadables.push(downloadable), downloadable.is_low_quality || (group.filter_out_low_quality = !
         0)
     }
-    for (let u of [...e.downloading.values(), ...e.downloaded.values()]) {
-      let s = o.get(u.downloadable.tab_id);
-      s && !u.downloadable.is_low_quality && (s.filter_out_low_quality = !0)
+    for (let item of [...state.downloading.values(), ...state.downloaded.values()]) {
+      let group = tabGroups.get(item.downloadable.tab_id);
+      group && !item.downloadable.is_low_quality && (group.filter_out_low_quality = !0)
     }
-    for (let [u, s] of o.entries()) {
-      let d = u == e.current_tab_id,
-        c = d || u == "none" || t.all_tabs;
-      for (let b of s.downloadables) {
-        let x = {
+    for (let [tabId, group] of tabGroups.entries()) {
+      let isCurrentTab = tabId == state.current_tab_id,
+        isVisible = isCurrentTab || tabId == "none" || viewOptions.all_tabs;
+      for (let downloadable of group.downloadables) {
+        let row = {
           order: 0,
-          is_current_tab: d,
-          id: b.id,
-          timestamp: b.timestamp,
+          is_current_tab: isCurrentTab,
+          id: downloadable.id,
+          timestamp: downloadable.timestamp,
           reach: "downloadable",
-          is_visible: c
+          is_visible: isVisible
         };
-        s.filter_out_low_quality && b.is_low_quality && !t.low_quality && (x
-          .is_visible = !1), n.push([b, x])
+        group.filter_out_low_quality && downloadable.is_low_quality && !viewOptions.low_quality && (row
+          .is_visible = !1), rows.push([downloadable, row])
       }
     }
   }
-  let r = [...e.downloading.values()].map(u => [u, {
+  let downloadingRows = [...state.downloading.values()].map(item => [item, {
       order: 0,
-      id: u.downloadable.id,
-      is_current_tab: u.downloadable.tab_id == e.current_tab_id,
-      timestamp: u.downloadable.timestamp,
+      id: item.downloadable.id,
+      is_current_tab: item.downloadable.tab_id == state.current_tab_id,
+      timestamp: item.downloadable.timestamp,
       reach: "downloading",
       is_visible: !0
     }]),
-    a = [...e.downloaded.values()].map(u => [u, {
+    downloadedRows = [...state.downloaded.values()].map(item => [item, {
       order: 0,
-      id: u.downloadable.id,
-      is_current_tab: u.downloadable.tab_id == e.current_tab_id,
-      timestamp: u.downloadable.timestamp,
+      id: item.downloadable.id,
+      is_current_tab: item.downloadable.tab_id == state.current_tab_id,
+      timestamp: item.downloadable.timestamp,
       reach: "downloaded",
-      is_visible: !t.hide_downloaded
+      is_visible: !viewOptions.hide_downloaded
     }]),
-    i;
+    sortedRows;
   {
-    let u = ([, s], [, d]) => d.timestamp - s.timestamp;
-    t.sort_by_status ? (n.sort(u), r.sort(u), a.sort(u), i = [...n, ...r, ...
-      a]) : (i = [...n, ...r, ...a], i.sort(u)), t.sort_reverse && i.reverse()
+    let byTimestamp = ([, leftMeta], [, rightMeta]) => rightMeta.timestamp - leftMeta.timestamp;
+    viewOptions.sort_by_status ? (rows.sort(byTimestamp), downloadingRows.sort(byTimestamp), downloadedRows.sort(byTimestamp), sortedRows = [...rows, ...downloadingRows, ...
+      downloadedRows]) : (sortedRows = [...rows, ...downloadingRows, ...downloadedRows], sortedRows.sort(byTimestamp)), viewOptions.sort_reverse && sortedRows.reverse()
   }
-  let l = 0;
-  for (let u of i) u[1].is_visible && (u[1].order = l++);
-  return i
+  let order = 0;
+  for (let row of sortedRows) row[1].is_visible && (row[1].order = order++);
+  return sortedRows
 }
 
-function de(e) {
-  return e < 1048576 ? `${(e/1024).toFixed(0)}Kb` :
-    `${(e/1048576).toFixed(0)}Mb`
+function formatBytes(bytes) {
+  return bytes < 1048576 ? `${(bytes/1024).toFixed(0)}Kb` :
+    `${(bytes/1048576).toFixed(0)}Mb`
 }
 
-function ye(e) {
-  let t = Math.floor(e / 3600);
-  e -= t * 3600;
-  let o = Math.floor(e / 60);
-  e -= o * 60;
-  let n = Math.round(e),
-    r = ("0" + t + ":")
+function formatDuration(seconds) {
+  let hours = Math.floor(seconds / 3600);
+  seconds -= hours * 3600;
+  let minutes = Math.floor(seconds / 60);
+  seconds -= minutes * 60;
+  let wholeSeconds = Math.round(seconds),
+    hoursStr = ("0" + hours + ":")
     .slice(-3),
-    a = ("0" + o + ":")
+    minutesStr = ("0" + minutes + ":")
     .slice(-3),
-    i = ("0" + n)
+    secondsStr = ("0" + wholeSeconds)
     .slice(-2);
-  return r == "00:" && (r = ""), r + a + i
+  return hoursStr == "00:" && (hoursStr = ""), hoursStr + minutesStr + secondsStr
 }
-var ze = ["download", "copy", "download_as", "download_audio"];
+var downloadActionNames = ["download", "copy", "download_as", "download_audio"];
 
-function be(e, t) {
-  let o = document.querySelector(`[data-downloadable-id="${e}"]`),
-    n = o.querySelector("sl-progress-bar"),
-    r = o.querySelector(".span-percent"),
-    a = o.querySelector(".span-bitrate"),
-    i = o.querySelector(".span-downloading-duration");
-  o.classList.remove("progress-unknown"), typeof t != "string" ? (i
-    .textContent = ye(t.duration_since_start / 1e3) + "s", o.querySelector(
+function UpdateProgress(downloadableId, progress) {
+  let downloadEl = document.querySelector(`[data-downloadable-id="${downloadableId}"]`),
+    progressBar = downloadEl.querySelector("sl-progress-bar"),
+    percentSpan = downloadEl.querySelector(".span-percent"),
+    bitrateSpan = downloadEl.querySelector(".span-bitrate"),
+    durationSpan = downloadEl.querySelector(".span-downloading-duration");
+  downloadEl.classList.remove("progress-unknown"), typeof progress != "string" ? (durationSpan
+    .textContent = formatDuration(progress.duration_since_start / 1e3) + "s", downloadEl.querySelector(
       ".button-stop")
-    .removeAttribute("loading"), o.querySelector(".button-stop")
-    .removeAttribute("disabled"), a.removeAttribute("hidden"), a
+    .removeAttribute("loading"), downloadEl.querySelector(".button-stop")
+    .removeAttribute("disabled"), bitrateSpan.removeAttribute("hidden"), bitrateSpan
     .querySelector("sl-format-bytes")
-    .setAttribute("value", t.bitrate_bs.toString()), t.progress != "unknown" ?
-    (r.removeAttribute("hidden"), r.querySelector("sl-format-number")
-      .setAttribute("value", t.progress.toString()), n.removeAttribute(
-        "indeterminate"), n.setAttribute("value", (t.progress * 100)
-        .toString())) : (r.setAttribute("hidden", "true"), n.removeAttribute(
-      "value"), n.setAttribute("indeterminate", "true"), o.classList.add(
-      "progress-unknown"))) : (o.querySelector(".button-stop")
-    .setAttribute("loading", "true"), o.querySelector(".button-stop")
-    .setAttribute("disabled", "true"), a.setAttribute("hidden", "true"))
+    .setAttribute("value", progress.bitrate_bs.toString()), progress.progress != "unknown" ?
+    (percentSpan.removeAttribute("hidden"), percentSpan.querySelector("sl-format-number")
+      .setAttribute("value", progress.progress.toString()), progressBar.removeAttribute(
+        "indeterminate"), progressBar.setAttribute("value", (progress.progress * 100)
+        .toString())) : (percentSpan.setAttribute("hidden", "true"), progressBar.removeAttribute(
+      "value"), progressBar.setAttribute("indeterminate", "true"), downloadEl.classList.add(
+      "progress-unknown"))) : (downloadEl.querySelector(".button-stop")
+    .setAttribute("loading", "true"), downloadEl.querySelector(".button-stop")
+    .setAttribute("disabled", "true"), bitrateSpan.setAttribute("hidden", "true"))
 }
 
-function bt(e, t) {
-  let o = e.core_media,
-    n = [],
-    r = o.container.extension;
-  o.av.video || (r = o.container.audio_only_extension), n.push(
-    `<span class="variant-container">${r}</span>`);
-  let a = Q("v9_panel_downloadable_variant_no_details", [], t);
-  if (o.av.video) {
-    if (o.av.video.quality.isSome()) {
-      let i = o.av.video.quality.unwrap() + "p";
-      n.push(`<span class="variant-quality _${i}">${i}</span>`)
+function renderVariant(variant, overrides) {
+  let coreMedia = variant.core_media,
+    parts = [],
+    containerExt = coreMedia.container.extension;
+  coreMedia.av.video || (containerExt = coreMedia.container.audio_only_extension), parts.push(
+    `<span class="variant-container">${containerExt}</span>`);
+  let details = localizeMessage("v9_panel_downloadable_variant_no_details", [], overrides);
+  if (coreMedia.av.video) {
+    if (coreMedia.av.video.quality.isSome()) {
+      let qualityLabel = coreMedia.av.video.quality.unwrap() + "p";
+      parts.push(`<span class="variant-quality _${qualityLabel}">${qualityLabel}</span>`)
     }
-    if (o.av.video.dimensions.isSome()) {
-      let i = o.av.video.dimensions.unwrap();
-      a = `${i.width}x${i.height}`, o.av.video.bitrate.isSome() && (a +=
-        ` ${de(o.av.video.bitrate.unwrap())}/s`)
-    } else o.content_length.isSome() ? a = de(o.content_length.unwrap()) : o.av
-      .video.bitrate.isSome() && (a += `${de(o.av.video.bitrate.unwrap())}/s`)
+    if (coreMedia.av.video.dimensions.isSome()) {
+      let dimensions = coreMedia.av.video.dimensions.unwrap();
+      details = `${dimensions.width}x${dimensions.height}`, coreMedia.av.video.bitrate.isSome() && (details +=
+        ` ${formatBytes(coreMedia.av.video.bitrate.unwrap())}/s`)
+    } else coreMedia.content_length.isSome() ? details = formatBytes(coreMedia.content_length.unwrap()) : coreMedia.av
+      .video.bitrate.isSome() && (details += `${formatBytes(coreMedia.av.video.bitrate.unwrap())}/s`)
   }
-  return n.push(`<span class="variant-differentiator">${a}</span>`), `<sl-menu-item class="menu-item-variant" data-variant-id="${e.id}" data-to-copy="${F(e.to_copy)}">
-    ${n.join("")}
+  return parts.push(`<span class="variant-differentiator">${details}</span>`), `<sl-menu-item class="menu-item-variant" data-variant-id="${variant.id}" data-to-copy="${escapeHtml(variant.to_copy)}">
+    ${parts.join("")}
   </sl-menu-item>`
 }
 
-function Fe(e, t) {
-  e.dataset.defaultAction = t;
-  let o = e.querySelector("sl-menu-item.action-" + t),
-    n = o.querySelector("sl-icon")
+function UpdateDefaultAction(downloadEl, action) {
+  downloadEl.dataset.defaultAction = action;
+  let menuItem = downloadEl.querySelector("sl-menu-item.action-" + action),
+    iconName = menuItem.querySelector("sl-icon")
     .getAttribute("name"),
-    r = o.querySelector("span")
+    label = menuItem.querySelector("span")
     .textContent,
-    a = e.querySelector(".button-group-actions > sl-button");
-  for (let i of ze) a.classList.remove("action-" + i);
-  a.classList.add("action-" + t), a.querySelector("sl-icon")
-    .setAttribute("name", n), a.querySelector("span")
-    .textContent = r
+    actionButton = downloadEl.querySelector(".button-group-actions > sl-button");
+  for (let actionName of downloadActionNames) actionButton.classList.remove("action-" + actionName);
+  actionButton.classList.add("action-" + action), actionButton.querySelector("sl-icon")
+    .setAttribute("name", iconName), actionButton.querySelector("span")
+    .textContent = label
 }
 
-function Be(e) {
-  let t = e.core_media.container.extension;
-  e.core_media.av.video || (t = e.core_media.container.audio_only_extension);
-  let o = `<span class="variant-container">${t}</span>`,
-    n = e.core_media.av.video,
-    r = o;
-  if (n && n.quality.isSome()) {
-    let i = n.quality.unwrap() + "p",
-      l = `<span class="variant-quality _${i}">${i}</span>`;
-    r += l
-  } else if (e.core_media.content_length.isSome()) {
-    let a = e.core_media.content_length.unwrap();
-    r += `<span class="variant-quality">${de(a)}</span>`
+function RenderVariantButton(variant) {
+  let containerExt = variant.core_media.container.extension;
+  variant.core_media.av.video || (containerExt = variant.core_media.container.audio_only_extension);
+  let containerSpan = `<span class="variant-container">${containerExt}</span>`,
+    video = variant.core_media.av.video,
+    html = containerSpan;
+  if (video && video.quality.isSome()) {
+    let qualityLabel = video.quality.unwrap() + "p",
+      qualitySpan = `<span class="variant-quality _${qualityLabel}">${qualityLabel}</span>`;
+    html += qualitySpan
+  } else if (variant.core_media.content_length.isSome()) {
+    let contentLength = variant.core_media.content_length.unwrap();
+    html += `<span class="variant-quality">${formatBytes(contentLength)}</span>`
   }
-  return r
+  return html
 }
 
-function he(e, t) {
-  let o = [...e.variants.values()][0],
-    n = document.createElement("hbox");
-  n.classList.add("download"), n.dataset.selectedVariantId = o.id, n.dataset
-    .downloadableId = e.id, n.dataset.timestamp = e.timestamp.toString(), n
-    .dataset.toCopy = o.to_copy;
-  let r;
+function renderDownloadable(downloadable, overrides) {
+  let firstVariant = [...downloadable.variants.values()][0],
+    element = document.createElement("hbox");
+  element.classList.add("download"), element.dataset.selectedVariantId = firstVariant.id, element.dataset
+    .downloadableId = downloadable.id, element.dataset.timestamp = downloadable.timestamp.toString(), element
+    .dataset.toCopy = firstVariant.to_copy;
+  let leftHtml;
   {
-    let u = o.core_media.duration,
-      s = "";
-    typeof u == "number" && (s = `<div class="duration">${ye(u)}</div>`), r = `<hbox class="download-left" align="start" style="background-image:url('${F(e.thumbnail_url)}')">
-      <div class="favicon" style="background-image:url('${F(e.favicon_url)}')"></div>
-      ${s}
+    let duration = firstVariant.core_media.duration,
+      durationHtml = "";
+    typeof duration == "number" && (durationHtml = `<div class="duration">${formatDuration(duration)}</div>`), leftHtml = `<hbox class="download-left" align="start" style="background-image:url('${escapeHtml(downloadable.thumbnail_url)}')">
+      <div class="favicon" style="background-image:url('${escapeHtml(downloadable.favicon_url)}')"></div>
+      ${durationHtml}
     </hbox>`
   }
-  let a;
+  let topHtml;
   {
-    let u =
+    let metaHtml =
       `
       <span class="span-bitrate"><sl-format-bytes></sl-format-bytes>/s</span>
       <span class="span-downloading-duration"></span>
       <span size="small" class="span-percent"><sl-format-number type="percent"></sl-format-number></span>`,
-      s = '<sl-icon name="film"></sl-icon>';
-    o.core_media.av.video ? s =
+      mediaIcons = '<sl-icon name="film"></sl-icon>';
+    firstVariant.core_media.av.video ? mediaIcons =
       '<sl-icon name="film"></sl-icon><sl-icon name="plus"></sl-icon><sl-icon name="music-note-beamed"></sl-icon>' :
-      s = '<sl-icon name="music-note-beamed"></sl-icon>';
-    let d = `
+      mediaIcons = '<sl-icon name="music-note-beamed"></sl-icon>';
+    let tagsHtml = `
       <hbox class="hbox-tags">
-        <sl-tag variant="primary" size="small">${o.core_media.builder}</sl-tag>
+        <sl-tag variant="primary" size="small">${firstVariant.core_media.builder}</sl-tag>
         <sl-tooltip content="Video & Audio">
-          <sl-tag variant="neutral" size="small">${s}</sl-tag>
+          <sl-tag variant="neutral" size="small">${mediaIcons}</sl-tag>
         </sl-tooltip>
       </hbox>`,
-      c = F(e.page_title);
-    a = `
+      pageTitle = escapeHtml(downloadable.page_title);
+    topHtml = `
     <hbox class="download-top" align="center">
-      ${d}<div class="favicon" style="background-image:url('${F(e.favicon_url)}')"></div>
-      <p class="title" flex="1" title="${c}">${c}</p>
-      ${u}
+      ${tagsHtml}<div class="favicon" style="background-image:url('${escapeHtml(downloadable.favicon_url)}')"></div>
+      <p class="title" flex="1" title="${pageTitle}">${pageTitle}</p>
+      ${metaHtml}
       <sl-icon-button name="x" class="button-hide"></sl-icon-button>
     </hbox>`
   }
-  let i;
+  let bottomHtml;
   {
-    let u = "";
-    for (let b of e.variants.values()) u += bt(b, t);
-    i = `
+    let variantsHtml = "";
+    for (let variant of downloadable.variants.values()) variantsHtml += renderVariant(variant, overrides);
+    bottomHtml = `
       <hbox align="center" pack="end" class="download-bottom" flex="1">
         ${`
         <sl-dropdown stay-open-on-select="true" class="dropdown-variants">
           <sl-button slot="trigger" size="small" caret>
-            ${Be(o)}
+            ${RenderVariantButton(firstVariant)}
           </sl-button>
           <sl-menu>
-            ${u}
+            ${variantsHtml}
             <sl-divider></sl-divider>
             <sl-menu-item type="checkbox" class="menu-prefer-quality"><span data-i18n="v9_panel_variant_menu_prefer_quality"></span></sl-menu-item>
             <sl-menu-item type="checkbox" class="menu-prefer-container"><span data-i18n="v9_panel_variant_menu_prefer_format"></span></sl-menu-item>
@@ -1961,62 +1961,62 @@ function he(e, t) {
         <!-- menu-actions from template -->
       </hbox>`
   }
-  n.innerHTML = `
-  ${r}
+  element.innerHTML = `
+  ${leftHtml}
   <vbox class="download-right" flex="1">
-    ${a}
-    ${i}
+    ${topHtml}
+    ${bottomHtml}
   </vbox>
   `;
-  let l = document.querySelector("template")
+  let template = document.querySelector("template")
     .content;
   {
-    let u = l.querySelector(".button-group-actions")
+    let actionsGroup = template.querySelector(".button-group-actions")
       .cloneNode(!0),
-      s = l.querySelector(".menu-actions")
+      actionsMenu = template.querySelector(".menu-actions")
       .cloneNode(!0),
-      d = n.querySelector(".download-bottom");
-    d.appendChild(u), d.appendChild(s)
+      bottomEl = element.querySelector(".download-bottom");
+    bottomEl.appendChild(actionsGroup), bottomEl.appendChild(actionsMenu)
   }
-  return ue(n, t), n
+  return applyI18n(element, overrides), element
 }
 
-function Je(e, t) {
-  let o = document.querySelector(
-    `[data-downloadable-id="${e.downloadable.id}"]`);
-  return o || (o = he(e.downloadable, t), document.querySelector(
+function UpdateDownloading(item, overrides) {
+  let downloadEl = document.querySelector(
+    `[data-downloadable-id="${item.downloadable.id}"]`);
+  return downloadEl || (downloadEl = renderDownloadable(item.downloadable, overrides), document.querySelector(
       "#core-downloads")
-    .append(o)), o.setAttribute("status", "downloading"), be(e.downloadable
-    .id, e.progress), o
+    .append(downloadEl)), downloadEl.setAttribute("status", "downloading"), UpdateProgress(item.downloadable
+    .id, item.progress), downloadEl
 }
 
-function We(e, t) {
-  let o = document.querySelector(`[data-downloadable-id="${e.id}"]`);
-  o || (o = he(e, t), document.querySelector("#core-downloads")
-    .append(o)), o.setAttribute("status", "downloadable");
+function UpdateDownloadable(downloadable, overrides) {
+  let downloadEl = document.querySelector(`[data-downloadable-id="${downloadable.id}"]`);
+  downloadEl || (downloadEl = renderDownloadable(downloadable, overrides), document.querySelector("#core-downloads")
+    .append(downloadEl)), downloadEl.setAttribute("status", "downloadable");
   {
-    let n = o.dataset.selectedVariantId,
-      r = e.variants.get(n),
-      a = Be(r),
-      i = o.querySelector(".dropdown-variants > sl-button");
-    i.innerHTML = a
+    let selectedVariantId = downloadEl.dataset.selectedVariantId,
+      variant = downloadable.variants.get(selectedVariantId),
+      buttonHtml = RenderVariantButton(variant),
+      triggerButton = downloadEl.querySelector(".dropdown-variants > sl-button");
+    triggerButton.innerHTML = buttonHtml
   }
-  return o
+  return downloadEl
 }
 
-function Qe(e, t) {
-  let o = document.querySelector(
-    `[data-downloadable-id="${e.downloadable.id}"]`);
-  o || (o = he(e.downloadable, t), document.querySelector("#core-downloads")
-    .append(o)), o.setAttribute("status", "downloaded");
-  let n = o.querySelector(".title");
-  return e.download_result.inbrowser ? (o.dataset.inBrowserDownloadId = e
-    .download_result.download_id.toString(), n.textContent = e.downloadable
-    .title) : n.textContent = e.download_result.filename, o
+function UpdateDownloaded(item, overrides) {
+  let downloadEl = document.querySelector(
+    `[data-downloadable-id="${item.downloadable.id}"]`);
+  downloadEl || (downloadEl = renderDownloadable(item.downloadable, overrides), document.querySelector("#core-downloads")
+    .append(downloadEl)), downloadEl.setAttribute("status", "downloaded");
+  let titleEl = downloadEl.querySelector(".title");
+  return item.download_result.inbrowser ? (downloadEl.dataset.inBrowserDownloadId = item
+    .download_result.download_id.toString(), titleEl.textContent = item.downloadable
+    .title) : titleEl.textContent = item.download_result.filename, downloadEl
 }
-var pe = ae(Y(), 1);
-var Z = /.^/,
-  Ae = {
+var browserStorageApi = toEsm(requirePolyfill(), 1);
+var neverMatchRegex = /.^/,
+  videoCodecDefs = {
     Av1: {
       name: "Av1",
       type: "video",
@@ -2032,7 +2032,7 @@ var Z = /.^/,
     H263: {
       name: "H263",
       type: "video",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "3gp"
     },
     H265: {
@@ -2050,13 +2050,13 @@ var Z = /.^/,
     MPEG1: {
       name: "MPEG1",
       type: "video",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Mpeg"
     },
     MPEG2: {
       name: "MPEG2",
       type: "video",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Mpeg"
     },
     Theora: {
@@ -2080,11 +2080,11 @@ var Z = /.^/,
     unknown: {
       name: "unknown",
       type: "video",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Mp4"
     }
   },
-  Ge = {
+  audioCodecDefs = {
     AAC: {
       name: "AAC",
       type: "audio",
@@ -2124,34 +2124,34 @@ var Z = /.^/,
     Wav: {
       name: "Wav",
       type: "audio",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Wav"
     },
     unknown: {
       name: "unknown",
       type: "audio",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Mp4"
     }
   },
-  Ke = C(function*() {
-    for (let e of Object.keys(Ae)) yield Ae[e]
+  videoCodecEntries = defineIterableHelpers(function*() {
+    for (let codecName of Object.keys(videoCodecDefs)) yield videoCodecDefs[codecName]
   }),
-  Ye = C(function*() {
-    for (let e of Object.keys(Ge)) yield Ge[e]
+  audioCodecEntries = defineIterableHelpers(function*() {
+    for (let codecName of Object.keys(audioCodecDefs)) yield audioCodecDefs[codecName]
   });
 
-function xe(e) {
-  return typeof e == "string" && e in Ae ? A(e) : f
+function toVideoCodec(codecName) {
+  return typeof codecName == "string" && codecName in videoCodecDefs ? Some(codecName) : noneSingleton
 }
-var ve = {
+var containerDefs = {
     Mp4: {
       name: "Mp4",
       extension: "mp4",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: f,
-        video: f
+        audio: noneSingleton,
+        video: noneSingleton
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2",
         "unknown"],
@@ -2163,16 +2163,16 @@ var ve = {
       extension: "mkv",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: f,
-        video: f
+        audio: noneSingleton,
+        video: noneSingleton
       },
-      supported_video_codecs: Ke()
-        .filter(e => e.name != "unknown")
-        .map(e => e.name)
+      supported_video_codecs: videoCodecEntries()
+        .filter(codec => codec.name != "unknown")
+        .map(codec => codec.name)
         .toArray(),
-      supported_audio_codecs: Ye()
-        .filter(e => e.name != "unknown")
-        .map(e => e.name)
+      supported_audio_codecs: audioCodecEntries()
+        .filter(codec => codec.name != "unknown")
+        .map(codec => codec.name)
         .toArray(),
       mimetype: /(?:x-)?matroska/i
     },
@@ -2181,8 +2181,8 @@ var ve = {
       extension: "webm",
       audio_only_extension: "oga",
       defacto_codecs: {
-        audio: f,
-        video: f
+        audio: noneSingleton,
+        video: noneSingleton
       },
       supported_video_codecs: ["H264", "VP8", "VP9", "Av1"],
       supported_audio_codecs: ["Opus", "Vorbis"],
@@ -2193,8 +2193,8 @@ var ve = {
       extension: "mt2s",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: f,
-        video: f
+        audio: noneSingleton,
+        video: noneSingleton
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2", "VP9",
         "unknown"
@@ -2207,8 +2207,8 @@ var ve = {
       extension: "mp2t",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: A("MP3"),
-        video: A("H264")
+        audio: Some("MP3"),
+        video: Some("H264")
       },
       supported_video_codecs: ["MPEG2", "MPEG1"],
       supported_audio_codecs: ["MP3"],
@@ -2219,8 +2219,8 @@ var ve = {
       extension: "flv",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: f,
-        video: f
+        audio: noneSingleton,
+        video: noneSingleton
       },
       supported_video_codecs: ["H264"],
       supported_audio_codecs: ["AAC"],
@@ -2231,8 +2231,8 @@ var ve = {
       extension: "m4v",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: f,
-        video: f
+        audio: noneSingleton,
+        video: noneSingleton
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2"],
       supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC"],
@@ -2244,8 +2244,8 @@ var ve = {
       other_extensions: ["aac"],
       audio_only_extension: "m4a",
       defacto_codecs: {
-        audio: A("AAC"),
-        video: f
+        audio: Some("AAC"),
+        video: noneSingleton
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC", "unknown"],
@@ -2256,8 +2256,8 @@ var ve = {
       extension: "flac",
       audio_only_extension: "flac",
       defacto_codecs: {
-        audio: A("FLAC"),
-        video: f
+        audio: Some("FLAC"),
+        video: noneSingleton
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["FLAC"],
@@ -2268,8 +2268,8 @@ var ve = {
       extension: "mpeg",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: A("MP3"),
-        video: A("H264")
+        audio: Some("MP3"),
+        video: Some("H264")
       },
       supported_video_codecs: ["MPEG2", "MPEG1"],
       supported_audio_codecs: ["MP3"],
@@ -2280,8 +2280,8 @@ var ve = {
       extension: "ogv",
       audio_only_extension: "oga",
       defacto_codecs: {
-        audio: f,
-        video: f
+        audio: noneSingleton,
+        video: noneSingleton
       },
       supported_video_codecs: ["VP9", "VP8", "Theora"],
       supported_audio_codecs: ["Opus", "Vorbis", "FLAC"],
@@ -2292,8 +2292,8 @@ var ve = {
       extension: "wav",
       audio_only_extension: "wav",
       defacto_codecs: {
-        audio: A("Wav"),
-        video: f
+        audio: Some("Wav"),
+        video: noneSingleton
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["Wav", "PCM"],
@@ -2304,8 +2304,8 @@ var ve = {
       extension: "3gpp",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: f,
-        video: f
+        audio: noneSingleton,
+        video: noneSingleton
       },
       supported_video_codecs: ["H264", "H263", "MP4V", "VP8"],
       supported_audio_codecs: ["MP3", "AAC"],
@@ -2316,25 +2316,25 @@ var ve = {
       extension: "mov",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: f,
-        video: f
+        audio: noneSingleton,
+        video: noneSingleton
       },
       supported_video_codecs: ["MPEG1", "MPEG2"],
       supported_audio_codecs: [],
       mimetype: /(?:x-)?mov/i
     }
   },
-  ht = C(function*() {
-    for (let e of Object.keys(ve)) yield e
+  containerNames = defineIterableHelpers(function*() {
+    for (let containerName of Object.keys(containerDefs)) yield containerName
   }),
-  Po = C(function*() {
-    for (let e of ht()) yield ve[e]
+  containerEntries = defineIterableHelpers(function*() {
+    for (let containerName of containerNames()) yield containerDefs[containerName]
   });
 
-function Se(e) {
-  return typeof e == "string" && e in ve ? A(e) : f
+function toContainer(containerName) {
+  return typeof containerName == "string" && containerName in containerDefs ? Some(containerName) : noneSingleton
 }
-var Ze = {
+var qualityDefs = {
   240: {
     id: "240",
     loose_name: "Small"
@@ -2368,24 +2368,24 @@ var Ze = {
     loose_name: "8K"
   }
 };
-var Xe = C(function*() {
-    for (let e of Object.keys(Ze)) yield e
+var qualityKeys = defineIterableHelpers(function*() {
+    for (let qualityKey of Object.keys(qualityDefs)) yield qualityKey
   }),
-  Ro = C(function*() {
-    for (let e of Xe()) yield Ze[e]
+  qualityEntries = defineIterableHelpers(function*() {
+    for (let qualityKey of qualityKeys()) yield qualityDefs[qualityKey]
   });
 
-function ce(e) {
-  if (typeof e == "string") return Xe()
-    .find(t => t == e);
-  if (typeof e == "number") {
-    let t = e.toString();
-    return ce(t)
+function toQuality(input) {
+  if (typeof input == "string") return qualityKeys()
+    .find(candidate => candidate == input);
+  if (typeof input == "number") {
+    let asString = input.toString();
+    return toQuality(asString)
   }
-  return f
+  return noneSingleton
 }
 
-function Me() {
+function defaultMediaPrefs() {
   return {
     prefer_60fps: !0,
     ignore_low_quality_hits: !0,
@@ -2399,64 +2399,64 @@ function Me() {
   }
 }
 
-function et(e) {
-  return N(e)
+function serializeMediaPrefs(prefs) {
+  return serialize(prefs)
     .unwrap()
 }
 
-function tt(e) {
-  let t = q(e)
+function deserializeMediaPrefs(raw) {
+  let parsed = deserialize(raw)
     .unwrapOr({}),
-    o = Me(),
-    n = Se(t.container)
-    .unwrapOr(o.container),
-    r = xe(t.video_codec)
-    .unwrapOr(o.video_codec),
-    a = ce(t.best_video_quality)
-    .unwrapOr(o.best_video_quality),
-    i = ce(t.lowest_video_quality)
-    .unwrapOr(o.lowest_video_quality),
-    l;
-  if ("prefered_video_quality" in t) {
-    let M = ce(t.prefered_video_quality);
-    M.isSome() && (l = M.unwrap())
+    defaults = defaultMediaPrefs(),
+    container = toContainer(parsed.container)
+    .unwrapOr(defaults.container),
+    videoCodec = toVideoCodec(parsed.video_codec)
+    .unwrapOr(defaults.video_codec),
+    bestQuality = toQuality(parsed.best_video_quality)
+    .unwrapOr(defaults.best_video_quality),
+    lowestQuality = toQuality(parsed.lowest_video_quality)
+    .unwrapOr(defaults.lowest_video_quality),
+    preferredQuality;
+  if ("prefered_video_quality" in parsed) {
+    let parsedPreferred = toQuality(parsed.prefered_video_quality);
+    parsedPreferred.isSome() && (preferredQuality = parsedPreferred.unwrap())
   }
-  let u = o.max_variants;
-  if (typeof t.max_variants == "number") {
-    let M = t.max_variants;
-    Number.isInteger(M) && M <= 11 && M > 0 && (u = M)
+  let maxVariants = defaults.max_variants;
+  if (typeof parsed.max_variants == "number") {
+    let parsedMax = parsed.max_variants;
+    Number.isInteger(parsedMax) && parsedMax <= 11 && parsedMax > 0 && (maxVariants = parsedMax)
   }
-  let s = o.prefer_60fps;
-  typeof t.prefer_60fps == "boolean" && (s = t.prefer_60fps);
-  let d = o.ignore_low_quality_hits;
-  typeof t.ignore_low_quality_hits == "boolean" && (d = t
+  let prefer60fps = defaults.prefer_60fps;
+  typeof parsed.prefer_60fps == "boolean" && (prefer60fps = parsed.prefer_60fps);
+  let ignoreLowQuality = defaults.ignore_low_quality_hits;
+  typeof parsed.ignore_low_quality_hits == "boolean" && (ignoreLowQuality = parsed
     .ignore_low_quality_hits);
-  let c = [];
-  if (Array.isArray(t.ignored_containers))
-    for (let M of t.ignored_containers) {
-      let v = Se(M);
-      v.isSome() && c.push(v.unwrap())
+  let ignoredContainers = [];
+  if (Array.isArray(parsed.ignored_containers))
+    for (let ignoredContainerName of parsed.ignored_containers) {
+      let container = toContainer(ignoredContainerName);
+      container.isSome() && ignoredContainers.push(container.unwrap())
     }
-  let b = [];
-  if (Array.isArray(t.ignored_video_codecs))
-    for (let M of t.ignored_video_codecs) {
-      let v = xe(M);
-      v.isSome() && b.push(v.unwrap())
+  let ignoredCodecs = [];
+  if (Array.isArray(parsed.ignored_video_codecs))
+    for (let ignoredCodecName of parsed.ignored_video_codecs) {
+      let codec = toVideoCodec(ignoredCodecName);
+      codec.isSome() && ignoredCodecs.push(codec.unwrap())
     }
-  let x = {
-    prefer_60fps: s,
-    ignore_low_quality_hits: d,
-    container: n,
-    max_variants: u,
-    video_codec: r,
-    lowest_video_quality: i,
-    best_video_quality: a,
-    ignored_containers: c,
-    ignored_video_codecs: b
+  let result = {
+    prefer_60fps: prefer60fps,
+    ignore_low_quality_hits: ignoreLowQuality,
+    container: container,
+    max_variants: maxVariants,
+    video_codec: videoCodec,
+    lowest_video_quality: lowestQuality,
+    best_video_quality: bestQuality,
+    ignored_containers: ignoredContainers,
+    ignored_video_codecs: ignoredCodecs
   };
-  return typeof l < "u" && (x.prefered_video_quality = l), x
+  return typeof preferredQuality < "u" && (result.prefered_video_quality = preferredQuality), result
 }
-var ot = {
+var defaultViewOptions = {
   all_tabs: !1,
   low_quality: !1,
   sort_by_status: !0,
@@ -2466,119 +2466,119 @@ var ot = {
   show_button_convert_local: !1,
   hide_downloaded: !1
 };
-var At = ae(Y(), 1);
+var browserApiUnused = toEsm(requirePolyfill(), 1);
 
-function Te(e, t) {
-  if (e == null || t === null || t === void 0) return e === t;
-  if (e.constructor !== t.constructor) return !1;
-  if (e instanceof Function || e instanceof RegExp) return e === t;
-  if (e === t || e.valueOf() === t.valueOf()) return !0;
-  if (Array.isArray(e) && e.length !== t.length || e instanceof Date || !(
-      e instanceof Object) || !(t instanceof Object)) return !1;
-  let o = Object.keys(e),
-    n = Object.keys(t)
-    .every(a => o.indexOf(a) !== -1),
-    r = o.every(a => Te(e[a], t[a]));
-  return n && r
+function deepEqual(left, right) {
+  if (left == null || right === null || right === void 0) return left === right;
+  if (left.constructor !== right.constructor) return !1;
+  if (left instanceof Function || left instanceof RegExp) return left === right;
+  if (left === right || left.valueOf() === right.valueOf()) return !0;
+  if (Array.isArray(left) && left.length !== right.length || left instanceof Date || !(
+      left instanceof Object) || !(right instanceof Object)) return !1;
+  let leftKeys = Object.keys(left),
+    rightKeys = Object.keys(right)
+    .every(key => leftKeys.indexOf(key) !== -1),
+    keysEqual = leftKeys.every(key => deepEqual(left[key], right[key]));
+  return rightKeys && keysEqual
 }
-async function O(e, t) {
-  let o = t;
-  e.hooks && (o = e.hooks.setter(t)), await pe.storage[e.where].set({
-    [e.name]: o
+async function saveStorageEntry(store, value) {
+  let storedValue = value;
+  store.hooks && (storedValue = store.hooks.setter(value)), await browserStorageApi.storage[store.where].set({
+    [store.name]: storedValue
   })
 }
-async function y(e) {
-  let t = await pe.storage[e.where].get(e.name);
-  if (e.name in t) {
-    let o = t[e.name];
-    return e.hooks ? e.hooks.getter(o, e) : o
+async function loadStorageEntry(store) {
+  let stored = await browserStorageApi.storage[store.where].get(store.name);
+  if (store.name in stored) {
+    let rawValue = stored[store.name];
+    return store.hooks ? store.hooks.getter(rawValue, store) : rawValue
   }
-  return e.default()
+  return store.default()
 }
 
-function X(e, t) {
-  pe.storage[e.where].onChanged.addListener(o => {
-    let n = o[e.name];
-    if (n) {
-      if (Te(n.oldValue, n.newValue)) return;
-      typeof n.newValue > "u" ? t(e.default()) : e.hooks ? t(e.hooks.getter(
-        n.newValue, e)) : t(n.newValue)
+function watchStorageEntry(store, onChange) {
+  browserStorageApi.storage[store.where].onChanged.addListener(changes => {
+    let change = changes[store.name];
+    if (change) {
+      if (deepEqual(change.oldValue, change.newValue)) return;
+      typeof change.newValue > "u" ? onChange(store.default()) : store.hooks ? onChange(store.hooks.getter(
+        change.newValue, store)) : onChange(change.newValue)
     }
   })
 }
-var rt = {
+var debuggerEnabledStore = {
   name: "debugger_enabled",
   default: () => !1,
   where: "local"
 };
-var ke = {
+var usedHistoryButtonStore = {
     name: "used_history_button",
     default: () => !1,
     where: "local"
   },
-  Ee = {
+  useSidebarStore = {
     name: "use_sidebar",
     default: () => !1,
     where: "local"
   };
-var L = {
+var viewOptionsStore = {
   name: "view_options",
-  default: () => structuredClone(ot),
+  default: () => structuredClone(defaultViewOptions),
   where: "local"
 };
-var j = {
+var defaultActionStore = {
     name: "default_action",
     default: () => "download",
     where: "local"
   },
-  nt = {
+  ytWarningStore = {
     name: "yt_warning",
     default: () => !0,
     where: "local"
   },
-  at = {
+  useWideUiStore = {
     name: "use_wide_ui",
     default: () => !1,
     where: "local"
   },
-  it = {
+  useLegacyUiStore = {
     name: "use_legacy_ui",
     default: () => !0,
     where: "local"
   };
-var De = {
+var openCountStore = {
   name: "open_count_store",
   default: () => 0,
   where: "session"
 };
-var G = {
+var sessionViewOptionsStore = {
   name: "view_options",
   default: () => ({}),
   where: "session"
 };
-var Ce = {
+var blacklistStore = {
   name: "blacklist",
   default: () => [],
   where: "local",
   hooks: {
-    setter: e => e.filter(t => t.length > 0),
-    getter: e => e
+    setter: entries => entries.filter(entry => entry.length > 0),
+    getter: value => value
   }
 };
-var Oe = {
+var mediaPrefsStore = {
   name: "media_user_pref",
   where: "local",
-  default: () => Me(),
+  default: () => defaultMediaPrefs(),
   hooks: {
-    setter: e => et(e),
-    getter: e => tt(e)
+    setter: value => serializeMediaPrefs(value),
+    getter: raw => deserializeMediaPrefs(raw)
   }
 };
-var U = {
+var databaseStore = {
   name: "database",
   where: "session",
   default: () => ({
-    yt_bulk: f,
+    yt_bulk: noneSingleton,
     user_messages: new Set,
     coapp_status: "checking",
     license_status: {
@@ -2592,482 +2592,482 @@ var U = {
     download_errors: new Map
   }),
   hooks: {
-    setter: e => N(e)
+    setter: state => serialize(state)
       .unwrap(),
-    getter: (e, t) => q(e)
-      .unwrapOr(t.default())
+    getter: (raw, store) => deserialize(raw)
+      .unwrapOr(store.default())
   }
 };
-var Ie = [],
-  xt = await y(rt),
-  Ve;
+var debugLogBuffer = [],
+  debuggerEnabled = await loadStorageEntry(debuggerEnabledStore),
+  debugFlushTimer;
 
-function R(e) {
-  xt && (Ie.push({
+function debugLog(message) {
+  debuggerEnabled && (debugLogBuffer.push({
     timestamp: Date.now(),
-    message: e
-  }), Ve || (Ve = setTimeout(() => {
-    Ve = void 0, S({
-      debugger_new_logs: Ie
-    }), Ie.length = 0
+    message: message
+  }), debugFlushTimer || (debugFlushTimer = setTimeout(() => {
+    debugFlushTimer = void 0, sendToBackground({
+      debugger_new_logs: debugLogBuffer
+    }), debugLogBuffer.length = 0
   }, 500)))
 }
-async function S(e) {
-  typeof e != "string" && !("debugger_new_logs" in e) && R(
-      `PostMessageToBackground - ${JSON.stringify(e)}`), k.default.runtime
-    .sendMessage(e)
+async function sendToBackground(message) {
+  typeof message != "string" && !("debugger_new_logs" in message) && debugLog(
+      `PostMessageToBackground - ${JSON.stringify(message)}`), browserRuntimeApi.default.runtime
+    .sendMessage(message)
 }
-k.default.runtime.onMessage.addListener(async e => {
-  let t = e;
-  if ("progress_changed" in t) {
+browserRuntimeApi.default.runtime.onMessage.addListener(async message => {
+  let payload = message;
+  if ("progress_changed" in payload) {
     let {
-      downloadable_id: o,
-      progress: n
-    } = t.progress_changed;
-    be(o, n)
+      downloadable_id: downloadableId,
+      progress: progress
+    } = payload.progress_changed;
+    UpdateProgress(downloadableId, progress)
   }
 });
-if (await y(it)) throw new Error("V9 panel openning while using legacy UI");
-var Pe;
+if (await loadStorageEntry(useLegacyUiStore)) throw new Error("V9 panel openning while using legacy UI");
+var currentWindowId;
 
-function vt(e, t) {
-  let o = document.querySelector("#core"),
-    n = Array.from(o.querySelectorAll(".download-error"));
-  for (let i of n) {
-    let l = i.dataset.errorId;
-    e.download_errors.has(l) || i.remove()
+function renderDownloadErrors(state, overrides) {
+  let coreEl = document.querySelector("#core"),
+    existingErrors = Array.from(coreEl.querySelectorAll(".download-error"));
+  for (let errorEl of existingErrors) {
+    let errorId = errorEl.dataset.errorId;
+    state.download_errors.has(errorId) || errorEl.remove()
   }
-  let r = document.querySelector("template")
+  let template = document.querySelector("template")
     .content;
-  for (let i of e.download_errors.values()) {
-    let l = document.querySelector(`.download-error[data-error-id="${i.id}"]`);
-    if (!l) {
-      let s = r.querySelector(`.download-error[error-type="${i.error}"]`);
-      if (!s) {
-        R("Didn't find template for error: " + i.error);
+  for (let error of state.download_errors.values()) {
+    let errorEl = document.querySelector(`.download-error[data-error-id="${error.id}"]`);
+    if (!errorEl) {
+      let templateEl = template.querySelector(`.download-error[error-type="${error.error}"]`);
+      if (!templateEl) {
+        debugLog("Didn't find template for error: " + error.error);
         continue
       }
-      l = s.cloneNode(!0), ue(l, t), l.dataset.errorId = i.id, o.insertBefore(l,
-        o.firstChild)
+      errorEl = templateEl.cloneNode(!0), applyI18n(errorEl, overrides), errorEl.dataset.errorId = error.id, coreEl.insertBefore(errorEl,
+        coreEl.firstChild)
     }
-    l.setAttribute("report-status", i.report_status);
-    let u = l.querySelector(".button-report-error");
-    u && (i.report_status == "reporting" ? (u.setAttribute("loading", "true"), u
-      .setAttribute("disabled", "true")) : (u.removeAttribute("loading"), u
+    errorEl.setAttribute("report-status", error.report_status);
+    let reportButton = errorEl.querySelector(".button-report-error");
+    reportButton && (error.report_status == "reporting" ? (reportButton.setAttribute("loading", "true"), reportButton
+      .setAttribute("disabled", "true")) : (reportButton.removeAttribute("loading"), reportButton
       .removeAttribute("disabled")))
   }
-  let a = document.querySelector('.download-error[data-error-id="nocoapp"]');
-  if (a) {
-    let i = a.querySelector(".error-nocoapp-button-recheck"),
-      l = a.querySelector(".error-nocoapp-button-install"),
-      u = a.querySelector(".error-nocoapp-button-success");
-    e.coapp_status == "checking" ? (u.setAttribute("hidden", "true"), l
-      .removeAttribute("hidden"), l.disabled = !0, i.disabled = !0, i
-      .setAttribute("loading", "true")) : e.coapp_status.found ? (u
-      .removeAttribute("hidden"), l.setAttribute("hidden", "true"), l
-      .disabled = !0, i.setAttribute("hidden", "true"), i.removeAttribute(
-        "loading")) : (u.setAttribute("hidden", "true"), l.removeAttribute(
-      "hidden"), l.disabled = !1, i.disabled = !1, i.removeAttribute(
+  let nocoappEl = document.querySelector('.download-error[data-error-id="nocoapp"]');
+  if (nocoappEl) {
+    let recheckButton = nocoappEl.querySelector(".error-nocoapp-button-recheck"),
+      installButton = nocoappEl.querySelector(".error-nocoapp-button-install"),
+      successButton = nocoappEl.querySelector(".error-nocoapp-button-success");
+    state.coapp_status == "checking" ? (successButton.setAttribute("hidden", "true"), installButton
+      .removeAttribute("hidden"), installButton.disabled = !0, recheckButton.disabled = !0, recheckButton
+      .setAttribute("loading", "true")) : state.coapp_status.found ? (successButton
+      .removeAttribute("hidden"), installButton.setAttribute("hidden", "true"), installButton
+      .disabled = !0, recheckButton.setAttribute("hidden", "true"), recheckButton.removeAttribute(
+        "loading")) : (successButton.setAttribute("hidden", "true"), installButton.removeAttribute(
+      "hidden"), installButton.disabled = !1, recheckButton.disabled = !1, recheckButton.removeAttribute(
       "loading"))
   }
 }
 
-function St(e, t) {
-  let o = document.querySelector("#core"),
-    n = Array.from(o.querySelectorAll(".user-message"));
-  for (let a of n) e.user_messages.has(a.dataset.userMessageId) || a.remove();
-  let r = document.querySelector("template")
+function renderUserMessages(state, overrides) {
+  let coreEl = document.querySelector("#core"),
+    existingMessages = Array.from(coreEl.querySelectorAll(".user-message"));
+  for (let messageEl of existingMessages) state.user_messages.has(messageEl.dataset.userMessageId) || messageEl.remove();
+  let template = document.querySelector("template")
     .content;
-  for (let a of e.user_messages.values()) {
-    let i = document.querySelector(
-    `.user-message[data-user-message-id="${a}"]`);
-    if (!i) {
-      let l = r.querySelector(`.user-message[data-user-message-id="${a}"]`);
-      if (!l) {
-        R("Didn't find template for user message: " + a);
+  for (let messageId of state.user_messages.values()) {
+    let messageEl = document.querySelector(
+    `.user-message[data-user-message-id="${messageId}"]`);
+    if (!messageEl) {
+      let templateEl = template.querySelector(`.user-message[data-user-message-id="${messageId}"]`);
+      if (!templateEl) {
+        debugLog("Didn't find template for user message: " + messageId);
         continue
       }
-      i = l.cloneNode(!0), ue(i, t), i.dataset.userMessageId = a, o
-        .insertBefore(i, o.firstChild)
+      messageEl = templateEl.cloneNode(!0), applyI18n(messageEl, overrides), messageEl.dataset.userMessageId = messageId, coreEl
+        .insertBefore(messageEl, coreEl.firstChild)
     }
-    if (a == "yt_bulk_detected" && e.yt_bulk.isSome()) {
-      let l = e.yt_bulk.unwrap();
-      i.querySelector(".title")
-        .textContent = Q("v9_yt_bulk_detected", [l.ids.length], t)
+    if (messageId == "yt_bulk_detected" && state.yt_bulk.isSome()) {
+      let ytBulk = state.yt_bulk.unwrap();
+      messageEl.querySelector(".title")
+        .textContent = localizeMessage("v9_yt_bulk_detected", [ytBulk.ids.length], overrides)
     }
   }
 }
 
-function te(e, t, o, n) {
-  let r = Ue(e, t),
-    a = r.reduce((s, [, d]) => s + (d.is_visible ? 1 : 0), 0),
-    i = r.some(([, s]) => s.is_visible && s.is_current_tab);
-  e.download_errors.size + e.user_messages.size + a + (i ? 0 : 1) > 1 &&
+function renderPanel(state, viewOptions, defaultAction, overrides) {
+  let rows = buildDownloadableRows(state, viewOptions),
+    visibleCount = rows.reduce((count, [, meta]) => count + (meta.is_visible ? 1 : 0), 0),
+    hasCurrentTab = rows.some(([, meta]) => meta.is_visible && meta.is_current_tab);
+  state.download_errors.size + state.user_messages.size + visibleCount + (hasCurrentTab ? 0 : 1) > 1 &&
     document.documentElement.classList.add("expanded");
-  let u = document.querySelector("#nomedia");
-  i ? u.setAttribute("hidden", "true") : u.removeAttribute("hidden"), document
+  let nomediaEl = document.querySelector("#nomedia");
+  hasCurrentTab ? nomediaEl.setAttribute("hidden", "true") : nomediaEl.removeAttribute("hidden"), document
     .querySelector("#menu-view-all-tabs")
-    .checked = t.all_tabs, document.querySelector("#menu-view-hide-downloaded")
-    .checked = t.hide_downloaded, document.querySelector(
+    .checked = viewOptions.all_tabs, document.querySelector("#menu-view-hide-downloaded")
+    .checked = viewOptions.hide_downloaded, document.querySelector(
       "#menu-view-show-low-quality")
-    .checked = t.low_quality, document.querySelector("#menu-view-sort-status")
-    .checked = t.sort_by_status, document.querySelector(
+    .checked = viewOptions.low_quality, document.querySelector("#menu-view-sort-status")
+    .checked = viewOptions.sort_by_status, document.querySelector(
       "#menu-view-sort-reverse")
-    .checked = t.sort_reverse, document.querySelector("#button-clean-all")
-    .setAttribute("hidden", (!t.show_button_clean_all)
+    .checked = viewOptions.sort_reverse, document.querySelector("#button-clean-all")
+    .setAttribute("hidden", (!viewOptions.show_button_clean_all)
       .toString()), document.querySelector("#button-clean")
-    .setAttribute("hidden", (!t.show_button_clean)
+    .setAttribute("hidden", (!viewOptions.show_button_clean)
       .toString()), document.querySelector("#button-convert-local")
-    .setAttribute("hidden", (!t.show_button_convert_local)
+    .setAttribute("hidden", (!viewOptions.show_button_convert_local)
       .toString()), document.querySelector("#menu-view-clean-all")
-    .checked = t.show_button_clean_all, document.querySelector(
+    .checked = viewOptions.show_button_clean_all, document.querySelector(
       "#menu-view-clean")
-    .checked = t.show_button_clean, Pe = e.current_window_id, vt(e, n), St(e,
-    n);
-  for (let s of Array.from(document.querySelectorAll(".download"))) {
-    let c = s.dataset.downloadableId;
-    !e.downloadable.has(c) && !e.downloading.has(c) && !e.downloaded.has(c) && s
+    .checked = viewOptions.show_button_clean, currentWindowId = state.current_window_id, renderDownloadErrors(state, overrides), renderUserMessages(state,
+    overrides);
+  for (let downloadEl of Array.from(document.querySelectorAll(".download"))) {
+    let downloadableId = downloadEl.dataset.downloadableId;
+    !state.downloadable.has(downloadableId) && !state.downloading.has(downloadableId) && !state.downloaded.has(downloadableId) && downloadEl
       .remove()
   }
-  for (let [s, d] of r)
-    if (d.is_visible) {
-      let c;
-      d.reach === "downloadable" ? c = We(s, n) : d.reach === "downloading" ?
-        c = Je(s, n) : c = Qe(s, n), Fe(c, o), c.setAttribute("style",
-          `--order: ${d.order.toString()}`)
+  for (let [item, meta] of rows)
+    if (meta.is_visible) {
+      let element;
+      meta.reach === "downloadable" ? element = UpdateDownloadable(item, overrides) : meta.reach === "downloading" ?
+        element = UpdateDownloading(item, overrides) : element = UpdateDownloaded(item, overrides), UpdateDefaultAction(element, defaultAction), element.setAttribute("style",
+          `--order: ${meta.order.toString()}`)
     } else {
-      let c;
-      "downloadable" in s ? c = s.downloadable.id : c = s.id;
-      let b = document.querySelector(
-        `#core-downloads > [data-downloadable-id="${c}"]`);
-      b && b.remove()
+      let staleId;
+      "downloadable" in item ? staleId = item.downloadable.id : staleId = item.id;
+      let staleEl = document.querySelector(
+        `#core-downloads > [data-downloadable-id="${staleId}"]`);
+      staleEl && staleEl.remove()
     }
 } {
-  let t = function(n) {
-      let r = n.target;
-      if (!r) return;
-      R(`on_change - #${r.id}.${r.className}`);
-      let a = r.closest('.download-error[error-type="qrcode"] sl-checkbox');
-      if (a) {
-        e++;
-        let i = a.checked;
-        O(nt, !i)
+  let handleSlChange = function(event) {
+      let target = event.target;
+      if (!target) return;
+      debugLog(`on_change - #${target.id}.${target.className}`);
+      let qrCheckbox = target.closest('.download-error[error-type="qrcode"] sl-checkbox');
+      if (qrCheckbox) {
+        eventCounter++;
+        let checked = qrCheckbox.checked;
+        saveStorageEntry(ytWarningStore, !checked)
       }
     },
-    o = function(n) {
-      let r = n.target;
-      if (!r) return;
-      let a = r.closest(".download"),
-        i = a?.dataset.downloadableId;
-      if (r.closest(".error-nocoapp-button-install")) k.default.tabs.create({
+    handleClick = function(event) {
+      let target = event.target;
+      if (!target) return;
+      let downloadEl = target.closest(".download"),
+        downloadableId = downloadEl?.dataset.downloadableId;
+      if (target.closest(".error-nocoapp-button-install")) browserRuntimeApi.default.tabs.create({
         url: "https://www.downloadhelper.net/install-coapp-v2"
       });
-      else if (r.closest(".button-report-error")) {
-        let l = r.closest(".download-error");
-        S({
-          report_error: l.dataset.errorId
+      else if (target.closest(".button-report-error")) {
+        let errorEl = target.closest(".download-error");
+        sendToBackground({
+          report_error: errorEl.dataset.errorId
         })
-      } else if (r.closest(".button-trigger-bulk-download")) S("bulk_download");
-      else if (r.closest(".button-leave-review")) S("leave_review");
-      else if (r.closest(".button-never-show-one-hundred-message")) S(
+      } else if (target.closest(".button-trigger-bulk-download")) sendToBackground("bulk_download");
+      else if (target.closest(".button-leave-review")) sendToBackground("leave_review");
+      else if (target.closest(".button-never-show-one-hundred-message")) sendToBackground(
         "never_ask_for_review");
-      else if (r.closest(".user-message-hide-downloaded")) S({
+      else if (target.closest(".user-message-hide-downloaded")) sendToBackground({
           rm_user_message: "auto_hide_downloaded"
-        }), y(L)
-        .then(l => {
-          l.hide_downloaded = !0, O(L, l)
+        }), loadStorageEntry(viewOptionsStore)
+        .then(viewOptions => {
+          viewOptions.hide_downloaded = !0, saveStorageEntry(viewOptionsStore, viewOptions)
         });
-      else if (r.closest(".error-nocoapp-button-recheck")) S({
+      else if (target.closest(".error-nocoapp-button-recheck")) sendToBackground({
         coapp_check: !0
       });
-      else if (r.closest(".error-nocoapp-button-success")) S({
+      else if (target.closest(".error-nocoapp-button-success")) sendToBackground({
         rm_error: "nocoapp"
       });
-      else if (r.closest(".error-why-qr")) k.default.tabs.create({
+      else if (target.closest(".error-why-qr")) browserRuntimeApi.default.tabs.create({
         url: "https://www.downloadhelper.net/about-licensing"
       });
-      else if (r.closest(".error-invalid-license-get")) k.default.tabs.create({
+      else if (target.closest(".error-invalid-license-get")) browserRuntimeApi.default.tabs.create({
         url: "https://www.downloadhelper.net/convert"
       });
-      else if (r.closest(".download-error .button-hide") || r.closest(
+      else if (target.closest(".download-error .button-hide") || target.closest(
           ".button-error-reported")) {
-        let u = r.closest(".download-error")
+        let errorId = target.closest(".download-error")
           .dataset.errorId;
-        S({
-          rm_error: u
+        sendToBackground({
+          rm_error: errorId
         })
-      } else if (r.closest(".user-message .button-hide")) {
-        let l = r.closest(".user-message");
-        S({
-          rm_user_message: l.dataset.userMessageId
+      } else if (target.closest(".user-message .button-hide")) {
+        let userMessageEl = target.closest(".user-message");
+        sendToBackground({
+          rm_user_message: userMessageEl.dataset.userMessageId
         })
-      } else if (r.closest("#button-convert-local")) document.documentElement
+      } else if (target.closest("#button-convert-local")) document.documentElement
         .classList.add("expanded"), document.querySelector("#drawer-convert-to")
         .show();
-      else if (r.closest("#drawer-menu-convert-to")) {
+      else if (target.closest("#drawer-menu-convert-to")) {
         document.querySelector("#drawer-convert-to")
           .hide();
-        let l = r.value;
-        S({
-          convert_local_to: l
+        let convertValue = target.value;
+        sendToBackground({
+          convert_local_to: convertValue
         })
-      } else if (r.closest(".menu-item-variant")) {
-        let l = r.closest(".menu-item-variant"),
-          u = l.dataset.variantId,
-          s = l.dataset.toCopy,
-          d = a.querySelector(".dropdown-variants"),
-          c = a.querySelector(".menu-prefer-quality"),
-          b = a.querySelector(".menu-prefer-container");
-        a.dataset.selectedVariantId = u, a.dataset.toCopy = s;
-        let x = c.checked,
-          M = b.checked;
-        c.checked = !1, b.checked = !1, d.hide(), Promise.resolve()
+      } else if (target.closest(".menu-item-variant")) {
+        let variantMenuItem = target.closest(".menu-item-variant"),
+          variantId = variantMenuItem.dataset.variantId,
+          toCopy = variantMenuItem.dataset.toCopy,
+          variantsDropdown = downloadEl.querySelector(".dropdown-variants"),
+          preferQualityCheckbox = downloadEl.querySelector(".menu-prefer-quality"),
+          preferContainerCheckbox = downloadEl.querySelector(".menu-prefer-container");
+        downloadEl.dataset.selectedVariantId = variantId, downloadEl.dataset.toCopy = toCopy;
+        let preferQuality = preferQualityCheckbox.checked,
+          preferContainer = preferContainerCheckbox.checked;
+        preferQualityCheckbox.checked = !1, preferContainerCheckbox.checked = !1, variantsDropdown.hide(), Promise.resolve()
           .then(async () => {
-            let v = await y(U),
-              me = v.downloadable.get(i)
-              .variants.get(u),
-              oe = await y(Oe),
-              re = await y(L),
-              m = await y(G),
-              p = me.core_media;
-            x && p.av.video && p.av.video.quality.isSome() && (oe
-                .prefered_video_quality = p.av.video.quality.unwrap()), M &&
-              (oe.container = p.container.name), await O(Oe, oe);
-            let _ = await y(j);
-            te(v, re, _, m)
+            let database = await loadStorageEntry(databaseStore),
+              downloadable = database.downloadable.get(downloadableId)
+              .variants.get(variantId),
+              mediaPrefs = await loadStorageEntry(mediaPrefsStore),
+              viewOptions = await loadStorageEntry(viewOptionsStore),
+              sessionViewOptions = await loadStorageEntry(sessionViewOptionsStore),
+              coreMedia = downloadable.core_media;
+            preferQuality && coreMedia.av.video && coreMedia.av.video.quality.isSome() && (mediaPrefs
+                .prefered_video_quality = coreMedia.av.video.quality.unwrap()), preferContainer &&
+              (mediaPrefs.container = coreMedia.container.name), await saveStorageEntry(mediaPrefsStore, mediaPrefs);
+            let defaultAction = await loadStorageEntry(defaultActionStore);
+            renderPanel(database, viewOptions, defaultAction, sessionViewOptions)
           })
-      } else if (r.closest(".dropdown-actions")) Mt(a);
-      else if (r.closest(".menu-smartnaming")) ee(), k.default.tabs.create({
-        url: `/content2/smartnaming_editor.html?id=${i}`
+      } else if (target.closest(".dropdown-actions")) openActionsMenu(downloadEl);
+      else if (target.closest(".menu-smartnaming")) closeOpenMenus(), browserRuntimeApi.default.tabs.create({
+        url: `/content2/smartnaming_editor.html?id=${downloadableId}`
       });
-      else if (r.closest("#button-clean-all")) S({
+      else if (target.closest("#button-clean-all")) sendToBackground({
         clean: !0
       });
-      else if (r.closest("#button-clean")) S({
+      else if (target.closest("#button-clean")) sendToBackground({
         clean: !1
       });
-      else if (r.closest("#button-use-sidebar")) O(Ee, !0), we(!0, Pe, !0),
+      else if (target.closest("#button-use-sidebar")) saveStorageEntry(useSidebarStore, !0), configurePanelBehavior(!0, currentWindowId, !0),
         window.close();
-      else if (r.closest("#button-use-popup")) O(Ee, !1), we(!1, Pe, !0);
-      else if (r.closest(".button-retry")) S({
-        retry: i
+      else if (target.closest("#button-use-popup")) saveStorageEntry(useSidebarStore, !1), configurePanelBehavior(!1, currentWindowId, !0);
+      else if (target.closest(".button-retry")) sendToBackground({
+        retry: downloadableId
       });
-      else if (r.closest(".menu-details")) ee(), n.shiftKey ? y(U)
-        .then(l => {
-          let u = l.downloadable.get(i),
-            s = H(u),
-            d = JSON.stringify(s, null, 4),
-            c = new Blob([d], {
+      else if (target.closest(".menu-details")) closeOpenMenus(), event.shiftKey ? loadStorageEntry(databaseStore)
+        .then(database => {
+          let downloadable = database.downloadable.get(downloadableId),
+            plain = toPlainValue(downloadable),
+            json = JSON.stringify(plain, null, 4),
+            blob = new Blob([json], {
               type: "text/json;charset=utf-8"
             }),
-            b = URL.createObjectURL(c);
-          k.default.tabs.create({
-            url: b
+            blobUrl = URL.createObjectURL(blob);
+          browserRuntimeApi.default.tabs.create({
+            url: blobUrl
           })
-        }) : k.default.tabs.create({
-          url: `/content2/details.html?id=${i}`
+        }) : browserRuntimeApi.default.tabs.create({
+          url: `/content2/details.html?id=${downloadableId}`
         });
-      else if (r.closest(".button-dir")) S({
-        show_dir: i
+      else if (target.closest(".button-dir")) sendToBackground({
+        show_dir: downloadableId
       });
-      else if (r.closest(".button-play"))
-        if (a.dataset.inBrowserDownloadId) {
-          let l = a.dataset.inBrowserDownloadId,
-            u = () => {
-              let d = {
+      else if (target.closest(".button-play"))
+        if (downloadEl.dataset.inBrowserDownloadId) {
+          let downloadId = downloadEl.dataset.inBrowserDownloadId,
+            requestPermission = () => {
+              let permissionRequest = {
                 permissions: ["downloads.open"]
               };
-              k.default.permissions.request(d)
+              browserRuntimeApi.default.permissions.request(permissionRequest)
             };
-          k.default.downloads.open ? k.default.downloads.open(parseInt(l))
-            .catch(s => {
-              u()
-            }) : u()
-        } else S({
-          play: i
+          browserRuntimeApi.default.downloads.open ? browserRuntimeApi.default.downloads.open(parseInt(downloadId))
+            .catch(error => {
+              requestPermission()
+            }) : requestPermission()
+        } else sendToBackground({
+          play: downloadableId
         });
-      else if (r.closest(".button-rm")) S({
-        rm: i
+      else if (target.closest(".button-rm")) sendToBackground({
+        rm: downloadableId
       });
-      else if (r.closest(".button-stop")) S({
-        stop: i
+      else if (target.closest(".button-stop")) sendToBackground({
+        stop: downloadableId
       });
-      else if (r.closest(".download .button-hide")) S({
-        forget: i
+      else if (target.closest(".download .button-hide")) sendToBackground({
+        forget: downloadableId
       });
-      else if (r.closest(".menu-blacklist-edit")) ee(), k.default.tabs.create({
+      else if (target.closest(".menu-blacklist-edit")) closeOpenMenus(), browserRuntimeApi.default.tabs.create({
         url: "/content2/blacklist.html"
       });
-      else if (r.closest(".button-open-browser-settings")) le == "mozilla" ? k
+      else if (target.closest(".button-open-browser-settings")) browserTarget == "mozilla" ? browserRuntimeApi
         .default.tabs.create({
           url: "https://github.com/aclap-dev/video-downloadhelper/wiki/Enable-Incognito"
-        }) : k.default.tabs.create({
-          url: `chrome://extensions/?id=${k.default.runtime.id}`
+        }) : browserRuntimeApi.default.tabs.create({
+          url: `chrome://extensions/?id=${browserRuntimeApi.default.runtime.id}`
         });
-      else if (r.closest("#dropdown-menu-view")) {
-        let l = r.closest("#dropdown-menu-view");
-        if (r.closest("#menu-view-open-settings")) l.hide(), S({
+      else if (target.closest("#dropdown-menu-view")) {
+        let viewMenu = target.closest("#dropdown-menu-view");
+        if (target.closest("#menu-view-open-settings")) viewMenu.hide(), sendToBackground({
             license_check: null
-          }), S({
+          }), sendToBackground({
             coapp_check: !1
           }), document.querySelector(".drawer-placement-bottom")
           .show();
         else {
-          let u = r.closest("#menu-view-all-tabs"),
-            s = r.closest("#menu-view-hide-downloaded"),
-            d = r.closest("#menu-view-show-low-quality"),
-            c = r.closest("#menu-view-sort-status"),
-            b = r.closest("#menu-view-sort-reverse"),
-            x = r.closest("#menu-view-clean-all"),
-            M = r.closest("#menu-view-clean");
-          y(L)
-            .then(v => {
-              u && (v.all_tabs = u.checked), s && (v.hide_downloaded = s
-                  .checked), d && (v.low_quality = d.checked), c && (v
-                  .sort_by_status = c.checked), b && (v.sort_reverse = b
-                  .checked), x && (v.show_button_clean_all = x.checked), M &&
-                (v.show_button_clean = M.checked), O(L, v)
+          let allTabsItem = target.closest("#menu-view-all-tabs"),
+            hideDownloadedItem = target.closest("#menu-view-hide-downloaded"),
+            showLowQualityItem = target.closest("#menu-view-show-low-quality"),
+            sortStatusItem = target.closest("#menu-view-sort-status"),
+            sortReverseItem = target.closest("#menu-view-sort-reverse"),
+            cleanAllItem = target.closest("#menu-view-clean-all"),
+            cleanItem = target.closest("#menu-view-clean");
+          loadStorageEntry(viewOptionsStore)
+            .then(viewOptions => {
+              allTabsItem && (viewOptions.all_tabs = allTabsItem.checked), hideDownloadedItem && (viewOptions.hide_downloaded = hideDownloadedItem
+                  .checked), showLowQualityItem && (viewOptions.low_quality = showLowQualityItem.checked), sortStatusItem && (viewOptions
+                  .sort_by_status = sortStatusItem.checked), sortReverseItem && (viewOptions.sort_reverse = sortReverseItem
+                  .checked), cleanAllItem && (viewOptions.show_button_clean_all = cleanAllItem.checked), cleanItem &&
+                (viewOptions.show_button_clean = cleanItem.checked), saveStorageEntry(viewOptionsStore, viewOptions)
             })
         }
-      } else if (r.closest(".menu-blacklist")) {
-        let l = r.closest(".menu-blacklist-media"),
-          u = r.closest(".menu-blacklist-domain"),
-          s = r.closest(".menu-blacklist-page");
-        (s || l || u) && (ee(), y(Ce)
-          .then(async d => {
-            let b = (await y(U))
-              .downloadable.get(i),
-              x;
-            s ? x = b.page_url : l ? x = b.variants.values()
+      } else if (target.closest(".menu-blacklist")) {
+        let blacklistMediaItem = target.closest(".menu-blacklist-media"),
+          blacklistDomainItem = target.closest(".menu-blacklist-domain"),
+          blacklistPageItem = target.closest(".menu-blacklist-page");
+        (blacklistPageItem || blacklistMediaItem || blacklistDomainItem) && (closeOpenMenus(), loadStorageEntry(blacklistStore)
+          .then(async blacklist => {
+            let downloadable = (await loadStorageEntry(databaseStore))
+              .downloadable.get(downloadableId),
+              blacklistEntry;
+            blacklistPageItem ? blacklistEntry = downloadable.page_url : blacklistMediaItem ? blacklistEntry = downloadable.variants.values()
               .next()
-              .value.manifest_url : u && (x = new URL(b.page_url)
-                .origin + "/*"), d.push(x), O(Ce, d)
+              .value.manifest_url : blacklistDomainItem && (blacklistEntry = new URL(downloadable.page_url)
+                .origin + "/*"), blacklist.push(blacklistEntry), saveStorageEntry(blacklistStore, blacklist)
           }))
-      } else if (r.closest("#button-show-history")) O(ke, !0), k.default.tabs
+      } else if (target.closest("#button-show-history")) saveStorageEntry(usedHistoryButtonStore, !0), browserRuntimeApi.default.tabs
         .create({
           url: "/content2/history.html"
         });
       else {
-        let l = r.closest(".action-download"),
-          u = r.closest(".action-download_as"),
-          s = r.closest(".action-download_audio"),
-          d = r.closest(".action-copy");
-        r.closest(".menu-actions") && a?.querySelector(
+        let downloadAction = target.closest(".action-download"),
+          downloadAsAction = target.closest(".action-download_as"),
+          downloadAudioAction = target.closest(".action-download_audio"),
+          copyAction = target.closest(".action-copy");
+        target.closest(".menu-actions") && downloadEl?.querySelector(
             ".checkbox-remember-action")
-          ?.checked && (l ? O(j, "download") : u ? O(j, "download_as") : s ? O(
-            j, "download_audio") : d && O(j, "copy"));
-        let c = r.closest(".menu-convert-to");
-        if (l ?? s ?? u ?? c) {
-          R("on_event - download_buttons is true");
-          let x = a.dataset.selectedVariantId,
-            M;
-          c && (M = c.value);
-          let v = {
+          ?.checked && (downloadAction ? saveStorageEntry(defaultActionStore, "download") : downloadAsAction ? saveStorageEntry(defaultActionStore, "download_as") : downloadAudioAction ? saveStorageEntry(
+            defaultActionStore, "download_audio") : copyAction && saveStorageEntry(defaultActionStore, "copy"));
+        let convertToItem = target.closest(".menu-convert-to");
+        if (downloadAction ?? downloadAudioAction ?? downloadAsAction ?? convertToItem) {
+          debugLog("on_event - download_buttons is true");
+          let selectedVariantId = downloadEl.dataset.selectedVariantId,
+            convertTo;
+          convertToItem && (convertTo = convertToItem.value);
+          let downloadRequest = {
             download: {
-              downloadable_id: i,
-              variant_id: x,
-              audio_only: !!s,
-              ask_for_destination: !!u,
-              convert_to: M
+              downloadable_id: downloadableId,
+              variant_id: selectedVariantId,
+              audio_only: !!downloadAudioAction,
+              ask_for_destination: !!downloadAsAction,
+              convert_to: convertTo
             }
           };
-          R(`<do> download args: ${JSON.stringify(v)}`), S(v), ee(), R(
+          debugLog(`<do> download args: ${JSON.stringify(downloadRequest)}`), sendToBackground(downloadRequest), closeOpenMenus(), debugLog(
             "</done>")
         }
-        if (d) {
-          let x = a.dataset.toCopy;
-          navigator.clipboard.writeText(x), ee()
+        if (copyAction) {
+          let toCopy = downloadEl.dataset.toCopy;
+          navigator.clipboard.writeText(toCopy), closeOpenMenus()
         }
       }
     };
-  Tt = t, kt = o;
-  let e = 0;
+  slChangeHandlerRef = handleSlChange, clickHandlerRef = handleClick;
+  let eventCounter = 0;
   setInterval(() => {
-    e > 1 && R("event counter > 1"), e = 0
-  }, 500), window.addEventListener("click", o), window.addEventListener(
-    "sl-change", t)
+    eventCounter > 1 && debugLog("event counter > 1"), eventCounter = 0
+  }, 500), window.addEventListener("click", handleClick), window.addEventListener(
+    "sl-change", handleSlChange)
 }
-var Tt, kt;
+var slChangeHandlerRef, clickHandlerRef;
 {
-  let e = await y(De);
-  await O(De, ++e), e > 8 && S("incognito_check")
+  let openCount = await loadStorageEntry(openCountStore);
+  await saveStorageEntry(openCountStore, ++openCount), openCount > 8 && sendToBackground("incognito_check")
 } {
-  async function e(i, l, u) {
-    let s = d => {
-      document.querySelector(l)
-        .classList.toggle(u, d)
+  async function bindClassToggle(store, selector, className) {
+    let applyToggle = enabled => {
+      document.querySelector(selector)
+        .classList.toggle(className, enabled)
     };
-    s(await y(i)), X(i, s)
+    applyToggle(await loadStorageEntry(store)), watchStorageEntry(store, applyToggle)
   }
-  e(ke, "#footer", "used-history-button"), e(at, "html", "wide");
-  let t = document.documentElement.id == "sidebar";
-  document.documentElement.setAttribute("target", le), document.documentElement
-    .setAttribute("os", (await k.default.runtime.getPlatformInfo())
-      .os), document.documentElement.classList.toggle("sidebar", t), X(L,
-    async i => {
-        let l = await y(G),
-          u = await y(U),
-          s = await y(j);
-        te(u, i, s, l)
-      }), X(G, async i => {
-      let l = await y(L),
-        u = await y(U),
-        s = await y(j);
-      te(u, l, s, i)
-    }), X(U, async i => {
-      R("DB changed");
-      let l = await y(G),
-        u = await y(L),
-        s = await y(j);
-      te(i, u, s, l)
-    }), X(j, async i => {
-      let l = await y(U),
-        u = await y(G),
-        s = await y(L);
-      te(l, s, i, u)
+  bindClassToggle(usedHistoryButtonStore, "#footer", "used-history-button"), bindClassToggle(useWideUiStore, "html", "wide");
+  let isSidebar = document.documentElement.id == "sidebar";
+  document.documentElement.setAttribute("target", browserTarget), document.documentElement
+    .setAttribute("os", (await browserRuntimeApi.default.runtime.getPlatformInfo())
+      .os), document.documentElement.classList.toggle("sidebar", isSidebar), watchStorageEntry(viewOptionsStore,
+    async viewOptions => {
+        let sessionViewOptions = await loadStorageEntry(sessionViewOptionsStore),
+          database = await loadStorageEntry(databaseStore),
+          defaultAction = await loadStorageEntry(defaultActionStore);
+        renderPanel(database, viewOptions, defaultAction, sessionViewOptions)
+      }), watchStorageEntry(sessionViewOptionsStore, async sessionViewOptions => {
+      let viewOptions = await loadStorageEntry(viewOptionsStore),
+        database = await loadStorageEntry(databaseStore),
+        defaultAction = await loadStorageEntry(defaultActionStore);
+      renderPanel(database, viewOptions, defaultAction, sessionViewOptions)
+    }), watchStorageEntry(databaseStore, async database => {
+      debugLog("DB changed");
+      let sessionViewOptions = await loadStorageEntry(sessionViewOptionsStore),
+        viewOptions = await loadStorageEntry(viewOptionsStore),
+        defaultAction = await loadStorageEntry(defaultActionStore);
+      renderPanel(database, viewOptions, defaultAction, sessionViewOptions)
+    }), watchStorageEntry(defaultActionStore, async defaultAction => {
+      let database = await loadStorageEntry(databaseStore),
+        sessionViewOptions = await loadStorageEntry(sessionViewOptionsStore),
+        viewOptions = await loadStorageEntry(viewOptionsStore);
+      renderPanel(database, viewOptions, defaultAction, sessionViewOptions)
     });
-  let o = await y(L),
-    n = await y(G),
-    r = await y(U),
-    a = await y(j);
-  te(r, o, a, n), document.readyState === "loading" ? document.addEventListener(
+  let viewOptions = await loadStorageEntry(viewOptionsStore),
+    sessionViewOptions = await loadStorageEntry(sessionViewOptionsStore),
+    database = await loadStorageEntry(databaseStore),
+    defaultAction = await loadStorageEntry(defaultActionStore);
+  renderPanel(database, viewOptions, defaultAction, sessionViewOptions), document.readyState === "loading" ? document.addEventListener(
       "DOMContentLoaded", () => {
         document.body.classList.remove("not-loaded")
       }) : document.body.classList.remove("not-loaded"), document
-    .addEventListener("sl-show", i => {
-      let l = i.target;
-      l && (l.tagName == "SL-DROPDOWN" || l.tagName == "SL-DRAWER") && (
-        document.documentElement.classList.add("expanded"), l.tagName ==
-        "SL-DROPDOWN" && l.shadowRoot.querySelector("sl-popup")
+    .addEventListener("sl-show", event => {
+      let target = event.target;
+      target && (target.tagName == "SL-DROPDOWN" || target.tagName == "SL-DRAWER") && (
+        document.documentElement.classList.add("expanded"), target.tagName ==
+        "SL-DROPDOWN" && target.shadowRoot.querySelector("sl-popup")
         .removeAttribute("auto-size"))
     }, !0)
 }
 
-function ee() {
+function closeOpenMenus() {
   document.body.click()
 }
 
-function Mt(e) {
-  let t = e.querySelector(".menu-actions");
-  if (!t.classList.contains("closed")) {
-    R("Dropdown already open");
+function openActionsMenu(downloadEl) {
+  let actionsMenu = downloadEl.querySelector(".menu-actions");
+  if (!actionsMenu.classList.contains("closed")) {
+    debugLog("Dropdown already open");
     return
   }
-  document.documentElement.classList.add("expanded"), t.classList.remove(
-    "closed"), t.removeAttribute("hidden");
-  let o = () => {
-      t.classList.add("closed"), setTimeout(() => {
-          t.classList.contains("closed") && t.setAttribute("hidden", "true")
-        }, 200), window.removeEventListener("click", r, !0), window
-        .removeEventListener("keydown", n, !0)
+  document.documentElement.classList.add("expanded"), actionsMenu.classList.remove(
+    "closed"), actionsMenu.removeAttribute("hidden");
+  let closeMenu = () => {
+      actionsMenu.classList.add("closed"), setTimeout(() => {
+          actionsMenu.classList.contains("closed") && actionsMenu.setAttribute("hidden", "true")
+        }, 200), window.removeEventListener("click", onOutsideClick, !0), window
+        .removeEventListener("keydown", onKeydown, !0)
     },
-    n = a => {
-      a.key === "Escape" && o()
+    onKeydown = event => {
+      event.key === "Escape" && closeMenu()
     },
-    r = a => {
-      let i = a.target;
-      i && (i == t || t.contains(i) || (o(), a.stopPropagation()))
+    onOutsideClick = event => {
+      let target = event.target;
+      target && (target == actionsMenu || actionsMenu.contains(target) || (closeMenu(), event.stopPropagation()))
     };
-  window.addEventListener("click", r, !0), window.addEventListener("keydown", n,
+  window.addEventListener("click", onOutsideClick, !0), window.addEventListener("keydown", onKeydown,
     !0)
 }

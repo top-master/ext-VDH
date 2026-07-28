@@ -1,47 +1,47 @@
-var _s = Object.create;
-var cr = Object.defineProperty;
-var ws = Object.getOwnPropertyDescriptor;
-var xs = Object.getOwnPropertyNames;
-var As = Object.getPrototypeOf,
-  ks = Object.prototype.hasOwnProperty;
-var Cs = (t, e) => () => (e || t((e = {
+var objectCreate = Object.create;
+var defineProperty = Object.defineProperty;
+var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var getOwnPropNames = Object.getOwnPropertyNames;
+var getPrototypeOf = Object.getPrototypeOf,
+  hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+var defineCommonjsModule = (moduleInitializer, cachedModuleState) => () => (cachedModuleState || moduleInitializer((cachedModuleState = {
     exports: {}
   })
-  .exports, e), e.exports);
-var Ss = (t, e, o, r) => {
-  if (e && typeof e == "object" || typeof e == "function")
-    for (let i of xs(e)) !ks.call(t, i) && i !== o && cr(t, i, {
-      get: () => e[i],
-      enumerable: !(r = ws(e, i)) || r.enumerable
+  .exports, cachedModuleState), cachedModuleState.exports);
+var copyProps = (targetObj, sourceObj, excludedKey, descriptorRef) => {
+  if (sourceObj && typeof sourceObj == "object" || typeof sourceObj == "function")
+    for (let propKey of getOwnPropNames(sourceObj)) !hasOwnPropertyRef.call(targetObj, propKey) && propKey !== excludedKey && defineProperty(targetObj, propKey, {
+      get: () => sourceObj[propKey],
+      enumerable: !(descriptorRef = getOwnPropDesc(sourceObj, propKey)) || descriptorRef.enumerable
     });
-  return t
+  return targetObj
 };
-var ur = (t, e, o) => (o = t != null ? _s(As(t)) : {}, Ss(e || !t || !t
-  .__esModule ? cr(o, "default", {
-    value: t,
+var toEsm = (moduleInput, isNodeMode, esmTarget) => (esmTarget = moduleInput != null ? objectCreate(getPrototypeOf(moduleInput)) : {}, copyProps(isNodeMode || !moduleInput || !moduleInput
+  .__esModule ? defineProperty(esmTarget, "default", {
+    value: moduleInput,
     enumerable: !0
-  }) : o, t));
-var er = Cs((tr, as) => {
-  (function(t, e) {
+  }) : esmTarget, moduleInput));
+var webextPolyfillModule = defineCommonjsModule((moduleExports, moduleObject) => {
+  (function(rootObject, factoryFn) {
     if (typeof define == "function" && define.amd) define(
-      "webextension-polyfill", ["module"], e);
-    else if (typeof tr < "u") e(as);
+      "webextension-polyfill", ["module"], factoryFn);
+    else if (typeof moduleExports < "u") factoryFn(moduleObject);
     else {
-      var o = {
+      var localModule = {
         exports: {}
       };
-      e(o), t.browser = o.exports
+      factoryFn(localModule), rootObject.browser = localModule.exports
     }
-  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : tr,
-    function(t) {
+  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : moduleExports,
+    function(polyfillModule) {
       "use strict";
       if (!globalThis.chrome?.runtime?.id) throw new Error(
         "This script should only be loaded in a browser extension.");
       if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
           globalThis.browser) !== Object.prototype) {
-        let e = "The message port closed before a response was received.",
-          o = r => {
-            let i = {
+        let portClosedMessage = "The message port closed before a response was received.",
+          wrapAPIs = extensionAPIs => {
+            let apiMetadata = {
               alarms: {
                 clear: {
                   minArgs: 0,
@@ -713,205 +713,205 @@ var er = Cs((tr, as) => {
                 }
               }
             };
-            if (Object.keys(i)
+            if (Object.keys(apiMetadata)
               .length === 0) throw new Error(
               "api-metadata.json has not been included in browser-polyfill"
               );
-            class s extends WeakMap {
-              constructor(f, x = void 0) {
-                super(x), this.createItem = f
+            class DefaultWeakMap extends WeakMap {
+              constructor(createItem, initialData = void 0) {
+                super(initialData), this.createItem = createItem
               }
-              get(f) {
-                return this.has(f) || this.set(f, this.createItem(f)),
-                  super.get(f)
+              get(lookupKey) {
+                return this.has(lookupKey) || this.set(lookupKey, this.createItem(lookupKey)),
+                  super.get(lookupKey)
               }
             }
-            let a = g => g && typeof g == "object" && typeof g.then ==
+            let isThenable = maybePromise => maybePromise && typeof maybePromise == "object" && typeof maybePromise.then ==
               "function",
-              u = (g, f) => (...x) => {
-                r.runtime.lastError ? g.reject(new Error(r.runtime.lastError
-                    .message)) : f.singleCallbackArg || x.length <= 1 && f
-                  .singleCallbackArg !== !1 ? g.resolve(x[0]) : g.resolve(x)
+              makeCallbackHandler = (promiseHandlers, callMetadata) => (...callbackArgs) => {
+                extensionAPIs.runtime.lastError ? promiseHandlers.reject(new Error(extensionAPIs.runtime.lastError
+                    .message)) : callMetadata.singleCallbackArg || callbackArgs.length <= 1 && callMetadata
+                  .singleCallbackArg !== !1 ? promiseHandlers.resolve(callbackArgs[0]) : promiseHandlers.resolve(callbackArgs)
               },
-              c = g => g == 1 ? "argument" : "arguments",
-              d = (g, f) => function(E, ...F) {
-                if (F.length < f.minArgs) throw new Error(
-                  `Expected at least ${f.minArgs} ${c(f.minArgs)} for ${g}(), got ${F.length}`
+              pluralizeArgWord = argCount => argCount == 1 ? "argument" : "arguments",
+              wrapAsyncFunction = (funcName, funcMetadata) => function(targetObject, ...callArgs) {
+                if (callArgs.length < funcMetadata.minArgs) throw new Error(
+                  `Expected at least ${funcMetadata.minArgs} ${pluralizeArgWord(funcMetadata.minArgs)} for ${funcName}(), got ${callArgs.length}`
                   );
-                if (F.length > f.maxArgs) throw new Error(
-                  `Expected at most ${f.maxArgs} ${c(f.maxArgs)} for ${g}(), got ${F.length}`
+                if (callArgs.length > funcMetadata.maxArgs) throw new Error(
+                  `Expected at most ${funcMetadata.maxArgs} ${pluralizeArgWord(funcMetadata.maxArgs)} for ${funcName}(), got ${callArgs.length}`
                   );
-                return new Promise((J, ot) => {
-                  if (f.fallbackToNoCallback) try {
-                    E[g](...F, u({
-                      resolve: J,
-                      reject: ot
-                    }, f))
-                  } catch (T) {
+                return new Promise((resolveCallback, rejectCallback) => {
+                  if (funcMetadata.fallbackToNoCallback) try {
+                    targetObject[funcName](...callArgs, makeCallbackHandler({
+                      resolve: resolveCallback,
+                      reject: rejectCallback
+                    }, funcMetadata))
+                  } catch (callbackError) {
                     console.warn(
-                        `${g} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                        T), E[g](...F), f.fallbackToNoCallback = !1, f
-                      .noCallback = !0, J()
-                  } else f.noCallback ? (E[g](...F), J()) : E[g](...F,
-                    u({
-                      resolve: J,
-                      reject: ot
-                    }, f))
+                        `${funcName} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                        callbackError), targetObject[funcName](...callArgs), funcMetadata.fallbackToNoCallback = !1, funcMetadata
+                      .noCallback = !0, resolveCallback()
+                  } else funcMetadata.noCallback ? (targetObject[funcName](...callArgs), resolveCallback()) : targetObject[funcName](...callArgs,
+                    makeCallbackHandler({
+                      resolve: resolveCallback,
+                      reject: rejectCallback
+                    }, funcMetadata))
                 })
               },
-              h = (g, f, x) => new Proxy(f, {
-                apply(E, F, J) {
-                  return x.call(F, g, ...J)
+              wrapProxyMethod = (namespaceName, targetFunction, wrapperFunction) => new Proxy(targetFunction, {
+                apply(proxyTarget, thisArg, callArguments) {
+                  return wrapperFunction.call(thisArg, namespaceName, ...callArguments)
                 }
               }),
-              p = Function.call.bind(Object.prototype.hasOwnProperty),
-              v = (g, f = {}, x = {}) => {
-                let E = Object.create(null),
-                  F = {
-                    has(ot, T) {
-                      return T in g || T in E
+              hasOwnPropertyCall = Function.call.bind(Object.prototype.hasOwnProperty),
+              wrapObject = (sourceObject, methodWrappers = {}, objectMetadata = {}) => {
+                let localCache = Object.create(null),
+                  proxyHandler = {
+                    has(handlerTarget, propName) {
+                      return propName in sourceObject || propName in localCache
                     },
-                    get(ot, T, U) {
-                      if (T in E) return E[T];
-                      if (!(T in g)) return;
-                      let q = g[T];
-                      if (typeof q == "function")
-                        if (typeof f[T] == "function") q = h(g, g[T], f[
-                          T]);
-                        else if (p(x, T)) {
-                        let et = d(T, x[T]);
-                        q = h(g, g[T], et)
-                      } else q = q.bind(g);
-                      else if (typeof q == "object" && q !== null && (p(f,
-                          T) || p(x, T))) q = v(q, f[T], x[T]);
-                      else if (p(x, "*")) q = v(q, f[T], x["*"]);
-                      else return Object.defineProperty(E, T, {
+                    get(handlerTarget, propName, receiver) {
+                      if (propName in localCache) return localCache[propName];
+                      if (!(propName in sourceObject)) return;
+                      let propValue = sourceObject[propName];
+                      if (typeof propValue == "function")
+                        if (typeof methodWrappers[propName] == "function") propValue = wrapProxyMethod(sourceObject, sourceObject[propName], methodWrappers[
+                          propName]);
+                        else if (hasOwnPropertyCall(objectMetadata, propName)) {
+                        let wrappedMethod = wrapAsyncFunction(propName, objectMetadata[propName]);
+                        propValue = wrapProxyMethod(sourceObject, sourceObject[propName], wrappedMethod)
+                      } else propValue = propValue.bind(sourceObject);
+                      else if (typeof propValue == "object" && propValue !== null && (hasOwnPropertyCall(methodWrappers,
+                          propName) || hasOwnPropertyCall(objectMetadata, propName))) propValue = wrapObject(propValue, methodWrappers[propName], objectMetadata[propName]);
+                      else if (hasOwnPropertyCall(objectMetadata, "*")) propValue = wrapObject(propValue, methodWrappers[propName], objectMetadata["*"]);
+                      else return Object.defineProperty(localCache, propName, {
                         configurable: !0,
                         enumerable: !0,
                         get() {
-                          return g[T]
+                          return sourceObject[propName]
                         },
-                        set(et) {
-                          g[T] = et
+                        set(incomingValue) {
+                          sourceObject[propName] = incomingValue
                         }
-                      }), q;
-                      return E[T] = q, q
+                      }), propValue;
+                      return localCache[propName] = propValue, propValue
                     },
-                    set(ot, T, U, q) {
-                      return T in E ? E[T] = U : g[T] = U, !0
+                    set(handlerTarget, propName, newValue, setReceiver) {
+                      return propName in localCache ? localCache[propName] = newValue : sourceObject[propName] = newValue, !0
                     },
-                    defineProperty(ot, T, U) {
-                      return Reflect.defineProperty(E, T, U)
+                    defineProperty(handlerTarget, propName, propDescriptor) {
+                      return Reflect.defineProperty(localCache, propName, propDescriptor)
                     },
-                    deleteProperty(ot, T) {
-                      return Reflect.deleteProperty(E, T)
+                    deleteProperty(handlerTarget, propName) {
+                      return Reflect.deleteProperty(localCache, propName)
                     }
                   },
-                  J = Object.create(g);
-                return new Proxy(J, F)
+                  proxyBase = Object.create(sourceObject);
+                return new Proxy(proxyBase, proxyHandler)
               },
-              m = g => ({
-                addListener(f, x, ...E) {
-                  f.addListener(g.get(x), ...E)
+              makeEventWrapper = callbackWrapperMap => ({
+                addListener(eventTarget, eventListener, ...extraArgs) {
+                  eventTarget.addListener(callbackWrapperMap.get(eventListener), ...extraArgs)
                 },
-                hasListener(f, x) {
-                  return f.hasListener(g.get(x))
+                hasListener(eventTarget, eventListener) {
+                  return eventTarget.hasListener(callbackWrapperMap.get(eventListener))
                 },
-                removeListener(f, x) {
-                  f.removeListener(g.get(x))
+                removeListener(eventTarget, eventListener) {
+                  eventTarget.removeListener(callbackWrapperMap.get(eventListener))
                 }
               }),
-              b = new s(g => typeof g != "function" ? g : function(x) {
-                let E = v(x, {}, {
+              onRequestFinishedWrappers = new DefaultWeakMap(userCallback => typeof userCallback != "function" ? userCallback : function(requestDetails) {
+                let wrappedRequest = wrapObject(requestDetails, {}, {
                   getContent: {
                     minArgs: 0,
                     maxArgs: 0
                   }
                 });
-                g(E)
+                userCallback(wrappedRequest)
               }),
-              $ = new s(g => typeof g != "function" ? g : function(x, E,
-              F) {
-                let J = !1,
-                  ot, T = new Promise(lt => {
-                    ot = function(X) {
-                      J = !0, lt(X)
+              onMessageWrappers = new DefaultWeakMap(userListener => typeof userListener != "function" ? userListener : function(message, messageSender,
+              sendResponse) {
+                let didRespond = !1,
+                  resolveHandled, handledPromise = new Promise(resolveHandledPromise => {
+                    resolveHandled = function(responseValue) {
+                      didRespond = !0, resolveHandledPromise(responseValue)
                     }
                   }),
-                  U;
+                  listenerReturn;
                 try {
-                  U = g(x, E, ot)
-                } catch (lt) {
-                  U = Promise.reject(lt)
+                  listenerReturn = userListener(message, messageSender, resolveHandled)
+                } catch (listenerError) {
+                  listenerReturn = Promise.reject(listenerError)
                 }
-                let q = U !== !0 && a(U);
-                if (U !== !0 && !q && !J) return !1;
-                let et = lt => {
-                  lt.then(X => {
-                      F(X)
-                    }, X => {
-                      let yt;
-                      X && (X instanceof Error || typeof X.message ==
-                          "string") ? yt = X.message : yt =
-                        "An unexpected error occurred", F({
+                let returnIsThenable = listenerReturn !== !0 && isThenable(listenerReturn);
+                if (listenerReturn !== !0 && !returnIsThenable && !didRespond) return !1;
+                let deliverResponse = resultPromise => {
+                  resultPromise.then(replySuccessValue => {
+                      sendResponse(replySuccessValue)
+                    }, replyErrorValue => {
+                      let errorMessage;
+                      replyErrorValue && (replyErrorValue instanceof Error || typeof replyErrorValue.message ==
+                          "string") ? errorMessage = replyErrorValue.message : errorMessage =
+                        "An unexpected error occurred", sendResponse({
                           __mozWebExtensionPolyfillReject__: !0,
-                          message: yt
+                          message: errorMessage
                         })
                     })
-                    .catch(X => {
+                    .catch(logError => {
                       console.error(
-                        "Failed to send onMessage rejected reply", X
+                        "Failed to send onMessage rejected reply", logError
                         )
                     })
                 };
-                return et(q ? U : T), !0
+                return deliverResponse(returnIsThenable ? listenerReturn : handledPromise), !0
               }),
-              V = ({
-                reject: g,
-                resolve: f
-              }, x) => {
-                r.runtime.lastError ? r.runtime.lastError.message === e ?
-                  f() : g(new Error(r.runtime.lastError.message)) : x && x
-                  .__mozWebExtensionPolyfillReject__ ? g(new Error(x
-                    .message)) : f(x)
+              handleCallbackResponse = ({
+                reject: rejectCallback,
+                resolve: resolveCallback
+              }, responseMessage) => {
+                extensionAPIs.runtime.lastError ? extensionAPIs.runtime.lastError.message === portClosedMessage ?
+                  resolveCallback() : rejectCallback(new Error(extensionAPIs.runtime.lastError.message)) : responseMessage && responseMessage
+                  .__mozWebExtensionPolyfillReject__ ? rejectCallback(new Error(responseMessage
+                    .message)) : resolveCallback(responseMessage)
               },
-              z = (g, f, x, ...E) => {
-                if (E.length < f.minArgs) throw new Error(
-                  `Expected at least ${f.minArgs} ${c(f.minArgs)} for ${g}(), got ${E.length}`
+              wrapSendMessage = (funcName, funcMetadata, apiObject, ...callArgs) => {
+                if (callArgs.length < funcMetadata.minArgs) throw new Error(
+                  `Expected at least ${funcMetadata.minArgs} ${pluralizeArgWord(funcMetadata.minArgs)} for ${funcName}(), got ${callArgs.length}`
                   );
-                if (E.length > f.maxArgs) throw new Error(
-                  `Expected at most ${f.maxArgs} ${c(f.maxArgs)} for ${g}(), got ${E.length}`
+                if (callArgs.length > funcMetadata.maxArgs) throw new Error(
+                  `Expected at most ${funcMetadata.maxArgs} ${pluralizeArgWord(funcMetadata.maxArgs)} for ${funcName}(), got ${callArgs.length}`
                   );
-                return new Promise((F, J) => {
-                  let ot = V.bind(null, {
-                    resolve: F,
-                    reject: J
+                return new Promise((resolveCallback, rejectCallback) => {
+                  let boundResponseHandler = handleCallbackResponse.bind(null, {
+                    resolve: resolveCallback,
+                    reject: rejectCallback
                   });
-                  E.push(ot), x.sendMessage(...E)
+                  callArgs.push(boundResponseHandler), apiObject.sendMessage(...callArgs)
                 })
               },
-              L = {
+              staticWrappers = {
                 devtools: {
                   network: {
-                    onRequestFinished: m(b)
+                    onRequestFinished: makeEventWrapper(onRequestFinishedWrappers)
                   }
                 },
                 runtime: {
-                  onMessage: m($),
-                  onMessageExternal: m($),
-                  sendMessage: z.bind(null, "sendMessage", {
+                  onMessage: makeEventWrapper(onMessageWrappers),
+                  onMessageExternal: makeEventWrapper(onMessageWrappers),
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 1,
                     maxArgs: 3
                   })
                 },
                 tabs: {
-                  sendMessage: z.bind(null, "sendMessage", {
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 2,
                     maxArgs: 3
                   })
                 }
               },
-              R = {
+              privacySettingMetadata = {
                 clear: {
                   minArgs: 1,
                   maxArgs: 1
@@ -925,293 +925,293 @@ var er = Cs((tr, as) => {
                   maxArgs: 1
                 }
               };
-            return i.privacy = {
+            return apiMetadata.privacy = {
               network: {
-                "*": R
+                "*": privacySettingMetadata
               },
               services: {
-                "*": R
+                "*": privacySettingMetadata
               },
               websites: {
-                "*": R
+                "*": privacySettingMetadata
               }
-            }, v(r, L, i)
+            }, wrapObject(extensionAPIs, staticWrappers, apiMetadata)
           };
-        t.exports = o(chrome)
-      } else t.exports = globalThis.browser
+        polyfillModule.exports = wrapAPIs(chrome)
+      } else polyfillModule.exports = globalThis.browser
     })
 });
-var Qe = globalThis,
-  Ye = Qe.ShadowRoot && (Qe.ShadyCSS === void 0 || Qe.ShadyCSS.nativeShadow) &&
+var litGlobalScope = globalThis,
+  supportsAdoptingStyleSheets = litGlobalScope.ShadowRoot && (litGlobalScope.ShadyCSS === void 0 || litGlobalScope.ShadyCSS.nativeShadow) &&
   "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet
   .prototype,
-  Co = Symbol(),
-  dr = new WeakMap,
-  Ae = class {
-    constructor(e, o, r) {
-      if (this._$cssResult$ = !0, r !== Co) throw Error(
+  cssConstructionToken = Symbol(),
+  styleSheetCache = new WeakMap,
+  CSSResult = class {
+    constructor(cssTextValue, cssStrings, safeToken) {
+      if (this._$cssResult$ = !0, safeToken !== cssConstructionToken) throw Error(
         "CSSResult is not constructable. Use `unsafeCSS` or `css` instead."
         );
-      this.cssText = e, this.t = o
+      this.cssText = cssTextValue, this.t = cssStrings
     }
     get styleSheet() {
-      let e = this.o,
-        o = this.t;
-      if (Ye && e === void 0) {
-        let r = o !== void 0 && o.length === 1;
-        r && (e = dr.get(o)), e === void 0 && ((this.o = e =
+      let cachedSheet = this.o,
+        cssStrings = this.t;
+      if (supportsAdoptingStyleSheets && cachedSheet === void 0) {
+        let isSingleString = cssStrings !== void 0 && cssStrings.length === 1;
+        isSingleString && (cachedSheet = styleSheetCache.get(cssStrings)), cachedSheet === void 0 && ((this.o = cachedSheet =
             new CSSStyleSheet)
-          .replaceSync(this.cssText), r && dr.set(o, e))
+          .replaceSync(this.cssText), isSingleString && styleSheetCache.set(cssStrings, cachedSheet))
       }
-      return e
+      return cachedSheet
     }
     toString() {
       return this.cssText
     }
   },
-  pr = t => new Ae(typeof t == "string" ? t : t + "", void 0, Co),
-  A = (t, ...e) => {
-    let o = t.length === 1 ? t[0] : e.reduce((r, i, s) => r + (a => {
-      if (a._$cssResult$ === !0) return a.cssText;
-      if (typeof a == "number") return a;
+  unsafeCSS = cssValue => new CSSResult(typeof cssValue == "string" ? cssValue : cssValue + "", void 0, cssConstructionToken),
+  cssTag = (cssStrings, ...interpolatedValues) => {
+    let combinedCssText = cssStrings.length === 1 ? cssStrings[0] : interpolatedValues.reduce((accumulatedCss, interpolatedValue, stringIndex) => accumulatedCss + (cssResultOrNumber => {
+      if (cssResultOrNumber._$cssResult$ === !0) return cssResultOrNumber.cssText;
+      if (typeof cssResultOrNumber == "number") return cssResultOrNumber;
       throw Error(
         "Value passed to 'css' function must be a 'css' function result: " +
-        a +
+        cssResultOrNumber +
         ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security."
         )
-    })(i) + t[s + 1], t[0]);
-    return new Ae(o, t, Co)
+    })(interpolatedValue) + cssStrings[stringIndex + 1], cssStrings[0]);
+    return new CSSResult(combinedCssText, cssStrings, cssConstructionToken)
   },
-  So = (t, e) => {
-    if (Ye) t.adoptedStyleSheets = e.map(o => o instanceof CSSStyleSheet ? o : o
+  adoptStyles = (renderRoot, styles) => {
+    if (supportsAdoptingStyleSheets) renderRoot.adoptedStyleSheets = styles.map(styleItem => styleItem instanceof CSSStyleSheet ? styleItem : styleItem
       .styleSheet);
     else
-      for (let o of e) {
-        let r = document.createElement("style"),
-          i = Qe.litNonce;
-        i !== void 0 && r.setAttribute("nonce", i), r.textContent = o.cssText, t
-          .appendChild(r)
+      for (let styleItem of styles) {
+        let styleElement = document.createElement("style"),
+          nonce = litGlobalScope.litNonce;
+        nonce !== void 0 && styleElement.setAttribute("nonce", nonce), styleElement.textContent = styleItem.cssText, renderRoot
+          .appendChild(styleElement)
       }
   },
-  Xe = Ye ? t => t : t => t instanceof CSSStyleSheet ? (e => {
-    let o = "";
-    for (let r of e.cssRules) o += r.cssText;
-    return pr(o)
-  })(t) : t;
+  getCompatibleStyle = supportsAdoptingStyleSheets ? styleInput => styleInput : styleInput => styleInput instanceof CSSStyleSheet ? (styleSheet => {
+    let cssTextValue = "";
+    for (let cssRule of styleSheet.cssRules) cssTextValue += cssRule.cssText;
+    return unsafeCSS(cssTextValue)
+  })(styleInput) : styleInput;
 var {
-  is: $s,
-  defineProperty: Es,
-  getOwnPropertyDescriptor: Ts,
-  getOwnPropertyNames: Os,
-  getOwnPropertySymbols: zs,
-  getPrototypeOf: Ms
-} = Object, Ze = globalThis, hr = Ze.trustedTypes, Ps = hr ? hr.emptyScript :
-  "", Ls = Ze.reactiveElementPolyfillSupport, ke = (t, e) => t, Nt = {
-    toAttribute(t, e) {
-      switch (e) {
+  is: objectIs,
+  defineProperty: definePropertyRef,
+  getOwnPropertyDescriptor: getOwnPropDescRef,
+  getOwnPropertyNames: getOwnPropNamesRef,
+  getOwnPropertySymbols: getOwnPropSymbolsRef,
+  getPrototypeOf: getPrototypeOfRef
+} = Object, reactiveElementGlobal = globalThis, reTrustedTypes = reactiveElementGlobal.trustedTypes, emptyScript = reTrustedTypes ? reTrustedTypes.emptyScript :
+  "", reactiveElementPolyfillSupport = reactiveElementGlobal.reactiveElementPolyfillSupport, identityConverter = (identityValue, identityType) => identityValue, defaultConverter = {
+    toAttribute(propertyValue, propertyType) {
+      switch (propertyType) {
         case Boolean:
-          t = t ? Ps : null;
+          propertyValue = propertyValue ? emptyScript : null;
           break;
         case Object:
         case Array:
-          t = t == null ? t : JSON.stringify(t)
+          propertyValue = propertyValue == null ? propertyValue : JSON.stringify(propertyValue)
       }
-      return t
+      return propertyValue
     },
-    fromAttribute(t, e) {
-      let o = t;
-      switch (e) {
+    fromAttribute(attributeValue, propertyType) {
+      let convertedValue = attributeValue;
+      switch (propertyType) {
         case Boolean:
-          o = t !== null;
+          convertedValue = attributeValue !== null;
           break;
         case Number:
-          o = t === null ? null : Number(t);
+          convertedValue = attributeValue === null ? null : Number(attributeValue);
           break;
         case Object:
         case Array:
           try {
-            o = JSON.parse(t)
+            convertedValue = JSON.parse(attributeValue)
           } catch {
-            o = null
+            convertedValue = null
           }
       }
-      return o
+      return convertedValue
     }
-  }, to = (t, e) => !$s(t, e), mr = {
+  }, valueHasChanged = (newValue, oldValue) => !objectIs(newValue, oldValue), defaultPropertyDeclaration = {
     attribute: !0,
     type: String,
-    converter: Nt,
+    converter: defaultConverter,
     reflect: !1,
-    hasChanged: to
+    hasChanged: valueHasChanged
   };
-Symbol.metadata ??= Symbol("metadata"), Ze.litPropertyMetadata ??= new WeakMap;
-var Pt = class extends HTMLElement {
-  static addInitializer(e) {
+Symbol.metadata ??= Symbol("metadata"), reactiveElementGlobal.litPropertyMetadata ??= new WeakMap;
+var ReactiveElement = class extends HTMLElement {
+  static addInitializer(initializer) {
     this._$Ei(), (this.l ??= [])
-      .push(e)
+      .push(initializer)
   }
   static get observedAttributes() {
     return this.finalize(), this._$Eh && [...this._$Eh.keys()]
   }
-  static createProperty(e, o = mr) {
-    if (o.state && (o.attribute = !1), this._$Ei(), this.elementProperties
-      .set(e, o), !o.noAccessor) {
-      let r = Symbol(),
-        i = this.getPropertyDescriptor(e, r, o);
-      i !== void 0 && Es(this.prototype, e, i)
+  static createProperty(propertyName, propertyOptions = defaultPropertyDeclaration) {
+    if (propertyOptions.state && (propertyOptions.attribute = !1), this._$Ei(), this.elementProperties
+      .set(propertyName, propertyOptions), !propertyOptions.noAccessor) {
+      let privateStorageKey = Symbol(),
+        propertyDescriptor = this.getPropertyDescriptor(propertyName, privateStorageKey, propertyOptions);
+      propertyDescriptor !== void 0 && definePropertyRef(this.prototype, propertyName, propertyDescriptor)
     }
   }
-  static getPropertyDescriptor(e, o, r) {
+  static getPropertyDescriptor(propertyName, privateStorageKey, propertyOptions) {
     let {
-      get: i,
-      set: s
-    } = Ts(this.prototype, e) ?? {
+      get: propGetter,
+      set: propSetter
+    } = getOwnPropDescRef(this.prototype, propertyName) ?? {
       get() {
-        return this[o]
+        return this[privateStorageKey]
       },
-      set(a) {
-        this[o] = a
+      set(incomingValue) {
+        this[privateStorageKey] = incomingValue
       }
     };
     return {
       get() {
-        return i?.call(this)
+        return propGetter?.call(this)
       },
-      set(a) {
-        let u = i?.call(this);
-        s.call(this, a), this.requestUpdate(e, u, r)
+      set(incomingValue) {
+        let previousValue = propGetter?.call(this);
+        propSetter.call(this, incomingValue), this.requestUpdate(propertyName, previousValue, propertyOptions)
       },
       configurable: !0,
       enumerable: !0
     }
   }
-  static getPropertyOptions(e) {
-    return this.elementProperties.get(e) ?? mr
+  static getPropertyOptions(propertyName) {
+    return this.elementProperties.get(propertyName) ?? defaultPropertyDeclaration
   }
   static _$Ei() {
-    if (this.hasOwnProperty(ke("elementProperties"))) return;
-    let e = Ms(this);
-    e.finalize(), e.l !== void 0 && (this.l = [...e.l]), this
-      .elementProperties = new Map(e.elementProperties)
+    if (this.hasOwnProperty(identityConverter("elementProperties"))) return;
+    let superConstructor = getPrototypeOfRef(this);
+    superConstructor.finalize(), superConstructor.l !== void 0 && (this.l = [...superConstructor.l]), this
+      .elementProperties = new Map(superConstructor.elementProperties)
   }
   static finalize() {
-    if (this.hasOwnProperty(ke("finalized"))) return;
-    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(ke(
+    if (this.hasOwnProperty(identityConverter("finalized"))) return;
+    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(identityConverter(
         "properties"))) {
-      let o = this.properties,
-        r = [...Os(o), ...zs(o)];
-      for (let i of r) this.createProperty(i, o[i])
+      let propertyDeclarations = this.properties,
+        propertyKeys = [...getOwnPropNamesRef(propertyDeclarations), ...getOwnPropSymbolsRef(propertyDeclarations)];
+      for (let propertyKey of propertyKeys) this.createProperty(propertyKey, propertyDeclarations[propertyKey])
     }
-    let e = this[Symbol.metadata];
-    if (e !== null) {
-      let o = litPropertyMetadata.get(e);
-      if (o !== void 0)
-        for (let [r, i] of o) this.elementProperties.set(r, i)
+    let classMetadata = this[Symbol.metadata];
+    if (classMetadata !== null) {
+      let inheritedProperties = litPropertyMetadata.get(classMetadata);
+      if (inheritedProperties !== void 0)
+        for (let [inheritedPropKey, inheritedPropOptions] of inheritedProperties) this.elementProperties.set(inheritedPropKey, inheritedPropOptions)
     }
     this._$Eh = new Map;
-    for (let [o, r] of this.elementProperties) {
-      let i = this._$Eu(o, r);
-      i !== void 0 && this._$Eh.set(i, o)
+    for (let [propertyKey, propertyOptions] of this.elementProperties) {
+      let attributeName = this._$Eu(propertyKey, propertyOptions);
+      attributeName !== void 0 && this._$Eh.set(attributeName, propertyKey)
     }
     this.elementStyles = this.finalizeStyles(this.styles)
   }
-  static finalizeStyles(e) {
-    let o = [];
-    if (Array.isArray(e)) {
-      let r = new Set(e.flat(1 / 0)
+  static finalizeStyles(styleDeclarations) {
+    let flattenedStyles = [];
+    if (Array.isArray(styleDeclarations)) {
+      let uniqueStyleSet = new Set(styleDeclarations.flat(1 / 0)
         .reverse());
-      for (let i of r) o.unshift(Xe(i))
-    } else e !== void 0 && o.push(Xe(e));
-    return o
+      for (let styleItem of uniqueStyleSet) flattenedStyles.unshift(getCompatibleStyle(styleItem))
+    } else styleDeclarations !== void 0 && flattenedStyles.push(getCompatibleStyle(styleDeclarations));
+    return flattenedStyles
   }
-  static _$Eu(e, o) {
-    let r = o.attribute;
-    return r === !1 ? void 0 : typeof r == "string" ? r : typeof e ==
-      "string" ? e.toLowerCase() : void 0
+  static _$Eu(propertyName, propertyOptions) {
+    let attributeOption = propertyOptions.attribute;
+    return attributeOption === !1 ? void 0 : typeof attributeOption == "string" ? attributeOption : typeof propertyName ==
+      "string" ? propertyName.toLowerCase() : void 0
   }
   constructor() {
     super(), this._$Ep = void 0, this.isUpdatePending = !1, this
       .hasUpdated = !1, this._$Em = null, this._$Ev()
   }
   _$Ev() {
-    this._$ES = new Promise(e => this.enableUpdating = e), this._$AL =
+    this._$ES = new Promise(resolveEnableUpdating => this.enableUpdating = resolveEnableUpdating), this._$AL =
       new Map, this._$E_(), this.requestUpdate(), this.constructor.l
-      ?.forEach(e => e(this))
+      ?.forEach(initializer => initializer(this))
   }
-  addController(e) {
+  addController(controller) {
     (this._$EO ??= new Set)
-    .add(e), this.renderRoot !== void 0 && this.isConnected && e
+    .add(controller), this.renderRoot !== void 0 && this.isConnected && controller
       .hostConnected?.()
   }
-  removeController(e) {
-    this._$EO?.delete(e)
+  removeController(controller) {
+    this._$EO?.delete(controller)
   }
   _$E_() {
-    let e = new Map,
-      o = this.constructor.elementProperties;
-    for (let r of o.keys()) this.hasOwnProperty(r) && (e.set(r, this[r]),
-      delete this[r]);
-    e.size > 0 && (this._$Ep = e)
+    let savedProperties = new Map,
+      elementProperties = this.constructor.elementProperties;
+    for (let propertyKey of elementProperties.keys()) this.hasOwnProperty(propertyKey) && (savedProperties.set(propertyKey, this[propertyKey]),
+      delete this[propertyKey]);
+    savedProperties.size > 0 && (this._$Ep = savedProperties)
   }
   createRenderRoot() {
-    let e = this.shadowRoot ?? this.attachShadow(this.constructor
+    let renderRootNode = this.shadowRoot ?? this.attachShadow(this.constructor
       .shadowRootOptions);
-    return So(e, this.constructor.elementStyles), e
+    return adoptStyles(renderRootNode, this.constructor.elementStyles), renderRootNode
   }
   connectedCallback() {
     this.renderRoot ??= this.createRenderRoot(), this.enableUpdating(!0),
-      this._$EO?.forEach(e => e.hostConnected?.())
+      this._$EO?.forEach(controller => controller.hostConnected?.())
   }
-  enableUpdating(e) {}
+  enableUpdating(updateRequested) {}
   disconnectedCallback() {
-    this._$EO?.forEach(e => e.hostDisconnected?.())
+    this._$EO?.forEach(controller => controller.hostDisconnected?.())
   }
-  attributeChangedCallback(e, o, r) {
-    this._$AK(e, r)
+  attributeChangedCallback(attributeName, oldAttrValue, newAttrValue) {
+    this._$AK(attributeName, newAttrValue)
   }
-  _$EC(e, o) {
-    let r = this.constructor.elementProperties.get(e),
-      i = this.constructor._$Eu(e, r);
-    if (i !== void 0 && r.reflect === !0) {
-      let s = (r.converter?.toAttribute !== void 0 ? r.converter : Nt)
-        .toAttribute(o, r.type);
-      this._$Em = e, s == null ? this.removeAttribute(i) : this
-        .setAttribute(i, s), this._$Em = null
+  _$EC(propertyName, propertyValue) {
+    let propertyOptions = this.constructor.elementProperties.get(propertyName),
+      attributeName = this.constructor._$Eu(propertyName, propertyOptions);
+    if (attributeName !== void 0 && propertyOptions.reflect === !0) {
+      let reflectedAttrValue = (propertyOptions.converter?.toAttribute !== void 0 ? propertyOptions.converter : defaultConverter)
+        .toAttribute(propertyValue, propertyOptions.type);
+      this._$Em = propertyName, reflectedAttrValue == null ? this.removeAttribute(attributeName) : this
+        .setAttribute(attributeName, reflectedAttrValue), this._$Em = null
     }
   }
-  _$AK(e, o) {
-    let r = this.constructor,
-      i = r._$Eh.get(e);
-    if (i !== void 0 && this._$Em !== i) {
-      let s = r.getPropertyOptions(i),
-        a = typeof s.converter == "function" ? {
-          fromAttribute: s.converter
-        } : s.converter?.fromAttribute !== void 0 ? s.converter : Nt;
-      this._$Em = i, this[i] = a.fromAttribute(o, s.type), this._$Em = null
+  _$AK(attributeName, attributeValue) {
+    let elementConstructor = this.constructor,
+      propertyName = elementConstructor._$Eh.get(attributeName);
+    if (propertyName !== void 0 && this._$Em !== propertyName) {
+      let propertyOptions = elementConstructor.getPropertyOptions(propertyName),
+        attributeConverter = typeof propertyOptions.converter == "function" ? {
+          fromAttribute: propertyOptions.converter
+        } : propertyOptions.converter?.fromAttribute !== void 0 ? propertyOptions.converter : defaultConverter;
+      this._$Em = propertyName, this[propertyName] = attributeConverter.fromAttribute(attributeValue, propertyOptions.type), this._$Em = null
     }
   }
-  requestUpdate(e, o, r) {
-    if (e !== void 0) {
-      if (r ??= this.constructor.getPropertyOptions(e), !(r.hasChanged ??
-          to)(this[e], o)) return;
-      this.P(e, o, r)
+  requestUpdate(propertyName, oldValue, propertyOptions) {
+    if (propertyName !== void 0) {
+      if (propertyOptions ??= this.constructor.getPropertyOptions(propertyName), !(propertyOptions.hasChanged ??
+          valueHasChanged)(this[propertyName], oldValue)) return;
+      this.P(propertyName, oldValue, propertyOptions)
     }
     this.isUpdatePending === !1 && (this._$ES = this._$ET())
   }
-  P(e, o, r) {
-    this._$AL.has(e) || this._$AL.set(e, o), r.reflect === !0 && this
-      ._$Em !== e && (this._$Ej ??= new Set)
-      .add(e)
+  P(propertyName, newValue, propertyOptions) {
+    this._$AL.has(propertyName) || this._$AL.set(propertyName, newValue), propertyOptions.reflect === !0 && this
+      ._$Em !== propertyName && (this._$Ej ??= new Set)
+      .add(propertyName)
   }
   async _$ET() {
     this.isUpdatePending = !0;
     try {
       await this._$ES
-    } catch (o) {
-      Promise.reject(o)
+    } catch (updateError) {
+      Promise.reject(updateError)
     }
-    let e = this.scheduleUpdate();
-    return e != null && await e, !this.isUpdatePending
+    let updateCompletePromise = this.scheduleUpdate();
+    return updateCompletePromise != null && await updateCompletePromise, !this.isUpdatePending
   }
   scheduleUpdate() {
     return this.performUpdate()
@@ -1220,28 +1220,28 @@ var Pt = class extends HTMLElement {
     if (!this.isUpdatePending) return;
     if (!this.hasUpdated) {
       if (this.renderRoot ??= this.createRenderRoot(), this._$Ep) {
-        for (let [i, s] of this._$Ep) this[i] = s;
+        for (let [deferredPropKey, deferredPropValue] of this._$Ep) this[deferredPropKey] = deferredPropValue;
         this._$Ep = void 0
       }
-      let r = this.constructor.elementProperties;
-      if (r.size > 0)
-        for (let [i, s] of r) s.wrapped !== !0 || this._$AL.has(i) || this[
-          i] === void 0 || this.P(i, this[i], s)
+      let elementProperties = this.constructor.elementProperties;
+      if (elementProperties.size > 0)
+        for (let [propertyKey, propertyOptions] of elementProperties) propertyOptions.wrapped !== !0 || this._$AL.has(propertyKey) || this[
+          propertyKey] === void 0 || this.P(propertyKey, this[propertyKey], propertyOptions)
     }
-    let e = !1,
-      o = this._$AL;
+    let shouldPerformUpdate = !1,
+      changedProperties = this._$AL;
     try {
-      e = this.shouldUpdate(o), e ? (this.willUpdate(o), this._$EO?.forEach(
-        r => r.hostUpdate?.()), this.update(o)) : this._$EU()
-    } catch (r) {
-      throw e = !1, this._$EU(), r
+      shouldPerformUpdate = this.shouldUpdate(changedProperties), shouldPerformUpdate ? (this.willUpdate(changedProperties), this._$EO?.forEach(
+        controller => controller.hostUpdate?.()), this.update(changedProperties)) : this._$EU()
+    } catch (updateError) {
+      throw shouldPerformUpdate = !1, this._$EU(), updateError
     }
-    e && this._$AE(o)
+    shouldPerformUpdate && this._$AE(changedProperties)
   }
-  willUpdate(e) {}
-  _$AE(e) {
-    this._$EO?.forEach(o => o.hostUpdated?.()), this.hasUpdated || (this
-      .hasUpdated = !0, this.firstUpdated(e)), this.updated(e)
+  willUpdate(changedProperties) {}
+  _$AE(changedProperties) {
+    this._$EO?.forEach(controller => controller.hostUpdated?.()), this.hasUpdated || (this
+      .hasUpdated = !0, this.firstUpdated(changedProperties)), this.updated(changedProperties)
   }
   _$EU() {
     this._$AL = new Map, this.isUpdatePending = !1
@@ -1252,168 +1252,168 @@ var Pt = class extends HTMLElement {
   getUpdateComplete() {
     return this._$ES
   }
-  shouldUpdate(e) {
+  shouldUpdate(changedProperties) {
     return !0
   }
-  update(e) {
-    this._$Ej &&= this._$Ej.forEach(o => this._$EC(o, this[o])), this._$EU()
+  update(changedProperties) {
+    this._$Ej &&= this._$Ej.forEach(reflectPropKey => this._$EC(reflectPropKey, this[reflectPropKey])), this._$EU()
   }
-  updated(e) {}
-  firstUpdated(e) {}
+  updated(changedProperties) {}
+  firstUpdated(changedProperties) {}
 };
-Pt.elementStyles = [], Pt.shadowRootOptions = {
+ReactiveElement.elementStyles = [], ReactiveElement.shadowRootOptions = {
     mode: "open"
-  }, Pt[ke("elementProperties")] = new Map, Pt[ke("finalized")] = new Map, Ls?.
+  }, ReactiveElement[identityConverter("elementProperties")] = new Map, ReactiveElement[identityConverter("finalized")] = new Map, reactiveElementPolyfillSupport?.
 ({
-    ReactiveElement: Pt
-  }), (Ze.reactiveElementVersions ??= [])
+    ReactiveElement: ReactiveElement
+  }), (reactiveElementGlobal.reactiveElementVersions ??= [])
   .push("2.0.4");
-var Eo = globalThis,
-  eo = Eo.trustedTypes,
-  fr = eo ? eo.createPolicy("lit-html", {
-    createHTML: t => t
+var litHtmlGlobal = globalThis,
+  litTrustedTypes = litHtmlGlobal.trustedTypes,
+  trustedTypesPolicy = litTrustedTypes ? litTrustedTypes.createPolicy("lit-html", {
+    createHTML: rawHtml => rawHtml
   }) : void 0,
-  To = "$lit$",
-  Lt = `lit$${(Math.random()+"").slice(9)}$`,
-  Oo = "?" + Lt,
-  Rs = `<${Oo}>`,
-  Jt = document,
-  Se = () => Jt.createComment(""),
-  $e = t => t === null || typeof t != "object" && typeof t != "function",
-  wr = Array.isArray,
-  xr = t => wr(t) || typeof t?.[Symbol.iterator] == "function",
-  $o = `[ \t\n\f\r]`,
-  Ce = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,
-  gr = /-->/g,
-  br = />/g,
-  Wt = RegExp(`>|${$o}(?:([^\\s"'>=/]+)(${$o}*=${$o}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"),
-  yr = /'/g,
-  vr = /"/g,
-  Ar = /^(?:script|style|textarea|title)$/i,
-  kr = t => (e, ...o) => ({
-    _$litType$: t,
-    strings: e,
-    values: o
+  boundAttributeSuffix = "$lit$",
+  markerText = `lit$${(Math.random()+"").slice(9)}$`,
+  markerMatch = "?" + markerText,
+  nodeMarker = `<${markerMatch}>`,
+  documentRef = document,
+  createMarkerComment = () => documentRef.createComment(""),
+  isPrimitiveValue = candidateValue => candidateValue === null || typeof candidateValue != "object" && typeof candidateValue != "function",
+  isArrayValue = Array.isArray,
+  isIterableValue = candidateValue => isArrayValue(candidateValue) || typeof candidateValue?.[Symbol.iterator] == "function",
+  whitespaceCharClass = `[ \t\n\f\r]`,
+  textEndRegex = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,
+  commentEndRegex = /-->/g,
+  comment2EndRegex = />/g,
+  tagEndRegex = RegExp(`>|${whitespaceCharClass}(?:([^\\s"'>=/]+)(${whitespaceCharClass}*=${whitespaceCharClass}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"),
+  singleQuoteAttrEndRegex = /'/g,
+  doubleQuoteAttrEndRegex = /"/g,
+  rawTextElementRegex = /^(?:script|style|textarea|title)$/i,
+  makeTemplateTag = templateResultType => (templateStrings, ...templateValues) => ({
+    _$litType$: templateResultType,
+    strings: templateStrings,
+    values: templateValues
   }),
-  y = kr(1),
-  Cr = kr(2),
-  ct = Symbol.for("lit-noChange"),
-  j = Symbol.for("lit-nothing"),
-  _r = new WeakMap,
-  Kt = Jt.createTreeWalker(Jt, 129);
+  htmlTag = makeTemplateTag(1),
+  svgTag = makeTemplateTag(2),
+  noChange = Symbol.for("lit-noChange"),
+  nothing = Symbol.for("lit-nothing"),
+  templateCache = new WeakMap,
+  templateWalker = documentRef.createTreeWalker(documentRef, 129);
 
-function Sr(t, e) {
-  if (!Array.isArray(t) || !t.hasOwnProperty("raw")) throw Error(
+function trustFromTemplateString(templateStringArray, stringFromArray) {
+  if (!Array.isArray(templateStringArray) || !templateStringArray.hasOwnProperty("raw")) throw Error(
     "invalid template strings array");
-  return fr !== void 0 ? fr.createHTML(e) : e
+  return trustedTypesPolicy !== void 0 ? trustedTypesPolicy.createHTML(stringFromArray) : stringFromArray
 }
-var $r = (t, e) => {
-    let o = t.length - 1,
-      r = [],
-      i, s = e === 2 ? "<svg>" : "",
-      a = Ce;
-    for (let u = 0; u < o; u++) {
-      let c = t[u],
-        d, h, p = -1,
-        v = 0;
-      for (; v < c.length && (a.lastIndex = v, h = a.exec(c), h !== null);) v =
-        a.lastIndex, a === Ce ? h[1] === "!--" ? a = gr : h[1] !== void 0 ? a =
-        br : h[2] !== void 0 ? (Ar.test(h[2]) && (i = RegExp("</" + h[2], "g")),
-          a = Wt) : h[3] !== void 0 && (a = Wt) : a === Wt ? h[0] === ">" ? (a =
-          i ?? Ce, p = -1) : h[1] === void 0 ? p = -2 : (p = a.lastIndex - h[2]
-          .length, d = h[1], a = h[3] === void 0 ? Wt : h[3] === '"' ? vr : yr
-          ) : a === vr || a === yr ? a = Wt : a === gr || a === br ? a = Ce : (
-          a = Wt, i = void 0);
-      let m = a === Wt && t[u + 1].startsWith("/>") ? " " : "";
-      s += a === Ce ? c + Rs : p >= 0 ? (r.push(d), c.slice(0, p) + To + c
-        .slice(p) + Lt + m) : c + Lt + (p === -2 ? u : m)
+var getTemplateHtml = (templateStrings, templateResultType) => {
+    let lastStringIndex = templateStrings.length - 1,
+      collectedAttrNames = [],
+      rawTextEndRegex, htmlOutput = templateResultType === 2 ? "<svg>" : "",
+      activeRegex = textEndRegex;
+    for (let stringLoopIndex = 0; stringLoopIndex < lastStringIndex; stringLoopIndex++) {
+      let currentString = templateStrings[stringLoopIndex],
+        regexMatch, attributeName, attrNameEndIndex = -1,
+        scanIndex = 0;
+      for (; scanIndex < currentString.length && (activeRegex.lastIndex = scanIndex, attributeName = activeRegex.exec(currentString), attributeName !== null);) scanIndex =
+        activeRegex.lastIndex, activeRegex === textEndRegex ? attributeName[1] === "!--" ? activeRegex = commentEndRegex : attributeName[1] !== void 0 ? activeRegex =
+        comment2EndRegex : attributeName[2] !== void 0 ? (rawTextElementRegex.test(attributeName[2]) && (rawTextEndRegex = RegExp("</" + attributeName[2], "g")),
+          activeRegex = tagEndRegex) : attributeName[3] !== void 0 && (activeRegex = tagEndRegex) : activeRegex === tagEndRegex ? attributeName[0] === ">" ? (activeRegex =
+          rawTextEndRegex ?? textEndRegex, attrNameEndIndex = -1) : attributeName[1] === void 0 ? attrNameEndIndex = -2 : (attrNameEndIndex = activeRegex.lastIndex - attributeName[2]
+          .length, regexMatch = attributeName[1], activeRegex = attributeName[3] === void 0 ? tagEndRegex : attributeName[3] === '"' ? doubleQuoteAttrEndRegex : singleQuoteAttrEndRegex
+          ) : activeRegex === doubleQuoteAttrEndRegex || activeRegex === singleQuoteAttrEndRegex ? activeRegex = tagEndRegex : activeRegex === commentEndRegex || activeRegex === comment2EndRegex ? activeRegex = textEndRegex : (
+          activeRegex = tagEndRegex, rawTextEndRegex = void 0);
+      let selfCloseSpacer = activeRegex === tagEndRegex && templateStrings[stringLoopIndex + 1].startsWith("/>") ? " " : "";
+      htmlOutput += activeRegex === textEndRegex ? currentString + nodeMarker : attrNameEndIndex >= 0 ? (collectedAttrNames.push(regexMatch), currentString.slice(0, attrNameEndIndex) + boundAttributeSuffix + currentString
+        .slice(attrNameEndIndex) + markerText + selfCloseSpacer) : currentString + markerText + (attrNameEndIndex === -2 ? stringLoopIndex : selfCloseSpacer)
     }
-    return [Sr(t, s + (t[o] || "<?>") + (e === 2 ? "</svg>" : "")), r]
+    return [trustFromTemplateString(templateStrings, htmlOutput + (templateStrings[lastStringIndex] || "<?>") + (templateResultType === 2 ? "</svg>" : "")), collectedAttrNames]
   },
-  Ee = class t {
+  Template = class TemplateClass {
     constructor({
-      strings: e,
-      _$litType$: o
-    }, r) {
-      let i;
+      strings: templateStrings,
+      _$litType$: templateResultType
+    }, renderOptions) {
+      let walkerNode;
       this.parts = [];
-      let s = 0,
-        a = 0,
-        u = e.length - 1,
-        c = this.parts,
-        [d, h] = $r(e, o);
-      if (this.el = t.createElement(d, r), Kt.currentNode = this.el.content,
-        o === 2) {
-        let p = this.el.content.firstChild;
-        p.replaceWith(...p.childNodes)
+      let walkNodeIndex = 0,
+        attrNameIndex = 0,
+        partCount = templateStrings.length - 1,
+        templateParts = this.parts,
+        [generatedHtml, parsedAttrNames] = getTemplateHtml(templateStrings, templateResultType);
+      if (this.el = TemplateClass.createElement(generatedHtml, renderOptions), templateWalker.currentNode = this.el.content,
+        templateResultType === 2) {
+        let firstChildNode = this.el.content.firstChild;
+        firstChildNode.replaceWith(...firstChildNode.childNodes)
       }
       for (;
-        (i = Kt.nextNode()) !== null && c.length < u;) {
-        if (i.nodeType === 1) {
-          if (i.hasAttributes())
-            for (let p of i.getAttributeNames())
-              if (p.endsWith(To)) {
-                let v = h[a++],
-                  m = i.getAttribute(p)
-                  .split(Lt),
-                  b = /([.?@])?(.*)/.exec(v);
-                c.push({
+        (walkerNode = templateWalker.nextNode()) !== null && templateParts.length < partCount;) {
+        if (walkerNode.nodeType === 1) {
+          if (walkerNode.hasAttributes())
+            for (let currentAttrName of walkerNode.getAttributeNames())
+              if (currentAttrName.endsWith(boundAttributeSuffix)) {
+                let expectedAttrName = parsedAttrNames[attrNameIndex++],
+                  attributeValue = walkerNode.getAttribute(currentAttrName)
+                  .split(markerText),
+                  attrPrefixMatch = /([.?@])?(.*)/.exec(expectedAttrName);
+                templateParts.push({
                   type: 1,
-                  index: s,
-                  name: b[2],
-                  strings: m,
-                  ctor: b[1] === "." ? ro : b[1] === "?" ? io : b[1] ===
-                    "@" ? so : Qt
-                }), i.removeAttribute(p)
-              } else p.startsWith(Lt) && (c.push({
+                  index: walkNodeIndex,
+                  name: attrPrefixMatch[2],
+                  strings: attributeValue,
+                  ctor: attrPrefixMatch[1] === "." ? PropertyPart : attrPrefixMatch[1] === "?" ? BooleanAttributePart : attrPrefixMatch[1] ===
+                    "@" ? EventPart : AttributePart
+                }), walkerNode.removeAttribute(currentAttrName)
+              } else currentAttrName.startsWith(markerText) && (templateParts.push({
                 type: 6,
-                index: s
-              }), i.removeAttribute(p));
-          if (Ar.test(i.tagName)) {
-            let p = i.textContent.split(Lt),
-              v = p.length - 1;
-            if (v > 0) {
-              i.textContent = eo ? eo.emptyScript : "";
-              for (let m = 0; m < v; m++) i.append(p[m], Se()), Kt.nextNode(),
-                c.push({
+                index: walkNodeIndex
+              }), walkerNode.removeAttribute(currentAttrName));
+          if (rawTextElementRegex.test(walkerNode.tagName)) {
+            let textNodeParts = walkerNode.textContent.split(markerText),
+              textPartCount = textNodeParts.length - 1;
+            if (textPartCount > 0) {
+              walkerNode.textContent = litTrustedTypes ? litTrustedTypes.emptyScript : "";
+              for (let textPartIndex = 0; textPartIndex < textPartCount; textPartIndex++) walkerNode.append(textNodeParts[textPartIndex], createMarkerComment()), templateWalker.nextNode(),
+                templateParts.push({
                   type: 2,
-                  index: ++s
+                  index: ++walkNodeIndex
                 });
-              i.append(p[v], Se())
+              walkerNode.append(textNodeParts[textPartCount], createMarkerComment())
             }
           }
-        } else if (i.nodeType === 8)
-          if (i.data === Oo) c.push({
+        } else if (walkerNode.nodeType === 8)
+          if (walkerNode.data === markerMatch) templateParts.push({
             type: 2,
-            index: s
+            index: walkNodeIndex
           });
           else {
-            let p = -1;
+            let nodePartIndex = -1;
             for (;
-              (p = i.data.indexOf(Lt, p + 1)) !== -1;) c.push({
+              (nodePartIndex = walkerNode.data.indexOf(markerText, nodePartIndex + 1)) !== -1;) templateParts.push({
               type: 7,
-              index: s
-            }), p += Lt.length - 1
-          } s++
+              index: walkNodeIndex
+            }), nodePartIndex += markerText.length - 1
+          } walkNodeIndex++
       }
     }
-    static createElement(e, o) {
-      let r = Jt.createElement("template");
-      return r.innerHTML = e, r
+    static createElement(htmlOutput, createOptions) {
+      let templateElement = documentRef.createElement("template");
+      return templateElement.innerHTML = htmlOutput, templateElement
     }
   };
 
-function Gt(t, e, o = t, r) {
-  if (e === ct) return e;
-  let i = r !== void 0 ? o._$Co?.[r] : o._$Cl,
-    s = $e(e) ? void 0 : e._$litDirective$;
-  return i?.constructor !== s && (i?._$AO?.(!1), s === void 0 ? i = void 0 : (
-      i = new s(t), i._$AT(t, o, r)), r !== void 0 ? (o._$Co ??= [])[r] = i :
-    o._$Cl = i), i !== void 0 && (e = Gt(t, i._$AS(t, e.values), i, r)), e
+function resolveDirective(directivePart, directiveValue, directiveParent = directivePart, directiveAttrIndex) {
+  if (directiveValue === noChange) return directiveValue;
+  let existingDirective = directiveAttrIndex !== void 0 ? directiveParent._$Co?.[directiveAttrIndex] : directiveParent._$Cl,
+    directiveClass = isPrimitiveValue(directiveValue) ? void 0 : directiveValue._$litDirective$;
+  return existingDirective?.constructor !== directiveClass && (existingDirective?._$AO?.(!1), directiveClass === void 0 ? existingDirective = void 0 : (
+      existingDirective = new directiveClass(directivePart), existingDirective._$AT(directivePart, directiveParent, directiveAttrIndex)), directiveAttrIndex !== void 0 ? (directiveParent._$Co ??= [])[directiveAttrIndex] = existingDirective :
+    directiveParent._$Cl = existingDirective), existingDirective !== void 0 && (directiveValue = resolveDirective(directivePart, existingDirective._$AS(directivePart, directiveValue.values), existingDirective, directiveAttrIndex)), directiveValue
 }
-var oo = class {
-    constructor(e, o) {
-      this._$AV = [], this._$AN = void 0, this._$AD = e, this._$AM = o
+var TemplateInstance = class {
+    constructor(template, parentPart) {
+      this._$AV = [], this._$AN = void 0, this._$AD = template, this._$AM = parentPart
     }
     get parentNode() {
       return this._$AM.parentNode
@@ -1421,49 +1421,49 @@ var oo = class {
     get _$AU() {
       return this._$AM._$AU
     }
-    u(e) {
+    u(cloneOptions) {
       let {
         el: {
-          content: o
+          content: templateContent
         },
-        parts: r
-      } = this._$AD, i = (e?.creationScope ?? Jt)
-        .importNode(o, !0);
-      Kt.currentNode = i;
-      let s = Kt.nextNode(),
-        a = 0,
-        u = 0,
-        c = r[0];
-      for (; c !== void 0;) {
-        if (a === c.index) {
-          let d;
-          c.type === 2 ? d = new ce(s, s.nextSibling, this, e) : c.type ===
-            1 ? d = new c.ctor(s, c.name, c.strings, this, e) : c.type ===
-            6 && (d = new no(s, this, e)), this._$AV.push(d), c = r[++u]
+        parts: templatePartInfos
+      } = this._$AD, clonedFragment = (cloneOptions?.creationScope ?? documentRef)
+        .importNode(templateContent, !0);
+      templateWalker.currentNode = clonedFragment;
+      let currentNode = templateWalker.nextNode(),
+        nodeIndex = 0,
+        partIndex = 0,
+        currentTemplatePart = templatePartInfos[0];
+      for (; currentTemplatePart !== void 0;) {
+        if (nodeIndex === currentTemplatePart.index) {
+          let createdPart;
+          currentTemplatePart.type === 2 ? createdPart = new ChildPart(currentNode, currentNode.nextSibling, this, cloneOptions) : currentTemplatePart.type ===
+            1 ? createdPart = new currentTemplatePart.ctor(currentNode, currentTemplatePart.name, currentTemplatePart.strings, this, cloneOptions) : currentTemplatePart.type ===
+            6 && (createdPart = new ElementPart(currentNode, this, cloneOptions)), this._$AV.push(createdPart), currentTemplatePart = templatePartInfos[++partIndex]
         }
-        a !== c?.index && (s = Kt.nextNode(), a++)
+        nodeIndex !== currentTemplatePart?.index && (currentNode = templateWalker.nextNode(), nodeIndex++)
       }
-      return Kt.currentNode = Jt, i
+      return templateWalker.currentNode = documentRef, clonedFragment
     }
-    p(e) {
-      let o = 0;
-      for (let r of this._$AV) r !== void 0 && (r.strings !== void 0 ? (r
-        ._$AI(e, r, o), o += r.strings.length - 2) : r._$AI(e[o])), o++
+    p(newValues) {
+      let valueIndex = 0;
+      for (let instancePart of this._$AV) instancePart !== void 0 && (instancePart.strings !== void 0 ? (instancePart
+        ._$AI(newValues, instancePart, valueIndex), valueIndex += instancePart.strings.length - 2) : instancePart._$AI(newValues[valueIndex])), valueIndex++
     }
   },
-  ce = class t {
+  ChildPart = class ChildPartClass {
     get _$AU() {
       return this._$AM?._$AU ?? this._$Cv
     }
-    constructor(e, o, r, i) {
-      this.type = 2, this._$AH = j, this._$AN = void 0, this._$AA = e, this
-        ._$AB = o, this._$AM = r, this.options = i, this._$Cv = i
+    constructor(startMarker, endMarker, parentPart, childRenderOptions) {
+      this.type = 2, this._$AH = nothing, this._$AN = void 0, this._$AA = startMarker, this
+        ._$AB = endMarker, this._$AM = parentPart, this.options = childRenderOptions, this._$Cv = childRenderOptions
         ?.isConnected ?? !0
     }
     get parentNode() {
-      let e = this._$AA.parentNode,
-        o = this._$AM;
-      return o !== void 0 && e?.nodeType === 11 && (e = o.parentNode), e
+      let parentNode = this._$AA.parentNode,
+        parentPartRef = this._$AM;
+      return parentPartRef !== void 0 && parentNode?.nodeType === 11 && (parentNode = parentPartRef.parentNode), parentNode
     }
     get startNode() {
       return this._$AA
@@ -1471,178 +1471,178 @@ var oo = class {
     get endNode() {
       return this._$AB
     }
-    _$AI(e, o = this) {
-      e = Gt(this, e, o), $e(e) ? e === j || e == null || e === "" ? (this
-          ._$AH !== j && this._$AR(), this._$AH = j) : e !== this._$AH &&
-        e !== ct && this._(e) : e._$litType$ !== void 0 ? this.$(e) : e
-        .nodeType !== void 0 ? this.T(e) : xr(e) ? this.k(e) : this._(e)
+    _$AI(newValue, directiveParent = this) {
+      newValue = resolveDirective(this, newValue, directiveParent), isPrimitiveValue(newValue) ? newValue === nothing || newValue == null || newValue === "" ? (this
+          ._$AH !== nothing && this._$AR(), this._$AH = nothing) : newValue !== this._$AH &&
+        newValue !== noChange && this._(newValue) : newValue._$litType$ !== void 0 ? this.$(newValue) : newValue
+        .nodeType !== void 0 ? this.T(newValue) : isIterableValue(newValue) ? this.k(newValue) : this._(newValue)
     }
-    S(e) {
-      return this._$AA.parentNode.insertBefore(e, this._$AB)
+    S(nodeToInsert) {
+      return this._$AA.parentNode.insertBefore(nodeToInsert, this._$AB)
     }
-    T(e) {
-      this._$AH !== e && (this._$AR(), this._$AH = this.S(e))
+    T(textValue) {
+      this._$AH !== textValue && (this._$AR(), this._$AH = this.S(textValue))
     }
-    _(e) {
-      this._$AH !== j && $e(this._$AH) ? this._$AA.nextSibling.data = e : this
-        .T(Jt.createTextNode(e)), this._$AH = e
+    _(domNodeValue) {
+      this._$AH !== nothing && isPrimitiveValue(this._$AH) ? this._$AA.nextSibling.data = domNodeValue : this
+        .T(documentRef.createTextNode(domNodeValue)), this._$AH = domNodeValue
     }
-    $(e) {
+    $(templateResultValue) {
       let {
-        values: o,
-        _$litType$: r
-      } = e, i = typeof r == "number" ? this._$AC(e) : (r.el === void 0 && (r
-        .el = Ee.createElement(Sr(r.h, r.h[0]), this.options)), r);
-      if (this._$AH?._$AD === i) this._$AH.p(o);
+        values: resultValues,
+        _$litType$: litTypeId
+      } = templateResultValue, resolvedTemplate = typeof litTypeId == "number" ? this._$AC(templateResultValue) : (litTypeId.el === void 0 && (litTypeId
+        .el = Template.createElement(trustFromTemplateString(litTypeId.h, litTypeId.h[0]), this.options)), litTypeId);
+      if (this._$AH?._$AD === resolvedTemplate) this._$AH.p(resultValues);
       else {
-        let s = new oo(i, this),
-          a = s.u(this.options);
-        s.p(o), this.T(a), this._$AH = s
+        let templateInstance = new TemplateInstance(resolvedTemplate, this),
+          instanceFragment = templateInstance.u(this.options);
+        templateInstance.p(resultValues), this.T(instanceFragment), this._$AH = templateInstance
       }
     }
-    _$AC(e) {
-      let o = _r.get(e.strings);
-      return o === void 0 && _r.set(e.strings, o = new Ee(e)), o
+    _$AC(templateResultValue) {
+      let cachedTemplate = templateCache.get(templateResultValue.strings);
+      return cachedTemplate === void 0 && templateCache.set(templateResultValue.strings, cachedTemplate = new Template(templateResultValue)), cachedTemplate
     }
-    k(e) {
-      wr(this._$AH) || (this._$AH = [], this._$AR());
-      let o = this._$AH,
-        r, i = 0;
-      for (let s of e) i === o.length ? o.push(r = new t(this.S(Se()), this.S(
-        Se()), this, this.options)) : r = o[i], r._$AI(s), i++;
-      i < o.length && (this._$AR(r && r._$AB.nextSibling, i), o.length = i)
+    k(iterableValue) {
+      isArrayValue(this._$AH) || (this._$AH = [], this._$AR());
+      let existingItemParts = this._$AH,
+        itemPart, itemIndex = 0;
+      for (let iterableItem of iterableValue) itemIndex === existingItemParts.length ? existingItemParts.push(itemPart = new ChildPartClass(this.S(createMarkerComment()), this.S(
+        createMarkerComment()), this, this.options)) : itemPart = existingItemParts[itemIndex], itemPart._$AI(iterableItem), itemIndex++;
+      itemIndex < existingItemParts.length && (this._$AR(itemPart && itemPart._$AB.nextSibling, itemIndex), existingItemParts.length = itemIndex)
     }
-    _$AR(e = this._$AA.nextSibling, o) {
-      for (this._$AP?.(!1, !0, o); e && e !== this._$AB;) {
-        let r = e.nextSibling;
-        e.remove(), e = r
+    _$AR(fromRemoveNode = this._$AA.nextSibling, directiveFromIndex) {
+      for (this._$AP?.(!1, !0, directiveFromIndex); fromRemoveNode && fromRemoveNode !== this._$AB;) {
+        let nextSiblingNode = fromRemoveNode.nextSibling;
+        fromRemoveNode.remove(), fromRemoveNode = nextSiblingNode
       }
     }
-    setConnected(e) {
-      this._$AM === void 0 && (this._$Cv = e, this._$AP?.(e))
+    setConnected(isConnectedFlag) {
+      this._$AM === void 0 && (this._$Cv = isConnectedFlag, this._$AP?.(isConnectedFlag))
     }
   },
-  Qt = class {
+  AttributePart = class {
     get tagName() {
       return this.element.tagName
     }
     get _$AU() {
       return this._$AM._$AU
     }
-    constructor(e, o, r, i, s) {
-      this.type = 1, this._$AH = j, this._$AN = void 0, this.element = e, this
-        .name = o, this._$AM = i, this.options = s, r.length > 2 || r[0] !==
-        "" || r[1] !== "" ? (this._$AH = Array(r.length - 1)
-          .fill(new String), this.strings = r) : this._$AH = j
+    constructor(hostElement, attributeName, partStrings, parentPart, attrRenderOptions) {
+      this.type = 1, this._$AH = nothing, this._$AN = void 0, this.element = hostElement, this
+        .name = attributeName, this._$AM = parentPart, this.options = attrRenderOptions, partStrings.length > 2 || partStrings[0] !==
+        "" || partStrings[1] !== "" ? (this._$AH = Array(partStrings.length - 1)
+          .fill(new String), this.strings = partStrings) : this._$AH = nothing
     }
-    _$AI(e, o = this, r, i) {
-      let s = this.strings,
-        a = !1;
-      if (s === void 0) e = Gt(this, e, o, 0), a = !$e(e) || e !== this._$AH &&
-        e !== ct, a && (this._$AH = e);
+    _$AI(newAttrValue, directiveParent = this, valuesStartIndex, noCommitFlag) {
+      let attrStrings = this.strings,
+        attrChanged = !1;
+      if (attrStrings === void 0) newAttrValue = resolveDirective(this, newAttrValue, directiveParent, 0), attrChanged = !isPrimitiveValue(newAttrValue) || newAttrValue !== this._$AH &&
+        newAttrValue !== noChange, attrChanged && (this._$AH = newAttrValue);
       else {
-        let u = e,
-          c, d;
-        for (e = s[0], c = 0; c < s.length - 1; c++) d = Gt(this, u[r + c], o,
-            c), d === ct && (d = this._$AH[c]), a ||= !$e(d) || d !== this._$AH[
-            c], d === j ? e = j : e !== j && (e += (d ?? "") + s[c + 1]), this
-          ._$AH[c] = d
+        let resolvedAttrValue = newAttrValue,
+          anyPartChanged, resolvedPartValue;
+        for (newAttrValue = attrStrings[0], anyPartChanged = 0; anyPartChanged < attrStrings.length - 1; anyPartChanged++) resolvedPartValue = resolveDirective(this, resolvedAttrValue[valuesStartIndex + anyPartChanged], directiveParent,
+            anyPartChanged), resolvedPartValue === noChange && (resolvedPartValue = this._$AH[anyPartChanged]), attrChanged ||= !isPrimitiveValue(resolvedPartValue) || resolvedPartValue !== this._$AH[
+            anyPartChanged], resolvedPartValue === nothing ? newAttrValue = nothing : newAttrValue !== nothing && (newAttrValue += (resolvedPartValue ?? "") + attrStrings[anyPartChanged + 1]), this
+          ._$AH[anyPartChanged] = resolvedPartValue
       }
-      a && !i && this.j(e)
+      attrChanged && !noCommitFlag && this.j(newAttrValue)
     }
-    j(e) {
-      e === j ? this.element.removeAttribute(this.name) : this.element
-        .setAttribute(this.name, e ?? "")
+    j(committedAttrValue) {
+      committedAttrValue === nothing ? this.element.removeAttribute(this.name) : this.element
+        .setAttribute(this.name, committedAttrValue ?? "")
     }
   },
-  ro = class extends Qt {
+  PropertyPart = class extends AttributePart {
     constructor() {
       super(...arguments), this.type = 3
     }
-    j(e) {
-      this.element[this.name] = e === j ? void 0 : e
+    j(committedPropValue) {
+      this.element[this.name] = committedPropValue === nothing ? void 0 : committedPropValue
     }
   },
-  io = class extends Qt {
+  BooleanAttributePart = class extends AttributePart {
     constructor() {
       super(...arguments), this.type = 4
     }
-    j(e) {
-      this.element.toggleAttribute(this.name, !!e && e !== j)
+    j(committedBoolValue) {
+      this.element.toggleAttribute(this.name, !!committedBoolValue && committedBoolValue !== nothing)
     }
   },
-  so = class extends Qt {
-    constructor(e, o, r, i, s) {
-      super(e, o, r, i, s), this.type = 5
+  EventPart = class extends AttributePart {
+    constructor(hostElement, eventName, partStrings, parentPart, eventRenderOptions) {
+      super(hostElement, eventName, partStrings, parentPart, eventRenderOptions), this.type = 5
     }
-    _$AI(e, o = this) {
-      if ((e = Gt(this, e, o, 0) ?? j) === ct) return;
-      let r = this._$AH,
-        i = e === j && r !== j || e.capture !== r.capture || e.once !== r
-        .once || e.passive !== r.passive,
-        s = e !== j && (r === j || i);
-      i && this.element.removeEventListener(this.name, this, r), s && this
-        .element.addEventListener(this.name, this, e), this._$AH = e
+    _$AI(newListener, listenerDirectiveParent = this) {
+      if ((newListener = resolveDirective(this, newListener, listenerDirectiveParent, 0) ?? nothing) === noChange) return;
+      let oldListener = this._$AH,
+        listenerOptionsChanged = newListener === nothing && oldListener !== nothing || newListener.capture !== oldListener.capture || newListener.once !== oldListener
+        .once || newListener.passive !== oldListener.passive,
+        shouldAddListener = newListener !== nothing && (oldListener === nothing || listenerOptionsChanged);
+      listenerOptionsChanged && this.element.removeEventListener(this.name, this, oldListener), shouldAddListener && this
+        .element.addEventListener(this.name, this, newListener), this._$AH = newListener
     }
-    handleEvent(e) {
+    handleEvent(domEvent) {
       typeof this._$AH == "function" ? this._$AH.call(this.options?.host ??
-        this.element, e) : this._$AH.handleEvent(e)
+        this.element, domEvent) : this._$AH.handleEvent(domEvent)
     }
   },
-  no = class {
-    constructor(e, o, r) {
-      this.element = e, this.type = 6, this._$AN = void 0, this._$AM = o, this
-        .options = r
+  ElementPart = class {
+    constructor(hostElement, parentPart, elementRenderOptions) {
+      this.element = hostElement, this.type = 6, this._$AN = void 0, this._$AM = parentPart, this
+        .options = elementRenderOptions
     }
     get _$AU() {
       return this._$AM._$AU
     }
-    _$AI(e) {
-      Gt(this, e)
+    _$AI(elementDirectiveValue) {
+      resolveDirective(this, elementDirectiveValue)
     }
   },
-  Er = {
-    P: To,
-    A: Lt,
-    C: Oo,
+  internalLitHtmlApi = {
+    P: boundAttributeSuffix,
+    A: markerText,
+    C: markerMatch,
     M: 1,
-    L: $r,
-    R: oo,
-    D: xr,
-    V: Gt,
-    I: ce,
-    H: Qt,
-    N: io,
-    U: so,
-    B: ro,
-    F: no
+    L: getTemplateHtml,
+    R: TemplateInstance,
+    D: isIterableValue,
+    V: resolveDirective,
+    I: ChildPart,
+    H: AttributePart,
+    N: BooleanAttributePart,
+    U: EventPart,
+    B: PropertyPart,
+    F: ElementPart
   },
-  Ds = Eo.litHtmlPolyfillSupport;
-Ds?.(Ee, ce), (Eo.litHtmlVersions ??= [])
+  litHtmlPolyfillSupport = litHtmlGlobal.litHtmlPolyfillSupport;
+litHtmlPolyfillSupport?.(Template, ChildPart), (litHtmlGlobal.litHtmlVersions ??= [])
   .push("3.1.2");
-var Tr = (t, e, o) => {
-  let r = o?.renderBefore ?? e,
-    i = r._$litPart$;
-  if (i === void 0) {
-    let s = o?.renderBefore ?? null;
-    r._$litPart$ = i = new ce(e.insertBefore(Se(), s), s, void 0, o ?? {})
+var renderTemplate = (templateValue, renderContainer, renderOptions) => {
+  let partOwnerNode = renderOptions?.renderBefore ?? renderContainer,
+    existingRootPart = partOwnerNode._$litPart$;
+  if (existingRootPart === void 0) {
+    let renderBeforeNode = renderOptions?.renderBefore ?? null;
+    partOwnerNode._$litPart$ = existingRootPart = new ChildPart(renderContainer.insertBefore(createMarkerComment(), renderBeforeNode), renderBeforeNode, void 0, renderOptions ?? {})
   }
-  return i._$AI(t), i
+  return existingRootPart._$AI(templateValue), existingRootPart
 };
-var Ft = class extends Pt {
+var LitElement = class extends ReactiveElement {
   constructor() {
     super(...arguments), this.renderOptions = {
       host: this
     }, this._$Do = void 0
   }
   createRenderRoot() {
-    let e = super.createRenderRoot();
-    return this.renderOptions.renderBefore ??= e.firstChild, e
+    let litRenderRoot = super.createRenderRoot();
+    return this.renderOptions.renderBefore ??= litRenderRoot.firstChild, litRenderRoot
   }
-  update(e) {
-    let o = this.render();
+  update(changedProperties) {
+    let renderResult = this.render();
     this.hasUpdated || (this.renderOptions.isConnected = this.isConnected),
-      super.update(e), this._$Do = Tr(o, this.renderRoot, this
+      super.update(changedProperties), this._$Do = renderTemplate(renderResult, this.renderRoot, this
         .renderOptions)
   }
   connectedCallback() {
@@ -1652,20 +1652,20 @@ var Ft = class extends Pt {
     super.disconnectedCallback(), this._$Do?.setConnected(!1)
   }
   render() {
-    return ct
+    return noChange
   }
 };
-Ft._$litElement$ = !0, Ft.finalized = !0, globalThis.litElementHydrateSupport?.
+LitElement._$litElement$ = !0, LitElement.finalized = !0, globalThis.litElementHydrateSupport?.
 ({
-  LitElement: Ft
+  LitElement: LitElement
 });
-var Vs = globalThis.litElementPolyfillSupport;
-Vs?.({
-  LitElement: Ft
+var litElementPolyfillSupport = globalThis.litElementPolyfillSupport;
+litElementPolyfillSupport?.({
+  LitElement: LitElement
 });
 (globalThis.litElementVersions ??= [])
 .push("4.0.4");
-var C = A`
+var componentBaseStyles = cssTag`
   :host {
     box-sizing: border-box;
   }
@@ -1680,8 +1680,8 @@ var C = A`
     display: none !important;
   }
 `;
-var Or = A`
-  ${C}
+var formControlHostStyles = cssTag`
+  ${componentBaseStyles}
 
   :host {
     --track-width: 2px;
@@ -1740,101 +1740,101 @@ var Or = A`
     }
   }
 `;
-var zo = new Set,
-  Is = new MutationObserver(Pr),
-  ue = new Map,
-  zr = document.documentElement.dir || "ltr",
-  Mr = document.documentElement.lang || navigator.language,
-  Yt;
-Is.observe(document.documentElement, {
+var connectedLocalizeElements = new Set,
+  localeMutationObserver = new MutationObserver(updateLocalizedElements),
+  translationsMap = new Map,
+  documentDirection = document.documentElement.dir || "ltr",
+  documentLanguage = document.documentElement.lang || navigator.language,
+  fallbackTranslation;
+localeMutationObserver.observe(document.documentElement, {
   attributes: !0,
   attributeFilter: ["dir", "lang"]
 });
 
-function Te(...t) {
-  t.map(e => {
-    let o = e.$code.toLowerCase();
-    ue.has(o) ? ue.set(o, Object.assign(Object.assign({}, ue.get(o)), e)) :
-      ue.set(o, e), Yt || (Yt = e)
-  }), Pr()
+function registerTranslation(...translationsToRegister) {
+  translationsToRegister.map(translationEntry => {
+    let languageCode = translationEntry.$code.toLowerCase();
+    translationsMap.has(languageCode) ? translationsMap.set(languageCode, Object.assign(Object.assign({}, translationsMap.get(languageCode)), translationEntry)) :
+      translationsMap.set(languageCode, translationEntry), fallbackTranslation || (fallbackTranslation = translationEntry)
+  }), updateLocalizedElements()
 }
 
-function Pr() {
-  zr = document.documentElement.dir || "ltr", Mr = document.documentElement
-    .lang || navigator.language, [...zo.keys()].map(t => {
-      typeof t.requestUpdate == "function" && t.requestUpdate()
+function updateLocalizedElements() {
+  documentDirection = document.documentElement.dir || "ltr", documentLanguage = document.documentElement
+    .lang || navigator.language, [...connectedLocalizeElements.keys()].map(localizedElement => {
+      typeof localizedElement.requestUpdate == "function" && localizedElement.requestUpdate()
     })
 }
-var ao = class {
-  constructor(e) {
-    this.host = e, this.host.addController(this)
+var LocalizeControllerBase = class {
+  constructor(hostElement) {
+    this.host = hostElement, this.host.addController(this)
   }
   hostConnected() {
-    zo.add(this.host)
+    connectedLocalizeElements.add(this.host)
   }
   hostDisconnected() {
-    zo.delete(this.host)
+    connectedLocalizeElements.delete(this.host)
   }
   dir() {
-    return `${this.host.dir||zr}`.toLowerCase()
+    return `${this.host.dir||documentDirection}`.toLowerCase()
   }
   lang() {
-    return `${this.host.lang||Mr}`.toLowerCase()
+    return `${this.host.lang||documentLanguage}`.toLowerCase()
   }
-  getTranslationData(e) {
-    var o, r;
-    let i = new Intl.Locale(e.replace(/_/g, "-")),
-      s = i?.language.toLowerCase(),
-      a = (r = (o = i?.region) === null || o === void 0 ? void 0 : o
-        .toLowerCase()) !== null && r !== void 0 ? r : "",
-      u = ue.get(`${s}-${a}`),
-      c = ue.get(s);
+  getTranslationData(localeString) {
+    var regionRaw, regionResolved;
+    let localeObject = new Intl.Locale(localeString.replace(/_/g, "-")),
+      languageSubtag = localeObject?.language.toLowerCase(),
+      regionSubtag = (regionResolved = (regionRaw = localeObject?.region) === null || regionRaw === void 0 ? void 0 : regionRaw
+        .toLowerCase()) !== null && regionResolved !== void 0 ? regionResolved : "",
+      regionTranslation = translationsMap.get(`${languageSubtag}-${regionSubtag}`),
+      languageTranslation = translationsMap.get(languageSubtag);
     return {
-      locale: i,
-      language: s,
-      region: a,
-      primary: u,
-      secondary: c
+      locale: localeObject,
+      language: languageSubtag,
+      region: regionSubtag,
+      primary: regionTranslation,
+      secondary: languageTranslation
     }
   }
-  exists(e, o) {
-    var r;
+  exists(translationKey, existsOptions) {
+    var translationEntryRef;
     let {
-      primary: i,
-      secondary: s
-    } = this.getTranslationData((r = o.lang) !== null && r !== void 0 ? r :
+      primary: primaryTranslation,
+      secondary: secondaryTranslation
+    } = this.getTranslationData((translationEntryRef = existsOptions.lang) !== null && translationEntryRef !== void 0 ? translationEntryRef :
       this.lang());
-    return o = Object.assign({
+    return existsOptions = Object.assign({
       includeFallback: !1
-    }, o), !!(i && i[e] || s && s[e] || o.includeFallback && Yt && Yt[e])
+    }, existsOptions), !!(primaryTranslation && primaryTranslation[translationKey] || secondaryTranslation && secondaryTranslation[translationKey] || existsOptions.includeFallback && fallbackTranslation && fallbackTranslation[translationKey])
   }
-  term(e, ...o) {
+  term(translationKey, ...termArgs) {
     let {
-      primary: r,
-      secondary: i
-    } = this.getTranslationData(this.lang()), s;
-    if (r && r[e]) s = r[e];
-    else if (i && i[e]) s = i[e];
-    else if (Yt && Yt[e]) s = Yt[e];
-    else return console.error(`No translation found for: ${String(e)}`),
-      String(e);
-    return typeof s == "function" ? s(...o) : s
+      primary: primaryTranslation,
+      secondary: secondaryTranslation
+    } = this.getTranslationData(this.lang()), resolvedTerm;
+    if (primaryTranslation && primaryTranslation[translationKey]) resolvedTerm = primaryTranslation[translationKey];
+    else if (secondaryTranslation && secondaryTranslation[translationKey]) resolvedTerm = secondaryTranslation[translationKey];
+    else if (fallbackTranslation && fallbackTranslation[translationKey]) resolvedTerm = fallbackTranslation[translationKey];
+    else return console.error(`No translation found for: ${String(translationKey)}`),
+      String(translationKey);
+    return typeof resolvedTerm == "function" ? resolvedTerm(...termArgs) : resolvedTerm
   }
-  date(e, o) {
-    return e = new Date(e), new Intl.DateTimeFormat(this.lang(), o)
-      .format(e)
+  date(dateValue, dateFormatOptions) {
+    return dateValue = new Date(dateValue), new Intl.DateTimeFormat(this.lang(), dateFormatOptions)
+      .format(dateValue)
   }
-  number(e, o) {
-    return e = Number(e), isNaN(e) ? "" : new Intl.NumberFormat(this.lang(),
-        o)
-      .format(e)
+  number(numberValue, numberFormatOptions) {
+    return numberValue = Number(numberValue), isNaN(numberValue) ? "" : new Intl.NumberFormat(this.lang(),
+        numberFormatOptions)
+      .format(numberValue)
   }
-  relativeTime(e, o, r) {
-    return new Intl.RelativeTimeFormat(this.lang(), r)
-      .format(e, o)
+  relativeTime(relativeValue, relativeUnit, relativeFormatOptions) {
+    return new Intl.RelativeTimeFormat(this.lang(), relativeFormatOptions)
+      .format(relativeValue, relativeUnit)
   }
 };
-var Lr = {
+var englishTranslation = {
   $code: "en",
   $name: "English",
   $dir: "ltr",
@@ -1845,12 +1845,12 @@ var Lr = {
   copy: "Copy",
   currentValue: "Current value",
   error: "Error",
-  goToSlide: (t, e) => `Go to slide ${t} of ${e}`,
+  goToSlide: (slideNumber, totalSlides) => `Go to slide ${slideNumber} of ${totalSlides}`,
   hidePassword: "Hide password",
   loading: "Loading",
   nextSlide: "Next slide",
-  numOptionsSelected: t => t === 0 ? "No options selected" : t === 1 ?
-    "1 option selected" : `${t} options selected`,
+  numOptionsSelected: selectedOptionCount => selectedOptionCount === 0 ? "No options selected" : selectedOptionCount === 1 ?
+    "1 option selected" : `${selectedOptionCount} options selected`,
   previousSlide: "Previous slide",
   progress: "Progress",
   remove: "Remove",
@@ -1859,199 +1859,199 @@ var Lr = {
   scrollToStart: "Scroll to start",
   selectAColorFromTheScreen: "Select a color from the screen",
   showPassword: "Show password",
-  slideNum: t => `Slide ${t}`,
+  slideNum: slideNumber => `Slide ${slideNumber}`,
   toggleColorFormat: "Toggle color format"
 };
-Te(Lr);
-var Rr = Lr;
-var H = class extends ao {};
-Te(Rr);
-var Ir = Object.defineProperty,
-  Bs = Object.defineProperties,
-  Ns = Object.getOwnPropertyDescriptor,
-  Fs = Object.getOwnPropertyDescriptors,
-  Dr = Object.getOwnPropertySymbols,
-  Hs = Object.prototype.hasOwnProperty,
-  Us = Object.prototype.propertyIsEnumerable,
-  Mo = (t, e) => (e = Symbol[t]) ? e : Symbol.for("Symbol." + t),
-  Vr = (t, e, o) => e in t ? Ir(t, e, {
+registerTranslation(englishTranslation);
+var registeredEnglishTranslation = englishTranslation;
+var LocalizeController = class extends LocalizeControllerBase {};
+registerTranslation(registeredEnglishTranslation);
+var definePropertyEsb = Object.defineProperty,
+  defineProperties = Object.defineProperties,
+  getOwnPropDescEsb = Object.getOwnPropertyDescriptor,
+  getOwnPropDescriptors = Object.getOwnPropertyDescriptors,
+  getOwnPropSymbolsEsb = Object.getOwnPropertySymbols,
+  hasOwnPropertyEsb = Object.prototype.hasOwnProperty,
+  propertyIsEnumerableEsb = Object.prototype.propertyIsEnumerable,
+  wellKnownSymbol = (symbolName, symbolValue) => (symbolValue = Symbol[symbolName]) ? symbolValue : Symbol.for("Symbol." + symbolName),
+  assignProperty = (assignTarget, assignKey, assignValue) => assignKey in assignTarget ? definePropertyEsb(assignTarget, assignKey, {
     enumerable: !0,
     configurable: !0,
     writable: !0,
-    value: o
-  }) : t[e] = o,
-  pt = (t, e) => {
-    for (var o in e || (e = {})) Hs.call(e, o) && Vr(t, o, e[o]);
-    if (Dr)
-      for (var o of Dr(e)) Us.call(e, o) && Vr(t, o, e[o]);
-    return t
+    value: assignValue
+  }) : assignTarget[assignKey] = assignValue,
+  applySpread = (spreadTarget, spreadSource) => {
+    for (var spreadKey in spreadSource || (spreadSource = {})) hasOwnPropertyEsb.call(spreadSource, spreadKey) && assignProperty(spreadTarget, spreadKey, spreadSource[spreadKey]);
+    if (getOwnPropSymbolsEsb)
+      for (var spreadKey of getOwnPropSymbolsEsb(spreadSource)) propertyIsEnumerableEsb.call(spreadSource, spreadKey) && assignProperty(spreadTarget, spreadKey, spreadSource[spreadKey]);
+    return spreadTarget
   },
-  Rt = (t, e) => Bs(t, Fs(e)),
-  n = (t, e, o, r) => {
-    for (var i = r > 1 ? void 0 : r ? Ns(e, o) : e, s = t.length - 1, a; s >=
-      0; s--)(a = t[s]) && (i = (r ? a(e, o, i) : a(i)) || i);
-    return r && i && Ir(e, o, i), i
+  copyPropDescriptors = (descTarget, descSource) => defineProperties(descTarget, getOwnPropDescriptors(descSource)),
+  decorateClass = (decoratorList, decoratorTarget, decoratorKey, decoratorKind) => {
+    for (var decoratorDescriptor = decoratorKind > 1 ? void 0 : decoratorKind ? getOwnPropDescEsb(decoratorTarget, decoratorKey) : decoratorTarget, decoratorIndex = decoratorList.length - 1, decoratorFn; decoratorIndex >=
+      0; decoratorIndex--)(decoratorFn = decoratorList[decoratorIndex]) && (decoratorDescriptor = (decoratorKind ? decoratorFn(decoratorTarget, decoratorKey, decoratorDescriptor) : decoratorFn(decoratorDescriptor)) || decoratorDescriptor);
+    return decoratorKind && decoratorDescriptor && definePropertyEsb(decoratorTarget, decoratorKey, decoratorDescriptor), decoratorDescriptor
   },
-  js = function(t, e) {
-    this[0] = t, this[1] = e
+  asyncAwaitWrap = function(awaitedValue, isYield) {
+    this[0] = awaitedValue, this[1] = isYield
   },
-  Br = t => {
-    var e = t[Mo("asyncIterator")],
-      o = !1,
-      r, i = {};
-    return e == null ? (e = t[Mo("iterator")](), r = s => i[s] = a => e[s](a)) :
-      (e = e.call(t), r = s => i[s] = a => {
-        if (o) {
-          if (o = !1, s === "throw") throw a;
-          return a
+  forAwaitHelper = asyncIterable => {
+    var iteratorFn = asyncIterable[wellKnownSymbol("asyncIterator")],
+      usingSyncIterator = !1,
+      makeIteratorMethod, wrappedIterator = {};
+    return iteratorFn == null ? (iteratorFn = asyncIterable[wellKnownSymbol("iterator")](), makeIteratorMethod = iteratorMethodName => wrappedIterator[iteratorMethodName] = iteratorMethodArg => iteratorFn[iteratorMethodName](iteratorMethodArg)) :
+      (iteratorFn = iteratorFn.call(asyncIterable), makeIteratorMethod = asyncMethodName => wrappedIterator[asyncMethodName] = asyncMethodArg => {
+        if (usingSyncIterator) {
+          if (usingSyncIterator = !1, asyncMethodName === "throw") throw asyncMethodArg;
+          return asyncMethodArg
         }
-        return o = !0, {
+        return usingSyncIterator = !0, {
           done: !1,
-          value: new js(new Promise(u => {
-            var c = e[s](a);
-            if (!(c instanceof Object)) throw TypeError(
+          value: new asyncAwaitWrap(new Promise(resolveSettled => {
+            var iterationResult = iteratorFn[asyncMethodName](asyncMethodArg);
+            if (!(iterationResult instanceof Object)) throw TypeError(
               "Object expected");
-            u(c)
+            resolveSettled(iterationResult)
           }), 1)
         }
-      }), i[Mo("iterator")] = () => i, r("next"), "throw" in e ? r("throw") : i
-      .throw = s => {
-        throw s
-      }, "return" in e && r("return"), i
+      }), wrappedIterator[wellKnownSymbol("iterator")] = () => wrappedIterator, makeIteratorMethod("next"), "throw" in iteratorFn ? makeIteratorMethod("throw") : wrappedIterator
+      .throw = throwValue => {
+        throw throwValue
+      }, "return" in iteratorFn && makeIteratorMethod("return"), wrappedIterator
   };
-var qs = {
+var standardPropertyOptions = {
     attribute: !0,
     type: String,
-    converter: Nt,
+    converter: defaultConverter,
     reflect: !1,
-    hasChanged: to
+    hasChanged: valueHasChanged
   },
-  Ws = (t = qs, e, o) => {
+  makePropertyDecorator = (propertyOptions = standardPropertyOptions, decoratedMember, decoratorContext) => {
     let {
-      kind: r,
-      metadata: i
-    } = o, s = globalThis.litPropertyMetadata.get(i);
-    if (s === void 0 && globalThis.litPropertyMetadata.set(i, s = new Map), s
-      .set(o.name, t), r === "accessor") {
+      kind: decoratorKind,
+      metadata: decoratorMetadata
+    } = decoratorContext, metadataProperties = globalThis.litPropertyMetadata.get(decoratorMetadata);
+    if (metadataProperties === void 0 && globalThis.litPropertyMetadata.set(decoratorMetadata, metadataProperties = new Map), metadataProperties
+      .set(decoratorContext.name, propertyOptions), decoratorKind === "accessor") {
       let {
-        name: a
-      } = o;
+        name: propertyName
+      } = decoratorContext;
       return {
-        set(u) {
-          let c = e.get.call(this);
-          e.set.call(this, u), this.requestUpdate(a, c, t)
+        set(newAccessorValue) {
+          let oldAccessorValue = decoratedMember.get.call(this);
+          decoratedMember.set.call(this, newAccessorValue), this.requestUpdate(propertyName, oldAccessorValue, propertyOptions)
         },
-        init(u) {
-          return u !== void 0 && this.P(a, void 0, t), u
+        init(initialFieldValue) {
+          return initialFieldValue !== void 0 && this.P(propertyName, void 0, propertyOptions), initialFieldValue
         }
       }
     }
-    if (r === "setter") {
+    if (decoratorKind === "setter") {
       let {
-        name: a
-      } = o;
-      return function(u) {
-        let c = this[a];
-        e.call(this, u), this.requestUpdate(a, c, t)
+        name: setterPropName
+      } = decoratorContext;
+      return function(newSetterValue) {
+        let oldSetterValue = this[setterPropName];
+        decoratedMember.call(this, newSetterValue), this.requestUpdate(setterPropName, oldSetterValue, propertyOptions)
       }
     }
-    throw Error("Unsupported decorator location: " + r)
+    throw Error("Unsupported decorator location: " + decoratorKind)
   };
 
-function l(t) {
-  return (e, o) => typeof o == "object" ? Ws(t, e, o) : ((r, i, s) => {
-    let a = i.hasOwnProperty(s);
-    return i.constructor.createProperty(s, a ? {
-      ...r,
+function property(propertyDeclaration) {
+  return (decoratorTargetOrProto, decoratorContextOrKey) => typeof decoratorContextOrKey == "object" ? makePropertyDecorator(propertyDeclaration, decoratorTargetOrProto, decoratorContextOrKey) : ((legacyProto, legacyPropKey, legacyDescriptor) => {
+    let alreadyHasDescriptor = legacyPropKey.hasOwnProperty(legacyDescriptor);
+    return legacyPropKey.constructor.createProperty(legacyDescriptor, alreadyHasDescriptor ? {
+      ...legacyProto,
       wrapped: !0
-    } : r), a ? Object.getOwnPropertyDescriptor(i, s) : void 0
-  })(t, e, o)
+    } : legacyProto), alreadyHasDescriptor ? Object.getOwnPropertyDescriptor(legacyPropKey, legacyDescriptor) : void 0
+  })(propertyDeclaration, decoratorTargetOrProto, decoratorContextOrKey)
 }
 
-function Z(t) {
-  return l({
-    ...t,
+function stateDecorator(stateOptions) {
+  return property({
+    ...stateOptions,
     state: !0,
     attribute: !1
   })
 }
-var Xt = (t, e, o) => (o.configurable = !0, o.enumerable = !0, Reflect
-  .decorate && typeof e != "object" && Object.defineProperty(t, e, o), o);
+var defineReactiveDescriptor = (descTargetProto, descPropName, descObject) => (descObject.configurable = !0, descObject.enumerable = !0, Reflect
+  .decorate && typeof descPropName != "object" && Object.defineProperty(descTargetProto, descPropName, descObject), descObject);
 
-function k(t, e) {
-  return (o, r, i) => {
-    let s = a => a.renderRoot?.querySelector(t) ?? null;
-    if (e) {
+function queryDecorator(querySelectorString, cacheQueryResult) {
+  return (queryTargetProto, queryPropKey, queryDescriptor) => {
+    let queryGetter = queryHostElement => queryHostElement.renderRoot?.querySelector(querySelectorString) ?? null;
+    if (cacheQueryResult) {
       let {
-        get: a,
-        set: u
-      } = typeof r == "object" ? o : i ?? (() => {
-        let c = Symbol();
+        get: queryGetterFn,
+        set: querySetterFn
+      } = typeof queryPropKey == "object" ? queryTargetProto : queryDescriptor ?? (() => {
+        let cachedResultSymbol = Symbol();
         return {
           get() {
-            return this[c]
+            return this[cachedResultSymbol]
           },
-          set(d) {
-            this[c] = d
+          set(queryCacheValue) {
+            this[cachedResultSymbol] = queryCacheValue
           }
         }
       })();
-      return Xt(o, r, {
+      return defineReactiveDescriptor(queryTargetProto, queryPropKey, {
         get() {
-          let c = a.call(this);
-          return c === void 0 && (c = s(this), (c !== null || this
-            .hasUpdated) && u.call(this, c)), c
+          let queryResult = queryGetterFn.call(this);
+          return queryResult === void 0 && (queryResult = queryGetter(this), (queryResult !== null || this
+            .hasUpdated) && querySetterFn.call(this, queryResult)), queryResult
         }
       })
     }
-    return Xt(o, r, {
+    return defineReactiveDescriptor(queryTargetProto, queryPropKey, {
       get() {
-        return s(this)
+        return queryGetter(this)
       }
     })
   }
 }
-var w = class extends Ft {
+var ShoelaceElement = class extends LitElement {
   constructor() {
     super(), Object.entries(this.constructor.dependencies)
-      .forEach(([t, e]) => {
-        this.constructor.define(t, e)
+      .forEach(([entryKey, entryValue]) => {
+        this.constructor.define(entryKey, entryValue)
       })
   }
-  emit(t, e) {
-    let o = new CustomEvent(t, pt({
+  emit(eventName, eventOptions) {
+    let customEvent = new CustomEvent(eventName, applySpread({
       bubbles: !0,
       cancelable: !1,
       composed: !0,
       detail: {}
-    }, e));
-    return this.dispatchEvent(o), o
+    }, eventOptions));
+    return this.dispatchEvent(customEvent), customEvent
   }
-  static define(t, e = this, o = {}) {
-    let r = customElements.get(t);
-    if (!r) {
-      customElements.define(t, class extends e {}, o);
+  static define(tagName, elementClass = this, defineOptions = {}) {
+    let existingRegistration = customElements.get(tagName);
+    if (!existingRegistration) {
+      customElements.define(tagName, class extends elementClass {}, defineOptions);
       return
     }
-    let i = " (unknown version)",
-      s = i;
-    "version" in e && e.version && (i = " v" + e.version), "version" in r &&
-      r.version && (s = " v" + r.version), !(i && s && i === s) && console
+    let versionSuffix = " (unknown version)",
+      conflictVersionInfo = versionSuffix;
+    "version" in elementClass && elementClass.version && (versionSuffix = " v" + elementClass.version), "version" in existingRegistration &&
+      existingRegistration.version && (conflictVersionInfo = " v" + existingRegistration.version), !(versionSuffix && conflictVersionInfo && versionSuffix === conflictVersionInfo) && console
       .warn(
-        `Attempted to register <${t}>${i}, but <${t}>${s} has already been registered.`
+        `Attempted to register <${tagName}>${versionSuffix}, but <${tagName}>${conflictVersionInfo} has already been registered.`
         )
   }
 };
-w.version = "2.13.1";
-w.dependencies = {};
-n([l()], w.prototype, "dir", 2);
-n([l()], w.prototype, "lang", 2);
-var Zt = class extends w {
+ShoelaceElement.version = "2.13.1";
+ShoelaceElement.dependencies = {};
+decorateClass([property()], ShoelaceElement.prototype, "dir", 2);
+decorateClass([property()], ShoelaceElement.prototype, "lang", 2);
+var SpinnerElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.localize = new H(this)
+    super(...arguments), this.localize = new LocalizeController(this)
   }
   render() {
-    return y`
+    return htmlTag`
       <svg part="base" class="spinner" role="progressbar" aria-label=${this.localize.term("loading")}>
         <circle class="spinner__track"></circle>
         <circle class="spinner__indicator"></circle>
@@ -2059,179 +2059,179 @@ var Zt = class extends w {
     `
   }
 };
-Zt.styles = Or;
-var Oe = new WeakMap,
-  ze = new WeakMap,
-  Me = new WeakMap,
-  Po = new WeakSet,
-  lo = new WeakMap,
-  Tt = class {
-    constructor(t, e) {
-      this.handleFormData = o => {
-          let r = this.options.disabled(this.host),
-            i = this.options.name(this.host),
-            s = this.options.value(this.host),
-            a = this.host.tagName.toLowerCase() === "sl-button";
-          this.host.isConnected && !r && !a && typeof i == "string" && i
-            .length > 0 && typeof s < "u" && (Array.isArray(s) ? s.forEach(
-              u => {
-                o.formData.append(i, u.toString())
-              }) : o.formData.append(i, s.toString()))
-        }, this.handleFormSubmit = o => {
-          var r;
-          let i = this.options.disabled(this.host),
-            s = this.options.reportValidity;
-          this.form && !this.form.noValidate && ((r = Oe.get(this.form)) ==
-              null || r.forEach(a => {
-                this.setUserInteracted(a, !0)
-              })), this.form && !this.form.noValidate && !i && !s(this
-            .host) && (o.preventDefault(), o.stopImmediatePropagation())
+SpinnerElement.styles = formControlHostStyles;
+var formCollectionsMap = new WeakMap,
+  reportValidityOverrides = new WeakMap,
+  checkValidityOverrides = new WeakMap,
+  userInteractedElements = new WeakSet,
+  interactionTrackers = new WeakMap,
+  FormControlController = class {
+    constructor(hostElement, controllerOptions) {
+      this.handleFormData = formDataEvent => {
+          let isDisabled = this.options.disabled(this.host),
+            fieldName = this.options.name(this.host),
+            fieldValue = this.options.value(this.host),
+            isButtonElement = this.host.tagName.toLowerCase() === "sl-button";
+          this.host.isConnected && !isDisabled && !isButtonElement && typeof fieldName == "string" && fieldName
+            .length > 0 && typeof fieldValue < "u" && (Array.isArray(fieldValue) ? fieldValue.forEach(
+              valueEntry => {
+                formDataEvent.formData.append(fieldName, valueEntry.toString())
+              }) : formDataEvent.formData.append(fieldName, fieldValue.toString()))
+        }, this.handleFormSubmit = submitEvent => {
+          var formControlList;
+          let isDisabledOnSubmit = this.options.disabled(this.host),
+            reportValidityFn = this.options.reportValidity;
+          this.form && !this.form.noValidate && ((formControlList = formCollectionsMap.get(this.form)) ==
+              null || formControlList.forEach(formControlItem => {
+                this.setUserInteracted(formControlItem, !0)
+              })), this.form && !this.form.noValidate && !isDisabledOnSubmit && !reportValidityFn(this
+            .host) && (submitEvent.preventDefault(), submitEvent.stopImmediatePropagation())
         }, this.handleFormReset = () => {
           this.options.setValue(this.host, this.options.defaultValue(this
-            .host)), this.setUserInteracted(this.host, !1), lo.set(this
+            .host)), this.setUserInteracted(this.host, !1), interactionTrackers.set(this
             .host, [])
-        }, this.handleInteraction = o => {
-          let r = lo.get(this.host);
-          r.includes(o.type) || r.push(o.type), r.length === this.options
+        }, this.handleInteraction = interactionEvent => {
+          let interactionState = interactionTrackers.get(this.host);
+          interactionState.includes(interactionEvent.type) || interactionState.push(interactionEvent.type), interactionState.length === this.options
             .assumeInteractionOn.length && this.setUserInteracted(this.host, !
               0)
         }, this.checkFormValidity = () => {
           if (this.form && !this.form.noValidate) {
-            let o = this.form.querySelectorAll("*");
-            for (let r of o)
-              if (typeof r.checkValidity == "function" && !r.checkValidity())
+            let formElements = this.form.querySelectorAll("*");
+            for (let formElementItem of formElements)
+              if (typeof formElementItem.checkValidity == "function" && !formElementItem.checkValidity())
                 return !1
           }
           return !0
         }, this.reportFormValidity = () => {
           if (this.form && !this.form.noValidate) {
-            let o = this.form.querySelectorAll("*");
-            for (let r of o)
-              if (typeof r.reportValidity == "function" && !r
+            let formElements = this.form.querySelectorAll("*");
+            for (let formElementItem of formElements)
+              if (typeof formElementItem.reportValidity == "function" && !formElementItem
               .reportValidity()) return !1
           }
           return !0
-        }, (this.host = t)
-        .addController(this), this.options = pt({
-          form: o => {
-            let r = o.form;
-            if (r) {
-              let s = o.getRootNode()
-                .getElementById(r);
-              if (s) return s
+        }, (this.host = hostElement)
+        .addController(this), this.options = applySpread({
+          form: controlElement => {
+            let formIdAttribute = controlElement.form;
+            if (formIdAttribute) {
+              let controlRootNode = controlElement.getRootNode()
+                .getElementById(formIdAttribute);
+              if (controlRootNode) return controlRootNode
             }
-            return o.closest("form")
+            return controlElement.closest("form")
           },
-          name: o => o.name,
-          value: o => o.value,
-          defaultValue: o => o.defaultValue,
-          disabled: o => {
-            var r;
-            return (r = o.disabled) != null ? r : !1
+          name: controlElement => controlElement.name,
+          value: controlElement => controlElement.value,
+          defaultValue: controlElement => controlElement.defaultValue,
+          disabled: controlElement => {
+            var disabledLookup;
+            return (disabledLookup = controlElement.disabled) != null ? disabledLookup : !1
           },
-          reportValidity: o => typeof o.reportValidity == "function" ? o
+          reportValidity: controlElement => typeof controlElement.reportValidity == "function" ? controlElement
             .reportValidity() : !0,
-          checkValidity: o => typeof o.checkValidity == "function" ? o
+          checkValidity: controlElement => typeof controlElement.checkValidity == "function" ? controlElement
             .checkValidity() : !0,
-          setValue: (o, r) => o.value = r,
+          setValue: (controlElement, newControlValue) => controlElement.value = newControlValue,
           assumeInteractionOn: ["sl-input"]
-        }, e)
+        }, controllerOptions)
     }
     hostConnected() {
-      let t = this.options.form(this.host);
-      t && this.attachForm(t), lo.set(this.host, []), this.options
-        .assumeInteractionOn.forEach(e => {
-          this.host.addEventListener(e, this.handleInteraction)
+      let attachedForm = this.options.form(this.host);
+      attachedForm && this.attachForm(attachedForm), interactionTrackers.set(this.host, []), this.options
+        .assumeInteractionOn.forEach(interactionEventName => {
+          this.host.addEventListener(interactionEventName, this.handleInteraction)
         })
     }
     hostDisconnected() {
-      this.detachForm(), lo.delete(this.host), this.options
-        .assumeInteractionOn.forEach(t => {
-          this.host.removeEventListener(t, this.handleInteraction)
+      this.detachForm(), interactionTrackers.delete(this.host), this.options
+        .assumeInteractionOn.forEach(interactionEventName => {
+          this.host.removeEventListener(interactionEventName, this.handleInteraction)
         })
     }
     hostUpdated() {
-      let t = this.options.form(this.host);
-      t || this.detachForm(), t && this.form !== t && (this.detachForm(), this
-        .attachForm(t)), this.host.hasUpdated && this.setValidity(this.host
+      let attachedForm = this.options.form(this.host);
+      attachedForm || this.detachForm(), attachedForm && this.form !== attachedForm && (this.detachForm(), this
+        .attachForm(attachedForm)), this.host.hasUpdated && this.setValidity(this.host
         .validity.valid)
     }
-    attachForm(t) {
-      t ? (this.form = t, Oe.has(this.form) ? Oe.get(this.form)
-          .add(this.host) : Oe.set(this.form, new Set([this.host])), this.form
+    attachForm(formToAttach) {
+      formToAttach ? (this.form = formToAttach, formCollectionsMap.has(this.form) ? formCollectionsMap.get(this.form)
+          .add(this.host) : formCollectionsMap.set(this.form, new Set([this.host])), this.form
           .addEventListener("formdata", this.handleFormData), this.form
           .addEventListener("submit", this.handleFormSubmit), this.form
-          .addEventListener("reset", this.handleFormReset), ze.has(this
-          .form) || (ze.set(this.form, this.form.reportValidity), this.form
-            .reportValidity = () => this.reportFormValidity()), Me.has(this
-            .form) || (Me.set(this.form, this.form.checkValidity), this.form
+          .addEventListener("reset", this.handleFormReset), reportValidityOverrides.has(this
+          .form) || (reportValidityOverrides.set(this.form, this.form.reportValidity), this.form
+            .reportValidity = () => this.reportFormValidity()), checkValidityOverrides.has(this
+            .form) || (checkValidityOverrides.set(this.form, this.form.checkValidity), this.form
             .checkValidity = () => this.checkFormValidity())) : this.form =
         void 0
     }
     detachForm() {
       if (!this.form) return;
-      let t = Oe.get(this.form);
-      t && (t.delete(this.host), t.size <= 0 && (this.form
+      let formControlsSet = formCollectionsMap.get(this.form);
+      formControlsSet && (formControlsSet.delete(this.host), formControlsSet.size <= 0 && (this.form
         .removeEventListener("formdata", this.handleFormData), this.form
         .removeEventListener("submit", this.handleFormSubmit), this.form
-        .removeEventListener("reset", this.handleFormReset), ze.has(this
-          .form) && (this.form.reportValidity = ze.get(this.form), ze
-          .delete(this.form)), Me.has(this.form) && (this.form
-          .checkValidity = Me.get(this.form), Me.delete(this.form)), this
+        .removeEventListener("reset", this.handleFormReset), reportValidityOverrides.has(this
+          .form) && (this.form.reportValidity = reportValidityOverrides.get(this.form), reportValidityOverrides
+          .delete(this.form)), checkValidityOverrides.has(this.form) && (this.form
+          .checkValidity = checkValidityOverrides.get(this.form), checkValidityOverrides.delete(this.form)), this
         .form = void 0))
     }
-    setUserInteracted(t, e) {
-      e ? Po.add(t) : Po.delete(t), t.requestUpdate()
+    setUserInteracted(controlElement, interactedFlag) {
+      interactedFlag ? userInteractedElements.add(controlElement) : userInteractedElements.delete(controlElement), controlElement.requestUpdate()
     }
-    doAction(t, e) {
+    doAction(formAction, submitterElement) {
       if (this.form) {
-        let o = document.createElement("button");
-        o.type = t, o.style.position = "absolute", o.style.width = "0", o
-          .style.height = "0", o.style.clipPath = "inset(50%)", o.style
-          .overflow = "hidden", o.style.whiteSpace = "nowrap", e && (o.name =
-            e.name, o.value = e.value, ["formaction", "formenctype",
+        let hiddenSubmitButton = document.createElement("button");
+        hiddenSubmitButton.type = formAction, hiddenSubmitButton.style.position = "absolute", hiddenSubmitButton.style.width = "0", hiddenSubmitButton
+          .style.height = "0", hiddenSubmitButton.style.clipPath = "inset(50%)", hiddenSubmitButton.style
+          .overflow = "hidden", hiddenSubmitButton.style.whiteSpace = "nowrap", submitterElement && (hiddenSubmitButton.name =
+            submitterElement.name, hiddenSubmitButton.value = submitterElement.value, ["formaction", "formenctype",
               "formmethod", "formnovalidate", "formtarget"
-            ].forEach(r => {
-              e.hasAttribute(r) && o.setAttribute(r, e.getAttribute(r))
-            })), this.form.append(o), o.click(), o.remove()
+            ].forEach(attributePair => {
+              submitterElement.hasAttribute(attributePair) && hiddenSubmitButton.setAttribute(attributePair, submitterElement.getAttribute(attributePair))
+            })), this.form.append(hiddenSubmitButton), hiddenSubmitButton.click(), hiddenSubmitButton.remove()
       }
     }
     getForm() {
-      var t;
-      return (t = this.form) != null ? t : null
+      var clonedSubmitButton;
+      return (clonedSubmitButton = this.form) != null ? clonedSubmitButton : null
     }
-    reset(t) {
-      this.doAction("reset", t)
+    reset(resetSubmitter) {
+      this.doAction("reset", resetSubmitter)
     }
-    submit(t) {
-      this.doAction("submit", t)
+    submit(submitSubmitter) {
+      this.doAction("submit", submitSubmitter)
     }
-    setValidity(t) {
-      let e = this.host,
-        o = !!Po.has(e),
-        r = !!e.required;
-      e.toggleAttribute("data-required", r), e.toggleAttribute(
-          "data-optional", !r), e.toggleAttribute("data-invalid", !t), e
-        .toggleAttribute("data-valid", t), e.toggleAttribute(
-          "data-user-invalid", !t && o), e.toggleAttribute("data-user-valid",
-          t && o)
+    setValidity(isValid) {
+      let hostElement = this.host,
+        hasInteracted = !!userInteractedElements.has(hostElement),
+        isRequired = !!hostElement.required;
+      hostElement.toggleAttribute("data-required", isRequired), hostElement.toggleAttribute(
+          "data-optional", !isRequired), hostElement.toggleAttribute("data-invalid", !isValid), hostElement
+        .toggleAttribute("data-valid", isValid), hostElement.toggleAttribute(
+          "data-user-invalid", !isValid && hasInteracted), hostElement.toggleAttribute("data-user-valid",
+          isValid && hasInteracted)
     }
     updateValidity() {
-      let t = this.host;
-      this.setValidity(t.validity.valid)
+      let hostElement = this.host;
+      this.setValidity(hostElement.validity.valid)
     }
-    emitInvalidEvent(t) {
-      let e = new CustomEvent("sl-invalid", {
+    emitInvalidEvent(sourceEvent) {
+      let invalidEvent = new CustomEvent("sl-invalid", {
         bubbles: !1,
         composed: !1,
         cancelable: !0,
         detail: {}
       });
-      t || e.preventDefault(), this.host.dispatchEvent(e) || t
+      sourceEvent || invalidEvent.preventDefault(), this.host.dispatchEvent(invalidEvent) || sourceEvent
         ?.preventDefault()
     }
   },
-  de = Object.freeze({
+  baseFormControlOptions = Object.freeze({
     badInput: !1,
     customError: !1,
     patternMismatch: !1,
@@ -2244,16 +2244,16 @@ var Oe = new WeakMap,
     valid: !0,
     valueMissing: !1
   }),
-  Nr = Object.freeze(Rt(pt({}, de), {
+  formControlOptionsVariantA = Object.freeze(copyPropDescriptors(applySpread({}, baseFormControlOptions), {
     valid: !1,
     valueMissing: !0
   })),
-  Fr = Object.freeze(Rt(pt({}, de), {
+  formControlOptionsVariantB = Object.freeze(copyPropDescriptors(applySpread({}, baseFormControlOptions), {
     valid: !1,
     customError: !0
   }));
-var co = A`
-  ${C}
+var componentStyles1 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: inline-block;
@@ -2848,32 +2848,32 @@ var co = A`
     z-index: 2;
   }
 `;
-var rt = class {
-  constructor(t, ...e) {
-    this.slotNames = [], this.handleSlotChange = o => {
-        let r = o.target;
-        (this.slotNames.includes("[default]") && !r.name || r.name && this
-          .slotNames.includes(r.name)) && this.host.requestUpdate()
-      }, (this.host = t)
-      .addController(this), this.slotNames = e
+var SlotController = class {
+  constructor(slotHostElement, ...slotNamesInit) {
+    this.slotNames = [], this.handleSlotChange = slotChangeEvent => {
+        let slotElement = slotChangeEvent.target;
+        (this.slotNames.includes("[default]") && !slotElement.name || slotElement.name && this
+          .slotNames.includes(slotElement.name)) && this.host.requestUpdate()
+      }, (this.host = slotHostElement)
+      .addController(this), this.slotNames = slotNamesInit
   }
   hasDefaultSlot() {
-    return [...this.host.childNodes].some(t => {
-      if (t.nodeType === t.TEXT_NODE && t.textContent.trim() !== "")
+    return [...this.host.childNodes].some(childNode => {
+      if (childNode.nodeType === childNode.TEXT_NODE && childNode.textContent.trim() !== "")
         return !0;
-      if (t.nodeType === t.ELEMENT_NODE) {
-        let e = t;
-        if (e.tagName.toLowerCase() === "sl-visually-hidden") return !1;
-        if (!e.hasAttribute("slot")) return !0
+      if (childNode.nodeType === childNode.ELEMENT_NODE) {
+        let nodeToCheck = childNode;
+        if (nodeToCheck.tagName.toLowerCase() === "sl-visually-hidden") return !1;
+        if (!nodeToCheck.hasAttribute("slot")) return !0
       }
       return !1
     })
   }
-  hasNamedSlot(t) {
-    return this.host.querySelector(`:scope > [slot="${t}"]`) !== null
+  hasNamedSlot(slotName) {
+    return this.host.querySelector(`:scope > [slot="${slotName}"]`) !== null
   }
-  test(t) {
-    return t === "[default]" ? this.hasDefaultSlot() : this.hasNamedSlot(t)
+  test(mutationRecords) {
+    return mutationRecords === "[default]" ? this.hasDefaultSlot() : this.hasNamedSlot(mutationRecords)
   }
   hostConnected() {
     this.host.shadowRoot.addEventListener("slotchange", this
@@ -2885,44 +2885,44 @@ var rt = class {
   }
 };
 
-function Hr(t) {
-  if (!t) return "";
-  let e = t.assignedNodes({
+function getSlotTextContent(slotElement) {
+  if (!slotElement) return "";
+  let assignedNodes = slotElement.assignedNodes({
       flatten: !0
     }),
-    o = "";
-  return [...e].forEach(r => {
-    r.nodeType === Node.TEXT_NODE && (o += r.textContent)
-  }), o
+    collectedText = "";
+  return [...assignedNodes].forEach(assignedNode => {
+    assignedNode.nodeType === Node.TEXT_NODE && (collectedText += assignedNode.textContent)
+  }), collectedText
 }
-var Lo = "";
+var shoelaceBasePath = "";
 
-function Pe(t) {
-  Lo = t
+function setBasePath(basePathValue) {
+  shoelaceBasePath = basePathValue
 }
 
-function Ro(t = "") {
-  if (!Lo) {
-    let e = [...document.getElementsByTagName("script")],
-      o = e.find(r => r.hasAttribute("data-shoelace"));
-    if (o) Pe(o.getAttribute("data-shoelace"));
+function getBasePath(subPath = "") {
+  if (!shoelaceBasePath) {
+    let scriptElements = [...document.getElementsByTagName("script")],
+      shoelaceScriptTag = scriptElements.find(scriptTag => scriptTag.hasAttribute("data-shoelace"));
+    if (shoelaceScriptTag) setBasePath(shoelaceScriptTag.getAttribute("data-shoelace"));
     else {
-      let r = e.find(s => /shoelace(\.min)?\.js($|\?)/.test(s.src) ||
-          /shoelace-autoloader(\.min)?\.js($|\?)/.test(s.src)),
-        i = "";
-      r && (i = r.getAttribute("src")), Pe(i.split("/")
+      let matchedScriptTag = scriptElements.find(candidateScriptTag => /shoelace(\.min)?\.js($|\?)/.test(candidateScriptTag.src) ||
+          /shoelace-autoloader(\.min)?\.js($|\?)/.test(candidateScriptTag.src)),
+        detectedBasePath = "";
+      matchedScriptTag && (detectedBasePath = matchedScriptTag.getAttribute("src")), setBasePath(detectedBasePath.split("/")
         .slice(0, -1)
         .join("/"))
     }
   }
-  return Lo.replace(/\/$/, "") + (t ? `/${t.replace(/^\//,"")}` : "")
+  return shoelaceBasePath.replace(/\/$/, "") + (subPath ? `/${subPath.replace(/^\//,"")}` : "")
 }
-var Ks = {
+var defaultIconLibraryConfig = {
     name: "default",
-    resolver: t => Ro(`assets/icons/${t}.svg`)
+    resolver: iconName => getBasePath(`assets/icons/${iconName}.svg`)
   },
-  Ur = Ks;
-var jr = {
+  defaultIconLibraryRef = defaultIconLibraryConfig;
+var systemIconDefinitions = {
     caret: `
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="6 9 12 15 18 9"></polyline>
@@ -3034,28 +3034,28 @@ var jr = {
     </svg>
   `
   },
-  Js = {
+  systemIconLibraryConfig = {
     name: "system",
-    resolver: t => t in jr ?
-      `data:image/svg+xml,${encodeURIComponent(jr[t])}` : ""
+    resolver: iconName => iconName in systemIconDefinitions ?
+      `data:image/svg+xml,${encodeURIComponent(systemIconDefinitions[iconName])}` : ""
   },
-  qr = Js;
-var Gs = [Ur, qr],
-  Do = [];
+  systemIconLibraryRef = systemIconLibraryConfig;
+var registeredIconLibraries = [defaultIconLibraryRef, systemIconLibraryRef],
+  iconWatchers = [];
 
-function Wr(t) {
-  Do.push(t)
+function registerIconWatcher(iconElement) {
+  iconWatchers.push(iconElement)
 }
 
-function Kr(t) {
-  Do = Do.filter(e => e !== t)
+function unregisterIconWatcher(iconElement) {
+  iconWatchers = iconWatchers.filter(watcherElement => watcherElement !== iconElement)
 }
 
-function Vo(t) {
-  return Gs.find(e => e.name === t)
+function getIconLibrary(libraryName) {
+  return registeredIconLibraries.find(iconLibrary => iconLibrary.name === libraryName)
 }
-var Jr = A`
-  ${C}
+var componentStyles2 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: inline-block;
@@ -3071,83 +3071,83 @@ var Jr = A`
   }
 `;
 
-function S(t, e) {
-  let o = pt({
+function watchDecorator(watchedPropertyNames, watchOptions) {
+  let resolvedWatchOptions = applySpread({
     waitUntilFirstUpdate: !1
-  }, e);
-  return (r, i) => {
+  }, watchOptions);
+  return (decoratorProto, decoratorPropName) => {
     let {
-      update: s
-    } = r, a = Array.isArray(t) ? t : [t];
-    r.update = function(u) {
-      a.forEach(c => {
-        let d = c;
-        if (u.has(d)) {
-          let h = u.get(d),
-            p = this[d];
-          h !== p && (!o.waitUntilFirstUpdate || this.hasUpdated) &&
-            this[i](h, p)
+      update: originalUpdateMethod
+    } = decoratorProto, watchedPropList = Array.isArray(watchedPropertyNames) ? watchedPropertyNames : [watchedPropertyNames];
+    decoratorProto.update = function(changedPropsMap) {
+      watchedPropList.forEach(watchedPropName => {
+        let propKeyToWatch = watchedPropName;
+        if (changedPropsMap.has(propKeyToWatch)) {
+          let oldWatchedValue = changedPropsMap.get(propKeyToWatch),
+            newWatchedValue = this[propKeyToWatch];
+          oldWatchedValue !== newWatchedValue && (!resolvedWatchOptions.waitUntilFirstUpdate || this.hasUpdated) &&
+            this[decoratorPropName](oldWatchedValue, newWatchedValue)
         }
-      }), s.call(this, u)
+      }), originalUpdateMethod.call(this, changedPropsMap)
     }
   }
 }
 var {
-  I: Sl
-} = Er;
-var Gr = (t, e) => e === void 0 ? t?._$litType$ !== void 0 : t?._$litType$ ===
-e;
-var uo = t => t.strings === void 0;
-var Qs = {},
-  Qr = (t, e = Qs) => t._$AH = e;
-var Le = Symbol(),
-  po = Symbol(),
-  Io, Bo = new Map,
-  G = class extends w {
+  I: watchInternalExport
+} = internalLitHtmlApi;
+var isTemplateResult = (candidateResult, expectedResultType) => expectedResultType === void 0 ? candidateResult?._$litType$ !== void 0 : candidateResult?._$litType$ ===
+expectedResultType;
+var isCompiledTemplateResult = candidateResult => candidateResult.strings === void 0;
+var noopPartMarker = {},
+  setChildPartValue = (childPart, childPartValue = noopPartMarker) => childPart._$AH = childPartValue;
+var iconStateSymbolA = Symbol(),
+  iconStateSymbolB = Symbol(),
+  domParserInstance, iconCache = new Map,
+  IconElement = class extends ShoelaceElement {
     constructor() {
       super(...arguments), this.initialRender = !1, this.svg = null, this
         .label = "", this.library = "default"
     }
-    async resolveIcon(t, e) {
-      var o;
-      let r;
-      if (e?.spriteSheet) return y`<svg part="svg">
-        <use part="use" href="${t}"></use>
+    async resolveIcon(iconUrl, iconLibrary) {
+      var fetchResult;
+      let svgText;
+      if (iconLibrary?.spriteSheet) return htmlTag`<svg part="svg">
+        <use part="use" href="${iconUrl}"></use>
       </svg>`;
       try {
-        if (r = await fetch(t, {
+        if (svgText = await fetch(iconUrl, {
             mode: "cors"
-          }), !r.ok) return r.status === 410 ? Le : po
+          }), !svgText.ok) return svgText.status === 410 ? iconStateSymbolA : iconStateSymbolB
       } catch {
-        return po
+        return iconStateSymbolB
       }
       try {
-        let i = document.createElement("div");
-        i.innerHTML = await r.text();
-        let s = i.firstElementChild;
-        if (((o = s?.tagName) == null ? void 0 : o.toLowerCase()) !== "svg")
-          return Le;
-        Io || (Io = new DOMParser);
-        let u = Io.parseFromString(s.outerHTML, "text/html")
+        let wrapperDiv = document.createElement("div");
+        wrapperDiv.innerHTML = await svgText.text();
+        let svgElement = wrapperDiv.firstElementChild;
+        if (((fetchResult = svgElement?.tagName) == null ? void 0 : fetchResult.toLowerCase()) !== "svg")
+          return iconStateSymbolA;
+        domParserInstance || (domParserInstance = new DOMParser);
+        let parsedIconDocument = domParserInstance.parseFromString(svgElement.outerHTML, "text/html")
           .body.querySelector("svg");
-        return u ? (u.part.add("svg"), document.adoptNode(u)) : Le
+        return parsedIconDocument ? (parsedIconDocument.part.add("svg"), document.adoptNode(parsedIconDocument)) : iconStateSymbolA
       } catch {
-        return Le
+        return iconStateSymbolA
       }
     }
     connectedCallback() {
-      super.connectedCallback(), Wr(this)
+      super.connectedCallback(), registerIconWatcher(this)
     }
     firstUpdated() {
       this.initialRender = !0, this.setIcon()
     }
     disconnectedCallback() {
-      super.disconnectedCallback(), Kr(this)
+      super.disconnectedCallback(), unregisterIconWatcher(this)
     }
     getIconSource() {
-      let t = Vo(this.library);
-      return this.name && t ? {
-        url: t.resolver(this.name),
+      let iconLibrary = getIconLibrary(this.library);
+      return this.name && iconLibrary ? {
+        url: iconLibrary.resolver(this.name),
         fromLibrary: !0
       } : {
         url: this.src,
@@ -3162,32 +3162,32 @@ var Le = Symbol(),
         .setAttribute("aria-hidden", "true"))
     }
     async setIcon() {
-      var t;
+      var previousIconSource;
       let {
-        url: e,
-        fromLibrary: o
-      } = this.getIconSource(), r = o ? Vo(this.library) : void 0;
-      if (!e) {
+        url: iconSourceUrl,
+        fromLibrary: iconFromLibrary
+      } = this.getIconSource(), resolvedIconLibrary = iconFromLibrary ? getIconLibrary(this.library) : void 0;
+      if (!iconSourceUrl) {
         this.svg = null;
         return
       }
-      let i = Bo.get(e);
-      if (i || (i = this.resolveIcon(e, r), Bo.set(e, i)), !this
+      let cachedIconRequest = iconCache.get(iconSourceUrl);
+      if (cachedIconRequest || (cachedIconRequest = this.resolveIcon(iconSourceUrl, resolvedIconLibrary), iconCache.set(iconSourceUrl, cachedIconRequest)), !this
         .initialRender) return;
-      let s = await i;
-      if (s === po && Bo.delete(e), e === this.getIconSource()
+      let iconSvgContent = await cachedIconRequest;
+      if (iconSvgContent === iconStateSymbolB && iconCache.delete(iconSourceUrl), iconSourceUrl === this.getIconSource()
         .url) {
-        if (Gr(s)) {
-          this.svg = s;
+        if (isTemplateResult(iconSvgContent)) {
+          this.svg = iconSvgContent;
           return
         }
-        switch (s) {
-          case po:
-          case Le:
+        switch (iconSvgContent) {
+          case iconStateSymbolB:
+          case iconStateSymbolA:
             this.svg = null, this.emit("sl-error");
             break;
           default:
-            this.svg = s.cloneNode(!0), (t = r?.mutator) == null || t.call(r,
+            this.svg = iconSvgContent.cloneNode(!0), (previousIconSource = resolvedIconLibrary?.mutator) == null || previousIconSource.call(resolvedIconLibrary,
               this.svg), this.emit("sl-load")
         }
       }
@@ -3196,19 +3196,19 @@ var Le = Symbol(),
       return this.svg
     }
   };
-G.styles = Jr;
-n([Z()], G.prototype, "svg", 2);
-n([l({
+IconElement.styles = componentStyles2;
+decorateClass([stateDecorator()], IconElement.prototype, "svg", 2);
+decorateClass([property({
   reflect: !0
-})], G.prototype, "name", 2);
-n([l()], G.prototype, "src", 2);
-n([l()], G.prototype, "label", 2);
-n([l({
+})], IconElement.prototype, "name", 2);
+decorateClass([property()], IconElement.prototype, "src", 2);
+decorateClass([property()], IconElement.prototype, "label", 2);
+decorateClass([property({
   reflect: !0
-})], G.prototype, "library", 2);
-n([S("label")], G.prototype, "handleLabelChange", 1);
-n([S(["name", "src", "library"])], G.prototype, "setIcon", 1);
-var ht = {
+})], IconElement.prototype, "library", 2);
+decorateClass([watchDecorator("label")], IconElement.prototype, "handleLabelChange", 1);
+decorateClass([watchDecorator(["name", "src", "library"])], IconElement.prototype, "setIcon", 1);
+var partTypeConstants = {
     ATTRIBUTE: 1,
     CHILD: 2,
     PROPERTY: 3,
@@ -3216,95 +3216,95 @@ var ht = {
     EVENT: 5,
     ELEMENT: 6
   },
-  Dt = t => (...e) => ({
-    _$litDirective$: t,
-    values: e
+  makeDirective = directiveClass => (...directiveArgs) => ({
+    _$litDirective$: directiveClass,
+    values: directiveArgs
   }),
-  kt = class {
-    constructor(e) {}
+  DirectiveBase = class {
+    constructor(partInfo) {}
     get _$AU() {
       return this._$AM._$AU
     }
-    _$AT(e, o, r) {
-      this._$Ct = e, this._$AM = o, this._$Ci = r
+    _$AT(directivePart, directiveParent, directiveAttrIndex) {
+      this._$Ct = directivePart, this._$AM = directiveParent, this._$Ci = directiveAttrIndex
     }
-    _$AS(e, o) {
-      return this.update(e, o)
+    _$AS(directivePart, directiveProps) {
+      return this.update(directivePart, directiveProps)
     }
-    update(e, o) {
-      return this.render(...o)
+    update(directivePart, directiveProps) {
+      return this.render(...directiveProps)
     }
   };
-var M = Dt(class extends kt {
-  constructor(t) {
-    if (super(t), t.type !== ht.ATTRIBUTE || t.name !== "class" || t
+var classMap = makeDirective(class extends DirectiveBase {
+  constructor(partInfo) {
+    if (super(partInfo), partInfo.type !== partTypeConstants.ATTRIBUTE || partInfo.name !== "class" || partInfo
       .strings?.length > 2) throw Error(
       "`classMap()` can only be used in the `class` attribute and must be the only part in the attribute."
       )
   }
-  render(t) {
-    return " " + Object.keys(t)
-      .filter(e => t[e])
+  render(classInfo) {
+    return " " + Object.keys(classInfo)
+      .filter(className => classInfo[className])
       .join(" ") + " "
   }
-  update(t, [e]) {
+  update(classAttributePart, [classInfo]) {
     if (this.st === void 0) {
-      this.st = new Set, t.strings !== void 0 && (this.nt = new Set(t
+      this.st = new Set, classAttributePart.strings !== void 0 && (this.nt = new Set(classAttributePart
         .strings.join(" ")
         .split(/\s/)
-        .filter(r => r !== "")));
-      for (let r in e) e[r] && !this.nt?.has(r) && this.st.add(r);
-      return this.render(e)
+        .filter(className => className !== "")));
+      for (let activeClassName in classInfo) classInfo[activeClassName] && !this.nt?.has(activeClassName) && this.st.add(activeClassName);
+      return this.render(classInfo)
     }
-    let o = t.element.classList;
-    for (let r of this.st) r in e || (o.remove(r), this.st.delete(r));
-    for (let r in e) {
-      let i = !!e[r];
-      i === this.st.has(r) || this.nt?.has(r) || (i ? (o.add(r), this.st
-        .add(r)) : (o.remove(r), this.st.delete(r)))
+    let elementClassList = classAttributePart.element.classList;
+    for (let previousClassName of this.st) previousClassName in classInfo || (elementClassList.remove(previousClassName), this.st.delete(previousClassName));
+    for (let classNameKey in classInfo) {
+      let shouldApplyClass = !!classInfo[classNameKey];
+      shouldApplyClass === this.st.has(classNameKey) || this.nt?.has(classNameKey) || (shouldApplyClass ? (elementClassList.add(classNameKey), this.st
+        .add(classNameKey)) : (elementClassList.remove(classNameKey), this.st.delete(classNameKey)))
     }
-    return ct
+    return noChange
   }
 });
-var Xr = Symbol.for(""),
-  Ys = t => {
-    if (t?.r === Xr) return t?._$litStatic$
+var staticValueBrand = Symbol.for(""),
+  getStaticValue = staticValue => {
+    if (staticValue?.r === staticValueBrand) return staticValue?._$litStatic$
   };
-var pe = (t, ...e) => ({
-    _$litStatic$: e.reduce((o, r, i) => o + (s => {
-      if (s._$litStatic$ !== void 0) return s._$litStatic$;
-      throw Error(`Value passed to 'literal' function must be a 'literal' result: ${s}. Use 'unsafeStatic' to pass non-literal values, but
+var staticLiteral = (literalStrings, ...literalValues) => ({
+    _$litStatic$: literalValues.reduce((accumulatedLiteral, literalValue, literalIndex) => accumulatedLiteral + (literalStringPart => {
+      if (literalStringPart._$litStatic$ !== void 0) return literalStringPart._$litStatic$;
+      throw Error(`Value passed to 'literal' function must be a 'literal' result: ${literalStringPart}. Use 'unsafeStatic' to pass non-literal values, but
             take care to ensure page security.`)
-    })(r) + t[i + 1], t[0]),
-    r: Xr
+    })(literalValue) + literalStrings[literalIndex + 1], literalStrings[0]),
+    r: staticValueBrand
   }),
-  Yr = new Map,
-  Zr = t => (e, ...o) => {
-    let r = o.length,
-      i, s, a = [],
-      u = [],
-      c, d = 0,
-      h = !1;
-    for (; d < r;) {
-      for (c = e[d]; d < r && (s = o[d], (i = Ys(s)) !== void 0);) c += i + e[++
-        d], h = !0;
-      d !== r && u.push(s), a.push(c), d++
+  staticTemplateCache = new Map,
+  withStatic = underlyingTag => (staticTagStrings, ...staticTagValues) => {
+    let valueCount = staticTagValues.length,
+      staticValueHolder, dynamicValueHolder, mergedStrings = [],
+      mergedValues = [],
+      currentStaticString, mergedStringIndex = 0,
+      hasStaticValues = !1;
+    for (; mergedStringIndex < valueCount;) {
+      for (currentStaticString = staticTagStrings[mergedStringIndex]; mergedStringIndex < valueCount && (dynamicValueHolder = staticTagValues[mergedStringIndex], (staticValueHolder = getStaticValue(dynamicValueHolder)) !== void 0);) currentStaticString += staticValueHolder + staticTagStrings[++
+        mergedStringIndex], hasStaticValues = !0;
+      mergedStringIndex !== valueCount && mergedValues.push(dynamicValueHolder), mergedStrings.push(currentStaticString), mergedStringIndex++
     }
-    if (d === r && a.push(e[r]), h) {
-      let p = a.join("$$lit$$");
-      (e = Yr.get(p)) === void 0 && (a.raw = a, Yr.set(p, e = a)), o = u
+    if (mergedStringIndex === valueCount && mergedStrings.push(staticTagStrings[valueCount]), hasStaticValues) {
+      let staticCacheKey = mergedStrings.join("$$lit$$");
+      (staticTagStrings = staticTemplateCache.get(staticCacheKey)) === void 0 && (mergedStrings.raw = mergedStrings, staticTemplateCache.set(staticCacheKey, staticTagStrings = mergedStrings)), staticTagValues = mergedValues
     }
-    return t(e, ...o)
+    return underlyingTag(staticTagStrings, ...staticTagValues)
   },
-  Ht = Zr(y),
-  Jl = Zr(Cr);
-var _ = t => t ?? j;
-var B = class extends w {
+  staticHtmlTag = withStatic(htmlTag),
+  staticSvgTag = withStatic(svgTag);
+var ifDefined = maybeDefinedValue => maybeDefinedValue ?? nothing;
+var ButtonElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.formControlController = new Tt(this, {
+    super(...arguments), this.formControlController = new FormControlController(this, {
         assumeInteractionOn: ["click"]
-      }), this.hasSlotController = new rt(this, "[default]", "prefix",
-        "suffix"), this.localize = new H(this), this.hasFocus = !1, this
+      }), this.hasSlotController = new SlotController(this, "[default]", "prefix",
+        "suffix"), this.localize = new LocalizeController(this), this.hasFocus = !1, this
       .invalid = !1, this.title = "", this.variant = "default", this.size =
       "medium", this.caret = !1, this.disabled = !1, this.loading = !1, this
       .outline = !1, this.pill = !1, this.circle = !1, this.type = "button",
@@ -3312,7 +3312,7 @@ var B = class extends w {
       "noreferrer noopener"
   }
   get validity() {
-    return this.isButton() ? this.button.validity : de
+    return this.isButton() ? this.button.validity : baseFormControlOptions
   }
   get validationMessage() {
     return this.isButton() ? this.button.validationMessage : ""
@@ -3330,9 +3330,9 @@ var B = class extends w {
     this.type === "submit" && this.formControlController.submit(this), this
       .type === "reset" && this.formControlController.reset(this)
   }
-  handleInvalid(t) {
+  handleInvalid(invalidEvent) {
     this.formControlController.setValidity(!1), this.formControlController
-      .emitInvalidEvent(t)
+      .emitInvalidEvent(invalidEvent)
   }
   isButton() {
     return !this.href
@@ -3346,8 +3346,8 @@ var B = class extends w {
   click() {
     this.button.click()
   }
-  focus(t) {
-    this.button.focus(t)
+  focus(focusOptions) {
+    this.button.focus(focusOptions)
   }
   blur() {
     this.button.blur()
@@ -3361,27 +3361,27 @@ var B = class extends w {
   reportValidity() {
     return this.isButton() ? this.button.reportValidity() : !0
   }
-  setCustomValidity(t) {
-    this.isButton() && (this.button.setCustomValidity(t), this
+  setCustomValidity(validationMessage) {
+    this.isButton() && (this.button.setCustomValidity(validationMessage), this
       .formControlController.updateValidity())
   }
   render() {
-    let t = this.isLink(),
-      e = t ? pe`a` : pe`button`;
-    return Ht`
-      <${e}
+    let renderAsLink = this.isLink(),
+      buttonTagLiteral = renderAsLink ? staticLiteral`a` : staticLiteral`button`;
+    return staticHtmlTag`
+      <${buttonTagLiteral}
         part="base"
-        class=${M({button:!0,"button--default":this.variant==="default","button--primary":this.variant==="primary","button--success":this.variant==="success","button--neutral":this.variant==="neutral","button--warning":this.variant==="warning","button--danger":this.variant==="danger","button--text":this.variant==="text","button--small":this.size==="small","button--medium":this.size==="medium","button--large":this.size==="large","button--caret":this.caret,"button--circle":this.circle,"button--disabled":this.disabled,"button--focused":this.hasFocus,"button--loading":this.loading,"button--standard":!this.outline,"button--outline":this.outline,"button--pill":this.pill,"button--rtl":this.localize.dir()==="rtl","button--has-label":this.hasSlotController.test("[default]"),"button--has-prefix":this.hasSlotController.test("prefix"),"button--has-suffix":this.hasSlotController.test("suffix")})}
-        ?disabled=${_(t?void 0:this.disabled)}
-        type=${_(t?void 0:this.type)}
+        class=${classMap({button:!0,"button--default":this.variant==="default","button--primary":this.variant==="primary","button--success":this.variant==="success","button--neutral":this.variant==="neutral","button--warning":this.variant==="warning","button--danger":this.variant==="danger","button--text":this.variant==="text","button--small":this.size==="small","button--medium":this.size==="medium","button--large":this.size==="large","button--caret":this.caret,"button--circle":this.circle,"button--disabled":this.disabled,"button--focused":this.hasFocus,"button--loading":this.loading,"button--standard":!this.outline,"button--outline":this.outline,"button--pill":this.pill,"button--rtl":this.localize.dir()==="rtl","button--has-label":this.hasSlotController.test("[default]"),"button--has-prefix":this.hasSlotController.test("prefix"),"button--has-suffix":this.hasSlotController.test("suffix")})}
+        ?disabled=${ifDefined(renderAsLink?void 0:this.disabled)}
+        type=${ifDefined(renderAsLink?void 0:this.type)}
         title=${this.title}
-        name=${_(t?void 0:this.name)}
-        value=${_(t?void 0:this.value)}
-        href=${_(t?this.href:void 0)}
-        target=${_(t?this.target:void 0)}
-        download=${_(t?this.download:void 0)}
-        rel=${_(t?this.rel:void 0)}
-        role=${_(t?void 0:"button")}
+        name=${ifDefined(renderAsLink?void 0:this.name)}
+        value=${ifDefined(renderAsLink?void 0:this.value)}
+        href=${ifDefined(renderAsLink?this.href:void 0)}
+        target=${ifDefined(renderAsLink?this.target:void 0)}
+        download=${ifDefined(renderAsLink?this.download:void 0)}
+        rel=${ifDefined(renderAsLink?this.rel:void 0)}
+        role=${ifDefined(renderAsLink?void 0:"button")}
         aria-disabled=${this.disabled?"true":"false"}
         tabindex=${this.disabled?"-1":"0"}
         @blur=${this.handleBlur}
@@ -3392,81 +3392,81 @@ var B = class extends w {
         <slot name="prefix" part="prefix" class="button__prefix"></slot>
         <slot part="label" class="button__label"></slot>
         <slot name="suffix" part="suffix" class="button__suffix"></slot>
-        ${this.caret?Ht` <sl-icon part="caret" class="button__caret" library="system" name="caret"></sl-icon> `:""}
-        ${this.loading?Ht`<sl-spinner part="spinner"></sl-spinner>`:""}
-      </${e}>
+        ${this.caret?staticHtmlTag` <sl-icon part="caret" class="button__caret" library="system" name="caret"></sl-icon> `:""}
+        ${this.loading?staticHtmlTag`<sl-spinner part="spinner"></sl-spinner>`:""}
+      </${buttonTagLiteral}>
     `
   }
 };
-B.styles = co;
-B.dependencies = {
-  "sl-icon": G,
-  "sl-spinner": Zt
+ButtonElement.styles = componentStyles1;
+ButtonElement.dependencies = {
+  "sl-icon": IconElement,
+  "sl-spinner": SpinnerElement
 };
-n([k(".button")], B.prototype, "button", 2);
-n([Z()], B.prototype, "hasFocus", 2);
-n([Z()], B.prototype, "invalid", 2);
-n([l()], B.prototype, "title", 2);
-n([l({
+decorateClass([queryDecorator(".button")], ButtonElement.prototype, "button", 2);
+decorateClass([stateDecorator()], ButtonElement.prototype, "hasFocus", 2);
+decorateClass([stateDecorator()], ButtonElement.prototype, "invalid", 2);
+decorateClass([property()], ButtonElement.prototype, "title", 2);
+decorateClass([property({
   reflect: !0
-})], B.prototype, "variant", 2);
-n([l({
+})], ButtonElement.prototype, "variant", 2);
+decorateClass([property({
   reflect: !0
-})], B.prototype, "size", 2);
-n([l({
+})], ButtonElement.prototype, "size", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], B.prototype, "caret", 2);
-n([l({
+})], ButtonElement.prototype, "caret", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], B.prototype, "disabled", 2);
-n([l({
+})], ButtonElement.prototype, "disabled", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], B.prototype, "loading", 2);
-n([l({
+})], ButtonElement.prototype, "loading", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], B.prototype, "outline", 2);
-n([l({
+})], ButtonElement.prototype, "outline", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], B.prototype, "pill", 2);
-n([l({
+})], ButtonElement.prototype, "pill", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], B.prototype, "circle", 2);
-n([l()], B.prototype, "type", 2);
-n([l()], B.prototype, "name", 2);
-n([l()], B.prototype, "value", 2);
-n([l()], B.prototype, "href", 2);
-n([l()], B.prototype, "target", 2);
-n([l()], B.prototype, "rel", 2);
-n([l()], B.prototype, "download", 2);
-n([l()], B.prototype, "form", 2);
-n([l({
+})], ButtonElement.prototype, "circle", 2);
+decorateClass([property()], ButtonElement.prototype, "type", 2);
+decorateClass([property()], ButtonElement.prototype, "name", 2);
+decorateClass([property()], ButtonElement.prototype, "value", 2);
+decorateClass([property()], ButtonElement.prototype, "href", 2);
+decorateClass([property()], ButtonElement.prototype, "target", 2);
+decorateClass([property()], ButtonElement.prototype, "rel", 2);
+decorateClass([property()], ButtonElement.prototype, "download", 2);
+decorateClass([property()], ButtonElement.prototype, "form", 2);
+decorateClass([property({
   attribute: "formaction"
-})], B.prototype, "formAction", 2);
-n([l({
+})], ButtonElement.prototype, "formAction", 2);
+decorateClass([property({
   attribute: "formenctype"
-})], B.prototype, "formEnctype", 2);
-n([l({
+})], ButtonElement.prototype, "formEnctype", 2);
+decorateClass([property({
   attribute: "formmethod"
-})], B.prototype, "formMethod", 2);
-n([l({
+})], ButtonElement.prototype, "formMethod", 2);
+decorateClass([property({
   attribute: "formnovalidate",
   type: Boolean
-})], B.prototype, "formNoValidate", 2);
-n([l({
+})], ButtonElement.prototype, "formNoValidate", 2);
+decorateClass([property({
   attribute: "formtarget"
-})], B.prototype, "formTarget", 2);
-n([S("disabled", {
+})], ButtonElement.prototype, "formTarget", 2);
+decorateClass([watchDecorator("disabled", {
   waitUntilFirstUpdate: !0
-})], B.prototype, "handleDisabledChange", 1);
-B.define("sl-button");
-var ti = A`
-  ${C}
+})], ButtonElement.prototype, "handleDisabledChange", 1);
+ButtonElement.define("sl-button");
+var componentStyles3 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: inline-block;
@@ -3477,44 +3477,44 @@ var ti = A`
     flex-wrap: nowrap;
   }
 `;
-var Ut = class extends w {
+var ButtonGroupElement = class extends ShoelaceElement {
   constructor() {
     super(...arguments), this.disableRole = !1, this.label = ""
   }
-  handleFocus(t) {
-    let e = Re(t.target);
-    e?.classList.add("sl-button-group__button--focus")
+  handleFocus(focusEvent) {
+    let focusedButton = findInnerButton(focusEvent.target);
+    focusedButton?.classList.add("sl-button-group__button--focus")
   }
-  handleBlur(t) {
-    let e = Re(t.target);
-    e?.classList.remove("sl-button-group__button--focus")
+  handleBlur(blurEvent) {
+    let blurredButton = findInnerButton(blurEvent.target);
+    blurredButton?.classList.remove("sl-button-group__button--focus")
   }
-  handleMouseOver(t) {
-    let e = Re(t.target);
-    e?.classList.add("sl-button-group__button--hover")
+  handleMouseOver(mouseOverEvent) {
+    let hoveredButton = findInnerButton(mouseOverEvent.target);
+    hoveredButton?.classList.add("sl-button-group__button--hover")
   }
-  handleMouseOut(t) {
-    let e = Re(t.target);
-    e?.classList.remove("sl-button-group__button--hover")
+  handleMouseOut(mouseOutEvent) {
+    let mouseOutButton = findInnerButton(mouseOutEvent.target);
+    mouseOutButton?.classList.remove("sl-button-group__button--hover")
   }
   handleSlotChange() {
-    let t = [...this.defaultSlot.assignedElements({
+    let slottedButtons = [...this.defaultSlot.assignedElements({
       flatten: !0
     })];
-    t.forEach(e => {
-      let o = t.indexOf(e),
-        r = Re(e);
-      r && (r.classList.add("sl-button-group__button"), r.classList
-        .toggle("sl-button-group__button--first", o === 0), r
-        .classList.toggle("sl-button-group__button--inner", o > 0 &&
-          o < t.length - 1), r.classList.toggle(
-          "sl-button-group__button--last", o === t.length - 1), r
-        .classList.toggle("sl-button-group__button--radio", r.tagName
+    slottedButtons.forEach(buttonElement => {
+      let buttonIndex = slottedButtons.indexOf(buttonElement),
+        innerButton = findInnerButton(buttonElement);
+      innerButton && (innerButton.classList.add("sl-button-group__button"), innerButton.classList
+        .toggle("sl-button-group__button--first", buttonIndex === 0), innerButton
+        .classList.toggle("sl-button-group__button--inner", buttonIndex > 0 &&
+          buttonIndex < slottedButtons.length - 1), innerButton.classList.toggle(
+          "sl-button-group__button--last", buttonIndex === slottedButtons.length - 1), innerButton
+        .classList.toggle("sl-button-group__button--radio", innerButton.tagName
           .toLowerCase() === "sl-radio-button"))
     })
   }
   render() {
-    return y`
+    return htmlTag`
       <div
         part="base"
         class="button-group"
@@ -3530,20 +3530,20 @@ var Ut = class extends w {
     `
   }
 };
-Ut.styles = ti;
-n([k("slot")], Ut.prototype, "defaultSlot", 2);
-n([Z()], Ut.prototype, "disableRole", 2);
-n([l()], Ut.prototype, "label", 2);
+ButtonGroupElement.styles = componentStyles3;
+decorateClass([queryDecorator("slot")], ButtonGroupElement.prototype, "defaultSlot", 2);
+decorateClass([stateDecorator()], ButtonGroupElement.prototype, "disableRole", 2);
+decorateClass([property()], ButtonGroupElement.prototype, "label", 2);
 
-function Re(t) {
-  var e;
-  let o = "sl-button, sl-radio-button";
-  return (e = t.closest(o)) != null ? e : t.querySelector(o)
+function findInnerButton(buttonHost) {
+  var shadowButton;
+  let buttonSelector = "sl-button, sl-radio-button";
+  return (shadowButton = buttonHost.closest(buttonSelector)) != null ? shadowButton : buttonHost.querySelector(buttonSelector)
 }
-Ut.define("sl-button-group");
-G.define("sl-icon");
-var ei = A`
-  ${C}
+ButtonGroupElement.define("sl-button-group");
+IconElement.define("sl-icon");
+var componentStyles4 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: inline-block;
@@ -3592,7 +3592,7 @@ var ei = A`
     pointer-events: none;
   }
 `;
-var Q = class extends w {
+var IconButtonElement = class extends ShoelaceElement {
   constructor() {
     super(...arguments), this.hasFocus = !1, this.label = "", this
       .disabled = !1
@@ -3603,32 +3603,32 @@ var Q = class extends w {
   handleFocus() {
     this.hasFocus = !0, this.emit("sl-focus")
   }
-  handleClick(t) {
-    this.disabled && (t.preventDefault(), t.stopPropagation())
+  handleClick(clickEvent) {
+    this.disabled && (clickEvent.preventDefault(), clickEvent.stopPropagation())
   }
   click() {
     this.button.click()
   }
-  focus(t) {
-    this.button.focus(t)
+  focus(focusOptions) {
+    this.button.focus(focusOptions)
   }
   blur() {
     this.button.blur()
   }
   render() {
-    let t = !!this.href,
-      e = t ? pe`a` : pe`button`;
-    return Ht`
-      <${e}
+    let renderAsLink = !!this.href,
+      iconButtonTag = renderAsLink ? staticLiteral`a` : staticLiteral`button`;
+    return staticHtmlTag`
+      <${iconButtonTag}
         part="base"
-        class=${M({"icon-button":!0,"icon-button--disabled":!t&&this.disabled,"icon-button--focused":this.hasFocus})}
-        ?disabled=${_(t?void 0:this.disabled)}
-        type=${_(t?void 0:"button")}
-        href=${_(t?this.href:void 0)}
-        target=${_(t?this.target:void 0)}
-        download=${_(t?this.download:void 0)}
-        rel=${_(t&&this.target?"noreferrer noopener":void 0)}
-        role=${_(t?void 0:"button")}
+        class=${classMap({"icon-button":!0,"icon-button--disabled":!renderAsLink&&this.disabled,"icon-button--focused":this.hasFocus})}
+        ?disabled=${ifDefined(renderAsLink?void 0:this.disabled)}
+        type=${ifDefined(renderAsLink?void 0:"button")}
+        href=${ifDefined(renderAsLink?this.href:void 0)}
+        target=${ifDefined(renderAsLink?this.target:void 0)}
+        download=${ifDefined(renderAsLink?this.download:void 0)}
+        rel=${ifDefined(renderAsLink&&this.target?"noreferrer noopener":void 0)}
+        role=${ifDefined(renderAsLink?void 0:"button")}
         aria-disabled=${this.disabled?"true":"false"}
         aria-label="${this.label}"
         tabindex=${this.disabled?"-1":"0"}
@@ -3638,35 +3638,35 @@ var Q = class extends w {
       >
         <sl-icon
           class="icon-button__icon"
-          name=${_(this.name)}
-          library=${_(this.library)}
-          src=${_(this.src)}
+          name=${ifDefined(this.name)}
+          library=${ifDefined(this.library)}
+          src=${ifDefined(this.src)}
           aria-hidden="true"
         ></sl-icon>
-      </${e}>
+      </${iconButtonTag}>
     `
   }
 };
-Q.styles = ei;
-Q.dependencies = {
-  "sl-icon": G
+IconButtonElement.styles = componentStyles4;
+IconButtonElement.dependencies = {
+  "sl-icon": IconElement
 };
-n([k(".icon-button")], Q.prototype, "button", 2);
-n([Z()], Q.prototype, "hasFocus", 2);
-n([l()], Q.prototype, "name", 2);
-n([l()], Q.prototype, "library", 2);
-n([l()], Q.prototype, "src", 2);
-n([l()], Q.prototype, "href", 2);
-n([l()], Q.prototype, "target", 2);
-n([l()], Q.prototype, "download", 2);
-n([l()], Q.prototype, "label", 2);
-n([l({
+decorateClass([queryDecorator(".icon-button")], IconButtonElement.prototype, "button", 2);
+decorateClass([stateDecorator()], IconButtonElement.prototype, "hasFocus", 2);
+decorateClass([property()], IconButtonElement.prototype, "name", 2);
+decorateClass([property()], IconButtonElement.prototype, "library", 2);
+decorateClass([property()], IconButtonElement.prototype, "src", 2);
+decorateClass([property()], IconButtonElement.prototype, "href", 2);
+decorateClass([property()], IconButtonElement.prototype, "target", 2);
+decorateClass([property()], IconButtonElement.prototype, "download", 2);
+decorateClass([property()], IconButtonElement.prototype, "label", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], Q.prototype, "disabled", 2);
-Q.define("sl-icon-button");
-var oi = A`
-  ${C}
+})], IconButtonElement.prototype, "disabled", 2);
+IconButtonElement.define("sl-icon-button");
+var componentStyles5 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     --max-width: 20rem;
@@ -3718,8 +3718,8 @@ var oi = A`
     -webkit-user-select: none;
   }
 `;
-var ri = A`
-  ${C}
+var componentStyles6 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     --arrow-color: var(--sl-color-neutral-1000);
@@ -3779,429 +3779,429 @@ var ri = A`
     );
   }
 `;
-var Ot = Math.min,
-  dt = Math.max,
-  Ve = Math.round,
-  Ie = Math.floor,
-  Vt = t => ({
-    x: t,
-    y: t
+var mathMin = Math.min,
+  mathMax = Math.max,
+  mathRound = Math.round,
+  mathFloor = Math.floor,
+  createCoords = coordValue => ({
+    x: coordValue,
+    y: coordValue
   }),
-  Xs = {
+  oppositeSideMap = {
     left: "right",
     right: "left",
     bottom: "top",
     top: "bottom"
   },
-  Zs = {
+  oppositeAlignmentMap = {
     start: "end",
     end: "start"
   };
 
-function mo(t, e, o) {
-  return dt(t, Ot(e, o))
+function clampValue(minValue, clampInput, maxValue) {
+  return mathMax(minValue, mathMin(clampInput, maxValue))
 }
 
-function te(t, e) {
-  return typeof t == "function" ? t(e) : t
+function evaluateOption(maybeFunction, functionParam) {
+  return typeof maybeFunction == "function" ? maybeFunction(functionParam) : maybeFunction
 }
 
-function It(t) {
-  return t.split("-")[0]
+function getSide(placement) {
+  return placement.split("-")[0]
 }
 
-function ee(t) {
-  return t.split("-")[1]
+function getAlignment(placement) {
+  return placement.split("-")[1]
 }
 
-function No(t) {
-  return t === "x" ? "y" : "x"
+function getOppositeAxis(axis) {
+  return axis === "x" ? "y" : "x"
 }
 
-function fo(t) {
-  return t === "y" ? "height" : "width"
+function getAxisLength(axis) {
+  return axis === "y" ? "height" : "width"
 }
 
-function he(t) {
-  return ["top", "bottom"].includes(It(t)) ? "y" : "x"
+function getSideAxis(placement) {
+  return ["top", "bottom"].includes(getSide(placement)) ? "y" : "x"
 }
 
-function go(t) {
-  return No(he(t))
+function getAlignmentAxis(placement) {
+  return getOppositeAxis(getSideAxis(placement))
 }
 
-function ii(t, e, o) {
-  o === void 0 && (o = !1);
-  let r = ee(t),
-    i = go(t),
-    s = fo(i),
-    a = i === "x" ? r === (o ? "end" : "start") ? "right" : "left" : r ===
+function getAlignmentSides(placement, elementRects, rtlDirection) {
+  rtlDirection === void 0 && (rtlDirection = !1);
+  let alignment = getAlignment(placement),
+    alignmentAxis = getAlignmentAxis(placement),
+    axisLength = getAxisLength(alignmentAxis),
+    preferredSide = alignmentAxis === "x" ? alignment === (rtlDirection ? "end" : "start") ? "right" : "left" : alignment ===
     "start" ? "bottom" : "top";
-  return e.reference[s] > e.floating[s] && (a = De(a)), [a, De(a)]
+  return elementRects.reference[axisLength] > elementRects.floating[axisLength] && (preferredSide = getOppositePlacement(preferredSide)), [preferredSide, getOppositePlacement(preferredSide)]
 }
 
-function si(t) {
-  let e = De(t);
-  return [ho(t), e, ho(e)]
+function getExpandedPlacements(placement) {
+  let oppositePlacement = getOppositePlacement(placement);
+  return [getOppositeAlignmentPlacement(placement), oppositePlacement, getOppositeAlignmentPlacement(oppositePlacement)]
 }
 
-function ho(t) {
-  return t.replace(/start|end/g, e => Zs[e])
+function getOppositeAlignmentPlacement(placement) {
+  return placement.replace(/start|end/g, alignmentMatch => oppositeAlignmentMap[alignmentMatch])
 }
 
-function tn(t, e, o) {
-  let r = ["left", "right"],
-    i = ["right", "left"],
-    s = ["top", "bottom"],
-    a = ["bottom", "top"];
-  switch (t) {
+function getSideList(side, isStartAlignment, rtlDirection) {
+  let leftRightSides = ["left", "right"],
+    rightLeftSides = ["right", "left"],
+    topBottomSides = ["top", "bottom"],
+    bottomTopSides = ["bottom", "top"];
+  switch (side) {
     case "top":
     case "bottom":
-      return o ? e ? i : r : e ? r : i;
+      return rtlDirection ? isStartAlignment ? rightLeftSides : leftRightSides : isStartAlignment ? leftRightSides : rightLeftSides;
     case "left":
     case "right":
-      return e ? s : a;
+      return isStartAlignment ? topBottomSides : bottomTopSides;
     default:
       return []
   }
 }
 
-function ni(t, e, o, r) {
-  let i = ee(t),
-    s = tn(It(t), o === "start", r);
-  return i && (s = s.map(a => a + "-" + i), e && (s = s.concat(s.map(ho)))), s
+function getOppositeAxisPlacements(placement, flipAlignment, direction, rtlDirection) {
+  let alignment = getAlignment(placement),
+    placementList = getSideList(getSide(placement), direction === "start", rtlDirection);
+  return alignment && (placementList = placementList.map(sidePlacement => sidePlacement + "-" + alignment), flipAlignment && (placementList = placementList.concat(placementList.map(getOppositeAlignmentPlacement)))), placementList
 }
 
-function De(t) {
-  return t.replace(/left|right|bottom|top/g, e => Xs[e])
+function getOppositePlacement(placement) {
+  return placement.replace(/left|right|bottom|top/g, sideMatch => oppositeSideMap[sideMatch])
 }
 
-function en(t) {
+function expandPaddingObject(padding) {
   return {
     top: 0,
     right: 0,
     bottom: 0,
     left: 0,
-    ...t
+    ...padding
   }
 }
 
-function Fo(t) {
-  return typeof t != "number" ? en(t) : {
-    top: t,
-    right: t,
-    bottom: t,
-    left: t
+function getPaddingObject(padding) {
+  return typeof padding != "number" ? expandPaddingObject(padding) : {
+    top: padding,
+    right: padding,
+    bottom: padding,
+    left: padding
   }
 }
 
-function oe(t) {
+function rectToClientRect(rect) {
   return {
-    ...t,
-    top: t.y,
-    left: t.x,
-    right: t.x + t.width,
-    bottom: t.y + t.height
+    ...rect,
+    top: rect.y,
+    left: rect.x,
+    right: rect.x + rect.width,
+    bottom: rect.y + rect.height
   }
 }
 
-function ai(t, e, o) {
+function computeCoordsFromPlacement(rectsInfo, placement, rtlDirection) {
   let {
-    reference: r,
-    floating: i
-  } = t, s = he(e), a = go(e), u = fo(a), c = It(e), d = s === "y", h = r.x + r
-    .width / 2 - i.width / 2, p = r.y + r.height / 2 - i.height / 2, v = r[u] /
-    2 - i[u] / 2, m;
-  switch (c) {
+    reference: referenceRect,
+    floating: floatingRect
+  } = rectsInfo, sideAxis = getSideAxis(placement), alignmentAxis = getAlignmentAxis(placement), axisLength = getAxisLength(alignmentAxis), placementSide = getSide(placement), isVerticalAxis = sideAxis === "y", referenceCenterX = referenceRect.x + referenceRect
+    .width / 2 - floatingRect.width / 2, referenceCenterY = referenceRect.y + referenceRect.height / 2 - floatingRect.height / 2, sideCoordValue = referenceRect[axisLength] /
+    2 - floatingRect[axisLength] / 2, computedCoords;
+  switch (placementSide) {
     case "top":
-      m = {
-        x: h,
-        y: r.y - i.height
+      computedCoords = {
+        x: referenceCenterX,
+        y: referenceRect.y - floatingRect.height
       };
       break;
     case "bottom":
-      m = {
-        x: h,
-        y: r.y + r.height
+      computedCoords = {
+        x: referenceCenterX,
+        y: referenceRect.y + referenceRect.height
       };
       break;
     case "right":
-      m = {
-        x: r.x + r.width,
-        y: p
+      computedCoords = {
+        x: referenceRect.x + referenceRect.width,
+        y: referenceCenterY
       };
       break;
     case "left":
-      m = {
-        x: r.x - i.width,
-        y: p
+      computedCoords = {
+        x: referenceRect.x - floatingRect.width,
+        y: referenceCenterY
       };
       break;
     default:
-      m = {
-        x: r.x,
-        y: r.y
+      computedCoords = {
+        x: referenceRect.x,
+        y: referenceRect.y
       }
   }
-  switch (ee(e)) {
+  switch (getAlignment(placement)) {
     case "start":
-      m[a] -= v * (o && d ? -1 : 1);
+      computedCoords[alignmentAxis] -= sideCoordValue * (rtlDirection && isVerticalAxis ? -1 : 1);
       break;
     case "end":
-      m[a] += v * (o && d ? -1 : 1);
+      computedCoords[alignmentAxis] += sideCoordValue * (rtlDirection && isVerticalAxis ? -1 : 1);
       break
   }
-  return m
+  return computedCoords
 }
-var li = async (t, e, o) => {
+var computePosition = async (referenceElement, floatingElement, positionConfig) => {
   let {
-    placement: r = "bottom",
-    strategy: i = "absolute",
-    middleware: s = [],
-    platform: a
-  } = o, u = s.filter(Boolean), c = await (a.isRTL == null ? void 0 : a
-    .isRTL(e)), d = await a.getElementRects({
-    reference: t,
-    floating: e,
-    strategy: i
+    placement: requestedPlacement = "bottom",
+    strategy: positionStrategy = "absolute",
+    middleware: middlewareList = [],
+    platform: platform
+  } = positionConfig, activeMiddleware = middlewareList.filter(Boolean), isRtl = await (platform.isRTL == null ? void 0 : platform
+    .isRTL(floatingElement)), elementRects = await platform.getElementRects({
+    reference: referenceElement,
+    floating: floatingElement,
+    strategy: positionStrategy
   }), {
-    x: h,
-    y: p
-  } = ai(d, r, c), v = r, m = {}, b = 0;
-  for (let $ = 0; $ < u.length; $++) {
+    x: coordX,
+    y: coordY
+  } = computeCoordsFromPlacement(elementRects, requestedPlacement, isRtl), currentPlacement = requestedPlacement, middlewareData = {}, resetCount = 0;
+  for (let middlewareIndex = 0; middlewareIndex < activeMiddleware.length; middlewareIndex++) {
     let {
-      name: V,
-      fn: z
-    } = u[$], {
-      x: L,
-      y: R,
-      data: g,
-      reset: f
-    } = await z({
-      x: h,
-      y: p,
-      initialPlacement: r,
-      placement: v,
-      strategy: i,
-      middlewareData: m,
-      rects: d,
-      platform: a,
+      name: middlewareName,
+      fn: middlewareFn
+    } = activeMiddleware[middlewareIndex], {
+      x: nextCoordX,
+      y: nextCoordY,
+      data: middlewareResultData,
+      reset: resetInstruction
+    } = await middlewareFn({
+      x: coordX,
+      y: coordY,
+      initialPlacement: requestedPlacement,
+      placement: currentPlacement,
+      strategy: positionStrategy,
+      middlewareData: middlewareData,
+      rects: elementRects,
+      platform: platform,
       elements: {
-        reference: t,
-        floating: e
+        reference: referenceElement,
+        floating: floatingElement
       }
     });
-    h = L ?? h, p = R ?? p, m = {
-      ...m,
-      [V]: {
-        ...m[V],
-        ...g
+    coordX = nextCoordX ?? coordX, coordY = nextCoordY ?? coordY, middlewareData = {
+      ...middlewareData,
+      [middlewareName]: {
+        ...middlewareData[middlewareName],
+        ...middlewareResultData
       }
-    }, f && b <= 50 && (b++, typeof f == "object" && (f.placement && (v =
-      f.placement), f.rects && (d = f.rects === !0 ? await a
+    }, resetInstruction && resetCount <= 50 && (resetCount++, typeof resetInstruction == "object" && (resetInstruction.placement && (currentPlacement =
+      resetInstruction.placement), resetInstruction.rects && (elementRects = resetInstruction.rects === !0 ? await platform
       .getElementRects({
-        reference: t,
-        floating: e,
-        strategy: i
-      }) : f.rects), {
-      x: h,
-      y: p
-    } = ai(d, v, c)), $ = -1)
+        reference: referenceElement,
+        floating: floatingElement,
+        strategy: positionStrategy
+      }) : resetInstruction.rects), {
+      x: coordX,
+      y: coordY
+    } = computeCoordsFromPlacement(elementRects, currentPlacement, isRtl)), middlewareIndex = -1)
   }
   return {
-    x: h,
-    y: p,
-    placement: v,
-    strategy: i,
-    middlewareData: m
+    x: coordX,
+    y: coordY,
+    placement: currentPlacement,
+    strategy: positionStrategy,
+    middlewareData: middlewareData
   }
 };
-async function bo(t, e) {
-  var o;
-  e === void 0 && (e = {});
+async function detectOverflow(overflowState, overflowOptions) {
+  var tempOffsetParent;
+  overflowOptions === void 0 && (overflowOptions = {});
   let {
-    x: r,
-    y: i,
-    platform: s,
-    rects: a,
-    elements: u,
-    strategy: c
-  } = t, {
-    boundary: d = "clippingAncestors",
-    rootBoundary: h = "viewport",
-    elementContext: p = "floating",
-    altBoundary: v = !1,
-    padding: m = 0
-  } = te(e, t), b = Fo(m), V = u[v ? p === "floating" ? "reference" :
-    "floating" : p], z = oe(await s.getClippingRect({
-    element: (o = await (s.isElement == null ? void 0 : s.isElement(
-      V))) == null || o ? V : V.contextElement || await (s
-        .getDocumentElement == null ? void 0 : s.getDocumentElement(u
+    x: coordX,
+    y: coordY,
+    platform: platform,
+    rects: elementRects,
+    elements: floatingElements,
+    strategy: positionStrategy
+  } = overflowState, {
+    boundary: boundary = "clippingAncestors",
+    rootBoundary: rootBoundary = "viewport",
+    elementContext: elementContext = "floating",
+    altBoundary: altBoundary = !1,
+    padding: paddingOption = 0
+  } = evaluateOption(overflowOptions, overflowState), paddingObject = getPaddingObject(paddingOption), contextElement = floatingElements[altBoundary ? elementContext === "floating" ? "reference" :
+    "floating" : elementContext], clippingRect = rectToClientRect(await platform.getClippingRect({
+    element: (tempOffsetParent = await (platform.isElement == null ? void 0 : platform.isElement(
+      contextElement))) == null || tempOffsetParent ? contextElement : contextElement.contextElement || await (platform
+        .getDocumentElement == null ? void 0 : platform.getDocumentElement(floatingElements
           .floating)),
-    boundary: d,
-    rootBoundary: h,
-    strategy: c
-  })), L = p === "floating" ? {
-    ...a.floating,
-    x: r,
-    y: i
-  } : a.reference, R = await (s.getOffsetParent == null ? void 0 : s
-    .getOffsetParent(u.floating)), g = await (s.isElement == null ? void 0 :
-    s.isElement(R)) ? await (s.getScale == null ? void 0 : s.getScale(
-  R)) || {
+    boundary: boundary,
+    rootBoundary: rootBoundary,
+    strategy: positionStrategy
+  })), contextElementRect = elementContext === "floating" ? {
+    ...elementRects.floating,
+    x: coordX,
+    y: coordY
+  } : elementRects.reference, offsetParentElement = await (platform.getOffsetParent == null ? void 0 : platform
+    .getOffsetParent(floatingElements.floating)), offsetParentIsElement = await (platform.isElement == null ? void 0 :
+    platform.isElement(offsetParentElement)) ? await (platform.getScale == null ? void 0 : platform.getScale(
+  offsetParentElement)) || {
     x: 1,
     y: 1
   } : {
     x: 1,
     y: 1
-  }, f = oe(s.convertOffsetParentRelativeRectToViewportRelativeRect ?
-    await s.convertOffsetParentRelativeRectToViewportRelativeRect({
-      elements: u,
-      rect: L,
-      offsetParent: R,
-      strategy: c
-    }) : L);
+  }, viewportRect = rectToClientRect(platform.convertOffsetParentRelativeRectToViewportRelativeRect ?
+    await platform.convertOffsetParentRelativeRectToViewportRelativeRect({
+      elements: floatingElements,
+      rect: contextElementRect,
+      offsetParent: offsetParentElement,
+      strategy: positionStrategy
+    }) : contextElementRect);
   return {
-    top: (z.top - f.top + b.top) / g.y,
-    bottom: (f.bottom - z.bottom + b.bottom) / g.y,
-    left: (z.left - f.left + b.left) / g.x,
-    right: (f.right - z.right + b.right) / g.x
+    top: (clippingRect.top - viewportRect.top + paddingObject.top) / offsetParentIsElement.y,
+    bottom: (viewportRect.bottom - clippingRect.bottom + paddingObject.bottom) / offsetParentIsElement.y,
+    left: (clippingRect.left - viewportRect.left + paddingObject.left) / offsetParentIsElement.x,
+    right: (viewportRect.right - clippingRect.right + paddingObject.right) / offsetParentIsElement.x
   }
 }
-var ci = t => ({
+var arrowMiddleware = arrowOptions => ({
   name: "arrow",
-  options: t,
-  async fn(e) {
+  options: arrowOptions,
+  async fn(middlewareArgs) {
     let {
-      x: o,
-      y: r,
-      placement: i,
-      rects: s,
-      platform: a,
-      elements: u,
-      middlewareData: c
-    } = e, {
-      element: d,
-      padding: h = 0
-    } = te(t, e) || {};
-    if (d == null) return {};
-    let p = Fo(h),
-      v = {
-        x: o,
-        y: r
+      x: coordX,
+      y: coordY,
+      placement: placement,
+      rects: elementRects,
+      platform: platform,
+      elements: floatingElements,
+      middlewareData: middlewareData
+    } = middlewareArgs, {
+      element: arrowElement,
+      padding: arrowPadding = 0
+    } = evaluateOption(arrowOptions, middlewareArgs) || {};
+    if (arrowElement == null) return {};
+    let paddingObject = getPaddingObject(arrowPadding),
+      arrowCoords = {
+        x: coordX,
+        y: coordY
       },
-      m = go(i),
-      b = fo(m),
-      $ = await a.getDimensions(d),
-      V = m === "y",
-      z = V ? "top" : "left",
-      L = V ? "bottom" : "right",
-      R = V ? "clientHeight" : "clientWidth",
-      g = s.reference[b] + s.reference[m] - v[m] - s.floating[b],
-      f = v[m] - s.reference[m],
-      x = await (a.getOffsetParent == null ? void 0 : a.getOffsetParent(
-        d)),
-      E = x ? x[R] : 0;
-    (!E || !await (a.isElement == null ? void 0 : a.isElement(x))) && (E =
-      u.floating[R] || s.floating[b]);
-    let F = g / 2 - f / 2,
-      J = E / 2 - $[b] / 2 - 1,
-      ot = Ot(p[z], J),
-      T = Ot(p[L], J),
-      U = ot,
-      q = E - $[b] - T,
-      et = E / 2 - $[b] / 2 + F,
-      lt = mo(U, et, q),
-      X = !c.arrow && ee(i) != null && et !== lt && s.reference[b] / 2 - (
-        et < U ? ot : T) - $[b] / 2 < 0,
-      yt = X ? et < U ? et - U : et - q : 0;
+      alignmentAxis = getAlignmentAxis(placement),
+      axisLength = getAxisLength(alignmentAxis),
+      arrowDimensions = await platform.getDimensions(arrowElement),
+      isVerticalAxis = alignmentAxis === "y",
+      minSideName = isVerticalAxis ? "top" : "left",
+      maxSideName = isVerticalAxis ? "bottom" : "right",
+      clientLengthProp = isVerticalAxis ? "clientHeight" : "clientWidth",
+      endDiff = elementRects.reference[axisLength] + elementRects.reference[alignmentAxis] - arrowCoords[alignmentAxis] - elementRects.floating[axisLength],
+      startDiff = arrowCoords[alignmentAxis] - elementRects.reference[alignmentAxis],
+      arrowOffsetParent = await (platform.getOffsetParent == null ? void 0 : platform.getOffsetParent(
+        arrowElement)),
+      clientLength = arrowOffsetParent ? arrowOffsetParent[clientLengthProp] : 0;
+    (!clientLength || !await (platform.isElement == null ? void 0 : platform.isElement(arrowOffsetParent))) && (clientLength =
+      floatingElements.floating[clientLengthProp] || elementRects.floating[axisLength]);
+    let centerOffset = endDiff / 2 - startDiff / 2,
+      maxPadding = clientLength / 2 - arrowDimensions[axisLength] / 2 - 1,
+      minClampValue = mathMin(paddingObject[minSideName], maxPadding),
+      maxClampValue = mathMin(paddingObject[maxSideName], maxPadding),
+      clampMin = minClampValue,
+      clampMax = clientLength - arrowDimensions[axisLength] - maxClampValue,
+      centerCoord = clientLength / 2 - arrowDimensions[axisLength] / 2 + centerOffset,
+      clampedCoord = clampValue(clampMin, centerCoord, clampMax),
+      shouldOffsetAlignment = !middlewareData.arrow && getAlignment(placement) != null && centerCoord !== clampedCoord && elementRects.reference[axisLength] / 2 - (
+        centerCoord < clampMin ? minClampValue : maxClampValue) - arrowDimensions[axisLength] / 2 < 0,
+      alignmentOffsetValue = shouldOffsetAlignment ? centerCoord < clampMin ? centerCoord - clampMin : centerCoord - clampMax : 0;
     return {
-      [m]: v[m] + yt,
+      [alignmentAxis]: arrowCoords[alignmentAxis] + alignmentOffsetValue,
       data: {
-        [m]: lt,
-        centerOffset: et - lt - yt,
-        ...X && {
-          alignmentOffset: yt
+        [alignmentAxis]: clampedCoord,
+        centerOffset: centerCoord - clampedCoord - alignmentOffsetValue,
+        ...shouldOffsetAlignment && {
+          alignmentOffset: alignmentOffsetValue
         }
       },
-      reset: X
+      reset: shouldOffsetAlignment
     }
   }
 });
-var ui = function(t) {
-  return t === void 0 && (t = {}), {
+var flipMiddleware = function(flipOptions) {
+  return flipOptions === void 0 && (flipOptions = {}), {
     name: "flip",
-    options: t,
-    async fn(e) {
-      var o, r;
+    options: flipOptions,
+    async fn(middlewareArgs) {
+      var prevFlipData, prevOverflowData;
       let {
-        placement: i,
-        middlewareData: s,
-        rects: a,
-        initialPlacement: u,
-        platform: c,
-        elements: d
-      } = e, {
-        mainAxis: h = !0,
-        crossAxis: p = !0,
-        fallbackPlacements: v,
-        fallbackStrategy: m = "bestFit",
-        fallbackAxisSideDirection: b = "none",
-        flipAlignment: $ = !0,
-        ...V
-      } = te(t, e);
-      if ((o = s.arrow) != null && o.alignmentOffset) return {};
-      let z = It(i),
-        L = It(u) === u,
-        R = await (c.isRTL == null ? void 0 : c.isRTL(d.floating)),
-        g = v || (L || !$ ? [De(u)] : si(u));
-      !v && b !== "none" && g.push(...ni(u, $, b, R));
-      let f = [u, ...g],
-        x = await bo(e, V),
-        E = [],
-        F = ((r = s.flip) == null ? void 0 : r.overflows) || [];
-      if (h && E.push(x[z]), p) {
-        let U = ii(i, a, R);
-        E.push(x[U[0]], x[U[1]])
+        placement: placement,
+        middlewareData: middlewareData,
+        rects: elementRects,
+        initialPlacement: initialPlacement,
+        platform: platform,
+        elements: floatingElements
+      } = middlewareArgs, {
+        mainAxis: checkMainAxis = !0,
+        crossAxis: checkCrossAxis = !0,
+        fallbackPlacements: fallbackPlacements,
+        fallbackStrategy: fallbackStrategy = "bestFit",
+        fallbackAxisSideDirection: fallbackAxisSideDirection = "none",
+        flipAlignment: flipAlignment = !0,
+        ...restOverflowOptions
+      } = evaluateOption(flipOptions, middlewareArgs);
+      if ((prevFlipData = middlewareData.arrow) != null && prevFlipData.alignmentOffset) return {};
+      let currentSide = getSide(placement),
+        isBasePlacement = getSide(initialPlacement) === initialPlacement,
+        isRtl = await (platform.isRTL == null ? void 0 : platform.isRTL(floatingElements.floating)),
+        fallbackList = fallbackPlacements || (isBasePlacement || !flipAlignment ? [getOppositePlacement(initialPlacement)] : getExpandedPlacements(initialPlacement));
+      !fallbackPlacements && fallbackAxisSideDirection !== "none" && fallbackList.push(...getOppositeAxisPlacements(initialPlacement, flipAlignment, fallbackAxisSideDirection, isRtl));
+      let allPlacements = [initialPlacement, ...fallbackList],
+        overflowResult = await detectOverflow(middlewareArgs, restOverflowOptions),
+        overflowsList = [],
+        previousOverflows = ((prevOverflowData = middlewareData.flip) == null ? void 0 : prevOverflowData.overflows) || [];
+      if (checkMainAxis && overflowsList.push(overflowResult[currentSide]), checkCrossAxis) {
+        let overflowSides = getAlignmentSides(placement, elementRects, isRtl);
+        overflowsList.push(overflowResult[overflowSides[0]], overflowResult[overflowSides[1]])
       }
-      if (F = [...F, {
-          placement: i,
-          overflows: E
-        }], !E.every(U => U <= 0)) {
-        var J, ot;
-        let U = (((J = s.flip) == null ? void 0 : J.index) || 0) + 1,
-          q = f[U];
-        if (q) return {
+      if (previousOverflows = [...previousOverflows, {
+          placement: placement,
+          overflows: overflowsList
+        }], !overflowsList.every(overflowMeasurement => overflowMeasurement <= 0)) {
+        var flipIndexHolder, nextPlacementHolder;
+        let nextFlipIndex = (((flipIndexHolder = middlewareData.flip) == null ? void 0 : flipIndexHolder.index) || 0) + 1,
+          nextPlacement = allPlacements[nextFlipIndex];
+        if (nextPlacement) return {
           data: {
-            index: U,
-            overflows: F
+            index: nextFlipIndex,
+            overflows: previousOverflows
           },
           reset: {
-            placement: q
+            placement: nextPlacement
           }
         };
-        let et = (ot = F.filter(lt => lt.overflows[0] <= 0)
-            .sort((lt, X) => lt.overflows[1] - X.overflows[1])[0]) ==
-          null ? void 0 : ot.placement;
-        if (!et) switch (m) {
+        let resetPlacement = (nextPlacementHolder = previousOverflows.filter(placementOverflowEntry => placementOverflowEntry.overflows[0] <= 0)
+            .sort((overflowEntryA, overflowEntryB) => overflowEntryA.overflows[1] - overflowEntryB.overflows[1])[0]) ==
+          null ? void 0 : nextPlacementHolder.placement;
+        if (!resetPlacement) switch (fallbackStrategy) {
           case "bestFit": {
-            var T;
-            let lt = (T = F.map(X => [X.placement, X.overflows.filter(
-                  yt => yt > 0)
-                .reduce((yt, vs) => yt + vs, 0)
+            var placementScoreList;
+            let chosenPlacement = (placementScoreList = previousOverflows.map(placementScoreEntry => [placementScoreEntry.placement, placementScoreEntry.overflows.filter(
+                  positiveOverflow => positiveOverflow > 0)
+                .reduce((overflowSumAcc, overflowSumItem) => overflowSumAcc + overflowSumItem, 0)
               ])
-              .sort((X, yt) => X[1] - yt[1])[0]) == null ? void 0 : T[
+              .sort((scoreEntryA, scoreEntryB) => scoreEntryA[1] - scoreEntryB[1])[0]) == null ? void 0 : placementScoreList[
               0];
-            lt && (et = lt);
+            chosenPlacement && (resetPlacement = chosenPlacement);
             break
           }
           case "initialPlacement":
-            et = u;
+            resetPlacement = initialPlacement;
             break
         }
-        if (i !== et) return {
+        if (placement !== resetPlacement) return {
           reset: {
-            placement: et
+            placement: resetPlacement
           }
         }
       }
@@ -4209,167 +4209,167 @@ var ui = function(t) {
     }
   }
 };
-async function on(t, e) {
+async function convertOffsetToCoords(offsetState, offsetOptions) {
   let {
-    placement: o,
-    platform: r,
-    elements: i
-  } = t, s = await (r.isRTL == null ? void 0 : r.isRTL(i.floating)), a = It(
-    o), u = ee(o), c = he(o) === "y", d = ["left", "top"].includes(a) ? -1 :
-    1, h = s && c ? -1 : 1, p = te(e, t), {
-      mainAxis: v,
-      crossAxis: m,
-      alignmentAxis: b
-    } = typeof p == "number" ? {
-      mainAxis: p,
+    placement: placement,
+    platform: platform,
+    elements: floatingElements
+  } = offsetState, isRtl = await (platform.isRTL == null ? void 0 : platform.isRTL(floatingElements.floating)), currentSide = getSide(
+    placement), currentAlignment = getAlignment(placement), isVerticalSide = getSideAxis(placement) === "y", mainAxisMultiplier = ["left", "top"].includes(currentSide) ? -1 :
+    1, crossAxisMultiplier = isRtl && isVerticalSide ? -1 : 1, resolvedOffset = evaluateOption(offsetOptions, offsetState), {
+      mainAxis: mainAxisOffset,
+      crossAxis: crossAxisOffset,
+      alignmentAxis: alignmentAxisOffset
+    } = typeof resolvedOffset == "number" ? {
+      mainAxis: resolvedOffset,
       crossAxis: 0,
       alignmentAxis: null
     } : {
       mainAxis: 0,
       crossAxis: 0,
       alignmentAxis: null,
-      ...p
+      ...resolvedOffset
     };
-  return u && typeof b == "number" && (m = u === "end" ? b * -1 : b), c ? {
-    x: m * h,
-    y: v * d
+  return currentAlignment && typeof alignmentAxisOffset == "number" && (crossAxisOffset = currentAlignment === "end" ? alignmentAxisOffset * -1 : alignmentAxisOffset), isVerticalSide ? {
+    x: crossAxisOffset * crossAxisMultiplier,
+    y: mainAxisOffset * mainAxisMultiplier
   } : {
-    x: v * d,
-    y: m * h
+    x: mainAxisOffset * mainAxisMultiplier,
+    y: crossAxisOffset * crossAxisMultiplier
   }
 }
-var Ho = function(t) {
-    return t === void 0 && (t = 0), {
+var offsetMiddleware = function(offsetOptions) {
+    return offsetOptions === void 0 && (offsetOptions = 0), {
       name: "offset",
-      options: t,
-      async fn(e) {
-        var o, r;
+      options: offsetOptions,
+      async fn(middlewareArgs) {
+        var diffCoords, diffPlacement;
         let {
-          x: i,
-          y: s,
-          placement: a,
-          middlewareData: u
-        } = e, c = await on(e, t);
-        return a === ((o = u.offset) == null ? void 0 : o.placement) && (r =
-          u.arrow) != null && r.alignmentOffset ? {} : {
-          x: i + c.x,
-          y: s + c.y,
+          x: coordX,
+          y: coordY,
+          placement: currentPlacement,
+          middlewareData: middlewareData
+        } = middlewareArgs, offsetCoords = await convertOffsetToCoords(middlewareArgs, offsetOptions);
+        return currentPlacement === ((diffCoords = middlewareData.offset) == null ? void 0 : diffCoords.placement) && (diffPlacement =
+          middlewareData.arrow) != null && diffPlacement.alignmentOffset ? {} : {
+          x: coordX + offsetCoords.x,
+          y: coordY + offsetCoords.y,
           data: {
-            ...c,
-            placement: a
+            ...offsetCoords,
+            placement: currentPlacement
           }
         }
       }
     }
   },
-  di = function(t) {
-    return t === void 0 && (t = {}), {
+  shiftMiddleware = function(shiftOptions) {
+    return shiftOptions === void 0 && (shiftOptions = {}), {
       name: "shift",
-      options: t,
-      async fn(e) {
+      options: shiftOptions,
+      async fn(middlewareArgs) {
         let {
-          x: o,
-          y: r,
-          placement: i
-        } = e, {
-          mainAxis: s = !0,
-          crossAxis: a = !1,
-          limiter: u = {
-            fn: V => {
+          x: coordX,
+          y: coordY,
+          placement: currentPlacement
+        } = middlewareArgs, {
+          mainAxis: checkMainAxis = !0,
+          crossAxis: checkCrossAxis = !1,
+          limiter: shiftLimiter = {
+            fn: limiterArgs => {
               let {
-                x: z,
-                y: L
-              } = V;
+                x: limitedX,
+                y: limitedY
+              } = limiterArgs;
               return {
-                x: z,
-                y: L
+                x: limitedX,
+                y: limitedY
               }
             }
           },
-          ...c
-        } = te(t, e), d = {
-          x: o,
-          y: r
-        }, h = await bo(e, c), p = he(It(i)), v = No(p), m = d[v], b = d[
-          p];
-        if (s) {
-          let V = v === "y" ? "top" : "left",
-            z = v === "y" ? "bottom" : "right",
-            L = m + h[V],
-            R = m - h[z];
-          m = mo(L, m, R)
+          ...detectOverflowOptions
+        } = evaluateOption(shiftOptions, middlewareArgs), shiftCoords = {
+          x: coordX,
+          y: coordY
+        }, overflowAmounts = await detectOverflow(middlewareArgs, detectOverflowOptions), mainAxisName = getSideAxis(getSide(currentPlacement)), crossAxisName = getOppositeAxis(mainAxisName), mainAxisCoord = shiftCoords[crossAxisName], crossAxisCoord = shiftCoords[
+          mainAxisName];
+        if (checkMainAxis) {
+          let mainMinSideName = crossAxisName === "y" ? "top" : "left",
+            mainMaxSideName = crossAxisName === "y" ? "bottom" : "right",
+            clampedMainMin = mainAxisCoord + overflowAmounts[mainMinSideName],
+            clampedMainMax = mainAxisCoord - overflowAmounts[mainMaxSideName];
+          mainAxisCoord = clampValue(clampedMainMin, mainAxisCoord, clampedMainMax)
         }
-        if (a) {
-          let V = p === "y" ? "top" : "left",
-            z = p === "y" ? "bottom" : "right",
-            L = b + h[V],
-            R = b - h[z];
-          b = mo(L, b, R)
+        if (checkCrossAxis) {
+          let crossMinSideName = mainAxisName === "y" ? "top" : "left",
+            crossMaxSideName = mainAxisName === "y" ? "bottom" : "right",
+            clampedCrossMin = crossAxisCoord + overflowAmounts[crossMinSideName],
+            clampedCrossMax = crossAxisCoord - overflowAmounts[crossMaxSideName];
+          crossAxisCoord = clampValue(clampedCrossMin, crossAxisCoord, clampedCrossMax)
         }
-        let $ = u.fn({
-          ...e,
-          [v]: m,
-          [p]: b
+        let limitedShiftCoords = shiftLimiter.fn({
+          ...middlewareArgs,
+          [crossAxisName]: mainAxisCoord,
+          [mainAxisName]: crossAxisCoord
         });
         return {
-          ...$,
+          ...limitedShiftCoords,
           data: {
-            x: $.x - o,
-            y: $.y - r
+            x: limitedShiftCoords.x - coordX,
+            y: limitedShiftCoords.y - coordY
           }
         }
       }
     }
   };
-var pi = function(t) {
-  return t === void 0 && (t = {}), {
+var sizeMiddleware = function(sizeOptions) {
+  return sizeOptions === void 0 && (sizeOptions = {}), {
     name: "size",
-    options: t,
-    async fn(e) {
+    options: sizeOptions,
+    async fn(middlewareArgs) {
       let {
-        placement: o,
-        rects: r,
-        platform: i,
-        elements: s
-      } = e, {
-        apply: a = () => {},
-        ...u
-      } = te(t, e), c = await bo(e, u), d = It(o), h = ee(o), p = he(
-        o) === "y", {
-          width: v,
-          height: m
-        } = r.floating, b, $;
-      d === "top" || d === "bottom" ? (b = d, $ = h === (await (i.isRTL ==
-          null ? void 0 : i.isRTL(s.floating)) ? "start" : "end") ?
-        "left" : "right") : ($ = d, b = h === "end" ? "top" : "bottom");
-      let V = m - c[b],
-        z = v - c[$],
-        L = !e.middlewareData.shift,
-        R = V,
-        g = z;
-      if (p) {
-        let x = v - c.left - c.right;
-        g = h || L ? Ot(z, x) : x
+        placement: currentPlacement,
+        rects: elementRects,
+        platform: platform,
+        elements: floatingElements
+      } = middlewareArgs, {
+        apply: applyCallback = () => {},
+        ...detectOverflowOptions
+      } = evaluateOption(sizeOptions, middlewareArgs), overflowAmounts = await detectOverflow(middlewareArgs, detectOverflowOptions), currentSide = getSide(currentPlacement), currentAlignment = getAlignment(currentPlacement), placementAxis = getSideAxis(
+        currentPlacement) === "y", {
+          width: floatingWidth,
+          height: floatingHeight
+        } = elementRects.floating, availableHeightProp, availableWidthProp;
+      currentSide === "top" || currentSide === "bottom" ? (availableHeightProp = currentSide, availableWidthProp = currentAlignment === (await (platform.isRTL ==
+          null ? void 0 : platform.isRTL(floatingElements.floating)) ? "start" : "end") ?
+        "left" : "right") : (availableWidthProp = currentSide, availableHeightProp = currentAlignment === "end" ? "top" : "bottom");
+      let computedAvailHeight = floatingHeight - overflowAmounts[availableHeightProp],
+        computedAvailWidth = floatingWidth - overflowAmounts[availableWidthProp],
+        noShiftApplied = !middlewareArgs.middlewareData.shift,
+        finalAvailHeight = computedAvailHeight,
+        finalAvailWidth = computedAvailWidth;
+      if (placementAxis) {
+        let widthMinusHorizOverflow = floatingWidth - overflowAmounts.left - overflowAmounts.right;
+        finalAvailWidth = currentAlignment || noShiftApplied ? mathMin(computedAvailWidth, widthMinusHorizOverflow) : widthMinusHorizOverflow
       } else {
-        let x = m - c.top - c.bottom;
-        R = h || L ? Ot(V, x) : x
+        let heightMinusVertOverflow = floatingHeight - overflowAmounts.top - overflowAmounts.bottom;
+        finalAvailHeight = currentAlignment || noShiftApplied ? mathMin(computedAvailHeight, heightMinusVertOverflow) : heightMinusVertOverflow
       }
-      if (L && !h) {
-        let x = dt(c.left, 0),
-          E = dt(c.right, 0),
-          F = dt(c.top, 0),
-          J = dt(c.bottom, 0);
-        p ? g = v - 2 * (x !== 0 || E !== 0 ? x + E : dt(c.left, c
-          .right)) : R = m - 2 * (F !== 0 || J !== 0 ? F + J : dt(c.top, c
+      if (noShiftApplied && !currentAlignment) {
+        let overflowLeft = mathMax(overflowAmounts.left, 0),
+          overflowRight = mathMax(overflowAmounts.right, 0),
+          overflowTop = mathMax(overflowAmounts.top, 0),
+          overflowBottom = mathMax(overflowAmounts.bottom, 0);
+        placementAxis ? finalAvailWidth = floatingWidth - 2 * (overflowLeft !== 0 || overflowRight !== 0 ? overflowLeft + overflowRight : mathMax(overflowAmounts.left, overflowAmounts
+          .right)) : finalAvailHeight = floatingHeight - 2 * (overflowTop !== 0 || overflowBottom !== 0 ? overflowTop + overflowBottom : mathMax(overflowAmounts.top, overflowAmounts
             .bottom))
       }
-      await a({
-        ...e,
-        availableWidth: g,
-        availableHeight: R
+      await applyCallback({
+        ...middlewareArgs,
+        availableWidth: finalAvailWidth,
+        availableHeight: finalAvailHeight
       });
-      let f = await i.getDimensions(s.floating);
-      return v !== f.width || m !== f.height ? {
+      let floatingDimensions = await platform.getDimensions(floatingElements.floating);
+      return floatingWidth !== floatingDimensions.width || floatingHeight !== floatingDimensions.height ? {
         reset: {
           rects: !0
         }
@@ -4378,609 +4378,609 @@ var pi = function(t) {
   }
 };
 
-function Bt(t) {
-  return mi(t) ? (t.nodeName || "")
+function getNodeName(node) {
+  return isNode(node) ? (node.nodeName || "")
     .toLowerCase() : "#document"
 }
 
-function mt(t) {
-  var e;
-  return (t == null || (e = t.ownerDocument) == null ? void 0 : e
+function getWindow(node) {
+  var nodeDocument;
+  return (node == null || (nodeDocument = node.ownerDocument) == null ? void 0 : nodeDocument
     .defaultView) || window
 }
 
-function zt(t) {
-  var e;
-  return (e = (mi(t) ? t.ownerDocument : t.document) || window.document) ==
-    null ? void 0 : e.documentElement
+function getDocumentElement(node) {
+  var nodeDocument;
+  return (nodeDocument = (isNode(node) ? node.ownerDocument : node.document) || window.document) ==
+    null ? void 0 : nodeDocument.documentElement
 }
 
-function mi(t) {
-  return t instanceof Node || t instanceof mt(t)
+function isNode(maybeNode) {
+  return maybeNode instanceof Node || maybeNode instanceof getWindow(maybeNode)
     .Node
 }
 
-function Mt(t) {
-  return t instanceof Element || t instanceof mt(t)
+function isElement(maybeElement) {
+  return maybeElement instanceof Element || maybeElement instanceof getWindow(maybeElement)
     .Element
 }
 
-function Ct(t) {
-  return t instanceof HTMLElement || t instanceof mt(t)
+function isHTMLElement(maybeHtmlElement) {
+  return maybeHtmlElement instanceof HTMLElement || maybeHtmlElement instanceof getWindow(maybeHtmlElement)
     .HTMLElement
 }
 
-function hi(t) {
-  return typeof ShadowRoot > "u" ? !1 : t instanceof ShadowRoot ||
-    t instanceof mt(t)
+function isShadowRoot(maybeShadowRoot) {
+  return typeof ShadowRoot > "u" ? !1 : maybeShadowRoot instanceof ShadowRoot ||
+    maybeShadowRoot instanceof getWindow(maybeShadowRoot)
     .ShadowRoot
 }
 
-function fe(t) {
+function isOverflowElement(element) {
   let {
-    overflow: e,
-    overflowX: o,
-    overflowY: r,
-    display: i
-  } = vt(t);
-  return /auto|scroll|overlay|hidden|clip/.test(e + r + o) && !["inline",
+    overflow: overflowStyle,
+    overflowX: overflowXStyle,
+    overflowY: overflowYStyle,
+    display: displayStyle
+  } = getComputedStyleForNode(element);
+  return /auto|scroll|overlay|hidden|clip/.test(overflowStyle + overflowYStyle + overflowXStyle) && !["inline",
     "contents"
-  ].includes(i)
+  ].includes(displayStyle)
 }
 
-function fi(t) {
-  return ["table", "td", "th"].includes(Bt(t))
+function isTableElement(element) {
+  return ["table", "td", "th"].includes(getNodeName(element))
 }
 
-function yo(t) {
-  let e = vo(),
-    o = vt(t);
-  return o.transform !== "none" || o.perspective !== "none" || (o
-    .containerType ? o.containerType !== "normal" : !1) || !e && (o
-    .backdropFilter ? o.backdropFilter !== "none" : !1) || !e && (o.filter ? o
+function isContainingBlock(element) {
+  let isWebkitBrowser = isWebkit(),
+    computedStyle = getComputedStyleForNode(element);
+  return computedStyle.transform !== "none" || computedStyle.perspective !== "none" || (computedStyle
+    .containerType ? computedStyle.containerType !== "normal" : !1) || !isWebkitBrowser && (computedStyle
+    .backdropFilter ? computedStyle.backdropFilter !== "none" : !1) || !isWebkitBrowser && (computedStyle.filter ? computedStyle
     .filter !== "none" : !1) || ["transform", "perspective", "filter"].some(
-    r => (o.willChange || "")
-    .includes(r)) || ["paint", "layout", "strict", "content"].some(r => (o
+    willChangeProp => (computedStyle.willChange || "")
+    .includes(willChangeProp)) || ["paint", "layout", "strict", "content"].some(containProp => (computedStyle
       .contain || "")
-    .includes(r))
+    .includes(containProp))
 }
 
-function Uo(t) {
-  let e = re(t);
-  for (; Ct(e) && !Be(e);) {
-    if (yo(e)) return e;
-    e = re(e)
+function getContainingBlock(element) {
+  let currentParent = getParentNode(element);
+  for (; isHTMLElement(currentParent) && !isLastTraversableNode(currentParent);) {
+    if (isContainingBlock(currentParent)) return currentParent;
+    currentParent = getParentNode(currentParent)
   }
   return null
 }
 
-function vo() {
+function isWebkit() {
   return typeof CSS > "u" || !CSS.supports ? !1 : CSS.supports(
     "-webkit-backdrop-filter", "none")
 }
 
-function Be(t) {
-  return ["html", "body", "#document"].includes(Bt(t))
+function isLastTraversableNode(node) {
+  return ["html", "body", "#document"].includes(getNodeName(node))
 }
 
-function vt(t) {
-  return mt(t)
-    .getComputedStyle(t)
+function getComputedStyleForNode(element) {
+  return getWindow(element)
+    .getComputedStyle(element)
 }
 
-function Ne(t) {
-  return Mt(t) ? {
-    scrollLeft: t.scrollLeft,
-    scrollTop: t.scrollTop
+function getNodeScroll(element) {
+  return isElement(element) ? {
+    scrollLeft: element.scrollLeft,
+    scrollTop: element.scrollTop
   } : {
-    scrollLeft: t.pageXOffset,
-    scrollTop: t.pageYOffset
+    scrollLeft: element.pageXOffset,
+    scrollTop: element.pageYOffset
   }
 }
 
-function re(t) {
-  if (Bt(t) === "html") return t;
-  let e = t.assignedSlot || t.parentNode || hi(t) && t.host || zt(t);
-  return hi(e) ? e.host : e
+function getParentNode(node) {
+  if (getNodeName(node) === "html") return node;
+  let parentCandidate = node.assignedSlot || node.parentNode || isShadowRoot(node) && node.host || getDocumentElement(node);
+  return isShadowRoot(parentCandidate) ? parentCandidate.host : parentCandidate
 }
 
-function gi(t) {
-  let e = re(t);
-  return Be(e) ? t.ownerDocument ? t.ownerDocument.body : t.body : Ct(e) && fe(
-    e) ? e : gi(e)
+function getNearestOverflowAncestor(node) {
+  let parentNode = getParentNode(node);
+  return isLastTraversableNode(parentNode) ? node.ownerDocument ? node.ownerDocument.body : node.body : isHTMLElement(parentNode) && isOverflowElement(
+    parentNode) ? parentNode : getNearestOverflowAncestor(parentNode)
 }
 
-function me(t, e, o) {
-  var r;
-  e === void 0 && (e = []), o === void 0 && (o = !0);
-  let i = gi(t),
-    s = i === ((r = t.ownerDocument) == null ? void 0 : r.body),
-    a = mt(i);
-  return s ? e.concat(a, a.visualViewport || [], fe(i) ? i : [], a
-    .frameElement && o ? me(a.frameElement) : []) : e.concat(i, me(i, [], o))
+function getOverflowAncestors(node, ancestorList, traverseIframes) {
+  var ownerBodyRef;
+  ancestorList === void 0 && (ancestorList = []), traverseIframes === void 0 && (traverseIframes = !0);
+  let overflowAncestor = getNearestOverflowAncestor(node),
+    isBodyAncestor = overflowAncestor === ((ownerBodyRef = node.ownerDocument) == null ? void 0 : ownerBodyRef.body),
+    ancestorWindow = getWindow(overflowAncestor);
+  return isBodyAncestor ? ancestorList.concat(ancestorWindow, ancestorWindow.visualViewport || [], isOverflowElement(overflowAncestor) ? overflowAncestor : [], ancestorWindow
+    .frameElement && traverseIframes ? getOverflowAncestors(ancestorWindow.frameElement) : []) : ancestorList.concat(overflowAncestor, getOverflowAncestors(overflowAncestor, [], traverseIframes))
 }
 
-function vi(t) {
-  let e = vt(t),
-    o = parseFloat(e.width) || 0,
-    r = parseFloat(e.height) || 0,
-    i = Ct(t),
-    s = i ? t.offsetWidth : o,
-    a = i ? t.offsetHeight : r,
-    u = Ve(o) !== s || Ve(r) !== a;
-  return u && (o = s, r = a), {
-    width: o,
-    height: r,
-    $: u
+function getCssDimensions(element) {
+  let computedStyle = getComputedStyleForNode(element),
+    cssWidth = parseFloat(computedStyle.width) || 0,
+    cssHeight = parseFloat(computedStyle.height) || 0,
+    isHtmlElement = isHTMLElement(element),
+    measuredWidth = isHtmlElement ? element.offsetWidth : cssWidth,
+    measuredHeight = isHtmlElement ? element.offsetHeight : cssHeight,
+    dimensionsMismatch = mathRound(cssWidth) !== measuredWidth || mathRound(cssHeight) !== measuredHeight;
+  return dimensionsMismatch && (cssWidth = measuredWidth, cssHeight = measuredHeight), {
+    width: cssWidth,
+    height: cssHeight,
+    $: dimensionsMismatch
   }
 }
 
-function jo(t) {
-  return Mt(t) ? t : t.contextElement
+function unwrapElement(maybeVirtualElement) {
+  return isElement(maybeVirtualElement) ? maybeVirtualElement : maybeVirtualElement.contextElement
 }
 
-function ge(t) {
-  let e = jo(t);
-  if (!Ct(e)) return Vt(1);
-  let o = e.getBoundingClientRect(),
+function getScale(elementOrVirtual) {
+  let scaleElement = unwrapElement(elementOrVirtual);
+  if (!isHTMLElement(scaleElement)) return createCoords(1);
+  let boundingRect = scaleElement.getBoundingClientRect(),
     {
-      width: r,
-      height: i,
-      $: s
-    } = vi(e),
-    a = (s ? Ve(o.width) : o.width) / r,
-    u = (s ? Ve(o.height) : o.height) / i;
-  return (!a || !Number.isFinite(a)) && (a = 1), (!u || !Number.isFinite(u)) &&
-    (u = 1), {
-      x: a,
-      y: u
+      width: cssWidthDim,
+      height: cssHeightDim,
+      $: dimensionsInvalid
+    } = getCssDimensions(scaleElement),
+    scaleX = (dimensionsInvalid ? mathRound(boundingRect.width) : boundingRect.width) / cssWidthDim,
+    scaleY = (dimensionsInvalid ? mathRound(boundingRect.height) : boundingRect.height) / cssHeightDim;
+  return (!scaleX || !Number.isFinite(scaleX)) && (scaleX = 1), (!scaleY || !Number.isFinite(scaleY)) &&
+    (scaleY = 1), {
+      x: scaleX,
+      y: scaleY
     }
 }
-var rn = Vt(0);
+var zeroVisualOffsets = createCoords(0);
 
-function _i(t) {
-  let e = mt(t);
-  return !vo() || !e.visualViewport ? rn : {
-    x: e.visualViewport.offsetLeft,
-    y: e.visualViewport.offsetTop
+function getVisualOffsets(element) {
+  let elementWindow = getWindow(element);
+  return !isWebkit() || !elementWindow.visualViewport ? zeroVisualOffsets : {
+    x: elementWindow.visualViewport.offsetLeft,
+    y: elementWindow.visualViewport.offsetTop
   }
 }
 
-function sn(t, e, o) {
-  return e === void 0 && (e = !1), !o || e && o !== mt(t) ? !1 : e
+function shouldAddVisualOffsets(element, isFixedStrategy, floatingOffsetParent) {
+  return isFixedStrategy === void 0 && (isFixedStrategy = !1), !floatingOffsetParent || isFixedStrategy && floatingOffsetParent !== getWindow(element) ? !1 : isFixedStrategy
 }
 
-function ie(t, e, o, r) {
-  e === void 0 && (e = !1), o === void 0 && (o = !1);
-  let i = t.getBoundingClientRect(),
-    s = jo(t),
-    a = Vt(1);
-  e && (r ? Mt(r) && (a = ge(r)) : a = ge(t));
-  let u = sn(s, o, r) ? _i(s) : Vt(0),
-    c = (i.left + u.x) / a.x,
-    d = (i.top + u.y) / a.y,
-    h = i.width / a.x,
-    p = i.height / a.y;
-  if (s) {
-    let v = mt(s),
-      m = r && Mt(r) ? mt(r) : r,
-      b = v.frameElement;
-    for (; b && r && m !== v;) {
-      let $ = ge(b),
-        V = b.getBoundingClientRect(),
-        z = vt(b),
-        L = V.left + (b.clientLeft + parseFloat(z.paddingLeft)) * $.x,
-        R = V.top + (b.clientTop + parseFloat(z.paddingTop)) * $.y;
-      c *= $.x, d *= $.y, h *= $.x, p *= $.y, c += L, d += R, b = mt(b)
+function getBoundingClientRectScaled(elementOrVirtual, includeScale, isFixedStrategy, offsetParentArg) {
+  includeScale === void 0 && (includeScale = !1), isFixedStrategy === void 0 && (isFixedStrategy = !1);
+  let clientRect = elementOrVirtual.getBoundingClientRect(),
+    unwrappedElement = unwrapElement(elementOrVirtual),
+    scaleCoords = createCoords(1);
+  includeScale && (offsetParentArg ? isElement(offsetParentArg) && (scaleCoords = getScale(offsetParentArg)) : scaleCoords = getScale(elementOrVirtual));
+  let visualOffsets = shouldAddVisualOffsets(unwrappedElement, isFixedStrategy, offsetParentArg) ? getVisualOffsets(unwrappedElement) : createCoords(0),
+    adjustedLeft = (clientRect.left + visualOffsets.x) / scaleCoords.x,
+    adjustedTop = (clientRect.top + visualOffsets.y) / scaleCoords.y,
+    adjustedWidth = clientRect.width / scaleCoords.x,
+    adjustedHeight = clientRect.height / scaleCoords.y;
+  if (unwrappedElement) {
+    let elementWindow = getWindow(unwrappedElement),
+      offsetParentWindow = offsetParentArg && isElement(offsetParentArg) ? getWindow(offsetParentArg) : offsetParentArg,
+      frameElement = elementWindow.frameElement;
+    for (; frameElement && offsetParentArg && offsetParentWindow !== elementWindow;) {
+      let frameScale = getScale(frameElement),
+        frameRect = frameElement.getBoundingClientRect(),
+        frameStyle = getComputedStyleForNode(frameElement),
+        frameOffsetLeft = frameRect.left + (frameElement.clientLeft + parseFloat(frameStyle.paddingLeft)) * frameScale.x,
+        frameOffsetTop = frameRect.top + (frameElement.clientTop + parseFloat(frameStyle.paddingTop)) * frameScale.y;
+      adjustedLeft *= frameScale.x, adjustedTop *= frameScale.y, adjustedWidth *= frameScale.x, adjustedHeight *= frameScale.y, adjustedLeft += frameOffsetLeft, adjustedTop += frameOffsetTop, frameElement = getWindow(frameElement)
         .frameElement
     }
   }
-  return oe({
-    width: h,
-    height: p,
-    x: c,
-    y: d
+  return rectToClientRect({
+    width: adjustedWidth,
+    height: adjustedHeight,
+    x: adjustedLeft,
+    y: adjustedTop
   })
 }
-var nn = [":popover-open", ":modal"];
+var topLayerSelectors = [":popover-open", ":modal"];
 
-function wi(t) {
-  let e = !1,
-    o = 0,
-    r = 0;
+function getTopLayerOffset(floatingElement) {
+  let isTopLayer = !1,
+    topLayerX = 0,
+    topLayerY = 0;
 
-  function i(s) {
+  function collectTransformOffset(transformOwner) {
     try {
-      e = e || t.matches(s)
+      isTopLayer = isTopLayer || floatingElement.matches(transformOwner)
     } catch {}
   }
-  if (nn.forEach(s => {
-      i(s)
-    }), e) {
-    let s = Uo(t);
-    if (s) {
-      let a = s.getBoundingClientRect();
-      o = a.x, r = a.y
+  if (topLayerSelectors.forEach(topLayerSelector => {
+      collectTransformOffset(topLayerSelector)
+    }), isTopLayer) {
+    let containingBlockElement = getContainingBlock(floatingElement);
+    if (containingBlockElement) {
+      let containingBlockRect = containingBlockElement.getBoundingClientRect();
+      topLayerX = containingBlockRect.x, topLayerY = containingBlockRect.y
     }
   }
-  return [e, o, r]
+  return [isTopLayer, topLayerX, topLayerY]
 }
 
-function an(t) {
+function convertToViewportRelativeRect(conversionArgs) {
   let {
-    elements: e,
-    rect: o,
-    offsetParent: r,
-    strategy: i
-  } = t, s = zt(r), [a] = e ? wi(e.floating) : [!1];
-  if (r === s || a) return o;
-  let u = {
+    elements: floatingElements,
+    rect: rectToConvert,
+    offsetParent: offsetParentNode,
+    strategy: positionStrategy
+  } = conversionArgs, docElement = getDocumentElement(offsetParentNode), [isTopLayerFloating] = floatingElements ? getTopLayerOffset(floatingElements.floating) : [!1];
+  if (offsetParentNode === docElement || isTopLayerFloating) return rectToConvert;
+  let convertedRect = {
       scrollLeft: 0,
       scrollTop: 0
     },
-    c = Vt(1),
-    d = Vt(0),
-    h = Ct(r);
-  if ((h || !h && i !== "fixed") && ((Bt(r) !== "body" || fe(s)) && (u = Ne(r)),
-      Ct(r))) {
-    let p = ie(r);
-    c = ge(r), d.x = p.x + r.clientLeft, d.y = p.y + r.clientTop
+    scaleCoords = createCoords(1),
+    scrollOffsetCoords = createCoords(0),
+    offsetParentIsHtml = isHTMLElement(offsetParentNode);
+  if ((offsetParentIsHtml || !offsetParentIsHtml && positionStrategy !== "fixed") && ((getNodeName(offsetParentNode) !== "body" || isOverflowElement(docElement)) && (convertedRect = getNodeScroll(offsetParentNode)),
+      isHTMLElement(offsetParentNode))) {
+    let offsetParentRect = getBoundingClientRectScaled(offsetParentNode);
+    scaleCoords = getScale(offsetParentNode), scrollOffsetCoords.x = offsetParentRect.x + offsetParentNode.clientLeft, scrollOffsetCoords.y = offsetParentRect.y + offsetParentNode.clientTop
   }
   return {
-    width: o.width * c.x,
-    height: o.height * c.y,
-    x: o.x * c.x - u.scrollLeft * c.x + d.x,
-    y: o.y * c.y - u.scrollTop * c.y + d.y
+    width: rectToConvert.width * scaleCoords.x,
+    height: rectToConvert.height * scaleCoords.y,
+    x: rectToConvert.x * scaleCoords.x - convertedRect.scrollLeft * scaleCoords.x + scrollOffsetCoords.x,
+    y: rectToConvert.y * scaleCoords.y - convertedRect.scrollTop * scaleCoords.y + scrollOffsetCoords.y
   }
 }
 
-function ln(t) {
-  return Array.from(t.getClientRects())
+function computeScrollbarOffset(element) {
+  return Array.from(element.getClientRects())
 }
 
-function xi(t) {
-  return ie(zt(t))
-    .left + Ne(t)
+function getWindowScrollBarX(element) {
+  return getBoundingClientRectScaled(getDocumentElement(element))
+    .left + getNodeScroll(element)
     .scrollLeft
 }
 
-function cn(t) {
-  let e = zt(t),
-    o = Ne(t),
-    r = t.ownerDocument.body,
-    i = dt(e.scrollWidth, e.clientWidth, r.scrollWidth, r.clientWidth),
-    s = dt(e.scrollHeight, e.clientHeight, r.scrollHeight, r.clientHeight),
-    a = -o.scrollLeft + xi(t),
-    u = -o.scrollTop;
-  return vt(r)
-    .direction === "rtl" && (a += dt(e.clientWidth, r.clientWidth) - i), {
-      width: i,
-      height: s,
-      x: a,
-      y: u
+function getDocumentRect(element) {
+  let docElement = getDocumentElement(element),
+    nodeScroll = getNodeScroll(element),
+    bodyElement = element.ownerDocument.body,
+    documentWidth = mathMax(docElement.scrollWidth, docElement.clientWidth, bodyElement.scrollWidth, bodyElement.clientWidth),
+    documentHeight = mathMax(docElement.scrollHeight, docElement.clientHeight, bodyElement.scrollHeight, bodyElement.clientHeight),
+    documentRectLeft = -nodeScroll.scrollLeft + getWindowScrollBarX(element),
+    documentRectTop = -nodeScroll.scrollTop;
+  return getComputedStyleForNode(bodyElement)
+    .direction === "rtl" && (documentRectLeft += mathMax(docElement.clientWidth, bodyElement.clientWidth) - documentWidth), {
+      width: documentWidth,
+      height: documentHeight,
+      x: documentRectLeft,
+      y: documentRectTop
     }
 }
 
-function un(t, e) {
-  let o = mt(t),
-    r = zt(t),
-    i = o.visualViewport,
-    s = r.clientWidth,
-    a = r.clientHeight,
-    u = 0,
-    c = 0;
-  if (i) {
-    s = i.width, a = i.height;
-    let d = vo();
-    (!d || d && e === "fixed") && (u = i.offsetLeft, c = i.offsetTop)
+function getViewportRect(element, positionStrategy) {
+  let elementWindow = getWindow(element),
+    docElement = getDocumentElement(element),
+    visualViewport = elementWindow.visualViewport,
+    viewportWidth = docElement.clientWidth,
+    viewportHeight = docElement.clientHeight,
+    viewportOffsetX = 0,
+    viewportOffsetY = 0;
+  if (visualViewport) {
+    viewportWidth = visualViewport.width, viewportHeight = visualViewport.height;
+    let isWebkitBrowser = isWebkit();
+    (!isWebkitBrowser || isWebkitBrowser && positionStrategy === "fixed") && (viewportOffsetX = visualViewport.offsetLeft, viewportOffsetY = visualViewport.offsetTop)
   }
   return {
-    width: s,
-    height: a,
-    x: u,
-    y: c
+    width: viewportWidth,
+    height: viewportHeight,
+    x: viewportOffsetX,
+    y: viewportOffsetY
   }
 }
 
-function dn(t, e) {
-  let o = ie(t, !0, e === "fixed"),
-    r = o.top + t.clientTop,
-    i = o.left + t.clientLeft,
-    s = Ct(t) ? ge(t) : Vt(1),
-    a = t.clientWidth * s.x,
-    u = t.clientHeight * s.y,
-    c = i * s.x,
-    d = r * s.y;
+function getInnerBoundingClientRect(element, positionStrategy) {
+  let clientRect = getBoundingClientRectScaled(element, !0, positionStrategy === "fixed"),
+    topInner = clientRect.top + element.clientTop,
+    leftInner = clientRect.left + element.clientLeft,
+    innerScaleCoords = isHTMLElement(element) ? getScale(element) : createCoords(1),
+    innerWidth = element.clientWidth * innerScaleCoords.x,
+    innerHeight = element.clientHeight * innerScaleCoords.y,
+    scaledLeft = leftInner * innerScaleCoords.x,
+    scaledTop = topInner * innerScaleCoords.y;
   return {
-    width: a,
-    height: u,
-    x: c,
-    y: d
+    width: innerWidth,
+    height: innerHeight,
+    x: scaledLeft,
+    y: scaledTop
   }
 }
 
-function bi(t, e, o) {
-  let r;
-  if (e === "viewport") r = un(t, o);
-  else if (e === "document") r = cn(zt(t));
-  else if (Mt(e)) r = dn(e, o);
+function getClippingElementRect(element, clippingBoundary, positionStrategy) {
+  let clippingRectResult;
+  if (clippingBoundary === "viewport") clippingRectResult = getViewportRect(element, positionStrategy);
+  else if (clippingBoundary === "document") clippingRectResult = getDocumentRect(getDocumentElement(element));
+  else if (isElement(clippingBoundary)) clippingRectResult = getInnerBoundingClientRect(clippingBoundary, positionStrategy);
   else {
-    let i = _i(t);
-    r = {
-      ...e,
-      x: e.x - i.x,
-      y: e.y - i.y
+    let visualOffsets = getVisualOffsets(element);
+    clippingRectResult = {
+      ...clippingBoundary,
+      x: clippingBoundary.x - visualOffsets.x,
+      y: clippingBoundary.y - visualOffsets.y
     }
   }
-  return oe(r)
+  return rectToClientRect(clippingRectResult)
 }
 
-function Ai(t, e) {
-  let o = re(t);
-  return o === e || !Mt(o) || Be(o) ? !1 : vt(o)
-    .position === "fixed" || Ai(o, e)
+function getClippingRect(element, clippingOptions) {
+  let parentNode = getParentNode(element);
+  return parentNode === clippingOptions || !isElement(parentNode) || isLastTraversableNode(parentNode) ? !1 : getComputedStyleForNode(parentNode)
+    .position === "fixed" || getClippingRect(parentNode, clippingOptions)
 }
 
-function pn(t, e) {
-  let o = e.get(t);
-  if (o) return o;
-  let r = me(t, [], !1)
-    .filter(u => Mt(u) && Bt(u) !== "body"),
-    i = null,
-    s = vt(t)
+function getClippingAncestors(element, cacheMap) {
+  let cachedAncestors = cacheMap.get(element);
+  if (cachedAncestors) return cachedAncestors;
+  let overflowAncestors = getOverflowAncestors(element, [], !1)
+    .filter(ancestorCandidate => isElement(ancestorCandidate) && getNodeName(ancestorCandidate) !== "body"),
+    currentContainingBlock = null,
+    elementPosition = getComputedStyleForNode(element)
     .position === "fixed",
-    a = s ? re(t) : t;
-  for (; Mt(a) && !Be(a);) {
-    let u = vt(a),
-      c = yo(a);
-    !c && u.position === "fixed" && (i = null), (s ? !c && !i : !c && u
-        .position === "static" && !!i && ["absolute", "fixed"].includes(i
-          .position) || fe(a) && !c && Ai(t, a)) ? r = r.filter(h => h !== a) :
-      i = u, a = re(a)
+    currentNode = elementPosition ? getParentNode(element) : element;
+  for (; isElement(currentNode) && !isLastTraversableNode(currentNode);) {
+    let ancestorStyle = getComputedStyleForNode(currentNode),
+      ancestorIsContainingBlock = isContainingBlock(currentNode);
+    !ancestorIsContainingBlock && ancestorStyle.position === "fixed" && (currentContainingBlock = null), (elementPosition ? !ancestorIsContainingBlock && !currentContainingBlock : !ancestorIsContainingBlock && ancestorStyle
+        .position === "static" && !!currentContainingBlock && ["absolute", "fixed"].includes(currentContainingBlock
+          .position) || isOverflowElement(currentNode) && !ancestorIsContainingBlock && getClippingRect(element, currentNode)) ? overflowAncestors = overflowAncestors.filter(ancestorFilterItem => ancestorFilterItem !== currentNode) :
+      currentContainingBlock = ancestorStyle, currentNode = getParentNode(currentNode)
   }
-  return e.set(t, r), r
+  return cacheMap.set(element, overflowAncestors), overflowAncestors
 }
 
-function hn(t) {
+function platformGetClippingRect(clippingArgs) {
   let {
-    element: e,
-    boundary: o,
-    rootBoundary: r,
-    strategy: i
-  } = t, a = [...o === "clippingAncestors" ? pn(e, this._c) : [].concat(o), r],
-    u = a[0], c = a.reduce((d, h) => {
-      let p = bi(e, h, i);
-      return d.top = dt(p.top, d.top), d.right = Ot(p.right, d.right), d
-        .bottom = Ot(p.bottom, d.bottom), d.left = dt(p.left, d.left), d
-    }, bi(e, u, i));
+    element: element,
+    boundary: boundary,
+    rootBoundary: rootBoundary,
+    strategy: positionStrategy
+  } = clippingArgs, clippingRects = [...boundary === "clippingAncestors" ? getClippingAncestors(element, this._c) : [].concat(boundary), rootBoundary],
+    firstClippingRect = clippingRects[0], mergedClippingRect = clippingRects.reduce((accumulatedRect, currentBoundaryRect) => {
+      let boundaryRect = getClippingElementRect(element, currentBoundaryRect, positionStrategy);
+      return accumulatedRect.top = mathMax(boundaryRect.top, accumulatedRect.top), accumulatedRect.right = mathMin(boundaryRect.right, accumulatedRect.right), accumulatedRect
+        .bottom = mathMin(boundaryRect.bottom, accumulatedRect.bottom), accumulatedRect.left = mathMax(boundaryRect.left, accumulatedRect.left), accumulatedRect
+    }, getClippingElementRect(element, firstClippingRect, positionStrategy));
   return {
-    width: c.right - c.left,
-    height: c.bottom - c.top,
-    x: c.left,
-    y: c.top
+    width: mergedClippingRect.right - mergedClippingRect.left,
+    height: mergedClippingRect.bottom - mergedClippingRect.top,
+    x: mergedClippingRect.left,
+    y: mergedClippingRect.top
   }
 }
 
-function mn(t) {
+function platformGetDimensions(element) {
   let {
-    width: e,
-    height: o
-  } = vi(t);
+    width: elementWidth,
+    height: elementHeight
+  } = getCssDimensions(element);
   return {
-    width: e,
-    height: o
+    width: elementWidth,
+    height: elementHeight
   }
 }
 
-function fn(t, e, o, r) {
-  let i = Ct(e),
-    s = zt(e),
-    a = o === "fixed",
-    u = ie(t, !0, a, e),
-    c = {
+function getRectRelativeToOffsetParent(elementOrVirtual, offsetParentNode, positionStrategy, floatingElementArg) {
+  let offsetParentIsHtml = isHTMLElement(offsetParentNode),
+    docElement = getDocumentElement(offsetParentNode),
+    isFixedStrategy = positionStrategy === "fixed",
+    elementRect = getBoundingClientRectScaled(elementOrVirtual, !0, isFixedStrategy, offsetParentNode),
+    scrollCoords = {
       scrollLeft: 0,
       scrollTop: 0
     },
-    d = Vt(0);
-  if (i || !i && !a)
-    if ((Bt(e) !== "body" || fe(s)) && (c = Ne(e)), i) {
-      let $ = ie(e, !0, a, e);
-      d.x = $.x + e.clientLeft, d.y = $.y + e.clientTop
-    } else s && (d.x = xi(s));
-  let h = u.left + c.scrollLeft - d.x,
-    p = u.top + c.scrollTop - d.y,
-    [v, m, b] = wi(r);
-  return v && (h += m, p += b, i && (h += e.clientLeft, p += e.clientTop)), {
-    x: h,
-    y: p,
-    width: u.width,
-    height: u.height
+    offsetParentCoords = createCoords(0);
+  if (offsetParentIsHtml || !offsetParentIsHtml && !isFixedStrategy)
+    if ((getNodeName(offsetParentNode) !== "body" || isOverflowElement(docElement)) && (scrollCoords = getNodeScroll(offsetParentNode)), offsetParentIsHtml) {
+      let offsetParentRect = getBoundingClientRectScaled(offsetParentNode, !0, isFixedStrategy, offsetParentNode);
+      offsetParentCoords.x = offsetParentRect.x + offsetParentNode.clientLeft, offsetParentCoords.y = offsetParentRect.y + offsetParentNode.clientTop
+    } else docElement && (offsetParentCoords.x = getWindowScrollBarX(docElement));
+  let relativeX = elementRect.left + scrollCoords.scrollLeft - offsetParentCoords.x,
+    relativeY = elementRect.top + scrollCoords.scrollTop - offsetParentCoords.y,
+    [topLayerFlag, topLayerX, topLayerY] = getTopLayerOffset(floatingElementArg);
+  return topLayerFlag && (relativeX += topLayerX, relativeY += topLayerY, offsetParentIsHtml && (relativeX += offsetParentNode.clientLeft, relativeY += offsetParentNode.clientTop)), {
+    x: relativeX,
+    y: relativeY,
+    width: elementRect.width,
+    height: elementRect.height
   }
 }
 
-function yi(t, e) {
-  return !Ct(t) || vt(t)
-    .position === "fixed" ? null : e ? e(t) : t.offsetParent
+function getTrueOffsetParent(element, offsetParentPolyfill) {
+  return !isHTMLElement(element) || getComputedStyleForNode(element)
+    .position === "fixed" ? null : offsetParentPolyfill ? offsetParentPolyfill(element) : element.offsetParent
 }
 
-function ki(t, e) {
-  let o = mt(t);
-  if (!Ct(t)) return o;
-  let r = yi(t, e);
-  for (; r && fi(r) && vt(r)
-    .position === "static";) r = yi(r, e);
-  return r && (Bt(r) === "html" || Bt(r) === "body" && vt(r)
-    .position === "static" && !yo(r)) ? o : r || Uo(t) || o
+function getOffsetParent(element, offsetParentPolyfill) {
+  let elementWindow = getWindow(element);
+  if (!isHTMLElement(element)) return elementWindow;
+  let offsetParentNode = getTrueOffsetParent(element, offsetParentPolyfill);
+  for (; offsetParentNode && isTableElement(offsetParentNode) && getComputedStyleForNode(offsetParentNode)
+    .position === "static";) offsetParentNode = getTrueOffsetParent(offsetParentNode, offsetParentPolyfill);
+  return offsetParentNode && (getNodeName(offsetParentNode) === "html" || getNodeName(offsetParentNode) === "body" && getComputedStyleForNode(offsetParentNode)
+    .position === "static" && !isContainingBlock(offsetParentNode)) ? elementWindow : offsetParentNode || getContainingBlock(element) || elementWindow
 }
-var gn = async function(t) {
-  let e = this.getOffsetParent || ki,
-    o = this.getDimensions;
+var platformGetElementRects = async function(rectsArgs) {
+  let getOffsetParentFn = this.getOffsetParent || getOffsetParent,
+    getDimensionsFn = this.getDimensions;
   return {
-    reference: fn(t.reference, await e(t.floating), t.strategy, t.floating),
+    reference: getRectRelativeToOffsetParent(rectsArgs.reference, await getOffsetParentFn(rectsArgs.floating), rectsArgs.strategy, rectsArgs.floating),
     floating: {
       x: 0,
       y: 0,
-      ...await o(t.floating)
+      ...await getDimensionsFn(rectsArgs.floating)
     }
   }
 };
 
-function bn(t) {
-  return vt(t)
+function isRtlElement(element) {
+  return getComputedStyleForNode(element)
     .direction === "rtl"
 }
-var Fe = {
-  convertOffsetParentRelativeRectToViewportRelativeRect: an,
-  getDocumentElement: zt,
-  getClippingRect: hn,
-  getOffsetParent: ki,
-  getElementRects: gn,
-  getClientRects: ln,
-  getDimensions: mn,
-  getScale: ge,
-  isElement: Mt,
-  isRTL: bn
+var floatingUiPlatform = {
+  convertOffsetParentRelativeRectToViewportRelativeRect: convertToViewportRelativeRect,
+  getDocumentElement: getDocumentElement,
+  getClippingRect: platformGetClippingRect,
+  getOffsetParent: getOffsetParent,
+  getElementRects: platformGetElementRects,
+  getClientRects: computeScrollbarOffset,
+  getDimensions: platformGetDimensions,
+  getScale: getScale,
+  isElement: isElement,
+  isRTL: isRtlElement
 };
 
-function yn(t, e) {
-  let o = null,
-    r, i = zt(t);
+function observeElementMove(element, onMoveCallback) {
+  let intersectionObserver = null,
+    cleanupFn, docElement = getDocumentElement(element);
 
-  function s() {
-    var u;
-    clearTimeout(r), (u = o) == null || u.disconnect(), o = null
+  function cleanupObserver() {
+    var currentObserver;
+    clearTimeout(cleanupFn), (currentObserver = intersectionObserver) == null || currentObserver.disconnect(), intersectionObserver = null
   }
 
-  function a(u, c) {
-    u === void 0 && (u = !1), c === void 0 && (c = 1), s();
+  function refreshObserver(isFirstCall, intersectionRatioArg) {
+    isFirstCall === void 0 && (isFirstCall = !1), intersectionRatioArg === void 0 && (intersectionRatioArg = 1), cleanupObserver();
     let {
-      left: d,
-      top: h,
-      width: p,
-      height: v
-    } = t.getBoundingClientRect();
-    if (u || e(), !p || !v) return;
-    let m = Ie(h),
-      b = Ie(i.clientWidth - (d + p)),
-      $ = Ie(i.clientHeight - (h + v)),
-      V = Ie(d),
-      L = {
-        rootMargin: -m + "px " + -b + "px " + -$ + "px " + -V + "px",
-        threshold: dt(0, Ot(1, c)) || 1
+      left: rectLeft,
+      top: rectTop,
+      width: rectWidth,
+      height: rectHeight
+    } = element.getBoundingClientRect();
+    if (isFirstCall || onMoveCallback(), !rectWidth || !rectHeight) return;
+    let insetTop = mathFloor(rectTop),
+      insetRight = mathFloor(docElement.clientWidth - (rectLeft + rectWidth)),
+      insetBottom = mathFloor(docElement.clientHeight - (rectTop + rectHeight)),
+      insetLeft = mathFloor(rectLeft),
+      observerOptions = {
+        rootMargin: -insetTop + "px " + -insetRight + "px " + -insetBottom + "px " + -insetLeft + "px",
+        threshold: mathMax(0, mathMin(1, intersectionRatioArg)) || 1
       },
-      R = !0;
+      isFirstUpdate = !0;
 
-    function g(f) {
-      let x = f[0].intersectionRatio;
-      if (x !== c) {
-        if (!R) return a();
-        x ? a(!1, x) : r = setTimeout(() => {
-          a(!1, 1e-7)
+    function handleIntersection(intersectionEntries) {
+      let intersectionRatio = intersectionEntries[0].intersectionRatio;
+      if (intersectionRatio !== intersectionRatioArg) {
+        if (!isFirstUpdate) return refreshObserver();
+        intersectionRatio ? refreshObserver(!1, intersectionRatio) : cleanupFn = setTimeout(() => {
+          refreshObserver(!1, 1e-7)
         }, 100)
       }
-      R = !1
+      isFirstUpdate = !1
     }
     try {
-      o = new IntersectionObserver(g, {
-        ...L,
-        root: i.ownerDocument
+      intersectionObserver = new IntersectionObserver(handleIntersection, {
+        ...observerOptions,
+        root: docElement.ownerDocument
       })
     } catch {
-      o = new IntersectionObserver(g, L)
+      intersectionObserver = new IntersectionObserver(handleIntersection, observerOptions)
     }
-    o.observe(t)
+    intersectionObserver.observe(element)
   }
-  return a(!0), s
+  return refreshObserver(!0), cleanupObserver
 }
 
-function Ci(t, e, o, r) {
-  r === void 0 && (r = {});
+function autoUpdate(referenceElement, floatingElement, updateCallback, autoUpdateOptions) {
+  autoUpdateOptions === void 0 && (autoUpdateOptions = {});
   let {
-    ancestorScroll: i = !0,
-    ancestorResize: s = !0,
-    elementResize: a = typeof ResizeObserver == "function",
-    layoutShift: u = typeof IntersectionObserver == "function",
-    animationFrame: c = !1
-  } = r, d = jo(t), h = i || s ? [...d ? me(d) : [], ...me(e)] : [];
-  h.forEach(z => {
-    i && z.addEventListener("scroll", o, {
+    ancestorScroll: observeAncestorScroll = !0,
+    ancestorResize: observeAncestorResize = !0,
+    elementResize: observeElementResize = typeof ResizeObserver == "function",
+    layoutShift: observeLayoutShift = typeof IntersectionObserver == "function",
+    animationFrame: useAnimationFrame = !1
+  } = autoUpdateOptions, referenceEl = unwrapElement(referenceElement), scrollResizeAncestors = observeAncestorScroll || observeAncestorResize ? [...referenceEl ? getOverflowAncestors(referenceEl) : [], ...getOverflowAncestors(floatingElement)] : [];
+  scrollResizeAncestors.forEach(ancestorNode => {
+    observeAncestorScroll && ancestorNode.addEventListener("scroll", updateCallback, {
       passive: !0
-    }), s && z.addEventListener("resize", o)
+    }), observeAncestorResize && ancestorNode.addEventListener("resize", updateCallback)
   });
-  let p = d && u ? yn(d, o) : null,
-    v = -1,
-    m = null;
-  a && (m = new ResizeObserver(z => {
-    let [L] = z;
-    L && L.target === d && m && (m.unobserve(e), cancelAnimationFrame(v),
-      v = requestAnimationFrame(() => {
-        var R;
-        (R = m) == null || R.observe(e)
-      })), o()
-  }), d && !c && m.observe(d), m.observe(e));
-  let b, $ = c ? ie(t) : null;
-  c && V();
+  let layoutShiftCleanup = referenceEl && observeLayoutShift ? observeElementMove(referenceEl, updateCallback) : null,
+    animationFrameId = -1,
+    resizeObserver = null;
+  observeElementResize && (resizeObserver = new ResizeObserver(resizeEntries => {
+    let [firstResizeEntry] = resizeEntries;
+    firstResizeEntry && firstResizeEntry.target === referenceEl && resizeObserver && (resizeObserver.unobserve(floatingElement), cancelAnimationFrame(animationFrameId),
+      animationFrameId = requestAnimationFrame(() => {
+        var resizeRafId;
+        (resizeRafId = resizeObserver) == null || resizeRafId.observe(floatingElement)
+      })), updateCallback()
+  }), referenceEl && !useAnimationFrame && resizeObserver.observe(referenceEl), resizeObserver.observe(floatingElement));
+  let previousRect, lastBoundingRect = useAnimationFrame ? getBoundingClientRectScaled(referenceElement) : null;
+  useAnimationFrame && frameLoop();
 
-  function V() {
-    let z = ie(t);
-    $ && (z.x !== $.x || z.y !== $.y || z.width !== $.width || z.height !== $
-      .height) && o(), $ = z, b = requestAnimationFrame(V)
+  function frameLoop() {
+    let currentBoundingRect = getBoundingClientRectScaled(referenceElement);
+    lastBoundingRect && (currentBoundingRect.x !== lastBoundingRect.x || currentBoundingRect.y !== lastBoundingRect.y || currentBoundingRect.width !== lastBoundingRect.width || currentBoundingRect.height !== lastBoundingRect
+      .height) && updateCallback(), lastBoundingRect = currentBoundingRect, previousRect = requestAnimationFrame(frameLoop)
   }
-  return o(), () => {
-    var z;
-    h.forEach(L => {
-        i && L.removeEventListener("scroll", o), s && L.removeEventListener(
-          "resize", o)
-      }), p?.(), (z = m) == null || z.disconnect(), m = null, c &&
-      cancelAnimationFrame(b)
+  return updateCallback(), () => {
+    var moveCleanup;
+    scrollResizeAncestors.forEach(ancestorNode => {
+        observeAncestorScroll && ancestorNode.removeEventListener("scroll", updateCallback), observeAncestorResize && ancestorNode.removeEventListener(
+          "resize", updateCallback)
+      }), layoutShiftCleanup?.(), (moveCleanup = resizeObserver) == null || moveCleanup.disconnect(), resizeObserver = null, useAnimationFrame &&
+      cancelAnimationFrame(previousRect)
   }
 }
-var Si = di,
-  $i = ui,
-  qo = pi;
-var Ei = ci;
-var Ti = (t, e, o) => {
-  let r = new Map,
-    i = {
-      platform: Fe,
-      ...o
+var shift = shiftMiddleware,
+  flip = flipMiddleware,
+  size = sizeMiddleware;
+var arrow = arrowMiddleware;
+var buildMiddlewareRegistry = (middlewareArgA, middlewareArgB, middlewareArgC) => {
+  let middlewareMap = new Map,
+    middlewareConfigA = {
+      platform: floatingUiPlatform,
+      ...middlewareArgC
     },
-    s = {
-      ...i.platform,
-      _c: r
+    middlewareConfigB = {
+      ...middlewareConfigA.platform,
+      _c: middlewareMap
     };
-  return li(t, e, {
-    ...i,
-    platform: s
+  return computePosition(middlewareArgA, middlewareArgB, {
+    ...middlewareConfigA,
+    platform: middlewareConfigB
   })
 };
 
-function Oi(t) {
-  return vn(t)
+function offsetParentPredicate(element) {
+  return findScrollableAncestor(element)
 }
 
-function Wo(t) {
-  return t.assignedSlot ? t.assignedSlot : t.parentNode instanceof ShadowRoot ?
-    t.parentNode.host : t.parentNode
+function getParentOrHost(node) {
+  return node.assignedSlot ? node.assignedSlot : node.parentNode instanceof ShadowRoot ?
+    node.parentNode.host : node.parentNode
 }
 
-function vn(t) {
-  for (let e = t; e; e = Wo(e))
-    if (e instanceof Element && getComputedStyle(e)
+function findScrollableAncestor(element) {
+  for (let ancestorNode = element; ancestorNode; ancestorNode = getParentOrHost(ancestorNode))
+    if (ancestorNode instanceof Element && getComputedStyle(ancestorNode)
       .display === "none") return null;
-  for (let e = Wo(t); e; e = Wo(e)) {
-    if (!(e instanceof Element)) continue;
-    let o = getComputedStyle(e);
-    if (o.display !== "contents" && (o.position !== "static" || o.filter !==
-        "none" || e.tagName === "BODY")) return e
+  for (let ancestorNode = getParentOrHost(element); ancestorNode; ancestorNode = getParentOrHost(ancestorNode)) {
+    if (!(ancestorNode instanceof Element)) continue;
+    let ancestorStyle = getComputedStyle(ancestorNode);
+    if (ancestorStyle.display !== "contents" && (ancestorStyle.position !== "static" || ancestorStyle.filter !==
+        "none" || ancestorNode.tagName === "BODY")) return ancestorNode
   }
   return null
 }
 
-function _n(t) {
-  return t !== null && typeof t == "object" && "getBoundingClientRect" in t
+function getElementRootNode(element) {
+  return element !== null && typeof element == "object" && "getBoundingClientRect" in element
 }
-var I = class extends w {
+var PopupElement = class extends ShoelaceElement {
   constructor() {
     super(...arguments), this.active = !1, this.placement = "top", this
       .strategy = "absolute", this.distance = 0, this.skidding = 0, this
@@ -4990,35 +4990,35 @@ var I = class extends w {
       .shift = !1, this.shiftPadding = 0, this.autoSizePadding = 0, this
       .hoverBridge = !1, this.updateHoverBridge = () => {
         if (this.hoverBridge && this.anchorEl) {
-          let t = this.anchorEl.getBoundingClientRect(),
-            e = this.popup.getBoundingClientRect(),
-            o = this.placement.includes("top") || this.placement.includes(
+          let anchorRect = this.anchorEl.getBoundingClientRect(),
+            popupRect = this.popup.getBoundingClientRect(),
+            isTopOrBottomPlacement = this.placement.includes("top") || this.placement.includes(
               "bottom"),
-            r = 0,
-            i = 0,
-            s = 0,
-            a = 0,
-            u = 0,
-            c = 0,
-            d = 0,
-            h = 0;
-          o ? t.top < e.top ? (r = t.left, i = t.bottom, s = t.right, a = t
-              .bottom, u = e.left, c = e.top, d = e.right, h = e.top) : (r =
-              e.left, i = e.bottom, s = e.right, a = e.bottom, u = t.left,
-              c = t.top, d = t.right, h = t.top) : t.left < e.left ? (r = t
-              .right, i = t.top, s = e.left, a = e.top, u = t.right, c = t
-              .bottom, d = e.left, h = e.bottom) : (r = e.right, i = e.top,
-              s = t.left, a = t.top, u = e.right, c = e.bottom, d = t.left,
-              h = t.bottom), this.style.setProperty(
-              "--hover-bridge-top-left-x", `${r}px`), this.style
-            .setProperty("--hover-bridge-top-left-y", `${i}px`), this.style
-            .setProperty("--hover-bridge-top-right-x", `${s}px`), this.style
-            .setProperty("--hover-bridge-top-right-y", `${a}px`), this.style
-            .setProperty("--hover-bridge-bottom-left-x", `${u}px`), this
-            .style.setProperty("--hover-bridge-bottom-left-y", `${c}px`),
+            hoverBridgeX1 = 0,
+            hoverBridgeY1 = 0,
+            hoverBridgeX2 = 0,
+            hoverBridgeY2 = 0,
+            hoverBridgeX3 = 0,
+            hoverBridgeY3 = 0,
+            hoverBridgeX4 = 0,
+            hoverBridgeY4 = 0;
+          isTopOrBottomPlacement ? anchorRect.top < popupRect.top ? (hoverBridgeX1 = anchorRect.left, hoverBridgeY1 = anchorRect.bottom, hoverBridgeX2 = anchorRect.right, hoverBridgeY2 = anchorRect
+              .bottom, hoverBridgeX3 = popupRect.left, hoverBridgeY3 = popupRect.top, hoverBridgeX4 = popupRect.right, hoverBridgeY4 = popupRect.top) : (hoverBridgeX1 =
+              popupRect.left, hoverBridgeY1 = popupRect.bottom, hoverBridgeX2 = popupRect.right, hoverBridgeY2 = popupRect.bottom, hoverBridgeX3 = anchorRect.left,
+              hoverBridgeY3 = anchorRect.top, hoverBridgeX4 = anchorRect.right, hoverBridgeY4 = anchorRect.top) : anchorRect.left < popupRect.left ? (hoverBridgeX1 = anchorRect
+              .right, hoverBridgeY1 = anchorRect.top, hoverBridgeX2 = popupRect.left, hoverBridgeY2 = popupRect.top, hoverBridgeX3 = anchorRect.right, hoverBridgeY3 = anchorRect
+              .bottom, hoverBridgeX4 = popupRect.left, hoverBridgeY4 = popupRect.bottom) : (hoverBridgeX1 = popupRect.right, hoverBridgeY1 = popupRect.top,
+              hoverBridgeX2 = anchorRect.left, hoverBridgeY2 = anchorRect.top, hoverBridgeX3 = popupRect.right, hoverBridgeY3 = popupRect.bottom, hoverBridgeX4 = anchorRect.left,
+              hoverBridgeY4 = anchorRect.bottom), this.style.setProperty(
+              "--hover-bridge-top-left-x", `${hoverBridgeX1}px`), this.style
+            .setProperty("--hover-bridge-top-left-y", `${hoverBridgeY1}px`), this.style
+            .setProperty("--hover-bridge-top-right-x", `${hoverBridgeX2}px`), this.style
+            .setProperty("--hover-bridge-top-right-y", `${hoverBridgeY2}px`), this.style
+            .setProperty("--hover-bridge-bottom-left-x", `${hoverBridgeX3}px`), this
+            .style.setProperty("--hover-bridge-bottom-left-y", `${hoverBridgeY3}px`),
             this.style.setProperty("--hover-bridge-bottom-right-x",
-              `${d}px`), this.style.setProperty(
-              "--hover-bridge-bottom-right-y", `${h}px`)
+              `${hoverBridgeX4}px`), this.style.setProperty(
+              "--hover-bridge-bottom-right-y", `${hoverBridgeY4}px`)
         }
       }
   }
@@ -5028,16 +5028,16 @@ var I = class extends w {
   disconnectedCallback() {
     super.disconnectedCallback(), this.stop()
   }
-  async updated(t) {
-    super.updated(t), t.has("active") && (this.active ? this.start() : this
-        .stop()), t.has("anchor") && this.handleAnchorChange(), this
+  async updated(changedProperties) {
+    super.updated(changedProperties), changedProperties.has("active") && (this.active ? this.start() : this
+        .stop()), changedProperties.has("anchor") && this.handleAnchorChange(), this
       .active && (await this.updateComplete, this.reposition())
   }
   async handleAnchorChange() {
     if (await this.stop(), this.anchor && typeof this.anchor == "string") {
-      let t = this.getRootNode();
-      this.anchorEl = t.getElementById(this.anchor)
-    } else this.anchor instanceof Element || _n(this.anchor) ? this
+      let popupRootNode = this.getRootNode();
+      this.anchorEl = popupRootNode.getElementById(this.anchor)
+    } else this.anchor instanceof Element || getElementRootNode(this.anchor) ? this
       .anchorEl = this.anchor : this.anchorEl = this.querySelector(
         '[slot="anchor"]');
     this.anchorEl instanceof HTMLSlotElement && (this.anchorEl = this
@@ -5046,233 +5046,233 @@ var I = class extends w {
       })[0]), this.anchorEl && this.start()
   }
   start() {
-    this.anchorEl && (this.cleanup = Ci(this.anchorEl, this.popup, () => {
+    this.anchorEl && (this.cleanup = autoUpdate(this.anchorEl, this.popup, () => {
       this.reposition()
     }))
   }
   async stop() {
-    return new Promise(t => {
+    return new Promise(resolveReposition => {
       this.cleanup ? (this.cleanup(), this.cleanup = void 0, this
         .removeAttribute("data-current-placement"), this.style
         .removeProperty("--auto-size-available-width"), this.style
         .removeProperty("--auto-size-available-height"),
-        requestAnimationFrame(() => t())) : t()
+        requestAnimationFrame(() => resolveReposition())) : resolveReposition()
     })
   }
   reposition() {
     if (!this.active || !this.anchorEl) return;
-    let t = [Ho({
+    let middlewareStack = [offsetMiddleware({
       mainAxis: this.distance,
       crossAxis: this.skidding
     })];
-    this.sync ? t.push(qo({
+    this.sync ? middlewareStack.push(size({
         apply: ({
-          rects: o
+          rects: middlewareRects
         }) => {
-          let r = this.sync === "width" || this.sync === "both",
-            i = this.sync === "height" || this.sync === "both";
-          this.popup.style.width = r ? `${o.reference.width}px` : "",
-            this.popup.style.height = i ? `${o.reference.height}px` :
+          let syncWidth = this.sync === "width" || this.sync === "both",
+            syncHeight = this.sync === "height" || this.sync === "both";
+          this.popup.style.width = syncWidth ? `${middlewareRects.reference.width}px` : "",
+            this.popup.style.height = syncHeight ? `${middlewareRects.reference.height}px` :
             ""
         }
       })) : (this.popup.style.width = "", this.popup.style.height = ""),
-      this.flip && t.push($i({
+      this.flip && middlewareStack.push(flip({
         boundary: this.flipBoundary,
         fallbackPlacements: this.flipFallbackPlacements,
         fallbackStrategy: this.flipFallbackStrategy === "best-fit" ?
           "bestFit" : "initialPlacement",
         padding: this.flipPadding
-      })), this.shift && t.push(Si({
+      })), this.shift && middlewareStack.push(shift({
         boundary: this.shiftBoundary,
         padding: this.shiftPadding
-      })), this.autoSize ? t.push(qo({
+      })), this.autoSize ? middlewareStack.push(size({
         boundary: this.autoSizeBoundary,
         padding: this.autoSizePadding,
         apply: ({
-          availableWidth: o,
-          availableHeight: r
+          availableWidth: availableWidth,
+          availableHeight: availableHeight
         }) => {
           this.autoSize === "vertical" || this.autoSize === "both" ?
             this.style.setProperty("--auto-size-available-height",
-              `${r}px`) : this.style.removeProperty(
+              `${availableHeight}px`) : this.style.removeProperty(
               "--auto-size-available-height"), this.autoSize ===
             "horizontal" || this.autoSize === "both" ? this.style
-            .setProperty("--auto-size-available-width", `${o}px`) :
+            .setProperty("--auto-size-available-width", `${availableWidth}px`) :
             this.style.removeProperty("--auto-size-available-width")
         }
       })) : (this.style.removeProperty("--auto-size-available-width"), this
         .style.removeProperty("--auto-size-available-height")), this
-      .arrow && t.push(Ei({
+      .arrow && middlewareStack.push(arrow({
         element: this.arrowEl,
         padding: this.arrowPadding
       }));
-    let e = this.strategy === "absolute" ? o => Fe.getOffsetParent(o, Oi) :
-      Fe.getOffsetParent;
-    Ti(this.anchorEl, this.popup, {
+    let getOffsetParentFn = this.strategy === "absolute" ? offsetParentElement => floatingUiPlatform.getOffsetParent(offsetParentElement, offsetParentPredicate) :
+      floatingUiPlatform.getOffsetParent;
+    buildMiddlewareRegistry(this.anchorEl, this.popup, {
         placement: this.placement,
-        middleware: t,
+        middleware: middlewareStack,
         strategy: this.strategy,
-        platform: Rt(pt({}, Fe), {
-          getOffsetParent: e
+        platform: copyPropDescriptors(applySpread({}, floatingUiPlatform), {
+          getOffsetParent: getOffsetParentFn
         })
       })
       .then(({
-        x: o,
-        y: r,
-        middlewareData: i,
-        placement: s
+        x: computedX,
+        y: computedY,
+        middlewareData: middlewareData,
+        placement: resolvedPlacement
       }) => {
-        let a = getComputedStyle(this)
+        let hostStyle = getComputedStyle(this)
           .direction === "rtl",
-          u = {
+          sideStyleMap = {
             top: "bottom",
             right: "left",
             bottom: "top",
             left: "right"
-          } [s.split("-")[0]];
-        if (this.setAttribute("data-current-placement", s), Object.assign(
+          } [resolvedPlacement.split("-")[0]];
+        if (this.setAttribute("data-current-placement", resolvedPlacement), Object.assign(
             this.popup.style, {
-              left: `${o}px`,
-              top: `${r}px`
+              left: `${computedX}px`,
+              top: `${computedY}px`
             }), this.arrow) {
-          let c = i.arrow.x,
-            d = i.arrow.y,
-            h = "",
-            p = "",
-            v = "",
-            m = "";
+          let arrowX = middlewareData.arrow.x,
+            arrowY = middlewareData.arrow.y,
+            arrowTopStyle = "",
+            arrowRightStyle = "",
+            arrowBottomStyle = "",
+            arrowLeftStyle = "";
           if (this.arrowPlacement === "start") {
-            let b = typeof c == "number" ?
+            let arrowXValue = typeof arrowX == "number" ?
               `calc(${this.arrowPadding}px - var(--arrow-padding-offset))` :
               "";
-            h = typeof d == "number" ?
+            arrowTopStyle = typeof arrowY == "number" ?
               `calc(${this.arrowPadding}px - var(--arrow-padding-offset))` :
-              "", p = a ? b : "", m = a ? "" : b
+              "", arrowRightStyle = hostStyle ? arrowXValue : "", arrowLeftStyle = hostStyle ? "" : arrowXValue
           } else if (this.arrowPlacement === "end") {
-            let b = typeof c == "number" ?
+            let arrowYValue = typeof arrowX == "number" ?
               `calc(${this.arrowPadding}px - var(--arrow-padding-offset))` :
               "";
-            p = a ? "" : b, m = a ? b : "", v = typeof d == "number" ?
+            arrowRightStyle = hostStyle ? "" : arrowYValue, arrowLeftStyle = hostStyle ? arrowYValue : "", arrowBottomStyle = typeof arrowY == "number" ?
               `calc(${this.arrowPadding}px - var(--arrow-padding-offset))` :
               ""
-          } else this.arrowPlacement === "center" ? (m = typeof c ==
+          } else this.arrowPlacement === "center" ? (arrowLeftStyle = typeof arrowX ==
             "number" ? "calc(50% - var(--arrow-size-diagonal))" : "",
-            h = typeof d == "number" ?
-            "calc(50% - var(--arrow-size-diagonal))" : "") : (m =
-            typeof c == "number" ? `${c}px` : "", h = typeof d ==
-            "number" ? `${d}px` : "");
+            arrowTopStyle = typeof arrowY == "number" ?
+            "calc(50% - var(--arrow-size-diagonal))" : "") : (arrowLeftStyle =
+            typeof arrowX == "number" ? `${arrowX}px` : "", arrowTopStyle = typeof arrowY ==
+            "number" ? `${arrowY}px` : "");
           Object.assign(this.arrowEl.style, {
-            top: h,
-            right: p,
-            bottom: v,
-            left: m,
-            [u]: "calc(var(--arrow-size-diagonal) * -1)"
+            top: arrowTopStyle,
+            right: arrowRightStyle,
+            bottom: arrowBottomStyle,
+            left: arrowLeftStyle,
+            [sideStyleMap]: "calc(var(--arrow-size-diagonal) * -1)"
           })
         }
       }), requestAnimationFrame(() => this.updateHoverBridge()), this.emit(
         "sl-reposition")
   }
   render() {
-    return y`
+    return htmlTag`
       <slot name="anchor" @slotchange=${this.handleAnchorChange}></slot>
 
       <span
         part="hover-bridge"
-        class=${M({"popup-hover-bridge":!0,"popup-hover-bridge--visible":this.hoverBridge&&this.active})}
+        class=${classMap({"popup-hover-bridge":!0,"popup-hover-bridge--visible":this.hoverBridge&&this.active})}
       ></span>
 
       <div
         part="popup"
-        class=${M({popup:!0,"popup--active":this.active,"popup--fixed":this.strategy==="fixed","popup--has-arrow":this.arrow})}
+        class=${classMap({popup:!0,"popup--active":this.active,"popup--fixed":this.strategy==="fixed","popup--has-arrow":this.arrow})}
       >
         <slot></slot>
-        ${this.arrow?y`<div part="arrow" class="popup__arrow" role="presentation"></div>`:""}
+        ${this.arrow?htmlTag`<div part="arrow" class="popup__arrow" role="presentation"></div>`:""}
       </div>
     `
   }
 };
-I.styles = ri;
-n([k(".popup")], I.prototype, "popup", 2);
-n([k(".popup__arrow")], I.prototype, "arrowEl", 2);
-n([l()], I.prototype, "anchor", 2);
-n([l({
+PopupElement.styles = componentStyles6;
+decorateClass([queryDecorator(".popup")], PopupElement.prototype, "popup", 2);
+decorateClass([queryDecorator(".popup__arrow")], PopupElement.prototype, "arrowEl", 2);
+decorateClass([property()], PopupElement.prototype, "anchor", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], I.prototype, "active", 2);
-n([l({
+})], PopupElement.prototype, "active", 2);
+decorateClass([property({
   reflect: !0
-})], I.prototype, "placement", 2);
-n([l({
+})], PopupElement.prototype, "placement", 2);
+decorateClass([property({
   reflect: !0
-})], I.prototype, "strategy", 2);
-n([l({
+})], PopupElement.prototype, "strategy", 2);
+decorateClass([property({
   type: Number
-})], I.prototype, "distance", 2);
-n([l({
+})], PopupElement.prototype, "distance", 2);
+decorateClass([property({
   type: Number
-})], I.prototype, "skidding", 2);
-n([l({
+})], PopupElement.prototype, "skidding", 2);
+decorateClass([property({
   type: Boolean
-})], I.prototype, "arrow", 2);
-n([l({
+})], PopupElement.prototype, "arrow", 2);
+decorateClass([property({
   attribute: "arrow-placement"
-})], I.prototype, "arrowPlacement", 2);
-n([l({
+})], PopupElement.prototype, "arrowPlacement", 2);
+decorateClass([property({
   attribute: "arrow-padding",
   type: Number
-})], I.prototype, "arrowPadding", 2);
-n([l({
+})], PopupElement.prototype, "arrowPadding", 2);
+decorateClass([property({
   type: Boolean
-})], I.prototype, "flip", 2);
-n([l({
+})], PopupElement.prototype, "flip", 2);
+decorateClass([property({
   attribute: "flip-fallback-placements",
   converter: {
-    fromAttribute: t => t.split(" ")
-      .map(e => e.trim())
-      .filter(e => e !== ""),
-    toAttribute: t => t.join(" ")
+    fromAttribute: placementAttrString => placementAttrString.split(" ")
+      .map(placementPart => placementPart.trim())
+      .filter(placementPartFiltered => placementPartFiltered !== ""),
+    toAttribute: placementArray => placementArray.join(" ")
   }
-})], I.prototype, "flipFallbackPlacements", 2);
-n([l({
+})], PopupElement.prototype, "flipFallbackPlacements", 2);
+decorateClass([property({
   attribute: "flip-fallback-strategy"
-})], I.prototype, "flipFallbackStrategy", 2);
-n([l({
+})], PopupElement.prototype, "flipFallbackStrategy", 2);
+decorateClass([property({
   type: Object
-})], I.prototype, "flipBoundary", 2);
-n([l({
+})], PopupElement.prototype, "flipBoundary", 2);
+decorateClass([property({
   attribute: "flip-padding",
   type: Number
-})], I.prototype, "flipPadding", 2);
-n([l({
+})], PopupElement.prototype, "flipPadding", 2);
+decorateClass([property({
   type: Boolean
-})], I.prototype, "shift", 2);
-n([l({
+})], PopupElement.prototype, "shift", 2);
+decorateClass([property({
   type: Object
-})], I.prototype, "shiftBoundary", 2);
-n([l({
+})], PopupElement.prototype, "shiftBoundary", 2);
+decorateClass([property({
   attribute: "shift-padding",
   type: Number
-})], I.prototype, "shiftPadding", 2);
-n([l({
+})], PopupElement.prototype, "shiftPadding", 2);
+decorateClass([property({
   attribute: "auto-size"
-})], I.prototype, "autoSize", 2);
-n([l()], I.prototype, "sync", 2);
-n([l({
+})], PopupElement.prototype, "autoSize", 2);
+decorateClass([property()], PopupElement.prototype, "sync", 2);
+decorateClass([property({
   type: Object
-})], I.prototype, "autoSizeBoundary", 2);
-n([l({
+})], PopupElement.prototype, "autoSizeBoundary", 2);
+decorateClass([property({
   attribute: "auto-size-padding",
   type: Number
-})], I.prototype, "autoSizePadding", 2);
-n([l({
+})], PopupElement.prototype, "autoSizePadding", 2);
+decorateClass([property({
   attribute: "hover-bridge",
   type: Boolean
-})], I.prototype, "hoverBridge", 2);
-var Mi = new Map,
-  wn = new WeakMap;
+})], PopupElement.prototype, "hoverBridge", 2);
+var defaultAnimations = new Map,
+  elementAnimations = new WeakMap;
 
-function xn(t) {
-  return t ?? {
+function normalizeAnimation(animationOrDefault) {
+  return animationOrDefault ?? {
     keyframes: [],
     options: {
       duration: 0
@@ -5280,22 +5280,22 @@ function xn(t) {
   }
 }
 
-function zi(t, e) {
-  return e.toLowerCase() === "rtl" ? {
-    keyframes: t.rtlKeyframes || t.keyframes,
-    options: t.options
-  } : t
+function applyDirectionToAnimation(animationDefinition, textDirection) {
+  return textDirection.toLowerCase() === "rtl" ? {
+    keyframes: animationDefinition.rtlKeyframes || animationDefinition.keyframes,
+    options: animationDefinition.options
+  } : animationDefinition
 }
 
-function N(t, e) {
-  Mi.set(t, xn(e))
+function setDefaultAnimation(animationName, animationDefinition) {
+  defaultAnimations.set(animationName, normalizeAnimation(animationDefinition))
 }
 
-function W(t, e, o) {
-  let r = wn.get(t);
-  if (r?.[e]) return zi(r[e], o.dir);
-  let i = Mi.get(e);
-  return i ? zi(i, o.dir) : {
+function getAnimation(element, animationName, animationOptions) {
+  let elementAnimationMap = elementAnimations.get(element);
+  if (elementAnimationMap?.[animationName]) return applyDirectionToAnimation(elementAnimationMap[animationName], animationOptions.dir);
+  let defaultAnimationDef = defaultAnimations.get(animationName);
+  return defaultAnimationDef ? applyDirectionToAnimation(defaultAnimationDef, animationOptions.dir) : {
     keyframes: [],
     options: {
       duration: 0
@@ -5303,56 +5303,56 @@ function W(t, e, o) {
   }
 }
 
-function it(t, e) {
-  return new Promise(o => {
-    function r(i) {
-      i.target === t && (t.removeEventListener(e, r), o())
+function waitForEvent(eventTarget, eventName) {
+  return new Promise(resolveEventPromise => {
+    function onEventOnce(eventObject) {
+      eventObject.target === eventTarget && (eventTarget.removeEventListener(eventName, onEventOnce), resolveEventPromise())
     }
-    t.addEventListener(e, r)
+    eventTarget.addEventListener(eventName, onEventOnce)
   })
 }
 
-function K(t, e, o) {
-  return new Promise(r => {
-    if (o?.duration === 1 / 0) throw new Error(
+function animateTo(element, keyframes, animationOptions) {
+  return new Promise(resolveAnimationPromise => {
+    if (animationOptions?.duration === 1 / 0) throw new Error(
       "Promise-based animations must be finite.");
-    let i = t.animate(e, Rt(pt({}, o), {
-      duration: An() ? 0 : o.duration
+    let animation = element.animate(keyframes, copyPropDescriptors(applySpread({}, animationOptions), {
+      duration: prefersReducedMotion() ? 0 : animationOptions.duration
     }));
-    i.addEventListener("cancel", r, {
+    animation.addEventListener("cancel", resolveAnimationPromise, {
       once: !0
-    }), i.addEventListener("finish", r, {
+    }), animation.addEventListener("finish", resolveAnimationPromise, {
       once: !0
     })
   })
 }
 
-function Ko(t) {
-  return t = t.toString()
-    .toLowerCase(), t.indexOf("ms") > -1 ? parseFloat(t) : t.indexOf("s") > -1 ?
-    parseFloat(t) * 1e3 : parseFloat(t)
+function parseDuration(durationValue) {
+  return durationValue = durationValue.toString()
+    .toLowerCase(), durationValue.indexOf("ms") > -1 ? parseFloat(durationValue) : durationValue.indexOf("s") > -1 ?
+    parseFloat(durationValue) * 1e3 : parseFloat(durationValue)
 }
 
-function An() {
+function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)")
     .matches
 }
 
-function Y(t) {
-  return Promise.all(t.getAnimations()
-    .map(e => new Promise(o => {
-      e.cancel(), requestAnimationFrame(o)
+function stopAnimations(element) {
+  return Promise.all(element.getAnimations()
+    .map(runningAnimation => new Promise(resolveCancelPromise => {
+      runningAnimation.cancel(), requestAnimationFrame(resolveCancelPromise)
     })))
 }
 
-function Jo(t, e) {
-  return t.map(o => Rt(pt({}, o), {
-    height: o.height === "auto" ? `${e}px` : o.height
+function shimKeyframesHeightAuto(keyframes, calculatedHeight) {
+  return keyframes.map(keyframeStep => copyPropDescriptors(applySpread({}, keyframeStep), {
+    height: keyframeStep.height === "auto" ? `${calculatedHeight}px` : keyframeStep.height
   }))
 }
-var st = class extends w {
+var TooltipElement = class extends ShoelaceElement {
   constructor() {
-    super(), this.localize = new H(this), this.content = "", this
+    super(), this.localize = new LocalizeController(this), this.content = "", this
       .placement = "top", this.disabled = !1, this.distance = 8, this
       .open = !1, this.skidding = 0, this.trigger = "hover focus", this
       .hoist = !1, this.handleBlur = () => {
@@ -5361,21 +5361,21 @@ var st = class extends w {
         this.hasTrigger("click") && (this.open ? this.hide() : this.show())
       }, this.handleFocus = () => {
         this.hasTrigger("focus") && this.show()
-      }, this.handleDocumentKeyDown = t => {
-        t.key === "Escape" && (t.stopPropagation(), this.hide())
+      }, this.handleDocumentKeyDown = documentKeydownEvent => {
+        documentKeydownEvent.key === "Escape" && (documentKeydownEvent.stopPropagation(), this.hide())
       }, this.handleMouseOver = () => {
         if (this.hasTrigger("hover")) {
-          let t = Ko(getComputedStyle(this)
+          let showDuration = parseDuration(getComputedStyle(this)
             .getPropertyValue("--show-delay"));
           clearTimeout(this.hoverTimeout), this.hoverTimeout = window
-            .setTimeout(() => this.show(), t)
+            .setTimeout(() => this.show(), showDuration)
         }
       }, this.handleMouseOut = () => {
         if (this.hasTrigger("hover")) {
-          let t = Ko(getComputedStyle(this)
+          let hideDuration = parseDuration(getComputedStyle(this)
             .getPropertyValue("--hide-delay"));
           clearTimeout(this.hoverTimeout), this.hoverTimeout = window
-            .setTimeout(() => this.hide(), t)
+            .setTimeout(() => this.hide(), hideDuration)
         }
       }, this.addEventListener("blur", this.handleBlur, !0), this
       .addEventListener("focus", this.handleFocus, !0), this
@@ -5384,48 +5384,48 @@ var st = class extends w {
         "mouseout", this.handleMouseOut)
   }
   disconnectedCallback() {
-    var t;
-    (t = this.closeWatcher) == null || t.destroy(), document
+    var currentTriggerElement;
+    (currentTriggerElement = this.closeWatcher) == null || currentTriggerElement.destroy(), document
       .removeEventListener("keydown", this.handleDocumentKeyDown)
   }
   firstUpdated() {
     this.body.hidden = !this.open, this.open && (this.popup.active = !0,
       this.popup.reposition())
   }
-  hasTrigger(t) {
+  hasTrigger(triggerType) {
     return this.trigger.split(" ")
-      .includes(t)
+      .includes(triggerType)
   }
   async handleOpenChange() {
-    var t, e;
+    var showAnimationName, showAnimationDef;
     if (this.open) {
       if (this.disabled) return;
-      this.emit("sl-show"), "CloseWatcher" in window ? ((t = this
-            .closeWatcher) == null || t.destroy(), this.closeWatcher =
+      this.emit("sl-show"), "CloseWatcher" in window ? ((showAnimationName = this
+            .closeWatcher) == null || showAnimationName.destroy(), this.closeWatcher =
           new CloseWatcher, this.closeWatcher.onclose = () => {
             this.hide()
           }) : document.addEventListener("keydown", this
-          .handleDocumentKeyDown), await Y(this.body), this.body.hidden = !
+          .handleDocumentKeyDown), await stopAnimations(this.body), this.body.hidden = !
         1, this.popup.active = !0;
       let {
-        keyframes: o,
-        options: r
-      } = W(this, "tooltip.show", {
+        keyframes: showKeyframes,
+        options: showAnimationOptions
+      } = getAnimation(this, "tooltip.show", {
         dir: this.localize.dir()
       });
-      await K(this.popup.popup, o, r), this.popup.reposition(), this.emit(
+      await animateTo(this.popup.popup, showKeyframes, showAnimationOptions), this.popup.reposition(), this.emit(
         "sl-after-show")
     } else {
-      this.emit("sl-hide"), (e = this.closeWatcher) == null || e.destroy(),
+      this.emit("sl-hide"), (showAnimationDef = this.closeWatcher) == null || showAnimationDef.destroy(),
         document.removeEventListener("keydown", this.handleDocumentKeyDown),
-        await Y(this.body);
+        await stopAnimations(this.body);
       let {
-        keyframes: o,
-        options: r
-      } = W(this, "tooltip.hide", {
+        keyframes: hideKeyframes,
+        options: hideAnimationOptions
+      } = getAnimation(this, "tooltip.hide", {
         dir: this.localize.dir()
       });
-      await K(this.popup.popup, o, r), this.popup.active = !1, this.body
+      await animateTo(this.popup.popup, hideKeyframes, hideAnimationOptions), this.popup.active = !1, this.body
         .hidden = !0, this.emit("sl-after-hide")
     }
   }
@@ -5436,20 +5436,20 @@ var st = class extends w {
     this.disabled && this.open && this.hide()
   }
   async show() {
-    if (!this.open) return this.open = !0, it(this, "sl-after-show")
+    if (!this.open) return this.open = !0, waitForEvent(this, "sl-after-show")
   }
   async hide() {
-    if (this.open) return this.open = !1, it(this, "sl-after-hide")
+    if (this.open) return this.open = !1, waitForEvent(this, "sl-after-hide")
   }
   render() {
-    return y`
+    return htmlTag`
       <sl-popup
         part="base"
         exportparts="
           popup:base__popup,
           arrow:base__arrow
         "
-        class=${M({tooltip:!0,"tooltip--open":this.open})}
+        class=${classMap({tooltip:!0,"tooltip--open":this.open})}
         placement=${this.placement}
         distance=${this.distance}
         skidding=${this.skidding}
@@ -5470,40 +5470,40 @@ var st = class extends w {
     `
   }
 };
-st.styles = oi;
-st.dependencies = {
-  "sl-popup": I
+TooltipElement.styles = componentStyles5;
+TooltipElement.dependencies = {
+  "sl-popup": PopupElement
 };
-n([k("slot:not([name])")], st.prototype, "defaultSlot", 2);
-n([k(".tooltip__body")], st.prototype, "body", 2);
-n([k("sl-popup")], st.prototype, "popup", 2);
-n([l()], st.prototype, "content", 2);
-n([l()], st.prototype, "placement", 2);
-n([l({
+decorateClass([queryDecorator("slot:not([name])")], TooltipElement.prototype, "defaultSlot", 2);
+decorateClass([queryDecorator(".tooltip__body")], TooltipElement.prototype, "body", 2);
+decorateClass([queryDecorator("sl-popup")], TooltipElement.prototype, "popup", 2);
+decorateClass([property()], TooltipElement.prototype, "content", 2);
+decorateClass([property()], TooltipElement.prototype, "placement", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], st.prototype, "disabled", 2);
-n([l({
+})], TooltipElement.prototype, "disabled", 2);
+decorateClass([property({
   type: Number
-})], st.prototype, "distance", 2);
-n([l({
+})], TooltipElement.prototype, "distance", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], st.prototype, "open", 2);
-n([l({
+})], TooltipElement.prototype, "open", 2);
+decorateClass([property({
   type: Number
-})], st.prototype, "skidding", 2);
-n([l()], st.prototype, "trigger", 2);
-n([l({
+})], TooltipElement.prototype, "skidding", 2);
+decorateClass([property()], TooltipElement.prototype, "trigger", 2);
+decorateClass([property({
   type: Boolean
-})], st.prototype, "hoist", 2);
-n([S("open", {
+})], TooltipElement.prototype, "hoist", 2);
+decorateClass([watchDecorator("open", {
   waitUntilFirstUpdate: !0
-})], st.prototype, "handleOpenChange", 1);
-n([S(["content", "distance", "hoist", "placement", "skidding"])], st.prototype,
+})], TooltipElement.prototype, "handleOpenChange", 1);
+decorateClass([watchDecorator(["content", "distance", "hoist", "placement", "skidding"])], TooltipElement.prototype,
   "handleOptionsChange", 1);
-n([S("disabled")], st.prototype, "handleDisabledChange", 1);
-N("tooltip.show", {
+decorateClass([watchDecorator("disabled")], TooltipElement.prototype, "handleDisabledChange", 1);
+setDefaultAnimation("tooltip.show", {
   keyframes: [{
     opacity: 0,
     scale: .8
@@ -5516,7 +5516,7 @@ N("tooltip.show", {
     easing: "ease"
   }
 });
-N("tooltip.hide", {
+setDefaultAnimation("tooltip.hide", {
   keyframes: [{
     opacity: 1,
     scale: 1
@@ -5529,9 +5529,9 @@ N("tooltip.hide", {
     easing: "ease"
   }
 });
-st.define("sl-tooltip");
-var Pi = A`
-  ${C}
+TooltipElement.define("sl-tooltip");
+var componentStyles7 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: block;
@@ -5615,16 +5615,16 @@ var Pi = A`
     padding: var(--sl-spacing-medium);
   }
 `;
-var _t = class extends w {
+var DetailsElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.localize = new H(this), this.open = !1, this
+    super(...arguments), this.localize = new LocalizeController(this), this.open = !1, this
       .disabled = !1
   }
   firstUpdated() {
     this.body.style.height = this.open ? "auto" : "0", this.open && (this
       .details.open = !0), this.detailsObserver = new MutationObserver(
-      t => {
-        for (let e of t) e.type === "attributes" && e.attributeName ===
+      mutationRecords => {
+        for (let mutationRecord of mutationRecords) mutationRecord.type === "attributes" && mutationRecord.attributeName ===
           "open" && (this.details.open ? this.show() : this.hide())
       }), this.detailsObserver.observe(this.details, {
       attributes: !0
@@ -5633,15 +5633,15 @@ var _t = class extends w {
   disconnectedCallback() {
     super.disconnectedCallback(), this.detailsObserver.disconnect()
   }
-  handleSummaryClick(t) {
-    t.preventDefault(), this.disabled || (this.open ? this.hide() : this
+  handleSummaryClick(summaryClickEvent) {
+    summaryClickEvent.preventDefault(), this.disabled || (this.open ? this.hide() : this
       .show(), this.header.focus())
   }
-  handleSummaryKeyDown(t) {
-    (t.key === "Enter" || t.key === " ") && (t.preventDefault(), this.open ?
-      this.hide() : this.show()), (t.key === "ArrowUp" || t.key ===
-      "ArrowLeft") && (t.preventDefault(), this.hide()), (t.key ===
-      "ArrowDown" || t.key === "ArrowRight") && (t.preventDefault(), this
+  handleSummaryKeyDown(summaryKeydownEvent) {
+    (summaryKeydownEvent.key === "Enter" || summaryKeydownEvent.key === " ") && (summaryKeydownEvent.preventDefault(), this.open ?
+      this.hide() : this.show()), (summaryKeydownEvent.key === "ArrowUp" || summaryKeydownEvent.key ===
+      "ArrowLeft") && (summaryKeydownEvent.preventDefault(), this.hide()), (summaryKeydownEvent.key ===
+      "ArrowDown" || summaryKeydownEvent.key === "ArrowRight") && (summaryKeydownEvent.preventDefault(), this
       .show())
   }
   async handleOpenChange() {
@@ -5653,14 +5653,14 @@ var _t = class extends w {
         this.open = !1, this.details.open = !1;
         return
       }
-      await Y(this.body);
+      await stopAnimations(this.body);
       let {
-        keyframes: e,
-        options: o
-      } = W(this, "details.show", {
+        keyframes: expandKeyframes,
+        options: expandAnimationOptions
+      } = getAnimation(this, "details.show", {
         dir: this.localize.dir()
       });
-      await K(this.body, Jo(e, this.body.scrollHeight), o), this.body.style
+      await animateTo(this.body, shimKeyframesHeightAuto(expandKeyframes, this.body.scrollHeight), expandAnimationOptions), this.body.style
         .height = "auto", this.emit("sl-after-show")
     } else {
       if (this.emit("sl-hide", {
@@ -5670,31 +5670,31 @@ var _t = class extends w {
         this.details.open = !0, this.open = !0;
         return
       }
-      await Y(this.body);
+      await stopAnimations(this.body);
       let {
-        keyframes: e,
-        options: o
-      } = W(this, "details.hide", {
+        keyframes: collapseKeyframes,
+        options: collapseAnimationOptions
+      } = getAnimation(this, "details.hide", {
         dir: this.localize.dir()
       });
-      await K(this.body, Jo(e, this.body.scrollHeight), o), this.body.style
+      await animateTo(this.body, shimKeyframesHeightAuto(collapseKeyframes, this.body.scrollHeight), collapseAnimationOptions), this.body.style
         .height = "auto", this.details.open = !1, this.emit("sl-after-hide")
     }
   }
   async show() {
-    if (!(this.open || this.disabled)) return this.open = !0, it(this,
+    if (!(this.open || this.disabled)) return this.open = !0, waitForEvent(this,
       "sl-after-show")
   }
   async hide() {
-    if (!(!this.open || this.disabled)) return this.open = !1, it(this,
+    if (!(!this.open || this.disabled)) return this.open = !1, waitForEvent(this,
       "sl-after-hide")
   }
   render() {
-    let t = this.localize.dir() === "rtl";
-    return y`
+    let isRtlDirection = this.localize.dir() === "rtl";
+    return htmlTag`
       <details
         part="base"
-        class=${M({details:!0,"details--open":this.open,"details--disabled":this.disabled,"details--rtl":t})}
+        class=${classMap({details:!0,"details--open":this.open,"details--disabled":this.disabled,"details--rtl":isRtlDirection})}
       >
         <summary
           part="header"
@@ -5712,10 +5712,10 @@ var _t = class extends w {
 
           <span part="summary-icon" class="details__summary-icon">
             <slot name="expand-icon">
-              <sl-icon library="system" name=${t?"chevron-left":"chevron-right"}></sl-icon>
+              <sl-icon library="system" name=${isRtlDirection?"chevron-left":"chevron-right"}></sl-icon>
             </slot>
             <slot name="collapse-icon">
-              <sl-icon library="system" name=${t?"chevron-left":"chevron-right"}></sl-icon>
+              <sl-icon library="system" name=${isRtlDirection?"chevron-left":"chevron-right"}></sl-icon>
             </slot>
           </span>
         </summary>
@@ -5727,27 +5727,27 @@ var _t = class extends w {
     `
   }
 };
-_t.styles = Pi;
-_t.dependencies = {
-  "sl-icon": G
+DetailsElement.styles = componentStyles7;
+DetailsElement.dependencies = {
+  "sl-icon": IconElement
 };
-n([k(".details")], _t.prototype, "details", 2);
-n([k(".details__header")], _t.prototype, "header", 2);
-n([k(".details__body")], _t.prototype, "body", 2);
-n([k(".details__expand-icon-slot")], _t.prototype, "expandIconSlot", 2);
-n([l({
+decorateClass([queryDecorator(".details")], DetailsElement.prototype, "details", 2);
+decorateClass([queryDecorator(".details__header")], DetailsElement.prototype, "header", 2);
+decorateClass([queryDecorator(".details__body")], DetailsElement.prototype, "body", 2);
+decorateClass([queryDecorator(".details__expand-icon-slot")], DetailsElement.prototype, "expandIconSlot", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], _t.prototype, "open", 2);
-n([l()], _t.prototype, "summary", 2);
-n([l({
+})], DetailsElement.prototype, "open", 2);
+decorateClass([property()], DetailsElement.prototype, "summary", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], _t.prototype, "disabled", 2);
-n([S("open", {
+})], DetailsElement.prototype, "disabled", 2);
+decorateClass([watchDecorator("open", {
   waitUntilFirstUpdate: !0
-})], _t.prototype, "handleOpenChange", 1);
-N("details.show", {
+})], DetailsElement.prototype, "handleOpenChange", 1);
+setDefaultAnimation("details.show", {
   keyframes: [{
     height: "0",
     opacity: "0"
@@ -5760,7 +5760,7 @@ N("details.show", {
     easing: "linear"
   }
 });
-N("details.hide", {
+setDefaultAnimation("details.hide", {
   keyframes: [{
     height: "auto",
     opacity: "1"
@@ -5773,9 +5773,9 @@ N("details.hide", {
     easing: "linear"
   }
 });
-_t.define("sl-details");
-var Li = A`
-  ${C}
+DetailsElement.define("sl-details");
+var componentStyles8 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: inline-block;
@@ -5890,23 +5890,23 @@ var Li = A`
     border-radius: var(--sl-border-radius-pill);
   }
 `;
-var jt = class extends w {
+var TagElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.localize = new H(this), this.variant =
+    super(...arguments), this.localize = new LocalizeController(this), this.variant =
       "neutral", this.size = "medium", this.pill = !1, this.removable = !1
   }
   handleRemoveClick() {
     this.emit("sl-remove")
   }
   render() {
-    return y`
+    return htmlTag`
       <span
         part="base"
-        class=${M({tag:!0,"tag--primary":this.variant==="primary","tag--success":this.variant==="success","tag--neutral":this.variant==="neutral","tag--warning":this.variant==="warning","tag--danger":this.variant==="danger","tag--text":this.variant==="text","tag--small":this.size==="small","tag--medium":this.size==="medium","tag--large":this.size==="large","tag--pill":this.pill,"tag--removable":this.removable})}
+        class=${classMap({tag:!0,"tag--primary":this.variant==="primary","tag--success":this.variant==="success","tag--neutral":this.variant==="neutral","tag--warning":this.variant==="warning","tag--danger":this.variant==="danger","tag--text":this.variant==="text","tag--small":this.size==="small","tag--medium":this.size==="medium","tag--large":this.size==="large","tag--pill":this.pill,"tag--removable":this.removable})}
       >
         <slot part="content" class="tag__content"></slot>
 
-        ${this.removable?y`
+        ${this.removable?htmlTag`
               <sl-icon-button
                 part="remove-button"
                 exportparts="base:remove-button__base"
@@ -5922,26 +5922,26 @@ var jt = class extends w {
     `
   }
 };
-jt.styles = Li;
-jt.dependencies = {
-  "sl-icon-button": Q
+TagElement.styles = componentStyles8;
+TagElement.dependencies = {
+  "sl-icon-button": IconButtonElement
 };
-n([l({
+decorateClass([property({
   reflect: !0
-})], jt.prototype, "variant", 2);
-n([l({
+})], TagElement.prototype, "variant", 2);
+decorateClass([property({
   reflect: !0
-})], jt.prototype, "size", 2);
-n([l({
+})], TagElement.prototype, "size", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], jt.prototype, "pill", 2);
-n([l({
+})], TagElement.prototype, "pill", 2);
+decorateClass([property({
   type: Boolean
-})], jt.prototype, "removable", 2);
-jt.define("sl-tag");
-var Ri = A`
-  ${C}
+})], TagElement.prototype, "removable", 2);
+TagElement.define("sl-tag");
+var componentStyles9 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: block;
@@ -5958,73 +5958,73 @@ var Ri = A`
     --spacing: var(--sl-spacing-x-small);
   }
 `;
-var _o = class extends w {
+var MenuElement = class extends ShoelaceElement {
   connectedCallback() {
     super.connectedCallback(), this.setAttribute("role", "menu")
   }
-  handleClick(t) {
-    let e = ["menuitem", "menuitemcheckbox"],
-      o = t.composedPath()
-      .find(i => {
-        var s;
-        return e.includes(((s = i?.getAttribute) == null ? void 0 : s
-          .call(i, "role")) || "")
+  handleClick(clickEvent) {
+    let menuItemRoles = ["menuitem", "menuitemcheckbox"],
+      eventPath = clickEvent.composedPath()
+      .find(pathElement => {
+        var tempRoleAttr;
+        return menuItemRoles.includes(((tempRoleAttr = pathElement?.getAttribute) == null ? void 0 : tempRoleAttr
+          .call(pathElement, "role")) || "")
       });
-    if (!o) return;
-    let r = o;
-    r.type === "checkbox" && (r.checked = !r.checked), this.emit(
+    if (!eventPath) return;
+    let targetMenuItem = eventPath;
+    targetMenuItem.type === "checkbox" && (targetMenuItem.checked = !targetMenuItem.checked), this.emit(
       "sl-select", {
         detail: {
-          item: r
+          item: targetMenuItem
         }
       })
   }
-  handleKeyDown(t) {
-    if (t.key === "Enter" || t.key === " ") {
-      let e = this.getCurrentItem();
-      t.preventDefault(), t.stopPropagation(), e?.click()
-    } else if (["ArrowDown", "ArrowUp", "Home", "End"].includes(t.key)) {
-      let e = this.getAllItems(),
-        o = this.getCurrentItem(),
-        r = o ? e.indexOf(o) : 0;
-      e.length > 0 && (t.preventDefault(), t.stopPropagation(), t.key ===
-        "ArrowDown" ? r++ : t.key === "ArrowUp" ? r-- : t.key === "Home" ?
-        r = 0 : t.key === "End" && (r = e.length - 1), r < 0 && (r = e
-          .length - 1), r > e.length - 1 && (r = 0), this.setCurrentItem(
-          e[r]), e[r].focus())
+  handleKeyDown(keydownEvent) {
+    if (keydownEvent.key === "Enter" || keydownEvent.key === " ") {
+      let currentItem = this.getCurrentItem();
+      keydownEvent.preventDefault(), keydownEvent.stopPropagation(), currentItem?.click()
+    } else if (["ArrowDown", "ArrowUp", "Home", "End"].includes(keydownEvent.key)) {
+      let allMenuItems = this.getAllItems(),
+        currentItem = this.getCurrentItem(),
+        currentIndex = currentItem ? allMenuItems.indexOf(currentItem) : 0;
+      allMenuItems.length > 0 && (keydownEvent.preventDefault(), keydownEvent.stopPropagation(), keydownEvent.key ===
+        "ArrowDown" ? currentIndex++ : keydownEvent.key === "ArrowUp" ? currentIndex-- : keydownEvent.key === "Home" ?
+        currentIndex = 0 : keydownEvent.key === "End" && (currentIndex = allMenuItems.length - 1), currentIndex < 0 && (currentIndex = allMenuItems
+          .length - 1), currentIndex > allMenuItems.length - 1 && (currentIndex = 0), this.setCurrentItem(
+          allMenuItems[currentIndex]), allMenuItems[currentIndex].focus())
     }
   }
-  handleMouseDown(t) {
-    let e = t.target;
-    this.isMenuItem(e) && this.setCurrentItem(e)
+  handleMouseDown(mouseDownEvent) {
+    let targetElement = mouseDownEvent.target;
+    this.isMenuItem(targetElement) && this.setCurrentItem(targetElement)
   }
   handleSlotChange() {
-    let t = this.getAllItems();
-    t.length > 0 && this.setCurrentItem(t[0])
+    let allMenuItems = this.getAllItems();
+    allMenuItems.length > 0 && this.setCurrentItem(allMenuItems[0])
   }
-  isMenuItem(t) {
-    var e;
-    return t.tagName.toLowerCase() === "sl-menu-item" || ["menuitem",
+  isMenuItem(element) {
+    var tempItemRole;
+    return element.tagName.toLowerCase() === "sl-menu-item" || ["menuitem",
       "menuitemcheckbox", "menuitemradio"
-    ].includes((e = t.getAttribute("role")) != null ? e : "")
+    ].includes((tempItemRole = element.getAttribute("role")) != null ? tempItemRole : "")
   }
   getAllItems() {
     return [...this.defaultSlot.assignedElements({
       flatten: !0
-    })].filter(t => !(t.inert || !this.isMenuItem(t)))
+    })].filter(menuItemCandidate => !(menuItemCandidate.inert || !this.isMenuItem(menuItemCandidate)))
   }
   getCurrentItem() {
     return this.getAllItems()
-      .find(t => t.getAttribute("tabindex") === "0")
+      .find(menuItemWithTabindex => menuItemWithTabindex.getAttribute("tabindex") === "0")
   }
-  setCurrentItem(t) {
+  setCurrentItem(targetItem) {
     this.getAllItems()
-      .forEach(o => {
-        o.setAttribute("tabindex", o === t ? "0" : "-1")
+      .forEach(menuItem => {
+        menuItem.setAttribute("tabindex", menuItem === targetItem ? "0" : "-1")
       })
   }
   render() {
-    return y`
+    return htmlTag`
       <slot
         @slotchange=${this.handleSlotChange}
         @click=${this.handleClick}
@@ -6034,11 +6034,11 @@ var _o = class extends w {
     `
   }
 };
-_o.styles = Ri;
-n([k("slot")], _o.prototype, "defaultSlot", 2);
-_o.define("sl-menu");
-var Di = A`
-  ${C}
+MenuElement.styles = componentStyles9;
+decorateClass([queryDecorator("slot")], MenuElement.prototype, "defaultSlot", 2);
+MenuElement.define("sl-menu");
+var componentStyles10 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     --color: var(--sl-panel-border-color);
@@ -6059,7 +6059,7 @@ var Di = A`
     margin: 0 var(--spacing);
   }
 `;
-var He = class extends w {
+var DividerElement = class extends ShoelaceElement {
   constructor() {
     super(...arguments), this.vertical = !1
   }
@@ -6071,44 +6071,44 @@ var He = class extends w {
       "horizontal")
   }
 };
-He.styles = Di;
-n([l({
+DividerElement.styles = componentStyles10;
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], He.prototype, "vertical", 2);
-n([S("vertical")], He.prototype, "handleVerticalChange", 1);
-He.define("sl-divider");
-var Ue = class extends w {
+})], DividerElement.prototype, "vertical", 2);
+decorateClass([watchDecorator("vertical")], DividerElement.prototype, "handleVerticalChange", 1);
+DividerElement.define("sl-divider");
+var FormatBytesElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.localize = new H(this), this.value = 0, this
+    super(...arguments), this.localize = new LocalizeController(this), this.value = 0, this
       .unit = "byte", this.display = "short"
   }
   render() {
     if (isNaN(this.value)) return "";
-    let t = ["", "kilo", "mega", "giga", "tera"],
-      e = ["", "kilo", "mega", "giga", "tera", "peta"],
-      o = this.unit === "bit" ? t : e,
-      r = Math.max(0, Math.min(Math.floor(Math.log10(this.value) / 3), o
+    let bitUnitPrefixes = ["", "kilo", "mega", "giga", "tera"],
+      byteUnitPrefixes = ["", "kilo", "mega", "giga", "tera", "peta"],
+      unitPrefixes = this.unit === "bit" ? bitUnitPrefixes : byteUnitPrefixes,
+      prefixIndex = Math.max(0, Math.min(Math.floor(Math.log10(this.value) / 3), unitPrefixes
         .length - 1)),
-      i = o[r] + this.unit,
-      s = parseFloat((this.value / Math.pow(1e3, r))
+      unitLabel = unitPrefixes[prefixIndex] + this.unit,
+      scaledValue = parseFloat((this.value / Math.pow(1e3, prefixIndex))
         .toPrecision(3));
-    return this.localize.number(s, {
+    return this.localize.number(scaledValue, {
       style: "unit",
-      unit: i,
+      unit: unitLabel,
       unitDisplay: this.display
     })
   }
 };
-n([l({
+decorateClass([property({
   type: Number
-})], Ue.prototype, "value", 2);
-n([l()], Ue.prototype, "unit", 2);
-n([l()], Ue.prototype, "display", 2);
-Ue.define("sl-format-bytes");
-var wt = class extends w {
+})], FormatBytesElement.prototype, "value", 2);
+decorateClass([property()], FormatBytesElement.prototype, "unit", 2);
+decorateClass([property()], FormatBytesElement.prototype, "display", 2);
+FormatBytesElement.define("sl-format-bytes");
+var FormatNumberElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.localize = new H(this), this.value = 0, this
+    super(...arguments), this.localize = new LocalizeController(this), this.value = 0, this
       .type = "decimal", this.noGrouping = !1, this.currency = "USD", this
       .currencyDisplay = "symbol"
   }
@@ -6126,41 +6126,41 @@ var wt = class extends w {
     })
   }
 };
-n([l({
+decorateClass([property({
   type: Number
-})], wt.prototype, "value", 2);
-n([l()], wt.prototype, "type", 2);
-n([l({
+})], FormatNumberElement.prototype, "value", 2);
+decorateClass([property()], FormatNumberElement.prototype, "type", 2);
+decorateClass([property({
   attribute: "no-grouping",
   type: Boolean
-})], wt.prototype, "noGrouping", 2);
-n([l()], wt.prototype, "currency", 2);
-n([l({
+})], FormatNumberElement.prototype, "noGrouping", 2);
+decorateClass([property()], FormatNumberElement.prototype, "currency", 2);
+decorateClass([property({
   attribute: "currency-display"
-})], wt.prototype, "currencyDisplay", 2);
-n([l({
+})], FormatNumberElement.prototype, "currencyDisplay", 2);
+decorateClass([property({
   attribute: "minimum-integer-digits",
   type: Number
-})], wt.prototype, "minimumIntegerDigits", 2);
-n([l({
+})], FormatNumberElement.prototype, "minimumIntegerDigits", 2);
+decorateClass([property({
   attribute: "minimum-fraction-digits",
   type: Number
-})], wt.prototype, "minimumFractionDigits", 2);
-n([l({
+})], FormatNumberElement.prototype, "minimumFractionDigits", 2);
+decorateClass([property({
   attribute: "maximum-fraction-digits",
   type: Number
-})], wt.prototype, "maximumFractionDigits", 2);
-n([l({
+})], FormatNumberElement.prototype, "maximumFractionDigits", 2);
+decorateClass([property({
   attribute: "minimum-significant-digits",
   type: Number
-})], wt.prototype, "minimumSignificantDigits", 2);
-n([l({
+})], FormatNumberElement.prototype, "minimumSignificantDigits", 2);
+decorateClass([property({
   attribute: "maximum-significant-digits",
   type: Number
-})], wt.prototype, "maximumSignificantDigits", 2);
-wt.define("sl-format-number");
-var Vi = A`
-  ${C}
+})], FormatNumberElement.prototype, "maximumSignificantDigits", 2);
+FormatNumberElement.define("sl-format-number");
+var componentStyles11 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     --height: 1rem;
@@ -6244,80 +6244,80 @@ var Vi = A`
     }
   }
 `;
-var Ii = "important",
-  kn = " !" + Ii,
-  Bi = Dt(class extends kt {
-    constructor(t) {
-      if (super(t), t.type !== ht.ATTRIBUTE || t.name !== "style" || t
+var importantKeyword = "important",
+  importantSuffix = " !" + importantKeyword,
+  styleMap = makeDirective(class extends DirectiveBase {
+    constructor(partInfo) {
+      if (super(partInfo), partInfo.type !== partTypeConstants.ATTRIBUTE || partInfo.name !== "style" || partInfo
         .strings?.length > 2) throw Error(
         "The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute."
         )
     }
-    render(t) {
-      return Object.keys(t)
-        .reduce((e, o) => {
-          let r = t[o];
-          return r == null ? e : e +
-            `${o=o.includes("-")?o:o.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g,"-$&").toLowerCase()}:${r};`
+    render(styleInfo) {
+      return Object.keys(styleInfo)
+        .reduce((accumulatedCss, stylePropertyName) => {
+          let stylePropertyValue = styleInfo[stylePropertyName];
+          return stylePropertyValue == null ? accumulatedCss : accumulatedCss +
+            `${stylePropertyName=stylePropertyName.includes("-")?stylePropertyName:stylePropertyName.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g,"-$&").toLowerCase()}:${stylePropertyValue};`
         }, "")
     }
-    update(t, [e]) {
+    update(styleAttributePart, [styleInfo]) {
       let {
-        style: o
-      } = t.element;
-      if (this.ft === void 0) return this.ft = new Set(Object.keys(e)), this
-        .render(e);
-      for (let r of this.ft) e[r] == null && (this.ft.delete(r), r.includes(
-        "-") ? o.removeProperty(r) : o[r] = null);
-      for (let r in e) {
-        let i = e[r];
-        if (i != null) {
-          this.ft.add(r);
-          let s = typeof i == "string" && i.endsWith(kn);
-          r.includes("-") || s ? o.setProperty(r, s ? i.slice(0, -11) : i,
-            s ? Ii : "") : o[r] = i
+        style: elementInlineStyle
+      } = styleAttributePart.element;
+      if (this.ft === void 0) return this.ft = new Set(Object.keys(styleInfo)), this
+        .render(styleInfo);
+      for (let previousStyleName of this.ft) styleInfo[previousStyleName] == null && (this.ft.delete(previousStyleName), previousStyleName.includes(
+        "-") ? elementInlineStyle.removeProperty(previousStyleName) : elementInlineStyle[previousStyleName] = null);
+      for (let styleName in styleInfo) {
+        let styleValue = styleInfo[styleName];
+        if (styleValue != null) {
+          this.ft.add(styleName);
+          let isImportantStyle = typeof styleValue == "string" && styleValue.endsWith(importantSuffix);
+          styleName.includes("-") || isImportantStyle ? elementInlineStyle.setProperty(styleName, isImportantStyle ? styleValue.slice(0, -11) : styleValue,
+            isImportantStyle ? importantKeyword : "") : elementInlineStyle[styleName] = styleValue
         }
       }
-      return ct
+      return noChange
     }
   });
-var be = class extends w {
+var ProgressBarElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.localize = new H(this), this.value = 0, this
+    super(...arguments), this.localize = new LocalizeController(this), this.value = 0, this
       .indeterminate = !1, this.label = ""
   }
   render() {
-    return y`
+    return htmlTag`
       <div
         part="base"
-        class=${M({"progress-bar":!0,"progress-bar--indeterminate":this.indeterminate,"progress-bar--rtl":this.localize.dir()==="rtl"})}
+        class=${classMap({"progress-bar":!0,"progress-bar--indeterminate":this.indeterminate,"progress-bar--rtl":this.localize.dir()==="rtl"})}
         role="progressbar"
-        title=${_(this.title)}
+        title=${ifDefined(this.title)}
         aria-label=${this.label.length>0?this.label:this.localize.term("progress")}
         aria-valuemin="0"
         aria-valuemax="100"
         aria-valuenow=${this.indeterminate?0:this.value}
       >
-        <div part="indicator" class="progress-bar__indicator" style=${Bi({width:`${this.value}%`})}>
-          ${this.indeterminate?"":y` <slot part="label" class="progress-bar__label"></slot> `}
+        <div part="indicator" class="progress-bar__indicator" style=${styleMap({width:`${this.value}%`})}>
+          ${this.indeterminate?"":htmlTag` <slot part="label" class="progress-bar__label"></slot> `}
         </div>
       </div>
     `
   }
 };
-be.styles = Vi;
-n([l({
+ProgressBarElement.styles = componentStyles11;
+decorateClass([property({
   type: Number,
   reflect: !0
-})], be.prototype, "value", 2);
-n([l({
+})], ProgressBarElement.prototype, "value", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], be.prototype, "indeterminate", 2);
-n([l()], be.prototype, "label", 2);
-be.define("sl-progress-bar");
-var Ni = A`
-  ${C}
+})], ProgressBarElement.prototype, "indeterminate", 2);
+decorateClass([property()], ProgressBarElement.prototype, "label", 2);
+ProgressBarElement.define("sl-progress-bar");
+var componentStyles12 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: contents;
@@ -6410,13 +6410,13 @@ var Ni = A`
     padding-inline-end: var(--sl-spacing-medium);
   }
 `;
-var ye = Object.assign(document.createElement("div"), {
+var toastStackElement = Object.assign(document.createElement("div"), {
     className: "sl-toast-stack"
   }),
-  St = class extends w {
+  AlertElement = class extends ShoelaceElement {
     constructor() {
-      super(...arguments), this.hasSlotController = new rt(this, "icon",
-          "suffix"), this.localize = new H(this), this.open = !1, this
+      super(...arguments), this.hasSlotController = new SlotController(this, "icon",
+          "suffix"), this.localize = new LocalizeController(this), this.open = !1, this
         .closable = !1, this.variant = "primary", this.duration = 1 / 0
     }
     firstUpdated() {
@@ -6436,24 +6436,24 @@ var ye = Object.assign(document.createElement("div"), {
     async handleOpenChange() {
       if (this.open) {
         this.emit("sl-show"), this.duration < 1 / 0 && this.restartAutoHide(),
-          await Y(this.base), this.base.hidden = !1;
+          await stopAnimations(this.base), this.base.hidden = !1;
         let {
-          keyframes: t,
-          options: e
-        } = W(this, "alert.show", {
+          keyframes: showKeyframes,
+          options: showAnimationOptions
+        } = getAnimation(this, "alert.show", {
           dir: this.localize.dir()
         });
-        await K(this.base, t, e), this.emit("sl-after-show")
+        await animateTo(this.base, showKeyframes, showAnimationOptions), this.emit("sl-after-show")
       } else {
-        this.emit("sl-hide"), clearTimeout(this.autoHideTimeout), await Y(this
+        this.emit("sl-hide"), clearTimeout(this.autoHideTimeout), await stopAnimations(this
           .base);
         let {
-          keyframes: t,
-          options: e
-        } = W(this, "alert.hide", {
+          keyframes: hideKeyframes,
+          options: hideAnimationOptions
+        } = getAnimation(this, "alert.hide", {
           dir: this.localize.dir()
         });
-        await K(this.base, t, e), this.base.hidden = !0, this.emit(
+        await animateTo(this.base, hideKeyframes, hideAnimationOptions), this.base.hidden = !0, this.emit(
           "sl-after-hide")
       }
     }
@@ -6461,29 +6461,29 @@ var ye = Object.assign(document.createElement("div"), {
       this.restartAutoHide()
     }
     async show() {
-      if (!this.open) return this.open = !0, it(this, "sl-after-show")
+      if (!this.open) return this.open = !0, waitForEvent(this, "sl-after-show")
     }
     async hide() {
-      if (this.open) return this.open = !1, it(this, "sl-after-hide")
+      if (this.open) return this.open = !1, waitForEvent(this, "sl-after-hide")
     }
     async toast() {
-      return new Promise(t => {
-        ye.parentElement === null && document.body.append(ye), ye
+      return new Promise(resolveToastPromise => {
+        toastStackElement.parentElement === null && document.body.append(toastStackElement), toastStackElement
           .appendChild(this), requestAnimationFrame(() => {
             this.clientWidth, this.show()
           }), this.addEventListener("sl-after-hide", () => {
-            ye.removeChild(this), t(), ye.querySelector("sl-alert") ===
-              null && ye.remove()
+            toastStackElement.removeChild(this), resolveToastPromise(), toastStackElement.querySelector("sl-alert") ===
+              null && toastStackElement.remove()
           }, {
             once: !0
           })
       })
     }
     render() {
-      return y`
+      return htmlTag`
       <div
         part="base"
-        class=${M({alert:!0,"alert--open":this.open,"alert--closable":this.closable,"alert--has-icon":this.hasSlotController.test("icon"),"alert--primary":this.variant==="primary","alert--success":this.variant==="success","alert--neutral":this.variant==="neutral","alert--warning":this.variant==="warning","alert--danger":this.variant==="danger"})}
+        class=${classMap({alert:!0,"alert--open":this.open,"alert--closable":this.closable,"alert--has-icon":this.hasSlotController.test("icon"),"alert--primary":this.variant==="primary","alert--success":this.variant==="success","alert--neutral":this.variant==="neutral","alert--warning":this.variant==="warning","alert--danger":this.variant==="danger"})}
         role="alert"
         aria-hidden=${this.open?"false":"true"}
         @mousemove=${this.handleMouseMove}
@@ -6496,7 +6496,7 @@ var ye = Object.assign(document.createElement("div"), {
           <slot></slot>
         </div>
 
-        ${this.closable?y`
+        ${this.closable?htmlTag`
               <sl-icon-button
                 part="close-button"
                 exportparts="base:close-button__base"
@@ -6511,30 +6511,30 @@ var ye = Object.assign(document.createElement("div"), {
     `
     }
   };
-St.styles = Ni;
-St.dependencies = {
-  "sl-icon-button": Q
+AlertElement.styles = componentStyles12;
+AlertElement.dependencies = {
+  "sl-icon-button": IconButtonElement
 };
-n([k('[part~="base"]')], St.prototype, "base", 2);
-n([l({
+decorateClass([queryDecorator('[part~="base"]')], AlertElement.prototype, "base", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], St.prototype, "open", 2);
-n([l({
+})], AlertElement.prototype, "open", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], St.prototype, "closable", 2);
-n([l({
+})], AlertElement.prototype, "closable", 2);
+decorateClass([property({
   reflect: !0
-})], St.prototype, "variant", 2);
-n([l({
+})], AlertElement.prototype, "variant", 2);
+decorateClass([property({
   type: Number
-})], St.prototype, "duration", 2);
-n([S("open", {
+})], AlertElement.prototype, "duration", 2);
+decorateClass([watchDecorator("open", {
   waitUntilFirstUpdate: !0
-})], St.prototype, "handleOpenChange", 1);
-n([S("duration")], St.prototype, "handleDurationChange", 1);
-N("alert.show", {
+})], AlertElement.prototype, "handleOpenChange", 1);
+decorateClass([watchDecorator("duration")], AlertElement.prototype, "handleDurationChange", 1);
+setDefaultAnimation("alert.show", {
   keyframes: [{
     opacity: 0,
     scale: .8
@@ -6547,7 +6547,7 @@ N("alert.show", {
     easing: "ease"
   }
 });
-N("alert.hide", {
+setDefaultAnimation("alert.hide", {
   keyframes: [{
     opacity: 1,
     scale: 1
@@ -6560,8 +6560,8 @@ N("alert.hide", {
     easing: "ease"
   }
 });
-St.define("sl-alert");
-var ve = A`
+AlertElement.define("sl-alert");
+var componentStyles13 = cssTag`
   .form-control .form-control__label {
     display: none;
   }
@@ -6618,9 +6618,9 @@ var ve = A`
     margin-top: var(--sl-spacing-2x-small);
   }
 `;
-var Fi = A`
-  ${C}
-  ${ve}
+var componentStyles14 = cssTag`
+  ${componentBaseStyles}
+  ${componentStyles13}
 
   :host {
     display: block;
@@ -6787,52 +6787,52 @@ var Fi = A`
     overflow-y: hidden;
   }
 `;
-var _e = (t = "value") => (e, o) => {
-  let r = e.constructor,
-    i = r.prototype.attributeChangedCallback;
-  r.prototype.attributeChangedCallback = function(s, a, u) {
-    var c;
-    let d = r.getPropertyOptions(t),
-      h = typeof d.attribute == "string" ? d.attribute : t;
-    if (s === h) {
-      let p = d.converter || Nt,
-        m = (typeof p == "function" ? p : (c = p?.fromAttribute) != null ?
-          c : Nt.fromAttribute)(u, d.type);
-      this[t] !== m && (this[o] = m)
+var defaultValueDecorator = (trackedPropertyName = "value") => (elementPrototype, decoratedPropKey) => {
+  let elementConstructor = elementPrototype.constructor,
+    originalAttrChangedCallback = elementConstructor.prototype.attributeChangedCallback;
+  elementConstructor.prototype.attributeChangedCallback = function(changedAttrName, oldAttrValue, newAttrValue) {
+    var tempConverter;
+    let propertyOptions = elementConstructor.getPropertyOptions(trackedPropertyName),
+      attributeName = typeof propertyOptions.attribute == "string" ? propertyOptions.attribute : trackedPropertyName;
+    if (changedAttrName === attributeName) {
+      let attributeConverter = propertyOptions.converter || defaultConverter,
+        fromAttributeFn = (typeof attributeConverter == "function" ? attributeConverter : (tempConverter = attributeConverter?.fromAttribute) != null ?
+          tempConverter : defaultConverter.fromAttribute)(newAttrValue, propertyOptions.type);
+      this[trackedPropertyName] !== fromAttributeFn && (this[decoratedPropKey] = fromAttributeFn)
     }
-    i.call(this, s, a, u)
+    originalAttrChangedCallback.call(this, changedAttrName, oldAttrValue, newAttrValue)
   }
 };
-var se = Dt(class extends kt {
-  constructor(t) {
-    if (super(t), t.type !== ht.PROPERTY && t.type !== ht.ATTRIBUTE && t
-      .type !== ht.BOOLEAN_ATTRIBUTE) throw Error(
+var toggleAttributeDirective = makeDirective(class extends DirectiveBase {
+  constructor(partInfo) {
+    if (super(partInfo), partInfo.type !== partTypeConstants.PROPERTY && partInfo.type !== partTypeConstants.ATTRIBUTE && partInfo
+      .type !== partTypeConstants.BOOLEAN_ATTRIBUTE) throw Error(
       "The `live` directive is not allowed on child or event bindings"
       );
-    if (!uo(t)) throw Error(
+    if (!isCompiledTemplateResult(partInfo)) throw Error(
       "`live` bindings can only contain a single expression")
   }
-  render(t) {
-    return t
+  render(directiveValue) {
+    return directiveValue
   }
-  update(t, [e]) {
-    if (e === ct || e === j) return e;
-    let o = t.element,
-      r = t.name;
-    if (t.type === ht.PROPERTY) {
-      if (e === o[r]) return ct
-    } else if (t.type === ht.BOOLEAN_ATTRIBUTE) {
-      if (!!e === o.hasAttribute(r)) return ct
-    } else if (t.type === ht.ATTRIBUTE && o.getAttribute(r) === e + "")
-      return ct;
-    return Qr(t), e
+  update(boundAttributePart, [directiveValue]) {
+    if (directiveValue === noChange || directiveValue === nothing) return directiveValue;
+    let boundElement = boundAttributePart.element,
+      boundAttributeName = boundAttributePart.name;
+    if (boundAttributePart.type === partTypeConstants.PROPERTY) {
+      if (directiveValue === boundElement[boundAttributeName]) return noChange
+    } else if (boundAttributePart.type === partTypeConstants.BOOLEAN_ATTRIBUTE) {
+      if (!!directiveValue === boundElement.hasAttribute(boundAttributeName)) return noChange
+    } else if (boundAttributePart.type === partTypeConstants.ATTRIBUTE && boundElement.getAttribute(boundAttributeName) === directiveValue + "")
+      return noChange;
+    return setChildPartValue(boundAttributePart), directiveValue
   }
 });
-var D = class extends w {
+var TextareaElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.formControlController = new Tt(this, {
+    super(...arguments), this.formControlController = new FormControlController(this, {
         assumeInteractionOn: ["sl-blur", "sl-input"]
-      }), this.hasSlotController = new rt(this, "help-text", "label"), this
+      }), this.hasSlotController = new SlotController(this, "help-text", "label"), this
       .hasFocus = !1, this.title = "", this.name = "", this.value = "", this
       .size = "medium", this.filled = !1, this.label = "", this.helpText =
       "", this.placeholder = "", this.rows = 4, this.resize = "vertical",
@@ -6870,9 +6870,9 @@ var D = class extends w {
   handleInput() {
     this.value = this.input.value, this.emit("sl-input")
   }
-  handleInvalid(t) {
+  handleInvalid(invalidEvent) {
     this.formControlController.setValidity(!1), this.formControlController
-      .emitInvalidEvent(t)
+      .emitInvalidEvent(invalidEvent)
   }
   setTextareaHeight() {
     this.resize === "auto" ? (this.input.style.height = "auto", this.input
@@ -6889,8 +6889,8 @@ var D = class extends w {
     await this.updateComplete, this.formControlController.updateValidity(),
       this.setTextareaHeight()
   }
-  focus(t) {
-    this.input.focus(t)
+  focus(focusOptions) {
+    this.input.focus(focusOptions)
   }
   blur() {
     this.input.blur()
@@ -6898,10 +6898,10 @@ var D = class extends w {
   select() {
     this.input.select()
   }
-  scrollPosition(t) {
-    if (t) {
-      typeof t.top == "number" && (this.input.scrollTop = t.top), typeof t
-        .left == "number" && (this.input.scrollLeft = t.left);
+  scrollPosition(scrollPositionValue) {
+    if (scrollPositionValue) {
+      typeof scrollPositionValue.top == "number" && (this.input.scrollTop = scrollPositionValue.top), typeof scrollPositionValue
+        .left == "number" && (this.input.scrollLeft = scrollPositionValue.left);
       return
     }
     return {
@@ -6909,13 +6909,13 @@ var D = class extends w {
       left: this.input.scrollTop
     }
   }
-  setSelectionRange(t, e, o = "none") {
-    this.input.setSelectionRange(t, e, o)
+  setSelectionRange(selectionStart, selectionEnd, selectionDirection = "none") {
+    this.input.setSelectionRange(selectionStart, selectionEnd, selectionDirection)
   }
-  setRangeText(t, e, o, r = "preserve") {
-    let i = e ?? this.input.selectionStart,
-      s = o ?? this.input.selectionEnd;
-    this.input.setRangeText(t, i, s, r), this.value !== this.input.value &&
+  setRangeText(replacementText, rangeStart, rangeEnd, selectionMode = "preserve") {
+    let effectiveRangeStart = rangeStart ?? this.input.selectionStart,
+      effectiveRangeEnd = rangeEnd ?? this.input.selectionEnd;
+    this.input.setRangeText(replacementText, effectiveRangeStart, effectiveRangeEnd, selectionMode), this.value !== this.input.value &&
       (this.value = this.input.value, this.setTextareaHeight())
   }
   checkValidity() {
@@ -6927,25 +6927,25 @@ var D = class extends w {
   reportValidity() {
     return this.input.reportValidity()
   }
-  setCustomValidity(t) {
-    this.input.setCustomValidity(t), this.formControlController
+  setCustomValidity(validationMessage) {
+    this.input.setCustomValidity(validationMessage), this.formControlController
       .updateValidity()
   }
   render() {
-    let t = this.hasSlotController.test("label"),
-      e = this.hasSlotController.test("help-text"),
-      o = this.label ? !0 : !!t,
-      r = this.helpText ? !0 : !!e;
-    return y`
+    let hasLabelSlot = this.hasSlotController.test("label"),
+      hasHelpTextSlot = this.hasSlotController.test("help-text"),
+      showLabel = this.label ? !0 : !!hasLabelSlot,
+      showHelpText = this.helpText ? !0 : !!hasHelpTextSlot;
+    return htmlTag`
       <div
         part="form-control"
-        class=${M({"form-control":!0,"form-control--small":this.size==="small","form-control--medium":this.size==="medium","form-control--large":this.size==="large","form-control--has-label":o,"form-control--has-help-text":r})}
+        class=${classMap({"form-control":!0,"form-control--small":this.size==="small","form-control--medium":this.size==="medium","form-control--large":this.size==="large","form-control--has-label":showLabel,"form-control--has-help-text":showHelpText})}
       >
         <label
           part="form-control-label"
           class="form-control__label"
           for="input"
-          aria-hidden=${o?"false":"true"}
+          aria-hidden=${showLabel?"false":"true"}
         >
           <slot name="label">${this.label}</slot>
         </label>
@@ -6953,28 +6953,28 @@ var D = class extends w {
         <div part="form-control-input" class="form-control-input">
           <div
             part="base"
-            class=${M({textarea:!0,"textarea--small":this.size==="small","textarea--medium":this.size==="medium","textarea--large":this.size==="large","textarea--standard":!this.filled,"textarea--filled":this.filled,"textarea--disabled":this.disabled,"textarea--focused":this.hasFocus,"textarea--empty":!this.value,"textarea--resize-none":this.resize==="none","textarea--resize-vertical":this.resize==="vertical","textarea--resize-auto":this.resize==="auto"})}
+            class=${classMap({textarea:!0,"textarea--small":this.size==="small","textarea--medium":this.size==="medium","textarea--large":this.size==="large","textarea--standard":!this.filled,"textarea--filled":this.filled,"textarea--disabled":this.disabled,"textarea--focused":this.hasFocus,"textarea--empty":!this.value,"textarea--resize-none":this.resize==="none","textarea--resize-vertical":this.resize==="vertical","textarea--resize-auto":this.resize==="auto"})}
           >
             <textarea
               part="textarea"
               id="input"
               class="textarea__control"
               title=${this.title}
-              name=${_(this.name)}
-              .value=${se(this.value)}
+              name=${ifDefined(this.name)}
+              .value=${toggleAttributeDirective(this.value)}
               ?disabled=${this.disabled}
               ?readonly=${this.readonly}
               ?required=${this.required}
-              placeholder=${_(this.placeholder)}
-              rows=${_(this.rows)}
-              minlength=${_(this.minlength)}
-              maxlength=${_(this.maxlength)}
-              autocapitalize=${_(this.autocapitalize)}
-              autocorrect=${_(this.autocorrect)}
+              placeholder=${ifDefined(this.placeholder)}
+              rows=${ifDefined(this.rows)}
+              minlength=${ifDefined(this.minlength)}
+              maxlength=${ifDefined(this.maxlength)}
+              autocapitalize=${ifDefined(this.autocapitalize)}
+              autocorrect=${ifDefined(this.autocorrect)}
               ?autofocus=${this.autofocus}
-              spellcheck=${_(this.spellcheck)}
-              enterkeyhint=${_(this.enterkeyhint)}
-              inputmode=${_(this.inputmode)}
+              spellcheck=${ifDefined(this.spellcheck)}
+              enterkeyhint=${ifDefined(this.enterkeyhint)}
+              inputmode=${ifDefined(this.inputmode)}
               aria-describedby="help-text"
               @change=${this.handleChange}
               @input=${this.handleInput}
@@ -6989,7 +6989,7 @@ var D = class extends w {
           part="form-control-help-text"
           id="help-text"
           class="form-control__help-text"
-          aria-hidden=${r?"false":"true"}
+          aria-hidden=${showHelpText?"false":"true"}
         >
           <slot name="help-text">${this.helpText}</slot>
         </div>
@@ -6997,77 +6997,77 @@ var D = class extends w {
     `
   }
 };
-D.styles = Fi;
-n([k(".textarea__control")], D.prototype, "input", 2);
-n([Z()], D.prototype, "hasFocus", 2);
-n([l()], D.prototype, "title", 2);
-n([l()], D.prototype, "name", 2);
-n([l()], D.prototype, "value", 2);
-n([l({
+TextareaElement.styles = componentStyles14;
+decorateClass([queryDecorator(".textarea__control")], TextareaElement.prototype, "input", 2);
+decorateClass([stateDecorator()], TextareaElement.prototype, "hasFocus", 2);
+decorateClass([property()], TextareaElement.prototype, "title", 2);
+decorateClass([property()], TextareaElement.prototype, "name", 2);
+decorateClass([property()], TextareaElement.prototype, "value", 2);
+decorateClass([property({
   reflect: !0
-})], D.prototype, "size", 2);
-n([l({
+})], TextareaElement.prototype, "size", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], D.prototype, "filled", 2);
-n([l()], D.prototype, "label", 2);
-n([l({
+})], TextareaElement.prototype, "filled", 2);
+decorateClass([property()], TextareaElement.prototype, "label", 2);
+decorateClass([property({
   attribute: "help-text"
-})], D.prototype, "helpText", 2);
-n([l()], D.prototype, "placeholder", 2);
-n([l({
+})], TextareaElement.prototype, "helpText", 2);
+decorateClass([property()], TextareaElement.prototype, "placeholder", 2);
+decorateClass([property({
   type: Number
-})], D.prototype, "rows", 2);
-n([l()], D.prototype, "resize", 2);
-n([l({
+})], TextareaElement.prototype, "rows", 2);
+decorateClass([property()], TextareaElement.prototype, "resize", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], D.prototype, "disabled", 2);
-n([l({
+})], TextareaElement.prototype, "disabled", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], D.prototype, "readonly", 2);
-n([l({
+})], TextareaElement.prototype, "readonly", 2);
+decorateClass([property({
   reflect: !0
-})], D.prototype, "form", 2);
-n([l({
+})], TextareaElement.prototype, "form", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], D.prototype, "required", 2);
-n([l({
+})], TextareaElement.prototype, "required", 2);
+decorateClass([property({
   type: Number
-})], D.prototype, "minlength", 2);
-n([l({
+})], TextareaElement.prototype, "minlength", 2);
+decorateClass([property({
   type: Number
-})], D.prototype, "maxlength", 2);
-n([l()], D.prototype, "autocapitalize", 2);
-n([l()], D.prototype, "autocorrect", 2);
-n([l()], D.prototype, "autocomplete", 2);
-n([l({
+})], TextareaElement.prototype, "maxlength", 2);
+decorateClass([property()], TextareaElement.prototype, "autocapitalize", 2);
+decorateClass([property()], TextareaElement.prototype, "autocorrect", 2);
+decorateClass([property()], TextareaElement.prototype, "autocomplete", 2);
+decorateClass([property({
   type: Boolean
-})], D.prototype, "autofocus", 2);
-n([l()], D.prototype, "enterkeyhint", 2);
-n([l({
+})], TextareaElement.prototype, "autofocus", 2);
+decorateClass([property()], TextareaElement.prototype, "enterkeyhint", 2);
+decorateClass([property({
   type: Boolean,
   converter: {
-    fromAttribute: t => !(!t || t === "false"),
-    toAttribute: t => t ? "true" : "false"
+    fromAttribute: checkedAttrValue => !(!checkedAttrValue || checkedAttrValue === "false"),
+    toAttribute: checkedBoolValue => checkedBoolValue ? "true" : "false"
   }
-})], D.prototype, "spellcheck", 2);
-n([l()], D.prototype, "inputmode", 2);
-n([_e()], D.prototype, "defaultValue", 2);
-n([S("disabled", {
+})], TextareaElement.prototype, "spellcheck", 2);
+decorateClass([property()], TextareaElement.prototype, "inputmode", 2);
+decorateClass([defaultValueDecorator()], TextareaElement.prototype, "defaultValue", 2);
+decorateClass([watchDecorator("disabled", {
   waitUntilFirstUpdate: !0
-})], D.prototype, "handleDisabledChange", 1);
-n([S("rows", {
+})], TextareaElement.prototype, "handleDisabledChange", 1);
+decorateClass([watchDecorator("rows", {
   waitUntilFirstUpdate: !0
-})], D.prototype, "handleRowsChange", 1);
-n([S("value", {
+})], TextareaElement.prototype, "handleRowsChange", 1);
+decorateClass([watchDecorator("value", {
   waitUntilFirstUpdate: !0
-})], D.prototype, "handleValueChange", 1);
-D.define("sl-textarea");
-var Hi = A`
-  ${C}
+})], TextareaElement.prototype, "handleValueChange", 1);
+TextareaElement.define("sl-textarea");
+var componentStyles15 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: inline-block;
@@ -7117,126 +7117,126 @@ var Hi = A`
     max-height: var(--auto-size-available-height) !important;
   }
 `;
-var Ui = new WeakMap;
+var computedStyleCache = new WeakMap;
 
-function ji(t) {
-  let e = Ui.get(t);
-  return e || (e = window.getComputedStyle(t, null), Ui.set(t, e)), e
+function getCachedComputedStyle(element) {
+  let cachedStyle = computedStyleCache.get(element);
+  return cachedStyle || (cachedStyle = window.getComputedStyle(element, null), computedStyleCache.set(element, cachedStyle)), cachedStyle
 }
 
-function Cn(t) {
-  if (typeof t.checkVisibility == "function") return t.checkVisibility({
+function isElementVisible(element) {
+  if (typeof element.checkVisibility == "function") return element.checkVisibility({
     checkOpacity: !1,
     checkVisibilityCSS: !0
   });
-  let e = ji(t);
-  return e.visibility !== "hidden" && e.display !== "none"
+  let computedStyle = getCachedComputedStyle(element);
+  return computedStyle.visibility !== "hidden" && computedStyle.display !== "none"
 }
 
-function Sn(t) {
-  let e = ji(t),
+function isScrollableElement(element) {
+  let computedStyle = getCachedComputedStyle(element),
     {
-      overflowY: o,
-      overflowX: r
-    } = e;
-  return o === "scroll" || r === "scroll" ? !0 : o !== "auto" || r !== "auto" ?
-    !1 : t.scrollHeight > t.clientHeight && o === "auto" || t.scrollWidth > t
-    .clientWidth && r === "auto"
+      overflowY: overflowYValue,
+      overflowX: overflowXValue
+    } = computedStyle;
+  return overflowYValue === "scroll" || overflowXValue === "scroll" ? !0 : overflowYValue !== "auto" || overflowXValue !== "auto" ?
+    !1 : element.scrollHeight > element.clientHeight && overflowYValue === "auto" || element.scrollWidth > element
+    .clientWidth && overflowXValue === "auto"
 }
 
-function $n(t) {
-  let e = t.tagName.toLowerCase(),
-    o = Number(t.getAttribute("tabindex"));
-  return t.hasAttribute("tabindex") && (isNaN(o) || o <= -1) || t.hasAttribute(
-    "disabled") || t.closest("[inert]") || e === "input" && t.getAttribute(
-    "type") === "radio" && !t.hasAttribute("checked") || !Cn(t) ? !1 : (e ===
-    "audio" || e === "video") && t.hasAttribute("controls") || t.hasAttribute(
-    "tabindex") || t.hasAttribute("contenteditable") && t.getAttribute(
+function isElementTabbable(element) {
+  let tagName = element.tagName.toLowerCase(),
+    tabindexValue = Number(element.getAttribute("tabindex"));
+  return element.hasAttribute("tabindex") && (isNaN(tabindexValue) || tabindexValue <= -1) || element.hasAttribute(
+    "disabled") || element.closest("[inert]") || tagName === "input" && element.getAttribute(
+    "type") === "radio" && !element.hasAttribute("checked") || !isElementVisible(element) ? !1 : (tagName ===
+    "audio" || tagName === "video") && element.hasAttribute("controls") || element.hasAttribute(
+    "tabindex") || element.hasAttribute("contenteditable") && element.getAttribute(
     "contenteditable") !== "false" || ["button", "input", "select",
     "textarea", "a", "audio", "video", "summary", "iframe"
-  ].includes(e) ? !0 : Sn(t)
+  ].includes(tagName) ? !0 : isScrollableElement(element)
 }
 
-function qi(t) {
-  var e, o;
-  let r = wo(t),
-    i = (e = r[0]) != null ? e : null,
-    s = (o = r[r.length - 1]) != null ? o : null;
+function getTabbableBoundary(rootElement) {
+  var tempFirstTabbable, tempLastTabbable;
+  let tabbableElements = getTabbableElements(rootElement),
+    firstTabbable = (tempFirstTabbable = tabbableElements[0]) != null ? tempFirstTabbable : null,
+    lastTabbable = (tempLastTabbable = tabbableElements[tabbableElements.length - 1]) != null ? tempLastTabbable : null;
   return {
-    start: i,
-    end: s
+    start: firstTabbable,
+    end: lastTabbable
   }
 }
 
-function En(t, e) {
-  var o;
-  return ((o = t.getRootNode({
+function isTabbableInContext(element, contextRoot) {
+  var tempCheckResult;
+  return ((tempCheckResult = element.getRootNode({
     composed: !0
-  })) == null ? void 0 : o.host) !== e
+  })) == null ? void 0 : tempCheckResult.host) !== contextRoot
 }
 
-function wo(t) {
-  let e = new WeakMap,
-    o = [];
+function getTabbableElements(rootElement) {
+  let visitedNodes = new WeakMap,
+    tabbableList = [];
 
-  function r(i) {
-    if (i instanceof Element) {
-      if (i.hasAttribute("inert") || i.closest("[inert]") || e.has(i)) return;
-      e.set(i, !0), !o.includes(i) && $n(i) && o.push(i),
-        i instanceof HTMLSlotElement && En(i, t) && i.assignedElements({
+  function traverseNode(currentNode) {
+    if (currentNode instanceof Element) {
+      if (currentNode.hasAttribute("inert") || currentNode.closest("[inert]") || visitedNodes.has(currentNode)) return;
+      visitedNodes.set(currentNode, !0), !tabbableList.includes(currentNode) && isElementTabbable(currentNode) && tabbableList.push(currentNode),
+        currentNode instanceof HTMLSlotElement && isTabbableInContext(currentNode, rootElement) && currentNode.assignedElements({
           flatten: !0
         })
-        .forEach(s => {
-          r(s)
-        }), i.shadowRoot !== null && i.shadowRoot.mode === "open" && r(i
+        .forEach(slotAssignedElement => {
+          traverseNode(slotAssignedElement)
+        }), currentNode.shadowRoot !== null && currentNode.shadowRoot.mode === "open" && traverseNode(currentNode
           .shadowRoot)
     }
-    for (let s of i.children) r(s)
+    for (let childElement of currentNode.children) traverseNode(childElement)
   }
-  return r(t), o.sort((i, s) => {
-    let a = Number(i.getAttribute("tabindex")) || 0;
-    return (Number(s.getAttribute("tabindex")) || 0) - a
+  return traverseNode(rootElement), tabbableList.sort((tabbableA, tabbableB) => {
+    let tabindexA = Number(tabbableA.getAttribute("tabindex")) || 0;
+    return (Number(tabbableB.getAttribute("tabindex")) || 0) - tabindexA
   })
 }
-var ut = class extends w {
+var DropdownElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.localize = new H(this), this.open = !1, this
+    super(...arguments), this.localize = new LocalizeController(this), this.open = !1, this
       .placement = "bottom-start", this.disabled = !1, this
       .stayOpenOnSelect = !1, this.distance = 0, this.skidding = 0, this
-      .hoist = !1, this.handleKeyDown = t => {
-        this.open && t.key === "Escape" && (t.stopPropagation(), this
+      .hoist = !1, this.handleKeyDown = keydownEvent => {
+        this.open && keydownEvent.key === "Escape" && (keydownEvent.stopPropagation(), this
         .hide(), this.focusOnTrigger())
-      }, this.handleDocumentKeyDown = t => {
-        var e;
-        if (t.key === "Escape" && this.open && !this.closeWatcher) {
-          t.stopPropagation(), this.focusOnTrigger(), this.hide();
+      }, this.handleDocumentKeyDown = documentKeydownEvent => {
+        var tempKeyTarget;
+        if (documentKeydownEvent.key === "Escape" && this.open && !this.closeWatcher) {
+          documentKeydownEvent.stopPropagation(), this.focusOnTrigger(), this.hide();
           return
         }
-        if (t.key === "Tab") {
-          if (this.open && ((e = document.activeElement) == null ? void 0 :
-              e.tagName.toLowerCase()) === "sl-menu-item") {
-            t.preventDefault(), this.hide(), this.focusOnTrigger();
+        if (documentKeydownEvent.key === "Tab") {
+          if (this.open && ((tempKeyTarget = document.activeElement) == null ? void 0 :
+              tempKeyTarget.tagName.toLowerCase()) === "sl-menu-item") {
+            documentKeydownEvent.preventDefault(), this.hide(), this.focusOnTrigger();
             return
           }
           setTimeout(() => {
-            var o, r, i;
-            let s = ((o = this.containingElement) == null ? void 0 : o
-                .getRootNode()) instanceof ShadowRoot ? (i = (r =
-                  document.activeElement) == null ? void 0 : r
-                .shadowRoot) == null ? void 0 : i.activeElement :
+            var tempContainingElement, tempActiveElement, tempComposedPath;
+            let containingElement = ((tempContainingElement = this.containingElement) == null ? void 0 : tempContainingElement
+                .getRootNode()) instanceof ShadowRoot ? (tempComposedPath = (tempActiveElement =
+                  document.activeElement) == null ? void 0 : tempActiveElement
+                .shadowRoot) == null ? void 0 : tempComposedPath.activeElement :
               document.activeElement;
-            (!this.containingElement || s?.closest(this
+            (!this.containingElement || containingElement?.closest(this
                 .containingElement.tagName.toLowerCase()) !== this
               .containingElement) && this.hide()
           })
         }
-      }, this.handleDocumentMouseDown = t => {
-        let e = t.composedPath();
-        this.containingElement && !e.includes(this.containingElement) &&
+      }, this.handleDocumentMouseDown = documentMouseDownEvent => {
+        let eventPath = documentMouseDownEvent.composedPath();
+        this.containingElement && !eventPath.includes(this.containingElement) &&
           this.hide()
-      }, this.handlePanelSelect = t => {
-        let e = t.target;
-        !this.stayOpenOnSelect && e.tagName.toLowerCase() === "sl-menu" && (
+      }, this.handlePanelSelect = panelSelectEvent => {
+        let selectedItem = panelSelectEvent.target;
+        !this.stayOpenOnSelect && selectedItem.tagName.toLowerCase() === "sl-menu" && (
           this.hide(), this.focusOnTrigger())
       }
   }
@@ -7252,79 +7252,79 @@ var ut = class extends w {
     super.disconnectedCallback(), this.removeOpenListeners(), this.hide()
   }
   focusOnTrigger() {
-    let t = this.trigger.assignedElements({
+    let triggerAssignedElements = this.trigger.assignedElements({
       flatten: !0
     })[0];
-    typeof t?.focus == "function" && t.focus()
+    typeof triggerAssignedElements?.focus == "function" && triggerAssignedElements.focus()
   }
   getMenu() {
     return this.panel.assignedElements({
         flatten: !0
       })
-      .find(t => t.tagName.toLowerCase() === "sl-menu")
+      .find(menuCandidate => menuCandidate.tagName.toLowerCase() === "sl-menu")
   }
   handleTriggerClick() {
     this.open ? this.hide() : (this.show(), this.focusOnTrigger())
   }
-  async handleTriggerKeyDown(t) {
-    if ([" ", "Enter"].includes(t.key)) {
-      t.preventDefault(), this.handleTriggerClick();
+  async handleTriggerKeyDown(triggerKeydownEvent) {
+    if ([" ", "Enter"].includes(triggerKeydownEvent.key)) {
+      triggerKeydownEvent.preventDefault(), this.handleTriggerClick();
       return
     }
-    let e = this.getMenu();
-    if (e) {
-      let o = e.getAllItems(),
-        r = o[0],
-        i = o[o.length - 1];
-      ["ArrowDown", "ArrowUp", "Home", "End"].includes(t.key) && (t
+    let dropdownMenu = this.getMenu();
+    if (dropdownMenu) {
+      let menuItems = dropdownMenu.getAllItems(),
+        firstMenuItem = menuItems[0],
+        lastMenuItem = menuItems[menuItems.length - 1];
+      ["ArrowDown", "ArrowUp", "Home", "End"].includes(triggerKeydownEvent.key) && (triggerKeydownEvent
         .preventDefault(), this.open || (this.show(), await this
-          .updateComplete), o.length > 0 && this.updateComplete.then(
+          .updateComplete), menuItems.length > 0 && this.updateComplete.then(
       () => {
-          (t.key === "ArrowDown" || t.key === "Home") && (e
-            .setCurrentItem(r), r.focus()), (t.key === "ArrowUp" || t
-            .key === "End") && (e.setCurrentItem(i), i.focus())
+          (triggerKeydownEvent.key === "ArrowDown" || triggerKeydownEvent.key === "Home") && (dropdownMenu
+            .setCurrentItem(firstMenuItem), firstMenuItem.focus()), (triggerKeydownEvent.key === "ArrowUp" || triggerKeydownEvent
+            .key === "End") && (dropdownMenu.setCurrentItem(lastMenuItem), lastMenuItem.focus())
         }))
     }
   }
-  handleTriggerKeyUp(t) {
-    t.key === " " && t.preventDefault()
+  handleTriggerKeyUp(triggerKeyupEvent) {
+    triggerKeyupEvent.key === " " && triggerKeyupEvent.preventDefault()
   }
   handleTriggerSlotChange() {
     this.updateAccessibleTrigger()
   }
   updateAccessibleTrigger() {
-    let e = this.trigger.assignedElements({
+    let triggerAssignedElements = this.trigger.assignedElements({
         flatten: !0
       })
-      .find(r => qi(r)
+      .find(triggerElement => getTabbableBoundary(triggerElement)
         .start),
-      o;
-    if (e) {
-      switch (e.tagName.toLowerCase()) {
+      firstFocusableItem;
+    if (triggerAssignedElements) {
+      switch (triggerAssignedElements.tagName.toLowerCase()) {
         case "sl-button":
         case "sl-icon-button":
-          o = e.button;
+          firstFocusableItem = triggerAssignedElements.button;
           break;
         default:
-          o = e
+          firstFocusableItem = triggerAssignedElements
       }
-      o.setAttribute("aria-haspopup", "true"), o.setAttribute(
+      firstFocusableItem.setAttribute("aria-haspopup", "true"), firstFocusableItem.setAttribute(
         "aria-expanded", this.open ? "true" : "false")
     }
   }
   async show() {
-    if (!this.open) return this.open = !0, it(this, "sl-after-show")
+    if (!this.open) return this.open = !0, waitForEvent(this, "sl-after-show")
   }
   async hide() {
-    if (this.open) return this.open = !1, it(this, "sl-after-hide")
+    if (this.open) return this.open = !1, waitForEvent(this, "sl-after-hide")
   }
   reposition() {
     this.popup.reposition()
   }
   addOpenListeners() {
-    var t;
+    var tempAnchorRef;
     this.panel.addEventListener("sl-select", this.handlePanelSelect),
-      "CloseWatcher" in window ? ((t = this.closeWatcher) == null || t
+      "CloseWatcher" in window ? ((tempAnchorRef = this.closeWatcher) == null || tempAnchorRef
         .destroy(), this.closeWatcher = new CloseWatcher, this.closeWatcher
         .onclose = () => {
           this.hide(), this.focusOnTrigger()
@@ -7333,12 +7333,12 @@ var ut = class extends w {
       document.addEventListener("mousedown", this.handleDocumentMouseDown)
   }
   removeOpenListeners() {
-    var t;
+    var tempPanelRef;
     this.panel && (this.panel.removeEventListener("sl-select", this
         .handlePanelSelect), this.panel.removeEventListener("keydown",
         this.handleKeyDown)), document.removeEventListener("keydown", this
         .handleDocumentKeyDown), document.removeEventListener("mousedown",
-        this.handleDocumentMouseDown), (t = this.closeWatcher) == null || t
+        this.handleDocumentMouseDown), (tempPanelRef = this.closeWatcher) == null || tempPanelRef
       .destroy()
   }
   async handleOpenChange() {
@@ -7347,29 +7347,29 @@ var ut = class extends w {
       return
     }
     if (this.updateAccessibleTrigger(), this.open) {
-      this.emit("sl-show"), this.addOpenListeners(), await Y(this), this
+      this.emit("sl-show"), this.addOpenListeners(), await stopAnimations(this), this
         .panel.hidden = !1, this.popup.active = !0;
       let {
-        keyframes: t,
-        options: e
-      } = W(this, "dropdown.show", {
+        keyframes: showKeyframes,
+        options: showAnimationOptions
+      } = getAnimation(this, "dropdown.show", {
         dir: this.localize.dir()
       });
-      await K(this.popup.popup, t, e), this.emit("sl-after-show")
+      await animateTo(this.popup.popup, showKeyframes, showAnimationOptions), this.emit("sl-after-show")
     } else {
-      this.emit("sl-hide"), this.removeOpenListeners(), await Y(this);
+      this.emit("sl-hide"), this.removeOpenListeners(), await stopAnimations(this);
       let {
-        keyframes: t,
-        options: e
-      } = W(this, "dropdown.hide", {
+        keyframes: hideKeyframes,
+        options: hideAnimationOptions
+      } = getAnimation(this, "dropdown.hide", {
         dir: this.localize.dir()
       });
-      await K(this.popup.popup, t, e), this.panel.hidden = !0, this.popup
+      await animateTo(this.popup.popup, hideKeyframes, hideAnimationOptions), this.panel.hidden = !0, this.popup
         .active = !1, this.emit("sl-after-hide")
     }
   }
   render() {
-    return y`
+    return htmlTag`
       <sl-popup
         part="base"
         id="dropdown"
@@ -7381,7 +7381,7 @@ var ut = class extends w {
         shift
         auto-size="vertical"
         auto-size-padding="10"
-        class=${M({dropdown:!0,"dropdown--open":this.open})}
+        class=${classMap({dropdown:!0,"dropdown--open":this.open})}
       >
         <slot
           name="trigger"
@@ -7401,45 +7401,45 @@ var ut = class extends w {
     `
   }
 };
-ut.styles = Hi;
-ut.dependencies = {
-  "sl-popup": I
+DropdownElement.styles = componentStyles15;
+DropdownElement.dependencies = {
+  "sl-popup": PopupElement
 };
-n([k(".dropdown")], ut.prototype, "popup", 2);
-n([k(".dropdown__trigger")], ut.prototype, "trigger", 2);
-n([k(".dropdown__panel")], ut.prototype, "panel", 2);
-n([l({
+decorateClass([queryDecorator(".dropdown")], DropdownElement.prototype, "popup", 2);
+decorateClass([queryDecorator(".dropdown__trigger")], DropdownElement.prototype, "trigger", 2);
+decorateClass([queryDecorator(".dropdown__panel")], DropdownElement.prototype, "panel", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], ut.prototype, "open", 2);
-n([l({
+})], DropdownElement.prototype, "open", 2);
+decorateClass([property({
   reflect: !0
-})], ut.prototype, "placement", 2);
-n([l({
+})], DropdownElement.prototype, "placement", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], ut.prototype, "disabled", 2);
-n([l({
+})], DropdownElement.prototype, "disabled", 2);
+decorateClass([property({
   attribute: "stay-open-on-select",
   type: Boolean,
   reflect: !0
-})], ut.prototype, "stayOpenOnSelect", 2);
-n([l({
+})], DropdownElement.prototype, "stayOpenOnSelect", 2);
+decorateClass([property({
   attribute: !1
-})], ut.prototype, "containingElement", 2);
-n([l({
+})], DropdownElement.prototype, "containingElement", 2);
+decorateClass([property({
   type: Number
-})], ut.prototype, "distance", 2);
-n([l({
+})], DropdownElement.prototype, "distance", 2);
+decorateClass([property({
   type: Number
-})], ut.prototype, "skidding", 2);
-n([l({
+})], DropdownElement.prototype, "skidding", 2);
+decorateClass([property({
   type: Boolean
-})], ut.prototype, "hoist", 2);
-n([S("open", {
+})], DropdownElement.prototype, "hoist", 2);
+decorateClass([watchDecorator("open", {
   waitUntilFirstUpdate: !0
-})], ut.prototype, "handleOpenChange", 1);
-N("dropdown.show", {
+})], DropdownElement.prototype, "handleOpenChange", 1);
+setDefaultAnimation("dropdown.show", {
   keyframes: [{
     opacity: 0,
     scale: .9
@@ -7452,7 +7452,7 @@ N("dropdown.show", {
     easing: "ease"
   }
 });
-N("dropdown.hide", {
+setDefaultAnimation("dropdown.hide", {
   keyframes: [{
     opacity: 1,
     scale: 1
@@ -7465,9 +7465,9 @@ N("dropdown.hide", {
     easing: "ease"
   }
 });
-ut.define("sl-dropdown");
-var Wi = A`
-  ${C}
+DropdownElement.define("sl-dropdown");
+var componentStyles16 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     --submenu-offset: -2px;
@@ -7616,90 +7616,90 @@ var Wi = A`
     }
   }
 `;
-var je = (t, e) => {
-    let o = t._$AN;
-    if (o === void 0) return !1;
-    for (let r of o) r._$AO?.(e, !1), je(r, e);
+var notifyChildrenConnected = (parentDirective, isConnected) => {
+    let disconnectableChildren = parentDirective._$AN;
+    if (disconnectableChildren === void 0) return !1;
+    for (let childDisconnectable of disconnectableChildren) childDisconnectable._$AO?.(isConnected, !1), notifyChildrenConnected(childDisconnectable, isConnected);
     return !0
   },
-  xo = t => {
-    let e, o;
+  removeFromParentDisconnectables = disconnectableChild => {
+    let parentDisconnectable, childrenSet;
     do {
-      if ((e = t._$AM) === void 0) break;
-      o = e._$AN, o.delete(t), t = e
-    } while (o?.size === 0)
+      if ((parentDisconnectable = disconnectableChild._$AM) === void 0) break;
+      childrenSet = parentDisconnectable._$AN, childrenSet.delete(disconnectableChild), disconnectableChild = parentDisconnectable
+    } while (childrenSet?.size === 0)
   },
-  Ki = t => {
-    for (let e; e = t._$AM; t = e) {
-      let o = e._$AN;
-      if (o === void 0) e._$AN = o = new Set;
-      else if (o.has(t)) break;
-      o.add(t), zn(e)
+  addToParentDisconnectables = disconnectableChild => {
+    for (let parentDirective; parentDirective = disconnectableChild._$AM; disconnectableChild = parentDirective) {
+      let parentChildrenSet = parentDirective._$AN;
+      if (parentChildrenSet === void 0) parentDirective._$AN = parentChildrenSet = new Set;
+      else if (parentChildrenSet.has(disconnectableChild)) break;
+      parentChildrenSet.add(disconnectableChild), attachDisconnectableToPart(parentDirective)
     }
   };
 
-function Tn(t) {
-  this._$AN !== void 0 ? (xo(this), this._$AM = t, Ki(this)) : this._$AM = t
+function reparentDisconnectables(childPart) {
+  this._$AN !== void 0 ? (removeFromParentDisconnectables(this), this._$AM = childPart, addToParentDisconnectables(this)) : this._$AM = childPart
 }
 
-function On(t, e = !1, o = 0) {
-  let r = this._$AH,
-    i = this._$AN;
-  if (i !== void 0 && i.size !== 0)
-    if (e)
-      if (Array.isArray(r))
-        for (let s = o; s < r.length; s++) je(r[s], !1), xo(r[s]);
-      else r != null && (je(r, !1), xo(r));
-  else je(this, t)
+function setChildrenConnected(isConnectedState, isClearingValue = !1, startChildIndex = 0) {
+  let partValue = this._$AH,
+    disconnectables = this._$AN;
+  if (disconnectables !== void 0 && disconnectables.size !== 0)
+    if (isClearingValue)
+      if (Array.isArray(partValue))
+        for (let childValueIndex = startChildIndex; childValueIndex < partValue.length; childValueIndex++) notifyChildrenConnected(partValue[childValueIndex], !1), removeFromParentDisconnectables(partValue[childValueIndex]);
+      else partValue != null && (notifyChildrenConnected(partValue, !1), removeFromParentDisconnectables(partValue));
+  else notifyChildrenConnected(this, isConnectedState)
 }
-var zn = t => {
-    t.type == ht.CHILD && (t._$AP ??= On, t._$AQ ??= Tn)
+var attachDisconnectableToPart = childPart => {
+    childPart.type == partTypeConstants.CHILD && (childPart._$AP ??= setChildrenConnected, childPart._$AQ ??= reparentDisconnectables)
   },
-  Ao = class extends kt {
+  AsyncDirective = class extends DirectiveBase {
     constructor() {
       super(...arguments), this._$AN = void 0
     }
-    _$AT(e, o, r) {
-      super._$AT(e, o, r), Ki(this), this.isConnected = e._$AU
+    _$AT(directivePart, directiveParent, attributeIndex) {
+      super._$AT(directivePart, directiveParent, attributeIndex), addToParentDisconnectables(this), this.isConnected = directivePart._$AU
     }
-    _$AO(e, o = !0) {
-      e !== this.isConnected && (this.isConnected = e, e ? this.reconnected?.
-      () : this.disconnected?.()), o && (je(this, e), xo(this))
+    _$AO(isConnected, shouldRemoveFromParent = !0) {
+      isConnected !== this.isConnected && (this.isConnected = isConnected, isConnected ? this.reconnected?.
+      () : this.disconnected?.()), shouldRemoveFromParent && (notifyChildrenConnected(this, isConnected), removeFromParentDisconnectables(this))
     }
-    setValue(e) {
-      if (uo(this._$Ct)) this._$Ct._$AI(e, this);
+    setValue(newValue) {
+      if (isCompiledTemplateResult(this._$Ct)) this._$Ct._$AI(newValue, this);
       else {
-        let o = [...this._$Ct._$AH];
-        o[this._$Ci] = e, this._$Ct._$AI(o, this, 0)
+        let committedValues = [...this._$Ct._$AH];
+        committedValues[this._$Ci] = newValue, this._$Ct._$AI(committedValues, this, 0)
       }
     }
     disconnected() {}
     reconnected() {}
   };
-var Ji = () => new Qo,
-  Qo = class {},
-  Go = new WeakMap,
-  Gi = Dt(class extends Ao {
-    render(t) {
-      return j
+var makeRefState = () => new RefStore,
+  RefStore = class {},
+  refCallbackCache = new WeakMap,
+  ref = makeDirective(class extends AsyncDirective {
+    render(refValue) {
+      return nothing
     }
-    update(t, [e]) {
-      let o = e !== this.Y;
-      return o && this.Y !== void 0 && this.rt(void 0), (o || this.lt !==
-        this.ct) && (this.Y = e, this.ht = t.options?.host, this.rt(this
-        .ct = t.element)), j
+    update(refElementPart, [refArg]) {
+      let refChanged = refArg !== this.Y;
+      return refChanged && this.Y !== void 0 && this.rt(void 0), (refChanged || this.lt !==
+        this.ct) && (this.Y = refArg, this.ht = refElementPart.options?.host, this.rt(this
+        .ct = refElementPart.element)), nothing
     }
-    rt(t) {
+    rt(refTargetElement) {
       if (typeof this.Y == "function") {
-        let e = this.ht ?? globalThis,
-          o = Go.get(e);
-        o === void 0 && (o = new WeakMap, Go.set(e, o)), o.get(this.Y) !==
-          void 0 && this.Y.call(this.ht, void 0), o.set(this.Y, t), t !==
-          void 0 && this.Y.call(this.ht, t)
-      } else this.Y.value = t
+        let refContext = this.ht ?? globalThis,
+          contextRefCache = refCallbackCache.get(refContext);
+        contextRefCache === void 0 && (contextRefCache = new WeakMap, refCallbackCache.set(refContext, contextRefCache)), contextRefCache.get(this.Y) !==
+          void 0 && this.Y.call(this.ht, void 0), contextRefCache.set(this.Y, refTargetElement), refTargetElement !==
+          void 0 && this.Y.call(this.ht, refTargetElement)
+      } else this.Y.value = refTargetElement
     }
     get lt() {
-      return typeof this.Y == "function" ? Go.get(this.ht ?? globalThis)
+      return typeof this.Y == "function" ? refCallbackCache.get(this.ht ?? globalThis)
         ?.get(this.Y) : this.Y?.value
     }
     disconnected() {
@@ -7709,68 +7709,68 @@ var Ji = () => new Qo,
       this.rt(this.ct)
     }
   });
-var Qi = class {
-  constructor(t, e, o) {
-    this.popupRef = Ji(), this.enableSubmenuTimer = -1, this.isConnected = !
+var SubmenuController = class {
+  constructor(hostElement, hostController, submenuConfig) {
+    this.popupRef = makeRefState(), this.enableSubmenuTimer = -1, this.isConnected = !
       1, this.isPopupConnected = !1, this.skidding = 0, this
-      .submenuOpenDelay = 100, this.handleMouseMove = r => {
+      .submenuOpenDelay = 100, this.handleMouseMove = mouseMoveEvent => {
         this.host.style.setProperty("--safe-triangle-cursor-x",
-          `${r.clientX}px`), this.host.style.setProperty(
-          "--safe-triangle-cursor-y", `${r.clientY}px`)
+          `${mouseMoveEvent.clientX}px`), this.host.style.setProperty(
+          "--safe-triangle-cursor-y", `${mouseMoveEvent.clientY}px`)
       }, this.handleMouseOver = () => {
         this.hasSlotController.test("submenu") && this.enableSubmenu()
-      }, this.handleKeyDown = r => {
-        switch (r.key) {
+      }, this.handleKeyDown = keydownEvent => {
+        switch (keydownEvent.key) {
           case "Escape":
           case "Tab":
             this.disableSubmenu();
             break;
           case "ArrowLeft":
-            r.target !== this.host && (r.preventDefault(), r
+            keydownEvent.target !== this.host && (keydownEvent.preventDefault(), keydownEvent
               .stopPropagation(), this.host.focus(), this.disableSubmenu()
               );
             break;
           case "ArrowRight":
           case "Enter":
           case " ":
-            this.handleSubmenuEntry(r);
+            this.handleSubmenuEntry(keydownEvent);
             break;
           default:
             break
         }
-      }, this.handleClick = r => {
-        var i;
-        r.target === this.host ? (r.preventDefault(), r.stopPropagation()) :
-          r.target instanceof Element && (r.target.tagName ===
-            "sl-menu-item" || (i = r.target.role) != null && i.startsWith(
+      }, this.handleClick = clickEvent => {
+        var tempSubmenuItem;
+        clickEvent.target === this.host ? (clickEvent.preventDefault(), clickEvent.stopPropagation()) :
+          clickEvent.target instanceof Element && (clickEvent.target.tagName ===
+            "sl-menu-item" || (tempSubmenuItem = clickEvent.target.role) != null && tempSubmenuItem.startsWith(
               "menuitem")) && this.disableSubmenu()
-      }, this.handleFocusOut = r => {
-        r.relatedTarget && r.relatedTarget instanceof Element && this.host
-          .contains(r.relatedTarget) || this.disableSubmenu()
-      }, this.handlePopupMouseover = r => {
-        r.stopPropagation()
+      }, this.handleFocusOut = focusOutEvent => {
+        focusOutEvent.relatedTarget && focusOutEvent.relatedTarget instanceof Element && this.host
+          .contains(focusOutEvent.relatedTarget) || this.disableSubmenu()
+      }, this.handlePopupMouseover = popupMouseoverEvent => {
+        popupMouseoverEvent.stopPropagation()
       }, this.handlePopupReposition = () => {
-        let r = this.host.renderRoot.querySelector("slot[name='submenu']"),
-          i = r?.assignedElements({
+        let submenuSlot = this.host.renderRoot.querySelector("slot[name='submenu']"),
+          submenuElements = submenuSlot?.assignedElements({
             flatten: !0
           })
-          .filter(h => h.localName === "sl-menu")[0],
-          s = this.localize.dir() === "rtl";
-        if (!i) return;
+          .filter(assignedSubmenuElement => assignedSubmenuElement.localName === "sl-menu")[0],
+          isRtlDirection = this.localize.dir() === "rtl";
+        if (!submenuElements) return;
         let {
-          left: a,
-          top: u,
-          width: c,
-          height: d
-        } = i.getBoundingClientRect();
+          left: anchorLeft,
+          top: anchorTop,
+          width: anchorWidth,
+          height: anchorHeight
+        } = submenuElements.getBoundingClientRect();
         this.host.style.setProperty("--safe-triangle-submenu-start-x",
-            `${s?a+c:a}px`), this.host.style.setProperty(
-            "--safe-triangle-submenu-start-y", `${u}px`), this.host.style
-          .setProperty("--safe-triangle-submenu-end-x", `${s?a+c:a}px`),
+            `${isRtlDirection?anchorLeft+anchorWidth:anchorLeft}px`), this.host.style.setProperty(
+            "--safe-triangle-submenu-start-y", `${anchorTop}px`), this.host.style
+          .setProperty("--safe-triangle-submenu-end-x", `${isRtlDirection?anchorLeft+anchorWidth:anchorLeft}px`),
           this.host.style.setProperty("--safe-triangle-submenu-end-y",
-            `${u+d}px`)
-      }, (this.host = t)
-      .addController(this), this.hasSlotController = e, this.localize = o
+            `${anchorTop+anchorHeight}px`)
+      }, (this.host = hostElement)
+      .addController(this), this.hasSlotController = hostController, this.localize = submenuConfig
   }
   hostConnected() {
     this.hasSlotController.test("submenu") && !this.host.disabled && this
@@ -7807,36 +7807,36 @@ var Qi = class {
         .removeEventListener("sl-reposition", this.handlePopupReposition),
         this.isPopupConnected = !1)
   }
-  handleSubmenuEntry(t) {
-    let e = this.host.renderRoot.querySelector("slot[name='submenu']");
-    if (!e) {
+  handleSubmenuEntry(submenuEntryEvent) {
+    let submenuSlot = this.host.renderRoot.querySelector("slot[name='submenu']");
+    if (!submenuSlot) {
       console.error(
         "Cannot activate a submenu if no corresponding menuitem can be found.",
         this);
       return
     }
-    let o = null;
-    for (let r of e.assignedElements())
-      if (o = r.querySelectorAll("sl-menu-item, [role^='menuitem']"), o
+    let submenuElement = null;
+    for (let assignedSubmenuElement of submenuSlot.assignedElements())
+      if (submenuElement = assignedSubmenuElement.querySelectorAll("sl-menu-item, [role^='menuitem']"), submenuElement
         .length !== 0) break;
-    if (!(!o || o.length === 0)) {
-      o[0].setAttribute("tabindex", "0");
-      for (let r = 1; r !== o.length; ++r) o[r].setAttribute("tabindex",
+    if (!(!submenuElement || submenuElement.length === 0)) {
+      submenuElement[0].setAttribute("tabindex", "0");
+      for (let submenuItemIndex = 1; submenuItemIndex !== submenuElement.length; ++submenuItemIndex) submenuElement[submenuItemIndex].setAttribute("tabindex",
         "-1");
-      this.popupRef.value && (t.preventDefault(), t.stopPropagation(), this
-        .popupRef.value.active ? o[0] instanceof HTMLElement && o[0]
+      this.popupRef.value && (submenuEntryEvent.preventDefault(), submenuEntryEvent.stopPropagation(), this
+        .popupRef.value.active ? submenuElement[0] instanceof HTMLElement && submenuElement[0]
         .focus() : (this.enableSubmenu(!1), this.host.updateComplete.then(
           () => {
-            o[0] instanceof HTMLElement && o[0].focus()
+            submenuElement[0] instanceof HTMLElement && submenuElement[0].focus()
           }), this.host.requestUpdate()))
     }
   }
-  setSubmenuState(t) {
-    this.popupRef.value && this.popupRef.value.active !== t && (this
-      .popupRef.value.active = t, this.host.requestUpdate())
+  setSubmenuState(isSubmenuOpen) {
+    this.popupRef.value && this.popupRef.value.active !== isSubmenuOpen && (this
+      .popupRef.value.active = isSubmenuOpen, this.host.requestUpdate())
   }
-  enableSubmenu(t = !0) {
-    t ? this.enableSubmenuTimer = window.setTimeout(() => {
+  enableSubmenu(isSubmenuEnabled = !0) {
+    isSubmenuEnabled ? this.enableSubmenuTimer = window.setTimeout(() => {
       this.setSubmenuState(!0)
     }, this.submenuOpenDelay) : this.setSubmenuState(!0)
   }
@@ -7844,29 +7844,29 @@ var Qi = class {
     clearTimeout(this.enableSubmenuTimer), this.setSubmenuState(!1)
   }
   updateSkidding() {
-    var t;
-    if (!((t = this.host.parentElement) != null && t.computedStyleMap))
+    var tempSubmenuSlot;
+    if (!((tempSubmenuSlot = this.host.parentElement) != null && tempSubmenuSlot.computedStyleMap))
       return;
-    let e = this.host.parentElement.computedStyleMap(),
-      r = ["padding-top", "border-top-width", "margin-top"].reduce((i,
-      s) => {
-        var a;
-        let u = (a = e.get(s)) != null ? a : new CSSUnitValue(0, "px"),
-          d = (u instanceof CSSUnitValue ? u : new CSSUnitValue(0, "px"))
+    let parentStyleMap = this.host.parentElement.computedStyleMap(),
+      verticalOffset = ["padding-top", "border-top-width", "margin-top"].reduce((accumulatedOffset,
+      stylePropertyName) => {
+        var tempStyleValue;
+        let styleValue = (tempStyleValue = parentStyleMap.get(stylePropertyName)) != null ? tempStyleValue : new CSSUnitValue(0, "px"),
+          pixelValue = (styleValue instanceof CSSUnitValue ? styleValue : new CSSUnitValue(0, "px"))
           .to("px");
-        return i - d.value
+        return accumulatedOffset - pixelValue.value
       }, 0);
-    this.skidding = r
+    this.skidding = verticalOffset
   }
   isExpanded() {
     return this.popupRef.value ? this.popupRef.value.active : !1
   }
   renderSubmenu() {
-    let t = this.localize.dir() === "ltr";
-    return this.isConnected ? y`
+    let isLtrDirection = this.localize.dir() === "ltr";
+    return this.isConnected ? htmlTag`
       <sl-popup
-        ${Gi(this.popupRef)}
-        placement=${t?"right-start":"left-start"}
+        ${ref(this.popupRef)}
+        placement=${isLtrDirection?"right-start":"left-start"}
         anchor="anchor"
         flip
         flip-fallback-strategy="best-fit"
@@ -7875,19 +7875,19 @@ var Qi = class {
       >
         <slot name="submenu"></slot>
       </sl-popup>
-    ` : y` <slot name="submenu" hidden></slot> `
+    ` : htmlTag` <slot name="submenu" hidden></slot> `
   }
 };
-var ft = class extends w {
+var MenuItemElement = class extends ShoelaceElement {
   constructor() {
     super(...arguments), this.type = "normal", this.checked = !1, this
       .value = "", this.loading = !1, this.disabled = !1, this.localize =
-      new H(this), this.hasSlotController = new rt(this, "submenu"), this
-      .submenuController = new Qi(this, this.hasSlotController, this
-        .localize), this.handleHostClick = t => {
-        this.disabled && (t.preventDefault(), t.stopImmediatePropagation())
-      }, this.handleMouseOver = t => {
-        this.focus(), t.stopPropagation()
+      new LocalizeController(this), this.hasSlotController = new SlotController(this, "submenu"), this
+      .submenuController = new SubmenuController(this, this.hasSlotController, this
+        .localize), this.handleHostClick = hostClickEvent => {
+        this.disabled && (hostClickEvent.preventDefault(), hostClickEvent.stopImmediatePropagation())
+      }, this.handleMouseOver = mouseOverEvent => {
+        this.focus(), mouseOverEvent.stopPropagation()
       }
   }
   connectedCallback() {
@@ -7901,12 +7901,12 @@ var ft = class extends w {
       .handleMouseOver)
   }
   handleDefaultSlotChange() {
-    let t = this.getTextLabel();
+    let textLabel = this.getTextLabel();
     if (typeof this.cachedTextLabel > "u") {
-      this.cachedTextLabel = t;
+      this.cachedTextLabel = textLabel;
       return
     }
-    t !== this.cachedTextLabel && (this.cachedTextLabel = t, this.emit(
+    textLabel !== this.cachedTextLabel && (this.cachedTextLabel = textLabel, this.emit(
       "slotchange", {
         bubbles: !0,
         composed: !1,
@@ -7933,21 +7933,21 @@ var ft = class extends w {
       "menuitem"), this.removeAttribute("aria-checked"))
   }
   getTextLabel() {
-    return Hr(this.defaultSlot)
+    return getSlotTextContent(this.defaultSlot)
   }
   isSubmenu() {
     return this.hasSlotController.test("submenu")
   }
   render() {
-    let t = this.localize.dir() === "rtl",
-      e = this.submenuController.isExpanded();
-    return y`
+    let isRtlDirection = this.localize.dir() === "rtl",
+      isSubmenuExpanded = this.submenuController.isExpanded();
+    return htmlTag`
       <div
         id="anchor"
         part="base"
-        class=${M({"menu-item":!0,"menu-item--rtl":t,"menu-item--checked":this.checked,"menu-item--disabled":this.disabled,"menu-item--loading":this.loading,"menu-item--has-submenu":this.isSubmenu(),"menu-item--submenu-expanded":e})}
+        class=${classMap({"menu-item":!0,"menu-item--rtl":isRtlDirection,"menu-item--checked":this.checked,"menu-item--disabled":this.disabled,"menu-item--loading":this.loading,"menu-item--has-submenu":this.isSubmenu(),"menu-item--submenu-expanded":isSubmenuExpanded})}
         ?aria-haspopup="${this.isSubmenu()}"
-        ?aria-expanded="${!!e}"
+        ?aria-expanded="${!!isSubmenuExpanded}"
       >
         <span part="checked-icon" class="menu-item__check">
           <sl-icon name="check" library="system" aria-hidden="true"></sl-icon>
@@ -7960,43 +7960,43 @@ var ft = class extends w {
         <slot name="suffix" part="suffix" class="menu-item__suffix"></slot>
 
         <span part="submenu-icon" class="menu-item__chevron">
-          <sl-icon name=${t?"chevron-left":"chevron-right"} library="system" aria-hidden="true"></sl-icon>
+          <sl-icon name=${isRtlDirection?"chevron-left":"chevron-right"} library="system" aria-hidden="true"></sl-icon>
         </span>
 
         ${this.submenuController.renderSubmenu()}
-        ${this.loading?y` <sl-spinner part="spinner" exportparts="base:spinner__base"></sl-spinner> `:""}
+        ${this.loading?htmlTag` <sl-spinner part="spinner" exportparts="base:spinner__base"></sl-spinner> `:""}
       </div>
     `
   }
 };
-ft.styles = Wi;
-ft.dependencies = {
-  "sl-icon": G,
-  "sl-popup": I,
-  "sl-spinner": Zt
+MenuItemElement.styles = componentStyles16;
+MenuItemElement.dependencies = {
+  "sl-icon": IconElement,
+  "sl-popup": PopupElement,
+  "sl-spinner": SpinnerElement
 };
-n([k("slot:not([name])")], ft.prototype, "defaultSlot", 2);
-n([k(".menu-item")], ft.prototype, "menuItem", 2);
-n([l()], ft.prototype, "type", 2);
-n([l({
+decorateClass([queryDecorator("slot:not([name])")], MenuItemElement.prototype, "defaultSlot", 2);
+decorateClass([queryDecorator(".menu-item")], MenuItemElement.prototype, "menuItem", 2);
+decorateClass([property()], MenuItemElement.prototype, "type", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], ft.prototype, "checked", 2);
-n([l()], ft.prototype, "value", 2);
-n([l({
+})], MenuItemElement.prototype, "checked", 2);
+decorateClass([property()], MenuItemElement.prototype, "value", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], ft.prototype, "loading", 2);
-n([l({
+})], MenuItemElement.prototype, "loading", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], ft.prototype, "disabled", 2);
-n([S("checked")], ft.prototype, "handleCheckedChange", 1);
-n([S("disabled")], ft.prototype, "handleDisabledChange", 1);
-n([S("type")], ft.prototype, "handleTypeChange", 1);
-ft.define("sl-menu-item");
-var Yi = A`
-  ${C}
+})], MenuItemElement.prototype, "disabled", 2);
+decorateClass([watchDecorator("checked")], MenuItemElement.prototype, "handleCheckedChange", 1);
+decorateClass([watchDecorator("disabled")], MenuItemElement.prototype, "handleDisabledChange", 1);
+decorateClass([watchDecorator("type")], MenuItemElement.prototype, "handleTypeChange", 1);
+MenuItemElement.define("sl-menu-item");
+var componentStyles17 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     --size: 25rem;
@@ -8152,66 +8152,66 @@ var Yi = A`
   }
 `;
 
-function* Yo(t = document.activeElement) {
-  t != null && (yield t, "shadowRoot" in t && t.shadowRoot && t.shadowRoot
-    .mode !== "closed" && (yield* Br(Yo(t.shadowRoot.activeElement))))
+function* activeElementsGenerator(startElement = document.activeElement) {
+  startElement != null && (yield startElement, "shadowRoot" in startElement && startElement.shadowRoot && startElement.shadowRoot
+    .mode !== "closed" && (yield* forAwaitHelper(activeElementsGenerator(startElement.shadowRoot.activeElement))))
 }
 
-function Mn() {
-  return [...Yo()].pop()
+function getDeepActiveElement() {
+  return [...activeElementsGenerator()].pop()
 }
-var qe = [],
-  ko = class {
-    constructor(t) {
+var activeModalStack = [],
+  Modal = class {
+    constructor(modalHostElement) {
       this.tabDirection = "forward", this.handleFocusIn = () => {
         this.isActive() && this.checkFocus()
-      }, this.handleKeyDown = e => {
-        var o;
-        if (e.key !== "Tab" || this.isExternalActivated || !this.isActive())
+      }, this.handleKeyDown = keydownEvent => {
+        var tempActiveElement;
+        if (keydownEvent.key !== "Tab" || this.isExternalActivated || !this.isActive())
           return;
-        let r = Mn();
-        if (this.previousFocus = r, this.previousFocus && this
+        let activeElement = getDeepActiveElement();
+        if (this.previousFocus = activeElement, this.previousFocus && this
           .possiblyHasTabbableChildren(this.previousFocus)) return;
-        e.shiftKey ? this.tabDirection = "backward" : this.tabDirection =
+        keydownEvent.shiftKey ? this.tabDirection = "backward" : this.tabDirection =
           "forward";
-        let i = wo(this.element),
-          s = i.findIndex(u => u === r);
+        let tabbableElements = getTabbableElements(this.element),
+          currentTabIndex = tabbableElements.findIndex(tabbableCandidate => tabbableCandidate === activeElement);
         this.previousFocus = this.currentFocus;
-        let a = this.tabDirection === "forward" ? 1 : -1;
+        let tabStep = this.tabDirection === "forward" ? 1 : -1;
         for (;;) {
-          s + a >= i.length ? s = 0 : s + a < 0 ? s = i.length - 1 : s += a,
+          currentTabIndex + tabStep >= tabbableElements.length ? currentTabIndex = 0 : currentTabIndex + tabStep < 0 ? currentTabIndex = tabbableElements.length - 1 : currentTabIndex += tabStep,
             this.previousFocus = this.currentFocus;
-          let u = i[s];
+          let currentTabbable = tabbableElements[currentTabIndex];
           if (this.tabDirection === "backward" && this.previousFocus && this
-            .possiblyHasTabbableChildren(this.previousFocus) || u && this
-            .possiblyHasTabbableChildren(u)) return;
-          e.preventDefault(), this.currentFocus = u, (o = this
-            .currentFocus) == null || o.focus({
+            .possiblyHasTabbableChildren(this.previousFocus) || currentTabbable && this
+            .possiblyHasTabbableChildren(currentTabbable)) return;
+          keydownEvent.preventDefault(), this.currentFocus = currentTabbable, (tempActiveElement = this
+            .currentFocus) == null || tempActiveElement.focus({
               preventScroll: !1
             });
-          let c = [...Yo()];
-          if (c.includes(this.currentFocus) || !c.includes(this
+          let allActiveElements = [...activeElementsGenerator()];
+          if (allActiveElements.includes(this.currentFocus) || !allActiveElements.includes(this
               .previousFocus)) break
         }
         setTimeout(() => this.checkFocus())
       }, this.handleKeyUp = () => {
         this.tabDirection = "forward"
-      }, this.element = t, this.elementsWithTabbableControls = ["iframe"]
+      }, this.element = modalHostElement, this.elementsWithTabbableControls = ["iframe"]
     }
     activate() {
-      qe.push(this.element), document.addEventListener("focusin", this
+      activeModalStack.push(this.element), document.addEventListener("focusin", this
         .handleFocusIn), document.addEventListener("keydown", this
         .handleKeyDown), document.addEventListener("keyup", this
         .handleKeyUp)
     }
     deactivate() {
-      qe = qe.filter(t => t !== this.element), this.currentFocus = null,
+      activeModalStack = activeModalStack.filter(modalEntry => modalEntry !== this.element), this.currentFocus = null,
         document.removeEventListener("focusin", this.handleFocusIn), document
         .removeEventListener("keydown", this.handleKeyDown), document
         .removeEventListener("keyup", this.handleKeyUp)
     }
     isActive() {
-      return qe[qe.length - 1] === this.element
+      return activeModalStack[activeModalStack.length - 1] === this.element
     }
     activateExternal() {
       this.isExternalActivated = !0
@@ -8221,160 +8221,160 @@ var qe = [],
     }
     checkFocus() {
       if (this.isActive() && !this.isExternalActivated) {
-        let t = wo(this.element);
+        let tabbableElements = getTabbableElements(this.element);
         if (!this.element.matches(":focus-within")) {
-          let e = t[0],
-            o = t[t.length - 1],
-            r = this.tabDirection === "forward" ? e : o;
-          typeof r?.focus == "function" && (this.currentFocus = r, r.focus({
+          let firstTabbable = tabbableElements[0],
+            lastTabbable = tabbableElements[tabbableElements.length - 1],
+            focusTarget = this.tabDirection === "forward" ? firstTabbable : lastTabbable;
+          typeof focusTarget?.focus == "function" && (this.currentFocus = focusTarget, focusTarget.focus({
             preventScroll: !1
           }))
         }
       }
     }
-    possiblyHasTabbableChildren(t) {
-      return this.elementsWithTabbableControls.includes(t.tagName
-      .toLowerCase()) || t.hasAttribute("controls")
+    possiblyHasTabbableChildren(element) {
+      return this.elementsWithTabbableControls.includes(element.tagName
+      .toLowerCase()) || element.hasAttribute("controls")
     }
   };
-var Xo = new Set;
+var scrollLockSet = new Set;
 
-function Pn() {
-  let t = document.documentElement.clientWidth;
-  return Math.abs(window.innerWidth - t)
+function getScrollbarWidth() {
+  let clientWidth = document.documentElement.clientWidth;
+  return Math.abs(window.innerWidth - clientWidth)
 }
 
-function ne(t) {
-  if (Xo.add(t), !document.body.classList.contains("sl-scroll-lock")) {
-    let e = Pn();
+function lockBodyScrolling(lockingElement) {
+  if (scrollLockSet.add(lockingElement), !document.body.classList.contains("sl-scroll-lock")) {
+    let scrollbarWidth = getScrollbarWidth();
     document.body.classList.add("sl-scroll-lock"), document.body.style
-      .setProperty("--sl-scroll-lock-size", `${e}px`)
+      .setProperty("--sl-scroll-lock-size", `${scrollbarWidth}px`)
   }
 }
 
-function ae(t) {
-  Xo.delete(t), Xo.size === 0 && (document.body.classList.remove(
+function unlockBodyScrolling(lockingElement) {
+  scrollLockSet.delete(lockingElement), scrollLockSet.size === 0 && (document.body.classList.remove(
     "sl-scroll-lock"), document.body.style.removeProperty(
     "--sl-scroll-lock-size"))
 }
 
-function Xi(t) {
-  return t.charAt(0)
-    .toUpperCase() + t.slice(1)
+function capitalizeFirst(textInput) {
+  return textInput.charAt(0)
+    .toUpperCase() + textInput.slice(1)
 }
-var gt = class extends w {
+var DrawerElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.hasSlotController = new rt(this, "footer"),
-      this.localize = new H(this), this.modal = new ko(this), this.open = !
+    super(...arguments), this.hasSlotController = new SlotController(this, "footer"),
+      this.localize = new LocalizeController(this), this.modal = new Modal(this), this.open = !
       1, this.label = "", this.placement = "end", this.contained = !1, this
-      .noHeader = !1, this.handleDocumentKeyDown = t => {
-        this.contained || t.key === "Escape" && this.modal.isActive() &&
-          this.open && (t.stopImmediatePropagation(), this.requestClose(
+      .noHeader = !1, this.handleDocumentKeyDown = documentKeydownEvent => {
+        this.contained || documentKeydownEvent.key === "Escape" && this.modal.isActive() &&
+          this.open && (documentKeydownEvent.stopImmediatePropagation(), this.requestClose(
             "keyboard"))
       }
   }
   firstUpdated() {
     this.drawer.hidden = !this.open, this.open && (this.addOpenListeners(),
-      this.contained || (this.modal.activate(), ne(this)))
+      this.contained || (this.modal.activate(), lockBodyScrolling(this)))
   }
   disconnectedCallback() {
-    var t;
-    super.disconnectedCallback(), ae(this), (t = this.closeWatcher) ==
-      null || t.destroy()
+    var tempPanelSlot;
+    super.disconnectedCallback(), unlockBodyScrolling(this), (tempPanelSlot = this.closeWatcher) ==
+      null || tempPanelSlot.destroy()
   }
-  requestClose(t) {
+  requestClose(closeSource) {
     if (this.emit("sl-request-close", {
         cancelable: !0,
         detail: {
-          source: t
+          source: closeSource
         }
       })
       .defaultPrevented) {
-      let o = W(this, "drawer.denyClose", {
+      let denyCloseAnimation = getAnimation(this, "drawer.denyClose", {
         dir: this.localize.dir()
       });
-      K(this.panel, o.keyframes, o.options);
+      animateTo(this.panel, denyCloseAnimation.keyframes, denyCloseAnimation.options);
       return
     }
     this.hide()
   }
   addOpenListeners() {
-    var t;
-    "CloseWatcher" in window ? ((t = this.closeWatcher) == null || t
+    var tempAutofocusElement;
+    "CloseWatcher" in window ? ((tempAutofocusElement = this.closeWatcher) == null || tempAutofocusElement
         .destroy(), this.contained || (this.closeWatcher = new CloseWatcher,
           this.closeWatcher.onclose = () => this.requestClose("keyboard"))
         ) : document.addEventListener("keydown", this.handleDocumentKeyDown)
   }
   removeOpenListeners() {
-    var t;
+    var tempAutofocusElement2;
     document.removeEventListener("keydown", this.handleDocumentKeyDown), (
-      t = this.closeWatcher) == null || t.destroy()
+      tempAutofocusElement2 = this.closeWatcher) == null || tempAutofocusElement2.destroy()
   }
   async handleOpenChange() {
     if (this.open) {
       this.emit("sl-show"), this.addOpenListeners(), this.originalTrigger =
         document.activeElement, this.contained || (this.modal.activate(),
-          ne(this));
-      let t = this.querySelector("[autofocus]");
-      t && t.removeAttribute("autofocus"), await Promise.all([Y(this
-        .drawer), Y(this.overlay)
+          lockBodyScrolling(this));
+      let autofocusElement = this.querySelector("[autofocus]");
+      autofocusElement && autofocusElement.removeAttribute("autofocus"), await Promise.all([stopAnimations(this
+        .drawer), stopAnimations(this.overlay)
       ]), this.drawer.hidden = !1, requestAnimationFrame(() => {
         this.emit("sl-initial-focus", {
             cancelable: !0
           })
-          .defaultPrevented || (t ? t.focus({
+          .defaultPrevented || (autofocusElement ? autofocusElement.focus({
             preventScroll: !0
           }) : this.panel.focus({
             preventScroll: !0
-          })), t && t.setAttribute("autofocus", "")
+          })), autofocusElement && autofocusElement.setAttribute("autofocus", "")
       });
-      let e = W(this, `drawer.show${Xi(this.placement)}`, {
+      let showAnimation = getAnimation(this, `drawer.show${capitalizeFirst(this.placement)}`, {
           dir: this.localize.dir()
         }),
-        o = W(this, "drawer.overlay.show", {
+        overlayShowAnimation = getAnimation(this, "drawer.overlay.show", {
           dir: this.localize.dir()
         });
-      await Promise.all([K(this.panel, e.keyframes, e.options), K(this
-        .overlay, o.keyframes, o.options)]), this.emit("sl-after-show")
+      await Promise.all([animateTo(this.panel, showAnimation.keyframes, showAnimation.options), animateTo(this
+        .overlay, overlayShowAnimation.keyframes, overlayShowAnimation.options)]), this.emit("sl-after-show")
     } else {
       this.emit("sl-hide"), this.removeOpenListeners(), this.contained || (
-        this.modal.deactivate(), ae(this)), await Promise.all([Y(this
-        .drawer), Y(this.overlay)]);
-      let t = W(this, `drawer.hide${Xi(this.placement)}`, {
+        this.modal.deactivate(), unlockBodyScrolling(this)), await Promise.all([stopAnimations(this
+        .drawer), stopAnimations(this.overlay)]);
+      let hideAnimation = getAnimation(this, `drawer.hide${capitalizeFirst(this.placement)}`, {
           dir: this.localize.dir()
         }),
-        e = W(this, "drawer.overlay.hide", {
+        overlayHideAnimation = getAnimation(this, "drawer.overlay.hide", {
           dir: this.localize.dir()
         });
-      await Promise.all([K(this.overlay, e.keyframes, e.options)
+      await Promise.all([animateTo(this.overlay, overlayHideAnimation.keyframes, overlayHideAnimation.options)
           .then(() => {
             this.overlay.hidden = !0
-          }), K(this.panel, t.keyframes, t.options)
+          }), animateTo(this.panel, hideAnimation.keyframes, hideAnimation.options)
           .then(() => {
             this.panel.hidden = !0
           })
         ]), this.drawer.hidden = !0, this.overlay.hidden = !1, this.panel
         .hidden = !1;
-      let o = this.originalTrigger;
-      typeof o?.focus == "function" && setTimeout(() => o.focus()), this
+      let originalTriggerElement = this.originalTrigger;
+      typeof originalTriggerElement?.focus == "function" && setTimeout(() => originalTriggerElement.focus()), this
         .emit("sl-after-hide")
     }
   }
   handleNoModalChange() {
-    this.open && !this.contained && (this.modal.activate(), ne(this)), this
-      .open && this.contained && (this.modal.deactivate(), ae(this))
+    this.open && !this.contained && (this.modal.activate(), lockBodyScrolling(this)), this
+      .open && this.contained && (this.modal.deactivate(), unlockBodyScrolling(this))
   }
   async show() {
-    if (!this.open) return this.open = !0, it(this, "sl-after-show")
+    if (!this.open) return this.open = !0, waitForEvent(this, "sl-after-show")
   }
   async hide() {
-    if (this.open) return this.open = !1, it(this, "sl-after-hide")
+    if (this.open) return this.open = !1, waitForEvent(this, "sl-after-hide")
   }
   render() {
-    return y`
+    return htmlTag`
       <div
         part="base"
-        class=${M({drawer:!0,"drawer--open":this.open,"drawer--top":this.placement==="top","drawer--end":this.placement==="end","drawer--bottom":this.placement==="bottom","drawer--start":this.placement==="start","drawer--contained":this.contained,"drawer--fixed":!this.contained,"drawer--rtl":this.localize.dir()==="rtl","drawer--has-footer":this.hasSlotController.test("footer")})}
+        class=${classMap({drawer:!0,"drawer--open":this.open,"drawer--top":this.placement==="top","drawer--end":this.placement==="end","drawer--bottom":this.placement==="bottom","drawer--start":this.placement==="start","drawer--contained":this.contained,"drawer--fixed":!this.contained,"drawer--rtl":this.localize.dir()==="rtl","drawer--has-footer":this.hasSlotController.test("footer")})}
       >
         <div part="overlay" class="drawer__overlay" @click=${()=>this.requestClose("overlay")} tabindex="-1"></div>
 
@@ -8384,11 +8384,11 @@ var gt = class extends w {
           role="dialog"
           aria-modal="true"
           aria-hidden=${this.open?"false":"true"}
-          aria-label=${_(this.noHeader?this.label:void 0)}
-          aria-labelledby=${_(this.noHeader?void 0:"title")}
+          aria-label=${ifDefined(this.noHeader?this.label:void 0)}
+          aria-labelledby=${ifDefined(this.noHeader?void 0:"title")}
           tabindex="0"
         >
-          ${this.noHeader?"":y`
+          ${this.noHeader?"":htmlTag`
                 <header part="header" class="drawer__header">
                   <h2 part="title" class="drawer__title" id="title">
                     <!-- If there's no label, use an invisible character to prevent the header from collapsing -->
@@ -8419,39 +8419,39 @@ var gt = class extends w {
     `
   }
 };
-gt.styles = Yi;
-gt.dependencies = {
-  "sl-icon-button": Q
+DrawerElement.styles = componentStyles17;
+DrawerElement.dependencies = {
+  "sl-icon-button": IconButtonElement
 };
-n([k(".drawer")], gt.prototype, "drawer", 2);
-n([k(".drawer__panel")], gt.prototype, "panel", 2);
-n([k(".drawer__overlay")], gt.prototype, "overlay", 2);
-n([l({
+decorateClass([queryDecorator(".drawer")], DrawerElement.prototype, "drawer", 2);
+decorateClass([queryDecorator(".drawer__panel")], DrawerElement.prototype, "panel", 2);
+decorateClass([queryDecorator(".drawer__overlay")], DrawerElement.prototype, "overlay", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], gt.prototype, "open", 2);
-n([l({
+})], DrawerElement.prototype, "open", 2);
+decorateClass([property({
   reflect: !0
-})], gt.prototype, "label", 2);
-n([l({
+})], DrawerElement.prototype, "label", 2);
+decorateClass([property({
   reflect: !0
-})], gt.prototype, "placement", 2);
-n([l({
+})], DrawerElement.prototype, "placement", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], gt.prototype, "contained", 2);
-n([l({
+})], DrawerElement.prototype, "contained", 2);
+decorateClass([property({
   attribute: "no-header",
   type: Boolean,
   reflect: !0
-})], gt.prototype, "noHeader", 2);
-n([S("open", {
+})], DrawerElement.prototype, "noHeader", 2);
+decorateClass([watchDecorator("open", {
   waitUntilFirstUpdate: !0
-})], gt.prototype, "handleOpenChange", 1);
-n([S("contained", {
+})], DrawerElement.prototype, "handleOpenChange", 1);
+decorateClass([watchDecorator("contained", {
   waitUntilFirstUpdate: !0
-})], gt.prototype, "handleNoModalChange", 1);
-N("drawer.showTop", {
+})], DrawerElement.prototype, "handleNoModalChange", 1);
+setDefaultAnimation("drawer.showTop", {
   keyframes: [{
     opacity: 0,
     translate: "0 -100%"
@@ -8464,7 +8464,7 @@ N("drawer.showTop", {
     easing: "ease"
   }
 });
-N("drawer.hideTop", {
+setDefaultAnimation("drawer.hideTop", {
   keyframes: [{
     opacity: 1,
     translate: "0 0"
@@ -8477,7 +8477,7 @@ N("drawer.hideTop", {
     easing: "ease"
   }
 });
-N("drawer.showEnd", {
+setDefaultAnimation("drawer.showEnd", {
   keyframes: [{
     opacity: 0,
     translate: "100%"
@@ -8497,7 +8497,7 @@ N("drawer.showEnd", {
     easing: "ease"
   }
 });
-N("drawer.hideEnd", {
+setDefaultAnimation("drawer.hideEnd", {
   keyframes: [{
     opacity: 1,
     translate: "0"
@@ -8517,7 +8517,7 @@ N("drawer.hideEnd", {
     easing: "ease"
   }
 });
-N("drawer.showBottom", {
+setDefaultAnimation("drawer.showBottom", {
   keyframes: [{
     opacity: 0,
     translate: "0 100%"
@@ -8530,7 +8530,7 @@ N("drawer.showBottom", {
     easing: "ease"
   }
 });
-N("drawer.hideBottom", {
+setDefaultAnimation("drawer.hideBottom", {
   keyframes: [{
     opacity: 1,
     translate: "0 0"
@@ -8543,7 +8543,7 @@ N("drawer.hideBottom", {
     easing: "ease"
   }
 });
-N("drawer.showStart", {
+setDefaultAnimation("drawer.showStart", {
   keyframes: [{
     opacity: 0,
     translate: "-100%"
@@ -8563,7 +8563,7 @@ N("drawer.showStart", {
     easing: "ease"
   }
 });
-N("drawer.hideStart", {
+setDefaultAnimation("drawer.hideStart", {
   keyframes: [{
     opacity: 1,
     translate: "0"
@@ -8583,7 +8583,7 @@ N("drawer.hideStart", {
     easing: "ease"
   }
 });
-N("drawer.denyClose", {
+setDefaultAnimation("drawer.denyClose", {
   keyframes: [{
     scale: 1
   }, {
@@ -8595,7 +8595,7 @@ N("drawer.denyClose", {
     duration: 250
   }
 });
-N("drawer.overlay.show", {
+setDefaultAnimation("drawer.overlay.show", {
   keyframes: [{
     opacity: 0
   }, {
@@ -8605,7 +8605,7 @@ N("drawer.overlay.show", {
     duration: 250
   }
 });
-N("drawer.overlay.hide", {
+setDefaultAnimation("drawer.overlay.hide", {
   keyframes: [{
     opacity: 1
   }, {
@@ -8615,9 +8615,9 @@ N("drawer.overlay.hide", {
     duration: 250
   }
 });
-gt.define("sl-drawer");
-var Zi = A`
-  ${C}
+DrawerElement.define("sl-drawer");
+var componentStyles18 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: inline-flex;
@@ -8708,16 +8708,16 @@ var Zi = A`
     }
   }
 `;
-var we = class extends w {
+var BadgeElement = class extends ShoelaceElement {
   constructor() {
     super(...arguments), this.variant = "primary", this.pill = !1, this
       .pulse = !1
   }
   render() {
-    return y`
+    return htmlTag`
       <span
         part="base"
-        class=${M({badge:!0,"badge--primary":this.variant==="primary","badge--success":this.variant==="success","badge--neutral":this.variant==="neutral","badge--warning":this.variant==="warning","badge--danger":this.variant==="danger","badge--pill":this.pill,"badge--pulse":this.pulse})}
+        class=${classMap({badge:!0,"badge--primary":this.variant==="primary","badge--success":this.variant==="success","badge--neutral":this.variant==="neutral","badge--warning":this.variant==="warning","badge--danger":this.variant==="danger","badge--pill":this.pill,"badge--pulse":this.pulse})}
         role="status"
       >
         <slot></slot>
@@ -8725,21 +8725,21 @@ var we = class extends w {
     `
   }
 };
-we.styles = Zi;
-n([l({
+BadgeElement.styles = componentStyles18;
+decorateClass([property({
   reflect: !0
-})], we.prototype, "variant", 2);
-n([l({
+})], BadgeElement.prototype, "variant", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], we.prototype, "pill", 2);
-n([l({
+})], BadgeElement.prototype, "pill", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], we.prototype, "pulse", 2);
-we.define("sl-badge");
-var ts = A`
-  ${C}
+})], BadgeElement.prototype, "pulse", 2);
+BadgeElement.define("sl-badge");
+var componentStyles19 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     --width: 31rem;
@@ -8858,112 +8858,112 @@ var ts = A`
     }
   }
 `;
-var $t = class extends w {
+var DialogElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.hasSlotController = new rt(this, "footer"),
-      this.localize = new H(this), this.modal = new ko(this), this.open = !
+    super(...arguments), this.hasSlotController = new SlotController(this, "footer"),
+      this.localize = new LocalizeController(this), this.modal = new Modal(this), this.open = !
       1, this.label = "", this.noHeader = !1, this.handleDocumentKeyDown =
-      t => {
-        t.key === "Escape" && this.modal.isActive() && this.open && (t
+      mutationRecords => {
+        mutationRecords.key === "Escape" && this.modal.isActive() && this.open && (mutationRecords
           .stopPropagation(), this.requestClose("keyboard"))
       }
   }
   firstUpdated() {
     this.dialog.hidden = !this.open, this.open && (this.addOpenListeners(),
-      this.modal.activate(), ne(this))
+      this.modal.activate(), lockBodyScrolling(this))
   }
   disconnectedCallback() {
-    var t;
-    super.disconnectedCallback(), this.modal.deactivate(), ae(this), (t =
-      this.closeWatcher) == null || t.destroy()
+    var tempPanelSlot;
+    super.disconnectedCallback(), this.modal.deactivate(), unlockBodyScrolling(this), (tempPanelSlot =
+      this.closeWatcher) == null || tempPanelSlot.destroy()
   }
-  requestClose(t) {
+  requestClose(closeSource) {
     if (this.emit("sl-request-close", {
         cancelable: !0,
         detail: {
-          source: t
+          source: closeSource
         }
       })
       .defaultPrevented) {
-      let o = W(this, "dialog.denyClose", {
+      let denyCloseAnimation = getAnimation(this, "dialog.denyClose", {
         dir: this.localize.dir()
       });
-      K(this.panel, o.keyframes, o.options);
+      animateTo(this.panel, denyCloseAnimation.keyframes, denyCloseAnimation.options);
       return
     }
     this.hide()
   }
   addOpenListeners() {
-    var t;
-    "CloseWatcher" in window ? ((t = this.closeWatcher) == null || t
+    var tempAutofocusElement;
+    "CloseWatcher" in window ? ((tempAutofocusElement = this.closeWatcher) == null || tempAutofocusElement
         .destroy(), this.closeWatcher = new CloseWatcher, this.closeWatcher
         .onclose = () => this.requestClose("keyboard")) : document
       .addEventListener("keydown", this.handleDocumentKeyDown)
   }
   removeOpenListeners() {
-    var t;
-    (t = this.closeWatcher) == null || t.destroy(), document
+    var tempAutofocusElement2;
+    (tempAutofocusElement2 = this.closeWatcher) == null || tempAutofocusElement2.destroy(), document
       .removeEventListener("keydown", this.handleDocumentKeyDown)
   }
   async handleOpenChange() {
     if (this.open) {
       this.emit("sl-show"), this.addOpenListeners(), this.originalTrigger =
-        document.activeElement, this.modal.activate(), ne(this);
-      let t = this.querySelector("[autofocus]");
-      t && t.removeAttribute("autofocus"), await Promise.all([Y(this
-        .dialog), Y(this.overlay)
+        document.activeElement, this.modal.activate(), lockBodyScrolling(this);
+      let autofocusElement = this.querySelector("[autofocus]");
+      autofocusElement && autofocusElement.removeAttribute("autofocus"), await Promise.all([stopAnimations(this
+        .dialog), stopAnimations(this.overlay)
       ]), this.dialog.hidden = !1, requestAnimationFrame(() => {
         this.emit("sl-initial-focus", {
             cancelable: !0
           })
-          .defaultPrevented || (t ? t.focus({
+          .defaultPrevented || (autofocusElement ? autofocusElement.focus({
             preventScroll: !0
           }) : this.panel.focus({
             preventScroll: !0
-          })), t && t.setAttribute("autofocus", "")
+          })), autofocusElement && autofocusElement.setAttribute("autofocus", "")
       });
-      let e = W(this, "dialog.show", {
+      let showAnimation = getAnimation(this, "dialog.show", {
           dir: this.localize.dir()
         }),
-        o = W(this, "dialog.overlay.show", {
+        overlayShowAnimation = getAnimation(this, "dialog.overlay.show", {
           dir: this.localize.dir()
         });
-      await Promise.all([K(this.panel, e.keyframes, e.options), K(this
-        .overlay, o.keyframes, o.options)]), this.emit("sl-after-show")
+      await Promise.all([animateTo(this.panel, showAnimation.keyframes, showAnimation.options), animateTo(this
+        .overlay, overlayShowAnimation.keyframes, overlayShowAnimation.options)]), this.emit("sl-after-show")
     } else {
       this.emit("sl-hide"), this.removeOpenListeners(), this.modal
-        .deactivate(), await Promise.all([Y(this.dialog), Y(this.overlay)]);
-      let t = W(this, "dialog.hide", {
+        .deactivate(), await Promise.all([stopAnimations(this.dialog), stopAnimations(this.overlay)]);
+      let hideAnimation = getAnimation(this, "dialog.hide", {
           dir: this.localize.dir()
         }),
-        e = W(this, "dialog.overlay.hide", {
+        overlayHideAnimation = getAnimation(this, "dialog.overlay.hide", {
           dir: this.localize.dir()
         });
-      await Promise.all([K(this.overlay, e.keyframes, e.options)
+      await Promise.all([animateTo(this.overlay, overlayHideAnimation.keyframes, overlayHideAnimation.options)
           .then(() => {
             this.overlay.hidden = !0
-          }), K(this.panel, t.keyframes, t.options)
+          }), animateTo(this.panel, hideAnimation.keyframes, hideAnimation.options)
           .then(() => {
             this.panel.hidden = !0
           })
         ]), this.dialog.hidden = !0, this.overlay.hidden = !1, this.panel
-        .hidden = !1, ae(this);
-      let o = this.originalTrigger;
-      typeof o?.focus == "function" && setTimeout(() => o.focus()), this
+        .hidden = !1, unlockBodyScrolling(this);
+      let originalTriggerElement = this.originalTrigger;
+      typeof originalTriggerElement?.focus == "function" && setTimeout(() => originalTriggerElement.focus()), this
         .emit("sl-after-hide")
     }
   }
   async show() {
-    if (!this.open) return this.open = !0, it(this, "sl-after-show")
+    if (!this.open) return this.open = !0, waitForEvent(this, "sl-after-show")
   }
   async hide() {
-    if (this.open) return this.open = !1, it(this, "sl-after-hide")
+    if (this.open) return this.open = !1, waitForEvent(this, "sl-after-hide")
   }
   render() {
-    return y`
+    return htmlTag`
       <div
         part="base"
-        class=${M({dialog:!0,"dialog--open":this.open,"dialog--has-footer":this.hasSlotController.test("footer")})}
+        class=${classMap({dialog:!0,"dialog--open":this.open,"dialog--has-footer":this.hasSlotController.test("footer")})}
       >
         <div part="overlay" class="dialog__overlay" @click=${()=>this.requestClose("overlay")} tabindex="-1"></div>
 
@@ -8973,11 +8973,11 @@ var $t = class extends w {
           role="dialog"
           aria-modal="true"
           aria-hidden=${this.open?"false":"true"}
-          aria-label=${_(this.noHeader?this.label:void 0)}
-          aria-labelledby=${_(this.noHeader?void 0:"title")}
+          aria-label=${ifDefined(this.noHeader?this.label:void 0)}
+          aria-labelledby=${ifDefined(this.noHeader?void 0:"title")}
           tabindex="-1"
         >
-          ${this.noHeader?"":y`
+          ${this.noHeader?"":htmlTag`
                 <header part="header" class="dialog__header">
                   <h2 part="title" class="dialog__title" id="title">
                     <slot name="label"> ${this.label.length>0?this.label:"\uFEFF"} </slot>
@@ -9007,29 +9007,29 @@ var $t = class extends w {
     `
   }
 };
-$t.styles = ts;
-$t.dependencies = {
-  "sl-icon-button": Q
+DialogElement.styles = componentStyles19;
+DialogElement.dependencies = {
+  "sl-icon-button": IconButtonElement
 };
-n([k(".dialog")], $t.prototype, "dialog", 2);
-n([k(".dialog__panel")], $t.prototype, "panel", 2);
-n([k(".dialog__overlay")], $t.prototype, "overlay", 2);
-n([l({
+decorateClass([queryDecorator(".dialog")], DialogElement.prototype, "dialog", 2);
+decorateClass([queryDecorator(".dialog__panel")], DialogElement.prototype, "panel", 2);
+decorateClass([queryDecorator(".dialog__overlay")], DialogElement.prototype, "overlay", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], $t.prototype, "open", 2);
-n([l({
+})], DialogElement.prototype, "open", 2);
+decorateClass([property({
   reflect: !0
-})], $t.prototype, "label", 2);
-n([l({
+})], DialogElement.prototype, "label", 2);
+decorateClass([property({
   attribute: "no-header",
   type: Boolean,
   reflect: !0
-})], $t.prototype, "noHeader", 2);
-n([S("open", {
+})], DialogElement.prototype, "noHeader", 2);
+decorateClass([watchDecorator("open", {
   waitUntilFirstUpdate: !0
-})], $t.prototype, "handleOpenChange", 1);
-N("dialog.show", {
+})], DialogElement.prototype, "handleOpenChange", 1);
+setDefaultAnimation("dialog.show", {
   keyframes: [{
     opacity: 0,
     scale: .8
@@ -9042,7 +9042,7 @@ N("dialog.show", {
     easing: "ease"
   }
 });
-N("dialog.hide", {
+setDefaultAnimation("dialog.hide", {
   keyframes: [{
     opacity: 1,
     scale: 1
@@ -9055,7 +9055,7 @@ N("dialog.hide", {
     easing: "ease"
   }
 });
-N("dialog.denyClose", {
+setDefaultAnimation("dialog.denyClose", {
   keyframes: [{
     scale: 1
   }, {
@@ -9067,7 +9067,7 @@ N("dialog.denyClose", {
     duration: 250
   }
 });
-N("dialog.overlay.show", {
+setDefaultAnimation("dialog.overlay.show", {
   keyframes: [{
     opacity: 0
   }, {
@@ -9077,7 +9077,7 @@ N("dialog.overlay.show", {
     duration: 250
   }
 });
-N("dialog.overlay.hide", {
+setDefaultAnimation("dialog.overlay.hide", {
   keyframes: [{
     opacity: 1
   }, {
@@ -9087,10 +9087,10 @@ N("dialog.overlay.hide", {
     duration: 250
   }
 });
-$t.define("sl-dialog");
-var es = A`
-  ${C}
-  ${ve}
+DialogElement.define("sl-dialog");
+var componentStyles20 = cssTag`
+  ${componentBaseStyles}
+  ${componentStyles13}
 
   :host {
     display: block;
@@ -9386,12 +9386,12 @@ var es = A`
     -moz-appearance: textfield;
   }
 `;
-var O = class extends w {
+var InputElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.formControlController = new Tt(this, {
+    super(...arguments), this.formControlController = new FormControlController(this, {
         assumeInteractionOn: ["sl-blur", "sl-input"]
-      }), this.hasSlotController = new rt(this, "help-text", "label"), this
-      .localize = new H(this), this.hasFocus = !1, this.title = "", this
+      }), this.hasSlotController = new SlotController(this, "help-text", "label"), this
+      .localize = new LocalizeController(this), this.hasFocus = !1, this.title = "", this
       .__numberInput = Object.assign(document.createElement("input"), {
         type: "number"
       }), this.__dateInput = Object.assign(document.createElement(
@@ -9406,22 +9406,22 @@ var O = class extends w {
       .spellcheck = !0
   }
   get valueAsDate() {
-    var t;
+    var tempDateValue;
     return this.__dateInput.type = this.type, this.__dateInput.value = this
-      .value, ((t = this.input) == null ? void 0 : t.valueAsDate) || this
+      .value, ((tempDateValue = this.input) == null ? void 0 : tempDateValue.valueAsDate) || this
       .__dateInput.valueAsDate
   }
-  set valueAsDate(t) {
-    this.__dateInput.type = this.type, this.__dateInput.valueAsDate = t,
+  set valueAsDate(dateValue) {
+    this.__dateInput.type = this.type, this.__dateInput.valueAsDate = dateValue,
       this.value = this.__dateInput.value
   }
   get valueAsNumber() {
-    var t;
-    return this.__numberInput.value = this.value, ((t = this.input) ==
-      null ? void 0 : t.valueAsNumber) || this.__numberInput.valueAsNumber
+    var tempNumberValue;
+    return this.__numberInput.value = this.value, ((tempNumberValue = this.input) ==
+      null ? void 0 : tempNumberValue.valueAsNumber) || this.__numberInput.valueAsNumber
   }
-  set valueAsNumber(t) {
-    this.__numberInput.valueAsNumber = t, this.value = this.__numberInput
+  set valueAsNumber(numberValue) {
+    this.__numberInput.valueAsNumber = numberValue, this.value = this.__numberInput
       .value
   }
   get validity() {
@@ -9439,9 +9439,9 @@ var O = class extends w {
   handleChange() {
     this.value = this.input.value, this.emit("sl-change")
   }
-  handleClearClick(t) {
+  handleClearClick(clearClickEvent) {
     this.value = "", this.emit("sl-clear"), this.emit("sl-input"), this
-      .emit("sl-change"), this.input.focus(), t.stopPropagation()
+      .emit("sl-change"), this.input.focus(), clearClickEvent.stopPropagation()
   }
   handleFocus() {
     this.hasFocus = !0, this.emit("sl-focus")
@@ -9450,14 +9450,14 @@ var O = class extends w {
     this.value = this.input.value, this.formControlController
       .updateValidity(), this.emit("sl-input")
   }
-  handleInvalid(t) {
+  handleInvalid(invalidEvent) {
     this.formControlController.setValidity(!1), this.formControlController
-      .emitInvalidEvent(t)
+      .emitInvalidEvent(invalidEvent)
   }
-  handleKeyDown(t) {
-    let e = t.metaKey || t.ctrlKey || t.shiftKey || t.altKey;
-    t.key === "Enter" && !e && setTimeout(() => {
-      !t.defaultPrevented && !t.isComposing && this
+  handleKeyDown(keydownEvent) {
+    let hasModifierKey = keydownEvent.metaKey || keydownEvent.ctrlKey || keydownEvent.shiftKey || keydownEvent.altKey;
+    keydownEvent.key === "Enter" && !hasModifierKey && setTimeout(() => {
+      !keydownEvent.defaultPrevented && !keydownEvent.isComposing && this
         .formControlController.submit()
     })
   }
@@ -9474,8 +9474,8 @@ var O = class extends w {
   async handleValueChange() {
     await this.updateComplete, this.formControlController.updateValidity()
   }
-  focus(t) {
-    this.input.focus(t)
+  focus(focusOptions) {
+    this.input.focus(focusOptions)
   }
   blur() {
     this.input.blur()
@@ -9483,13 +9483,13 @@ var O = class extends w {
   select() {
     this.input.select()
   }
-  setSelectionRange(t, e, o = "none") {
-    this.input.setSelectionRange(t, e, o)
+  setSelectionRange(selectionStart, selectionEnd, selectionDirection = "none") {
+    this.input.setSelectionRange(selectionStart, selectionEnd, selectionDirection)
   }
-  setRangeText(t, e, o, r = "preserve") {
-    let i = e ?? this.input.selectionStart,
-      s = o ?? this.input.selectionEnd;
-    this.input.setRangeText(t, i, s, r), this.value !== this.input.value &&
+  setRangeText(replacementText, rangeStart, rangeEnd, selectionMode = "preserve") {
+    let effectiveRangeStart = rangeStart ?? this.input.selectionStart,
+      effectiveRangeEnd = rangeEnd ?? this.input.selectionEnd;
+    this.input.setRangeText(replacementText, effectiveRangeStart, effectiveRangeEnd, selectionMode), this.value !== this.input.value &&
       (this.value = this.input.value)
   }
   showPicker() {
@@ -9512,32 +9512,32 @@ var O = class extends w {
   reportValidity() {
     return this.input.reportValidity()
   }
-  setCustomValidity(t) {
-    this.input.setCustomValidity(t), this.formControlController
+  setCustomValidity(validationMessage) {
+    this.input.setCustomValidity(validationMessage), this.formControlController
       .updateValidity()
   }
   render() {
-    let t = this.hasSlotController.test("label"),
-      e = this.hasSlotController.test("help-text"),
-      o = this.label ? !0 : !!t,
-      r = this.helpText ? !0 : !!e,
-      i = this.clearable && !this.disabled && !this.readonly;
+    let hasLabelSlot = this.hasSlotController.test("label"),
+      hasHelpTextSlot = this.hasSlotController.test("help-text"),
+      showLabel = this.label ? !0 : !!hasLabelSlot,
+      showHelpText = this.helpText ? !0 : !!hasHelpTextSlot,
+      showClearButton = this.clearable && !this.disabled && !this.readonly;
 
     // TRACE/UI BugFix: the `value` can be undefined.
-    let s = i && (typeof this.value == "number"
+    let hasClearableValue = showClearButton && (typeof this.value == "number"
       || (typeof this.value != "undefined" && this.value.length > 0)
     );
 
-    return y`
+    return htmlTag`
       <div
         part="form-control"
-        class=${M({"form-control":!0,"form-control--small":this.size==="small","form-control--medium":this.size==="medium","form-control--large":this.size==="large","form-control--has-label":o,"form-control--has-help-text":r})}
+        class=${classMap({"form-control":!0,"form-control--small":this.size==="small","form-control--medium":this.size==="medium","form-control--large":this.size==="large","form-control--has-label":showLabel,"form-control--has-help-text":showHelpText})}
       >
         <label
           part="form-control-label"
           class="form-control__label"
           for="input"
-          aria-hidden=${o?"false":"true"}
+          aria-hidden=${showLabel?"false":"true"}
         >
           <slot name="label">${this.label}</slot>
         </label>
@@ -9545,7 +9545,7 @@ var O = class extends w {
         <div part="form-control-input" class="form-control-input">
           <div
             part="base"
-            class=${M({input:!0,"input--small":this.size==="small","input--medium":this.size==="medium","input--large":this.size==="large","input--pill":this.pill,"input--standard":!this.filled,"input--filled":this.filled,"input--disabled":this.disabled,"input--focused":this.hasFocus,"input--empty":!this.value,"input--no-spin-buttons":this.noSpinButtons})}
+            class=${classMap({input:!0,"input--small":this.size==="small","input--medium":this.size==="medium","input--large":this.size==="large","input--pill":this.pill,"input--standard":!this.filled,"input--filled":this.filled,"input--disabled":this.disabled,"input--focused":this.hasFocus,"input--empty":!this.value,"input--no-spin-buttons":this.noSpinButtons})}
           >
             <span part="prefix" class="input__prefix">
               <slot name="prefix"></slot>
@@ -9557,25 +9557,25 @@ var O = class extends w {
               class="input__control"
               type=${this.type==="password"&&this.passwordVisible?"text":this.type}
               title=${this.title}
-              name=${_(this.name)}
+              name=${ifDefined(this.name)}
               ?disabled=${this.disabled}
               ?readonly=${this.readonly}
               ?required=${this.required}
-              placeholder=${_(this.placeholder)}
-              minlength=${_(this.minlength)}
-              maxlength=${_(this.maxlength)}
-              min=${_(this.min)}
-              max=${_(this.max)}
-              step=${_(this.step)}
-              .value=${se(this.value)}
-              autocapitalize=${_(this.autocapitalize)}
-              autocomplete=${_(this.autocomplete)}
-              autocorrect=${_(this.autocorrect)}
+              placeholder=${ifDefined(this.placeholder)}
+              minlength=${ifDefined(this.minlength)}
+              maxlength=${ifDefined(this.maxlength)}
+              min=${ifDefined(this.min)}
+              max=${ifDefined(this.max)}
+              step=${ifDefined(this.step)}
+              .value=${toggleAttributeDirective(this.value)}
+              autocapitalize=${ifDefined(this.autocapitalize)}
+              autocomplete=${ifDefined(this.autocomplete)}
+              autocorrect=${ifDefined(this.autocorrect)}
               ?autofocus=${this.autofocus}
               spellcheck=${this.spellcheck}
-              pattern=${_(this.pattern)}
-              enterkeyhint=${_(this.enterkeyhint)}
-              inputmode=${_(this.inputmode)}
+              pattern=${ifDefined(this.pattern)}
+              enterkeyhint=${ifDefined(this.enterkeyhint)}
+              inputmode=${ifDefined(this.inputmode)}
               aria-describedby="help-text"
               @change=${this.handleChange}
               @input=${this.handleInput}
@@ -9585,10 +9585,10 @@ var O = class extends w {
               @blur=${this.handleBlur}
             />
 
-            ${i?y`
+            ${showClearButton?htmlTag`
                   <button
                     part="clear-button"
-                    class=${M({input__clear:!0,"input__clear--visible":s})}
+                    class=${classMap({input__clear:!0,"input__clear--visible":hasClearableValue})}
                     type="button"
                     aria-label=${this.localize.term("clearEntry")}
                     @click=${this.handleClearClick}
@@ -9599,7 +9599,7 @@ var O = class extends w {
                     </slot>
                   </button>
                 `:""}
-            ${this.passwordToggle&&!this.disabled?y`
+            ${this.passwordToggle&&!this.disabled?htmlTag`
                   <button
                     part="password-toggle-button"
                     class="input__password-toggle"
@@ -9608,11 +9608,11 @@ var O = class extends w {
                     @click=${this.handlePasswordToggle}
                     tabindex="-1"
                   >
-                    ${this.passwordVisible?y`
+                    ${this.passwordVisible?htmlTag`
                           <slot name="show-password-icon">
                             <sl-icon name="eye-slash" library="system"></sl-icon>
                           </slot>
-                        `:y`
+                        `:htmlTag`
                           <slot name="hide-password-icon">
                             <sl-icon name="eye" library="system"></sl-icon>
                           </slot>
@@ -9630,7 +9630,7 @@ var O = class extends w {
           part="form-control-help-text"
           id="help-text"
           class="form-control__help-text"
-          aria-hidden=${r?"false":"true"}
+          aria-hidden=${showHelpText?"false":"true"}
         >
           <slot name="help-text">${this.helpText}</slot>
         </div>
@@ -9638,102 +9638,102 @@ var O = class extends w {
     `
   }
 };
-O.styles = es;
-O.dependencies = {
-  "sl-icon": G
+InputElement.styles = componentStyles20;
+InputElement.dependencies = {
+  "sl-icon": IconElement
 };
-n([k(".input__control")], O.prototype, "input", 2);
-n([Z()], O.prototype, "hasFocus", 2);
-n([l()], O.prototype, "title", 2);
-n([l({
+decorateClass([queryDecorator(".input__control")], InputElement.prototype, "input", 2);
+decorateClass([stateDecorator()], InputElement.prototype, "hasFocus", 2);
+decorateClass([property()], InputElement.prototype, "title", 2);
+decorateClass([property({
   reflect: !0
-})], O.prototype, "type", 2);
-n([l()], O.prototype, "name", 2);
-n([l()], O.prototype, "value", 2);
-n([_e()], O.prototype, "defaultValue", 2);
-n([l({
+})], InputElement.prototype, "type", 2);
+decorateClass([property()], InputElement.prototype, "name", 2);
+decorateClass([property()], InputElement.prototype, "value", 2);
+decorateClass([defaultValueDecorator()], InputElement.prototype, "defaultValue", 2);
+decorateClass([property({
   reflect: !0
-})], O.prototype, "size", 2);
-n([l({
+})], InputElement.prototype, "size", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], O.prototype, "filled", 2);
-n([l({
+})], InputElement.prototype, "filled", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], O.prototype, "pill", 2);
-n([l()], O.prototype, "label", 2);
-n([l({
+})], InputElement.prototype, "pill", 2);
+decorateClass([property()], InputElement.prototype, "label", 2);
+decorateClass([property({
   attribute: "help-text"
-})], O.prototype, "helpText", 2);
-n([l({
+})], InputElement.prototype, "helpText", 2);
+decorateClass([property({
   type: Boolean
-})], O.prototype, "clearable", 2);
-n([l({
+})], InputElement.prototype, "clearable", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], O.prototype, "disabled", 2);
-n([l()], O.prototype, "placeholder", 2);
-n([l({
+})], InputElement.prototype, "disabled", 2);
+decorateClass([property()], InputElement.prototype, "placeholder", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], O.prototype, "readonly", 2);
-n([l({
+})], InputElement.prototype, "readonly", 2);
+decorateClass([property({
   attribute: "password-toggle",
   type: Boolean
-})], O.prototype, "passwordToggle", 2);
-n([l({
+})], InputElement.prototype, "passwordToggle", 2);
+decorateClass([property({
   attribute: "password-visible",
   type: Boolean
-})], O.prototype, "passwordVisible", 2);
-n([l({
+})], InputElement.prototype, "passwordVisible", 2);
+decorateClass([property({
   attribute: "no-spin-buttons",
   type: Boolean
-})], O.prototype, "noSpinButtons", 2);
-n([l({
+})], InputElement.prototype, "noSpinButtons", 2);
+decorateClass([property({
   reflect: !0
-})], O.prototype, "form", 2);
-n([l({
+})], InputElement.prototype, "form", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], O.prototype, "required", 2);
-n([l()], O.prototype, "pattern", 2);
-n([l({
+})], InputElement.prototype, "required", 2);
+decorateClass([property()], InputElement.prototype, "pattern", 2);
+decorateClass([property({
   type: Number
-})], O.prototype, "minlength", 2);
-n([l({
+})], InputElement.prototype, "minlength", 2);
+decorateClass([property({
   type: Number
-})], O.prototype, "maxlength", 2);
-n([l()], O.prototype, "min", 2);
-n([l()], O.prototype, "max", 2);
-n([l()], O.prototype, "step", 2);
-n([l()], O.prototype, "autocapitalize", 2);
-n([l()], O.prototype, "autocorrect", 2);
-n([l()], O.prototype, "autocomplete", 2);
-n([l({
+})], InputElement.prototype, "maxlength", 2);
+decorateClass([property()], InputElement.prototype, "min", 2);
+decorateClass([property()], InputElement.prototype, "max", 2);
+decorateClass([property()], InputElement.prototype, "step", 2);
+decorateClass([property()], InputElement.prototype, "autocapitalize", 2);
+decorateClass([property()], InputElement.prototype, "autocorrect", 2);
+decorateClass([property()], InputElement.prototype, "autocomplete", 2);
+decorateClass([property({
   type: Boolean
-})], O.prototype, "autofocus", 2);
-n([l()], O.prototype, "enterkeyhint", 2);
-n([l({
+})], InputElement.prototype, "autofocus", 2);
+decorateClass([property()], InputElement.prototype, "enterkeyhint", 2);
+decorateClass([property({
   type: Boolean,
   converter: {
-    fromAttribute: t => !(!t || t === "false"),
-    toAttribute: t => t ? "true" : "false"
+    fromAttribute: checkedAttrValue => !(!checkedAttrValue || checkedAttrValue === "false"),
+    toAttribute: checkedBoolValue => checkedBoolValue ? "true" : "false"
   }
-})], O.prototype, "spellcheck", 2);
-n([l()], O.prototype, "inputmode", 2);
-n([S("disabled", {
+})], InputElement.prototype, "spellcheck", 2);
+decorateClass([property()], InputElement.prototype, "inputmode", 2);
+decorateClass([watchDecorator("disabled", {
   waitUntilFirstUpdate: !0
-})], O.prototype, "handleDisabledChange", 1);
-n([S("step", {
+})], InputElement.prototype, "handleDisabledChange", 1);
+decorateClass([watchDecorator("step", {
   waitUntilFirstUpdate: !0
-})], O.prototype, "handleStepChange", 1);
-n([S("value", {
+})], InputElement.prototype, "handleStepChange", 1);
+decorateClass([watchDecorator("value", {
   waitUntilFirstUpdate: !0
-})], O.prototype, "handleValueChange", 1);
-O.define("sl-input");
-var os = A`
-  ${C}
+})], InputElement.prototype, "handleValueChange", 1);
+InputElement.define("sl-input");
+var componentStyles21 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: inline-block;
@@ -9852,12 +9852,12 @@ var os = A`
     margin-inline-start: var(--sl-input-required-content-offset);
   }
 `;
-var nt = class extends w {
+var CheckboxElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.formControlController = new Tt(this, {
-        value: t => t.checked ? t.value || "on" : void 0,
-        defaultValue: t => t.defaultChecked,
-        setValue: (t, e) => t.checked = e
+    super(...arguments), this.formControlController = new FormControlController(this, {
+        value: checkboxControl => checkboxControl.checked ? checkboxControl.value || "on" : void 0,
+        defaultValue: checkboxControl => checkboxControl.defaultChecked,
+        setValue: (checkboxControl, checkedState) => checkboxControl.checked = checkedState
       }), this.hasFocus = !1, this.title = "", this.name = "", this.size =
       "medium", this.disabled = !1, this.checked = !1, this
       .indeterminate = !1, this.defaultChecked = !1, this.form = "", this
@@ -9882,9 +9882,9 @@ var nt = class extends w {
   handleInput() {
     this.emit("sl-input")
   }
-  handleInvalid(t) {
+  handleInvalid(invalidEvent) {
     this.formControlController.setValidity(!1), this.formControlController
-      .emitInvalidEvent(t)
+      .emitInvalidEvent(invalidEvent)
   }
   handleFocus() {
     this.hasFocus = !0, this.emit("sl-focus")
@@ -9899,8 +9899,8 @@ var nt = class extends w {
   click() {
     this.input.click()
   }
-  focus(t) {
-    this.input.focus(t)
+  focus(focusOptions) {
+    this.input.focus(focusOptions)
   }
   blur() {
     this.input.blur()
@@ -9914,24 +9914,24 @@ var nt = class extends w {
   reportValidity() {
     return this.input.reportValidity()
   }
-  setCustomValidity(t) {
-    this.input.setCustomValidity(t), this.formControlController
+  setCustomValidity(validationMessage) {
+    this.input.setCustomValidity(validationMessage), this.formControlController
       .updateValidity()
   }
   render() {
-    return y`
+    return htmlTag`
       <label
         part="base"
-        class=${M({checkbox:!0,"checkbox--checked":this.checked,"checkbox--disabled":this.disabled,"checkbox--focused":this.hasFocus,"checkbox--indeterminate":this.indeterminate,"checkbox--small":this.size==="small","checkbox--medium":this.size==="medium","checkbox--large":this.size==="large"})}
+        class=${classMap({checkbox:!0,"checkbox--checked":this.checked,"checkbox--disabled":this.disabled,"checkbox--focused":this.hasFocus,"checkbox--indeterminate":this.indeterminate,"checkbox--small":this.size==="small","checkbox--medium":this.size==="medium","checkbox--large":this.size==="large"})}
       >
         <input
           class="checkbox__input"
           type="checkbox"
           title=${this.title}
           name=${this.name}
-          value=${_(this.value)}
-          .indeterminate=${se(this.indeterminate)}
-          .checked=${se(this.checked)}
+          value=${ifDefined(this.value)}
+          .indeterminate=${toggleAttributeDirective(this.indeterminate)}
+          .checked=${toggleAttributeDirective(this.checked)}
           .disabled=${this.disabled}
           .required=${this.required}
           aria-checked=${this.checked?"true":"false"}
@@ -9946,10 +9946,10 @@ var nt = class extends w {
           part="control${this.checked?" control--checked":""}${this.indeterminate?" control--indeterminate":""}"
           class="checkbox__control"
         >
-          ${this.checked?y`
+          ${this.checked?htmlTag`
                 <sl-icon part="checked-icon" class="checkbox__checked-icon" library="system" name="check"></sl-icon>
               `:""}
-          ${!this.checked&&this.indeterminate?y`
+          ${!this.checked&&this.indeterminate?htmlTag`
                 <sl-icon
                   part="indeterminate-icon"
                   class="checkbox__indeterminate-icon"
@@ -9966,49 +9966,49 @@ var nt = class extends w {
     `
   }
 };
-nt.styles = os;
-nt.dependencies = {
-  "sl-icon": G
+CheckboxElement.styles = componentStyles21;
+CheckboxElement.dependencies = {
+  "sl-icon": IconElement
 };
-n([k('input[type="checkbox"]')], nt.prototype, "input", 2);
-n([Z()], nt.prototype, "hasFocus", 2);
-n([l()], nt.prototype, "title", 2);
-n([l()], nt.prototype, "name", 2);
-n([l()], nt.prototype, "value", 2);
-n([l({
+decorateClass([queryDecorator('input[type="checkbox"]')], CheckboxElement.prototype, "input", 2);
+decorateClass([stateDecorator()], CheckboxElement.prototype, "hasFocus", 2);
+decorateClass([property()], CheckboxElement.prototype, "title", 2);
+decorateClass([property()], CheckboxElement.prototype, "name", 2);
+decorateClass([property()], CheckboxElement.prototype, "value", 2);
+decorateClass([property({
   reflect: !0
-})], nt.prototype, "size", 2);
-n([l({
+})], CheckboxElement.prototype, "size", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], nt.prototype, "disabled", 2);
-n([l({
+})], CheckboxElement.prototype, "disabled", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], nt.prototype, "checked", 2);
-n([l({
+})], CheckboxElement.prototype, "checked", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], nt.prototype, "indeterminate", 2);
-n([_e("checked")], nt.prototype, "defaultChecked", 2);
-n([l({
+})], CheckboxElement.prototype, "indeterminate", 2);
+decorateClass([defaultValueDecorator("checked")], CheckboxElement.prototype, "defaultChecked", 2);
+decorateClass([property({
   reflect: !0
-})], nt.prototype, "form", 2);
-n([l({
+})], CheckboxElement.prototype, "form", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], nt.prototype, "required", 2);
-n([S("disabled", {
+})], CheckboxElement.prototype, "required", 2);
+decorateClass([watchDecorator("disabled", {
   waitUntilFirstUpdate: !0
-})], nt.prototype, "handleDisabledChange", 1);
-n([S(["checked", "indeterminate"], {
+})], CheckboxElement.prototype, "handleDisabledChange", 1);
+decorateClass([watchDecorator(["checked", "indeterminate"], {
   waitUntilFirstUpdate: !0
-})], nt.prototype, "handleStateChange", 1);
-nt.define("sl-checkbox");
-Zt.define("sl-spinner");
-var rs = A`
-  ${C}
-  ${ve}
+})], CheckboxElement.prototype, "handleStateChange", 1);
+CheckboxElement.define("sl-checkbox");
+SpinnerElement.define("sl-spinner");
+var componentStyles22 = cssTag`
+  ${componentBaseStyles}
+  ${componentStyles13}
 
   :host {
     display: block;
@@ -10042,23 +10042,23 @@ var rs = A`
     border: 0;
   }
 `;
-var at = class extends w {
+var RadioGroupElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.formControlController = new Tt(this), this
-      .hasSlotController = new rt(this, "help-text", "label"), this
+    super(...arguments), this.formControlController = new FormControlController(this), this
+      .hasSlotController = new SlotController(this, "help-text", "label"), this
       .customValidityMessage = "", this.hasButtonGroup = !1, this
       .errorMessage = "", this.defaultValue = "", this.label = "", this
       .helpText = "", this.name = "option", this.value = "", this.size =
       "medium", this.form = "", this.required = !1
   }
   get validity() {
-    let t = this.required && !this.value;
-    return this.customValidityMessage !== "" ? Fr : t ? Nr : de
+    let isMissingRequired = this.required && !this.value;
+    return this.customValidityMessage !== "" ? formControlOptionsVariantB : isMissingRequired ? formControlOptionsVariantA : baseFormControlOptions
   }
   get validationMessage() {
-    let t = this.required && !this.value;
+    let isMissingRequired = this.required && !this.value;
     return this.customValidityMessage !== "" ? this.customValidityMessage :
-      t ? this.validationInput.validationMessage : ""
+      isMissingRequired ? this.validationInput.validationMessage : ""
   }
   connectedCallback() {
     super.connectedCallback(), this.defaultValue = this.value
@@ -10069,60 +10069,60 @@ var at = class extends w {
   getAllRadios() {
     return [...this.querySelectorAll("sl-radio, sl-radio-button")]
   }
-  handleRadioClick(t) {
-    let e = t.target.closest("sl-radio, sl-radio-button"),
-      o = this.getAllRadios(),
-      r = this.value;
-    e.disabled || (this.value = e.value, o.forEach(i => i.checked = i ===
-      e), this.value !== r && (this.emit("sl-change"), this.emit(
+  handleRadioClick(radioClickEvent) {
+    let clickedRadio = radioClickEvent.target.closest("sl-radio, sl-radio-button"),
+      allRadios = this.getAllRadios(),
+      previousValue = this.value;
+    clickedRadio.disabled || (this.value = clickedRadio.value, allRadios.forEach(radioOption => radioOption.checked = radioOption ===
+      clickedRadio), this.value !== previousValue && (this.emit("sl-change"), this.emit(
         "sl-input")))
   }
-  handleKeyDown(t) {
-    var e;
-    if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(t
+  handleKeyDown(keydownEvent) {
+    var tempCheckedRadio;
+    if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(keydownEvent
         .key)) return;
-    let o = this.getAllRadios()
-      .filter(u => !u.disabled),
-      r = (e = o.find(u => u.checked)) != null ? e : o[0],
-      i = t.key === " " ? 0 : ["ArrowUp", "ArrowLeft"].includes(t.key) ? -
+    let enabledRadios = this.getAllRadios()
+      .filter(radioOption => !radioOption.disabled),
+      currentRadio = (tempCheckedRadio = enabledRadios.find(radioCandidate => radioCandidate.checked)) != null ? tempCheckedRadio : enabledRadios[0],
+      keyNavigationStep = keydownEvent.key === " " ? 0 : ["ArrowUp", "ArrowLeft"].includes(keydownEvent.key) ? -
       1 : 1,
-      s = this.value,
-      a = o.indexOf(r) + i;
-    a < 0 && (a = o.length - 1), a > o.length - 1 && (a = 0), this
+      previousValue = this.value,
+      nextRadioIndex = enabledRadios.indexOf(currentRadio) + keyNavigationStep;
+    nextRadioIndex < 0 && (nextRadioIndex = enabledRadios.length - 1), nextRadioIndex > enabledRadios.length - 1 && (nextRadioIndex = 0), this
       .getAllRadios()
-      .forEach(u => {
-        u.checked = !1, this.hasButtonGroup || (u.tabIndex = -1)
-      }), this.value = o[a].value, o[a].checked = !0, this.hasButtonGroup ?
-      o[a].shadowRoot.querySelector("button")
-      .focus() : (o[a].tabIndex = 0, o[a].focus()), this.value !== s && (
-        this.emit("sl-change"), this.emit("sl-input")), t.preventDefault()
+      .forEach(radioOption => {
+        radioOption.checked = !1, this.hasButtonGroup || (radioOption.tabIndex = -1)
+      }), this.value = enabledRadios[nextRadioIndex].value, enabledRadios[nextRadioIndex].checked = !0, this.hasButtonGroup ?
+      enabledRadios[nextRadioIndex].shadowRoot.querySelector("button")
+      .focus() : (enabledRadios[nextRadioIndex].tabIndex = 0, enabledRadios[nextRadioIndex].focus()), this.value !== previousValue && (
+        this.emit("sl-change"), this.emit("sl-input")), keydownEvent.preventDefault()
   }
   handleLabelClick() {
-    let t = this.getAllRadios(),
-      o = t.find(r => r.checked) || t[0];
-    o && o.focus()
+    let allRadios = this.getAllRadios(),
+      checkedRadio = allRadios.find(radioCandidate => radioCandidate.checked) || allRadios[0];
+    checkedRadio && checkedRadio.focus()
   }
-  handleInvalid(t) {
+  handleInvalid(invalidEvent) {
     this.formControlController.setValidity(!1), this.formControlController
-      .emitInvalidEvent(t)
+      .emitInvalidEvent(invalidEvent)
   }
   async syncRadioElements() {
-    var t, e;
-    let o = this.getAllRadios();
-    if (await Promise.all(o.map(async r => {
-        await r.updateComplete, r.checked = r.value === this.value, r
+    var tempShadowRoot, tempFirstRadio;
+    let allRadios = this.getAllRadios();
+    if (await Promise.all(allRadios.map(async radioOption => {
+        await radioOption.updateComplete, radioOption.checked = radioOption.value === this.value, radioOption
           .size = this.size
-      })), this.hasButtonGroup = o.some(r => r.tagName.toLowerCase() ===
-        "sl-radio-button"), o.length > 0 && !o.some(r => r.checked))
+      })), this.hasButtonGroup = allRadios.some(radioOption => radioOption.tagName.toLowerCase() ===
+        "sl-radio-button"), allRadios.length > 0 && !allRadios.some(radioOption => radioOption.checked))
       if (this.hasButtonGroup) {
-        let r = (t = o[0].shadowRoot) == null ? void 0 : t.querySelector(
+        let firstRadioInput = (tempShadowRoot = allRadios[0].shadowRoot) == null ? void 0 : tempShadowRoot.querySelector(
           "button");
-        r && (r.tabIndex = 0)
-      } else o[0].tabIndex = 0;
+        firstRadioInput && (firstRadioInput.tabIndex = 0)
+      } else allRadios[0].tabIndex = 0;
     if (this.hasButtonGroup) {
-      let r = (e = this.shadowRoot) == null ? void 0 : e.querySelector(
+      let radioValidationInput = (tempFirstRadio = this.shadowRoot) == null ? void 0 : tempFirstRadio.querySelector(
         "sl-button-group");
-      r && (r.disableRole = !0)
+      radioValidationInput && (radioValidationInput.disableRole = !0)
     }
   }
   syncRadios() {
@@ -10140,7 +10140,7 @@ var at = class extends w {
   }
   updateCheckedRadio() {
     this.getAllRadios()
-      .forEach(e => e.checked = e.value === this.value), this
+      .forEach(radioOption => radioOption.checked = radioOption.value === this.value), this
       .formControlController.setValidity(this.validity.valid)
   }
   handleSizeChange() {
@@ -10150,39 +10150,39 @@ var at = class extends w {
     this.hasUpdated && this.updateCheckedRadio()
   }
   checkValidity() {
-    let t = this.required && !this.value,
-      e = this.customValidityMessage !== "";
-    return t || e ? (this.formControlController.emitInvalidEvent(), !1) : !0
+    let isMissingRequired = this.required && !this.value,
+      hasCustomValidity = this.customValidityMessage !== "";
+    return isMissingRequired || hasCustomValidity ? (this.formControlController.emitInvalidEvent(), !1) : !0
   }
   getForm() {
     return this.formControlController.getForm()
   }
   reportValidity() {
-    let t = this.validity.valid;
-    return this.errorMessage = this.customValidityMessage || t ? "" : this
+    let isValidState = this.validity.valid;
+    return this.errorMessage = this.customValidityMessage || isValidState ? "" : this
       .validationInput.validationMessage, this.formControlController
-      .setValidity(t), this.validationInput.hidden = !0, clearTimeout(this
-        .validationTimeout), t || (this.validationInput.hidden = !1, this
+      .setValidity(isValidState), this.validationInput.hidden = !0, clearTimeout(this
+        .validationTimeout), isValidState || (this.validationInput.hidden = !1, this
         .validationInput.reportValidity(), this.validationTimeout =
-        setTimeout(() => this.validationInput.hidden = !0, 1e4)), t
+        setTimeout(() => this.validationInput.hidden = !0, 1e4)), isValidState
   }
-  setCustomValidity(t = "") {
-    this.customValidityMessage = t, this.errorMessage = t, this
-      .validationInput.setCustomValidity(t), this.formControlController
+  setCustomValidity(validationMessage = "") {
+    this.customValidityMessage = validationMessage, this.errorMessage = validationMessage, this
+      .validationInput.setCustomValidity(validationMessage), this.formControlController
       .updateValidity()
   }
   render() {
-    let t = this.hasSlotController.test("label"),
-      e = this.hasSlotController.test("help-text"),
-      o = this.label ? !0 : !!t,
-      r = this.helpText ? !0 : !!e,
-      i = y`
+    let hasLabelSlot = this.hasSlotController.test("label"),
+      hasHelpTextSlot = this.hasSlotController.test("help-text"),
+      showLabel = this.label ? !0 : !!hasLabelSlot,
+      showHelpText = this.helpText ? !0 : !!hasHelpTextSlot,
+      defaultSlotTemplate = htmlTag`
       <slot @slotchange=${this.syncRadios} @click=${this.handleRadioClick} @keydown=${this.handleKeyDown}></slot>
     `;
-    return y`
+    return htmlTag`
       <fieldset
         part="form-control"
-        class=${M({"form-control":!0,"form-control--small":this.size==="small","form-control--medium":this.size==="medium","form-control--large":this.size==="large","form-control--radio-group":!0,"form-control--has-label":o,"form-control--has-help-text":r})}
+        class=${classMap({"form-control":!0,"form-control--small":this.size==="small","form-control--medium":this.size==="medium","form-control--large":this.size==="large","form-control--radio-group":!0,"form-control--has-label":showLabel,"form-control--has-help-text":showHelpText})}
         role="radiogroup"
         aria-labelledby="label"
         aria-describedby="help-text"
@@ -10192,7 +10192,7 @@ var at = class extends w {
           part="form-control-label"
           id="label"
           class="form-control__label"
-          aria-hidden=${o?"false":"true"}
+          aria-hidden=${showLabel?"false":"true"}
           @click=${this.handleLabelClick}
         >
           <slot name="label">${this.label}</slot>
@@ -10213,18 +10213,18 @@ var at = class extends w {
             </label>
           </div>
 
-          ${this.hasButtonGroup?y`
+          ${this.hasButtonGroup?htmlTag`
                 <sl-button-group part="button-group" exportparts="base:button-group__base" role="presentation">
-                  ${i}
+                  ${defaultSlotTemplate}
                 </sl-button-group>
-              `:i}
+              `:defaultSlotTemplate}
         </div>
 
         <div
           part="form-control-help-text"
           id="help-text"
           class="form-control__help-text"
-          aria-hidden=${r?"false":"true"}
+          aria-hidden=${showHelpText?"false":"true"}
         >
           <slot name="help-text">${this.helpText}</slot>
         </div>
@@ -10232,40 +10232,40 @@ var at = class extends w {
     `
   }
 };
-at.styles = rs;
-at.dependencies = {
-  "sl-button-group": Ut
+RadioGroupElement.styles = componentStyles22;
+RadioGroupElement.dependencies = {
+  "sl-button-group": ButtonGroupElement
 };
-n([k("slot:not([name])")], at.prototype, "defaultSlot", 2);
-n([k(".radio-group__validation-input")], at.prototype, "validationInput", 2);
-n([Z()], at.prototype, "hasButtonGroup", 2);
-n([Z()], at.prototype, "errorMessage", 2);
-n([Z()], at.prototype, "defaultValue", 2);
-n([l()], at.prototype, "label", 2);
-n([l({
+decorateClass([queryDecorator("slot:not([name])")], RadioGroupElement.prototype, "defaultSlot", 2);
+decorateClass([queryDecorator(".radio-group__validation-input")], RadioGroupElement.prototype, "validationInput", 2);
+decorateClass([stateDecorator()], RadioGroupElement.prototype, "hasButtonGroup", 2);
+decorateClass([stateDecorator()], RadioGroupElement.prototype, "errorMessage", 2);
+decorateClass([stateDecorator()], RadioGroupElement.prototype, "defaultValue", 2);
+decorateClass([property()], RadioGroupElement.prototype, "label", 2);
+decorateClass([property({
   attribute: "help-text"
-})], at.prototype, "helpText", 2);
-n([l()], at.prototype, "name", 2);
-n([l({
+})], RadioGroupElement.prototype, "helpText", 2);
+decorateClass([property()], RadioGroupElement.prototype, "name", 2);
+decorateClass([property({
   reflect: !0
-})], at.prototype, "value", 2);
-n([l({
+})], RadioGroupElement.prototype, "value", 2);
+decorateClass([property({
   reflect: !0
-})], at.prototype, "size", 2);
-n([l({
+})], RadioGroupElement.prototype, "size", 2);
+decorateClass([property({
   reflect: !0
-})], at.prototype, "form", 2);
-n([l({
+})], RadioGroupElement.prototype, "form", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], at.prototype, "required", 2);
-n([S("size", {
+})], RadioGroupElement.prototype, "required", 2);
+decorateClass([watchDecorator("size", {
   waitUntilFirstUpdate: !0
-})], at.prototype, "handleSizeChange", 1);
-n([S("value")], at.prototype, "handleValueChange", 1);
-at.define("sl-radio-group");
-var is = A`
-  ${co}
+})], RadioGroupElement.prototype, "handleSizeChange", 1);
+decorateClass([watchDecorator("value")], RadioGroupElement.prototype, "handleValueChange", 1);
+RadioGroupElement.define("sl-radio-group");
+var componentStyles23 = cssTag`
+  ${componentStyles1}
 
   .button__prefix,
   .button__suffix,
@@ -10289,9 +10289,9 @@ var is = A`
     z-index: -1;
   }
 `;
-var xt = class extends w {
+var RadioButtonElement = class extends ShoelaceElement {
   constructor() {
-    super(...arguments), this.hasSlotController = new rt(this, "[default]",
+    super(...arguments), this.hasSlotController = new SlotController(this, "[default]",
         "prefix", "suffix"), this.hasFocus = !1, this.checked = !1, this
       .disabled = !1, this.size = "medium", this.pill = !1
   }
@@ -10301,9 +10301,9 @@ var xt = class extends w {
   handleBlur() {
     this.hasFocus = !1, this.emit("sl-blur")
   }
-  handleClick(t) {
+  handleClick(clickEvent) {
     if (this.disabled) {
-      t.preventDefault(), t.stopPropagation();
+      clickEvent.preventDefault(), clickEvent.stopPropagation();
       return
     }
     this.checked = !0
@@ -10314,23 +10314,23 @@ var xt = class extends w {
   handleDisabledChange() {
     this.setAttribute("aria-disabled", this.disabled ? "true" : "false")
   }
-  focus(t) {
-    this.input.focus(t)
+  focus(focusOptions) {
+    this.input.focus(focusOptions)
   }
   blur() {
     this.input.blur()
   }
   render() {
-    return Ht`
+    return staticHtmlTag`
       <div part="base" role="presentation">
         <button
           part="${`button${this.checked?" button--checked":""}`}"
           role="radio"
           aria-checked="${this.checked}"
-          class=${M({button:!0,"button--default":!0,"button--small":this.size==="small","button--medium":this.size==="medium","button--large":this.size==="large","button--checked":this.checked,"button--disabled":this.disabled,"button--focused":this.hasFocus,"button--outline":!0,"button--pill":this.pill,"button--has-label":this.hasSlotController.test("[default]"),"button--has-prefix":this.hasSlotController.test("prefix"),"button--has-suffix":this.hasSlotController.test("suffix")})}
+          class=${classMap({button:!0,"button--default":!0,"button--small":this.size==="small","button--medium":this.size==="medium","button--large":this.size==="large","button--checked":this.checked,"button--disabled":this.disabled,"button--focused":this.hasFocus,"button--outline":!0,"button--pill":this.pill,"button--has-label":this.hasSlotController.test("[default]"),"button--has-prefix":this.hasSlotController.test("prefix"),"button--has-suffix":this.hasSlotController.test("suffix")})}
           aria-disabled=${this.disabled}
           type="button"
-          value=${_(this.value)}
+          value=${ifDefined(this.value)}
           tabindex="${this.checked?"0":"-1"}"
           @blur=${this.handleBlur}
           @focus=${this.handleFocus}
@@ -10344,80 +10344,80 @@ var xt = class extends w {
     `
   }
 };
-xt.styles = is;
-n([k(".button")], xt.prototype, "input", 2);
-n([k(".hidden-input")], xt.prototype, "hiddenInput", 2);
-n([Z()], xt.prototype, "hasFocus", 2);
-n([l({
+RadioButtonElement.styles = componentStyles23;
+decorateClass([queryDecorator(".button")], RadioButtonElement.prototype, "input", 2);
+decorateClass([queryDecorator(".hidden-input")], RadioButtonElement.prototype, "hiddenInput", 2);
+decorateClass([stateDecorator()], RadioButtonElement.prototype, "hasFocus", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], xt.prototype, "checked", 2);
-n([l()], xt.prototype, "value", 2);
-n([l({
+})], RadioButtonElement.prototype, "checked", 2);
+decorateClass([property()], RadioButtonElement.prototype, "value", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], xt.prototype, "disabled", 2);
-n([l({
+})], RadioButtonElement.prototype, "disabled", 2);
+decorateClass([property({
   reflect: !0
-})], xt.prototype, "size", 2);
-n([l({
+})], RadioButtonElement.prototype, "size", 2);
+decorateClass([property({
   type: Boolean,
   reflect: !0
-})], xt.prototype, "pill", 2);
-n([S("disabled", {
+})], RadioButtonElement.prototype, "pill", 2);
+decorateClass([watchDecorator("disabled", {
   waitUntilFirstUpdate: !0
-})], xt.prototype, "handleDisabledChange", 1);
-xt.define("sl-radio-button");
-var ss = A`
-  ${C}
+})], RadioButtonElement.prototype, "handleDisabledChange", 1);
+RadioButtonElement.define("sl-radio-button");
+var componentStyles24 = cssTag`
+  ${componentBaseStyles}
 
   :host {
     display: block;
   }
 `;
-var Zo = new Map;
+var iconFetchCache = new Map;
 
-function ns(t, e = "cors") {
-  let o = Zo.get(t);
-  if (o !== void 0) return Promise.resolve(o);
-  let r = fetch(t, {
-      mode: e
+function fetchIconFile(iconUrl, corsMode = "cors") {
+  let cachedIconRequest = iconFetchCache.get(iconUrl);
+  if (cachedIconRequest !== void 0) return Promise.resolve(cachedIconRequest);
+  let iconFetchPromise = fetch(iconUrl, {
+      mode: corsMode
     })
-    .then(async i => {
-      let s = {
-        ok: i.ok,
-        status: i.status,
-        html: await i.text()
+    .then(async iconResponse => {
+      let iconResult = {
+        ok: iconResponse.ok,
+        status: iconResponse.status,
+        html: await iconResponse.text()
       };
-      return Zo.set(t, s), s
+      return iconFetchCache.set(iconUrl, iconResult), iconResult
     });
-  return Zo.set(t, r), r
+  return iconFetchCache.set(iconUrl, iconFetchPromise), iconFetchPromise
 }
-var le = class extends w {
+var IncludeElement = class extends ShoelaceElement {
   constructor() {
     super(...arguments), this.mode = "cors", this.allowScripts = !1
   }
-  executeScript(t) {
-    let e = document.createElement("script");
-    [...t.attributes].forEach(o => e.setAttribute(o.name, o.value)), e
-      .textContent = t.textContent, t.parentNode.replaceChild(e, t)
+  executeScript(scriptElement) {
+    let newScriptElement = document.createElement("script");
+    [...scriptElement.attributes].forEach(scriptAttribute => newScriptElement.setAttribute(scriptAttribute.name, scriptAttribute.value)), newScriptElement
+      .textContent = scriptElement.textContent, scriptElement.parentNode.replaceChild(newScriptElement, scriptElement)
   }
   async handleSrcChange() {
     try {
-      let t = this.src,
-        e = await ns(t, this.mode);
-      if (t !== this.src) return;
-      if (!e.ok) {
+      let sourceUrl = this.src,
+        includeFetchResult = await fetchIconFile(sourceUrl, this.mode);
+      if (sourceUrl !== this.src) return;
+      if (!includeFetchResult.ok) {
         this.emit("sl-error", {
           detail: {
-            status: e.status
+            status: includeFetchResult.status
           }
         });
         return
       }
-      this.innerHTML = e.html, this.allowScripts && [...this
+      this.innerHTML = includeFetchResult.html, this.allowScripts && [...this
         .querySelectorAll("script")
-      ].forEach(o => this.executeScript(o)), this.emit("sl-load")
+      ].forEach(includedScriptElement => this.executeScript(includedScriptElement)), this.emit("sl-load")
     } catch {
       this.emit("sl-error", {
         detail: {
@@ -10427,34 +10427,34 @@ var le = class extends w {
     }
   }
   render() {
-    return y`<slot></slot>`
+    return htmlTag`<slot></slot>`
   }
 };
-le.styles = ss;
-n([l()], le.prototype, "src", 2);
-n([l()], le.prototype, "mode", 2);
-n([l({
+IncludeElement.styles = componentStyles24;
+decorateClass([property()], IncludeElement.prototype, "src", 2);
+decorateClass([property()], IncludeElement.prototype, "mode", 2);
+decorateClass([property({
   attribute: "allow-scripts",
   type: Boolean
-})], le.prototype, "allowScripts", 2);
-n([S("src")], le.prototype, "handleSrcChange", 1);
-le.define("sl-include");
-var sr = ur(er(), 1);
+})], IncludeElement.prototype, "allowScripts", 2);
+decorateClass([watchDecorator("src")], IncludeElement.prototype, "handleSrcChange", 1);
+IncludeElement.define("sl-include");
+var browserPolyfill = toEsm(webextPolyfillModule(), 1);
 
-function qt(t) {
-  var e = String(t);
-  if (e === "[object Object]") try {
-    e = JSON.stringify(t)
+function normalizeToString(stringInput) {
+  var stringValue = String(stringInput);
+  if (stringValue === "[object Object]") try {
+    stringValue = JSON.stringify(stringInput)
   } catch {}
-  return e
+  return stringValue
 }
-var Ln = function() {
-    function t() {}
-    return t.prototype.isSome = function() {
+var NoneOptionClass = function() {
+    function NoneConstructor() {}
+    return NoneConstructor.prototype.isSome = function() {
       return !1
-    }, t.prototype.isNone = function() {
+    }, NoneConstructor.prototype.isNone = function() {
       return !0
-    }, t.prototype[Symbol.iterator] = function() {
+    }, NoneConstructor.prototype[Symbol.iterator] = function() {
       return {
         next: function() {
           return {
@@ -10463,44 +10463,44 @@ var Ln = function() {
           }
         }
       }
-    }, t.prototype.unwrapOr = function(e) {
-      return e
-    }, t.prototype.expect = function(e) {
-      throw new Error("".concat(e))
-    }, t.prototype.unwrap = function() {
+    }, NoneConstructor.prototype.unwrapOr = function(defaultValue) {
+      return defaultValue
+    }, NoneConstructor.prototype.expect = function(expectMessage) {
+      throw new Error("".concat(expectMessage))
+    }, NoneConstructor.prototype.unwrap = function() {
       throw new Error("Tried to unwrap None")
-    }, t.prototype.map = function(e) {
+    }, NoneConstructor.prototype.map = function(mapCallback) {
       return this
-    }, t.prototype.mapOr = function(e, o) {
-      return e
-    }, t.prototype.mapOrElse = function(e, o) {
-      return e()
-    }, t.prototype.or = function(e) {
-      return e
-    }, t.prototype.orElse = function(e) {
-      return e()
-    }, t.prototype.andThen = function(e) {
+    }, NoneConstructor.prototype.mapOr = function(defaultValue, mapCallback) {
+      return defaultValue
+    }, NoneConstructor.prototype.mapOrElse = function(defaultCallback, mapCallback) {
+      return defaultCallback()
+    }, NoneConstructor.prototype.or = function(alternativeOption) {
+      return alternativeOption
+    }, NoneConstructor.prototype.orElse = function(alternativeCallback) {
+      return alternativeCallback()
+    }, NoneConstructor.prototype.andThen = function(chainCallback) {
       return this
-    }, t.prototype.toResult = function(e) {
-      return Et(e)
-    }, t.prototype.toString = function() {
+    }, NoneConstructor.prototype.toResult = function(errorValue) {
+      return resultClassAlias(errorValue)
+    }, NoneConstructor.prototype.toString = function() {
       return "None"
-    }, t
+    }, NoneConstructor
   }(),
-  P = new Ln;
-Object.freeze(P);
-var Rn = function() {
-    function t(e) {
-      if (!(this instanceof t)) return new t(e);
-      this.value = e
+  None = new NoneOptionClass;
+Object.freeze(None);
+var SomeOptionClass = function() {
+    function SomeConstructor(wrappedValue) {
+      if (!(this instanceof SomeConstructor)) return new SomeConstructor(wrappedValue);
+      this.value = wrappedValue
     }
-    return t.prototype.isSome = function() {
+    return SomeConstructor.prototype.isSome = function() {
       return !0
-    }, t.prototype.isNone = function() {
+    }, SomeConstructor.prototype.isNone = function() {
       return !1
-    }, t.prototype[Symbol.iterator] = function() {
-      var e = Object(this.value);
-      return Symbol.iterator in e ? e[Symbol.iterator]() : {
+    }, SomeConstructor.prototype[Symbol.iterator] = function() {
+      var boxedValue = Object(this.value);
+      return Symbol.iterator in boxedValue ? boxedValue[Symbol.iterator]() : {
         next: function() {
           return {
             done: !0,
@@ -10508,78 +10508,78 @@ var Rn = function() {
           }
         }
       }
-    }, t.prototype.unwrapOr = function(e) {
+    }, SomeConstructor.prototype.unwrapOr = function(defaultValue) {
       return this.value
-    }, t.prototype.expect = function(e) {
+    }, SomeConstructor.prototype.expect = function(expectMessage) {
       return this.value
-    }, t.prototype.unwrap = function() {
+    }, SomeConstructor.prototype.unwrap = function() {
       return this.value
-    }, t.prototype.map = function(e) {
-      return tt(e(this.value))
-    }, t.prototype.mapOr = function(e, o) {
-      return o(this.value)
-    }, t.prototype.mapOrElse = function(e, o) {
-      return o(this.value)
-    }, t.prototype.or = function(e) {
+    }, SomeConstructor.prototype.map = function(mapCallback) {
+      return Some(mapCallback(this.value))
+    }, SomeConstructor.prototype.mapOr = function(defaultValue, mapCallback) {
+      return mapCallback(this.value)
+    }, SomeConstructor.prototype.mapOrElse = function(defaultCallback, mapCallback) {
+      return mapCallback(this.value)
+    }, SomeConstructor.prototype.or = function(alternativeOption) {
       return this
-    }, t.prototype.orElse = function(e) {
+    }, SomeConstructor.prototype.orElse = function(alternativeCallback) {
       return this
-    }, t.prototype.andThen = function(e) {
-      return e(this.value)
-    }, t.prototype.toResult = function(e) {
-      return At(this.value)
-    }, t.prototype.safeUnwrap = function() {
+    }, SomeConstructor.prototype.andThen = function(chainCallback) {
+      return chainCallback(this.value)
+    }, SomeConstructor.prototype.toResult = function(errorValue) {
+      return OkResult(this.value)
+    }, SomeConstructor.prototype.safeUnwrap = function() {
       return this.value
-    }, t.prototype.toString = function() {
-      return "Some(".concat(qt(this.value), ")")
-    }, t.EMPTY = new t(void 0), t
+    }, SomeConstructor.prototype.toString = function() {
+      return "Some(".concat(normalizeToString(this.value), ")")
+    }, SomeConstructor.EMPTY = new SomeConstructor(void 0), SomeConstructor
   }(),
-  tt = Rn,
-  We;
-(function(t) {
-  function e() {
-    for (var i = [], s = 0; s < arguments.length; s++) i[s] = arguments[s];
-    for (var a = [], u = 0, c = i; u < c.length; u++) {
-      var d = c[u];
-      if (d.isSome()) a.push(d.value);
-      else return d
+  Some = SomeOptionClass,
+  OptionModule;
+(function(optionExports) {
+  function allOptions() {
+    for (var allArgsArray = [], allArgIndex = 0; allArgIndex < arguments.length; allArgIndex++) allArgsArray[allArgIndex] = arguments[allArgIndex];
+    for (var collectedValues = [], allLoopIndex = 0, allArgsCopy = allArgsArray; allLoopIndex < allArgsCopy.length; allLoopIndex++) {
+      var optionItem = allArgsCopy[allLoopIndex];
+      if (optionItem.isSome()) collectedValues.push(optionItem.value);
+      else return optionItem
     }
-    return tt(a)
+    return Some(collectedValues)
   }
-  t.all = e;
+  optionExports.all = allOptions;
 
-  function o() {
-    for (var i = [], s = 0; s < arguments.length; s++) i[s] = arguments[s];
-    for (var a = 0, u = i; a < u.length; a++) {
-      var c = u[a];
-      return c.isSome(), c
+  function anyOption() {
+    for (var anyArgsArray = [], anyArgIndex = 0; anyArgIndex < arguments.length; anyArgIndex++) anyArgsArray[anyArgIndex] = arguments[anyArgIndex];
+    for (var anyLoopIndex = 0, anyArgsCopy = anyArgsArray; anyLoopIndex < anyArgsCopy.length; anyLoopIndex++) {
+      var anyOptionItem = anyArgsCopy[anyLoopIndex];
+      return anyOptionItem.isSome(), anyOptionItem
     }
-    return P
+    return None
   }
-  t.any = o;
+  optionExports.any = anyOption;
 
-  function r(i) {
-    return i instanceof tt || i === P
+  function isOption(candidateValue) {
+    return candidateValue instanceof Some || candidateValue === None
   }
-  t.isOption = r
-})(We || (We = {}));
-var Dn = function() {
-  function t(e) {
-    if (!(this instanceof t)) return new t(e);
-    this.error = e;
-    var o = new Error()
+  optionExports.isOption = isOption
+})(OptionModule || (OptionModule = {}));
+var ResultClass = function() {
+  function ResultConstructor(resultValue) {
+    if (!(this instanceof ResultConstructor)) return new ResultConstructor(resultValue);
+    this.error = resultValue;
+    var stackError = new Error()
       .stack.split(`
 `)
       .slice(2);
-    o && o.length > 0 && o[0].includes("ErrImpl") && o.shift(), this._stack =
-      o.join(`
+    stackError && stackError.length > 0 && stackError[0].includes("ErrImpl") && stackError.shift(), this._stack =
+      stackError.join(`
 `)
   }
-  return t.prototype.isOk = function() {
+  return ResultConstructor.prototype.isOk = function() {
     return !1
-  }, t.prototype.isErr = function() {
+  }, ResultConstructor.prototype.isErr = function() {
     return !0
-  }, t.prototype[Symbol.iterator] = function() {
+  }, ResultConstructor.prototype[Symbol.iterator] = function() {
     return {
       next: function() {
         return {
@@ -10588,46 +10588,46 @@ var Dn = function() {
         }
       }
     }
-  }, t.prototype.else = function(e) {
-    return e
-  }, t.prototype.unwrapOr = function(e) {
-    return e
-  }, t.prototype.expect = function(e) {
-    throw new Error("".concat(e, " - Error: ")
-      .concat(qt(this.error), `
+  }, ResultConstructor.prototype.else = function(alternativeResult) {
+    return alternativeResult
+  }, ResultConstructor.prototype.unwrapOr = function(defaultValue) {
+    return defaultValue
+  }, ResultConstructor.prototype.expect = function(expectMessage) {
+    throw new Error("".concat(expectMessage, " - Error: ")
+      .concat(normalizeToString(this.error), `
 `)
       .concat(this._stack), {
         cause: this.error
       })
-  }, t.prototype.expectErr = function(e) {
+  }, ResultConstructor.prototype.expectErr = function(expectErrMessage) {
     return this.error
-  }, t.prototype.unwrap = function() {
-    throw new Error("Tried to unwrap Error: ".concat(qt(this.error), `
+  }, ResultConstructor.prototype.unwrap = function() {
+    throw new Error("Tried to unwrap Error: ".concat(normalizeToString(this.error), `
 `)
       .concat(this._stack), {
         cause: this.error
       })
-  }, t.prototype.unwrapErr = function() {
+  }, ResultConstructor.prototype.unwrapErr = function() {
     return this.error
-  }, t.prototype.map = function(e) {
+  }, ResultConstructor.prototype.map = function(mapCallback) {
     return this
-  }, t.prototype.andThen = function(e) {
+  }, ResultConstructor.prototype.andThen = function(chainCallback) {
     return this
-  }, t.prototype.mapErr = function(e) {
-    return new Et(e(this.error))
-  }, t.prototype.mapOr = function(e, o) {
-    return e
-  }, t.prototype.mapOrElse = function(e, o) {
-    return e(this.error)
-  }, t.prototype.or = function(e) {
-    return e
-  }, t.prototype.orElse = function(e) {
-    return e(this.error)
-  }, t.prototype.toOption = function() {
-    return P
-  }, t.prototype.toString = function() {
-    return "Err(".concat(qt(this.error), ")")
-  }, Object.defineProperty(t.prototype, "stack", {
+  }, ResultConstructor.prototype.mapErr = function(errorMapCallback) {
+    return new resultClassAlias(errorMapCallback(this.error))
+  }, ResultConstructor.prototype.mapOr = function(defaultValue, mapCallback) {
+    return defaultValue
+  }, ResultConstructor.prototype.mapOrElse = function(errorMapCallback2, okMapCallback) {
+    return errorMapCallback2(this.error)
+  }, ResultConstructor.prototype.or = function(alternativeResult) {
+    return alternativeResult
+  }, ResultConstructor.prototype.orElse = function(alternativeCallback) {
+    return alternativeCallback(this.error)
+  }, ResultConstructor.prototype.toOption = function() {
+    return None
+  }, ResultConstructor.prototype.toString = function() {
+    return "Err(".concat(normalizeToString(this.error), ")")
+  }, Object.defineProperty(ResultConstructor.prototype, "stack", {
     get: function() {
       return "".concat(this, `
 `)
@@ -10635,23 +10635,23 @@ var Dn = function() {
     },
     enumerable: !1,
     configurable: !0
-  }), t.prototype.toAsyncResult = function() {
-    return new or(this)
-  }, t.EMPTY = new t(void 0), t
+  }), ResultConstructor.prototype.toAsyncResult = function() {
+    return new AsyncResultClass(this)
+  }, ResultConstructor.EMPTY = new ResultConstructor(void 0), ResultConstructor
 }();
-var Et = Dn,
-  Vn = function() {
-    function t(e) {
-      if (!(this instanceof t)) return new t(e);
-      this.value = e
+var resultClassAlias = ResultClass,
+  OkResultClass = function() {
+    function OkConstructor(okValue) {
+      if (!(this instanceof OkConstructor)) return new OkConstructor(okValue);
+      this.value = okValue
     }
-    return t.prototype.isOk = function() {
+    return OkConstructor.prototype.isOk = function() {
       return !0
-    }, t.prototype.isErr = function() {
+    }, OkConstructor.prototype.isErr = function() {
       return !1
-    }, t.prototype[Symbol.iterator] = function() {
-      var e = Object(this.value);
-      return Symbol.iterator in e ? e[Symbol.iterator]() : {
+    }, OkConstructor.prototype[Symbol.iterator] = function() {
+      var boxedOkValue = Object(this.value);
+      return Symbol.iterator in boxedOkValue ? boxedOkValue[Symbol.iterator]() : {
         next: function() {
           return {
             done: !0,
@@ -10659,321 +10659,321 @@ var Et = Dn,
           }
         }
       }
-    }, t.prototype.else = function(e) {
+    }, OkConstructor.prototype.else = function(alternativeResult) {
       return this.value
-    }, t.prototype.unwrapOr = function(e) {
+    }, OkConstructor.prototype.unwrapOr = function(defaultValue) {
       return this.value
-    }, t.prototype.expect = function(e) {
+    }, OkConstructor.prototype.expect = function(expectMessage) {
       return this.value
-    }, t.prototype.expectErr = function(e) {
-      throw new Error(e)
-    }, t.prototype.unwrap = function() {
+    }, OkConstructor.prototype.expectErr = function(expectErrMessage) {
+      throw new Error(expectErrMessage)
+    }, OkConstructor.prototype.unwrap = function() {
       return this.value
-    }, t.prototype.unwrapErr = function() {
-      throw new Error("Tried to unwrap Ok: ".concat(qt(this.value)), {
+    }, OkConstructor.prototype.unwrapErr = function() {
+      throw new Error("Tried to unwrap Ok: ".concat(normalizeToString(this.value)), {
         cause: this.value
       })
-    }, t.prototype.map = function(e) {
-      return new At(e(this.value))
-    }, t.prototype.andThen = function(e) {
-      return e(this.value)
-    }, t.prototype.mapErr = function(e) {
+    }, OkConstructor.prototype.map = function(mapCallback) {
+      return new OkResult(mapCallback(this.value))
+    }, OkConstructor.prototype.andThen = function(chainCallback) {
+      return chainCallback(this.value)
+    }, OkConstructor.prototype.mapErr = function(errorMapCallback) {
       return this
-    }, t.prototype.mapOr = function(e, o) {
-      return o(this.value)
-    }, t.prototype.mapOrElse = function(e, o) {
-      return o(this.value)
-    }, t.prototype.or = function(e) {
+    }, OkConstructor.prototype.mapOr = function(defaultValue, mapCallback) {
+      return mapCallback(this.value)
+    }, OkConstructor.prototype.mapOrElse = function(errorMapCallback2, okMapCallback) {
+      return okMapCallback(this.value)
+    }, OkConstructor.prototype.or = function(alternativeResult) {
       return this
-    }, t.prototype.orElse = function(e) {
+    }, OkConstructor.prototype.orElse = function(alternativeCallback) {
       return this
-    }, t.prototype.toOption = function() {
-      return tt(this.value)
-    }, t.prototype.safeUnwrap = function() {
+    }, OkConstructor.prototype.toOption = function() {
+      return Some(this.value)
+    }, OkConstructor.prototype.safeUnwrap = function() {
       return this.value
-    }, t.prototype.toString = function() {
-      return "Ok(".concat(qt(this.value), ")")
-    }, t.prototype.toAsyncResult = function() {
-      return new or(this)
-    }, t.EMPTY = new t(void 0), t
+    }, OkConstructor.prototype.toString = function() {
+      return "Ok(".concat(normalizeToString(this.value), ")")
+    }, OkConstructor.prototype.toAsyncResult = function() {
+      return new AsyncResultClass(this)
+    }, OkConstructor.EMPTY = new OkConstructor(void 0), OkConstructor
   }();
-var At = Vn,
-  Ke;
-(function(t) {
-  function e() {
-    for (var a = [], u = 0; u < arguments.length; u++) a[u] = arguments[u];
-    for (var c = [], d = 0, h = a; d < h.length; d++) {
-      var p = h[d];
-      if (p.isOk()) c.push(p.value);
-      else return p
+var OkResult = OkResultClass,
+  ResultModule;
+(function(resultExports) {
+  function allResults() {
+    for (var allArgsArray = [], allArgIndex = 0; allArgIndex < arguments.length; allArgIndex++) allArgsArray[allArgIndex] = arguments[allArgIndex];
+    for (var collectedOkValues = [], allLoopIndex = 0, allArgsCopy = allArgsArray; allLoopIndex < allArgsCopy.length; allLoopIndex++) {
+      var resultItem = allArgsCopy[allLoopIndex];
+      if (resultItem.isOk()) collectedOkValues.push(resultItem.value);
+      else return resultItem
     }
-    return new At(c)
+    return new OkResult(collectedOkValues)
   }
-  t.all = e;
+  resultExports.all = allResults;
 
-  function o() {
-    for (var a = [], u = 0; u < arguments.length; u++) a[u] = arguments[u];
-    for (var c = [], d = 0, h = a; d < h.length; d++) {
-      var p = h[d];
-      if (p.isOk()) return p;
-      c.push(p.error)
+  function anyResult() {
+    for (var anyArgsArray = [], anyArgIndex = 0; anyArgIndex < arguments.length; anyArgIndex++) anyArgsArray[anyArgIndex] = arguments[anyArgIndex];
+    for (var anyCollected = [], anyLoopIndex = 0, anyArgsCopy = anyArgsArray; anyLoopIndex < anyArgsCopy.length; anyLoopIndex++) {
+      var anyResultItem = anyArgsCopy[anyLoopIndex];
+      if (anyResultItem.isOk()) return anyResultItem;
+      anyCollected.push(anyResultItem.error)
     }
-    return new Et(c)
+    return new resultClassAlias(anyCollected)
   }
-  t.any = o;
+  resultExports.any = anyResult;
 
-  function r(a) {
+  function isResult(candidateResultValue) {
     try {
-      return new At(a())
-    } catch (u) {
-      return new Et(u)
+      return new OkResult(candidateResultValue())
+    } catch (resultCatchError) {
+      return new resultClassAlias(resultCatchError)
     }
   }
-  t.wrap = r;
+  resultExports.wrap = isResult;
 
-  function i(a) {
+  function isOkResult(candidateResult) {
     try {
-      return a()
-        .then(function(u) {
-          return new At(u)
+      return candidateResult()
+        .then(function(resolvedValue) {
+          return new OkResult(resolvedValue)
         })
-        .catch(function(u) {
-          return new Et(u)
+        .catch(function(rejectedError) {
+          return new resultClassAlias(rejectedError)
         })
-    } catch (u) {
-      return Promise.resolve(new Et(u))
+    } catch (syncCatchError) {
+      return Promise.resolve(new resultClassAlias(syncCatchError))
     }
   }
-  t.wrapAsync = i;
+  resultExports.wrapAsync = isOkResult;
 
-  function s(a) {
-    return a instanceof Et || a instanceof At
+  function toResultAsync(asyncResultValue) {
+    return asyncResultValue instanceof resultClassAlias || asyncResultValue instanceof OkResult
   }
-  t.isResult = s
-})(Ke || (Ke = {}));
-var ls = function(t, e, o, r) {
-    function i(s) {
-      return s instanceof o ? s : new o(function(a) {
-        a(s)
+  resultExports.isResult = toResultAsync
+})(ResultModule || (ResultModule = {}));
+var asyncAwaiter = function(thisContext, argumentsList, PromiseImpl, generatorFn) {
+    function adoptValue(resolutionValue) {
+      return resolutionValue instanceof PromiseImpl ? resolutionValue : new PromiseImpl(function(resolveAdopted) {
+        resolveAdopted(resolutionValue)
       })
     }
-    return new(o || (o = Promise))(function(s, a) {
-      function u(h) {
+    return new(PromiseImpl || (PromiseImpl = Promise))(function(resolveAwaiter, rejectAwaiter) {
+      function onFulfilled(fulfilledValue) {
         try {
-          d(r.next(h))
-        } catch (p) {
-          a(p)
+          advanceAsyncStep(generatorFn.next(fulfilledValue))
+        } catch (fulfillCatchError) {
+          rejectAwaiter(fulfillCatchError)
         }
       }
 
-      function c(h) {
+      function onRejected(rejectionReason) {
         try {
-          d(r.throw(h))
-        } catch (p) {
-          a(p)
+          advanceAsyncStep(generatorFn.throw(rejectionReason))
+        } catch (rejectCatchError) {
+          rejectAwaiter(rejectCatchError)
         }
       }
 
-      function d(h) {
-        h.done ? s(h.value) : i(h.value)
-          .then(u, c)
+      function advanceAsyncStep(generatorStepResult) {
+        generatorStepResult.done ? resolveAwaiter(generatorStepResult.value) : adoptValue(generatorStepResult.value)
+          .then(onFulfilled, onRejected)
       }
-      d((r = r.apply(t, e || []))
+      advanceAsyncStep((generatorFn = generatorFn.apply(thisContext, argumentsList || []))
         .next())
     })
   },
-  cs = function(t, e) {
-    var o = {
+  generatorRunner = function(generatorThis, generatorBody) {
+    var generatorState = {
         label: 0,
         sent: function() {
-          if (s[0] & 1) throw s[1];
-          return s[1]
+          if (generatorObject[0] & 1) throw generatorObject[1];
+          return generatorObject[1]
         },
         trys: [],
         ops: []
       },
-      r, i, s, a;
-    return a = {
-      next: u(0),
-      throw: u(1),
-      return: u(2)
-    }, typeof Symbol == "function" && (a[Symbol.iterator] = function() {
+      thrownException, stepResult, generatorObject, iteratorSelf;
+    return iteratorSelf = {
+      next: makeVerb(0),
+      throw: makeVerb(1),
+      return: makeVerb(2)
+    }, typeof Symbol == "function" && (iteratorSelf[Symbol.iterator] = function() {
       return this
-    }), a;
+    }), iteratorSelf;
 
-    function u(d) {
-      return function(h) {
-        return c([d, h])
+    function makeVerb(verbIndex) {
+      return function(verbArgument) {
+        return advanceGeneratorStep([verbIndex, verbArgument])
       }
     }
 
-    function c(d) {
-      if (r) throw new TypeError("Generator is already executing.");
-      for (; a && (a = 0, d[0] && (o = 0)), o;) try {
-        if (r = 1, i && (s = d[0] & 2 ? i.return : d[0] ? i.throw || ((s = i
-            .return) && s.call(i), 0) : i.next) && !(s = s.call(i, d[1]))
-          .done) return s;
-        switch (i = 0, s && (d = [d[0] & 2, s.value]), d[0]) {
+    function advanceGeneratorStep(generatorOp) {
+      if (thrownException) throw new TypeError("Generator is already executing.");
+      for (; iteratorSelf && (iteratorSelf = 0, generatorOp[0] && (generatorState = 0)), generatorState;) try {
+        if (thrownException = 1, stepResult && (generatorObject = generatorOp[0] & 2 ? stepResult.return : generatorOp[0] ? stepResult.throw || ((generatorObject = stepResult
+            .return) && generatorObject.call(stepResult), 0) : stepResult.next) && !(generatorObject = generatorObject.call(stepResult, generatorOp[1]))
+          .done) return generatorObject;
+        switch (stepResult = 0, generatorObject && (generatorOp = [generatorOp[0] & 2, generatorObject.value]), generatorOp[0]) {
           case 0:
           case 1:
-            s = d;
+            generatorObject = generatorOp;
             break;
           case 4:
-            return o.label++, {
-              value: d[1],
+            return generatorState.label++, {
+              value: generatorOp[1],
               done: !1
             };
           case 5:
-            o.label++, i = d[1], d = [0];
+            generatorState.label++, stepResult = generatorOp[1], generatorOp = [0];
             continue;
           case 7:
-            d = o.ops.pop(), o.trys.pop();
+            generatorOp = generatorState.ops.pop(), generatorState.trys.pop();
             continue;
           default:
-            if (s = o.trys, !(s = s.length > 0 && s[s.length - 1]) && (d[
-                0] === 6 || d[0] === 2)) {
-              o = 0;
+            if (generatorObject = generatorState.trys, !(generatorObject = generatorObject.length > 0 && generatorObject[generatorObject.length - 1]) && (generatorOp[
+                0] === 6 || generatorOp[0] === 2)) {
+              generatorState = 0;
               continue
             }
-            if (d[0] === 3 && (!s || d[1] > s[0] && d[1] < s[3])) {
-              o.label = d[1];
+            if (generatorOp[0] === 3 && (!generatorObject || generatorOp[1] > generatorObject[0] && generatorOp[1] < generatorObject[3])) {
+              generatorState.label = generatorOp[1];
               break
             }
-            if (d[0] === 6 && o.label < s[1]) {
-              o.label = s[1], s = d;
+            if (generatorOp[0] === 6 && generatorState.label < generatorObject[1]) {
+              generatorState.label = generatorObject[1], generatorObject = generatorOp;
               break
             }
-            if (s && o.label < s[2]) {
-              o.label = s[2], o.ops.push(d);
+            if (generatorObject && generatorState.label < generatorObject[2]) {
+              generatorState.label = generatorObject[2], generatorState.ops.push(generatorOp);
               break
             }
-            s[2] && o.ops.pop(), o.trys.pop();
+            generatorObject[2] && generatorState.ops.pop(), generatorState.trys.pop();
             continue
         }
-        d = e.call(t, o)
-      } catch (h) {
-        d = [6, h], i = 0
+        generatorOp = generatorBody.call(generatorThis, generatorState)
+      } catch (generatorStepError) {
+        generatorOp = [6, generatorStepError], stepResult = 0
       } finally {
-        r = s = 0
+        thrownException = generatorObject = 0
       }
-      if (d[0] & 5) throw d[1];
+      if (generatorOp[0] & 5) throw generatorOp[1];
       return {
-        value: d[0] ? d[1] : void 0,
+        value: generatorOp[0] ? generatorOp[1] : void 0,
         done: !0
       }
     }
   },
-  or = function() {
-    function t(e) {
-      this.promise = Promise.resolve(e)
+  AsyncResultClass = function() {
+    function AsyncResultConstructor(innerResultPromise) {
+      this.promise = Promise.resolve(innerResultPromise)
     }
-    return t.prototype.andThen = function(e) {
-      var o = this;
-      return this.thenInternal(function(r) {
-        return ls(o, void 0, void 0, function() {
-          var i;
-          return cs(this, function(s) {
-            return r.isErr() ? [2, r] : (i = e(r.value), [2,
-              i instanceof t ? i.promise : i
+    return AsyncResultConstructor.prototype.andThen = function(chainCallback) {
+      var asyncResultSelf = this;
+      return this.thenInternal(function(resolvedChainResult) {
+        return asyncAwaiter(asyncResultSelf, void 0, void 0, function() {
+          var chainedResult;
+          return generatorRunner(this, function(chainGeneratorStep) {
+            return resolvedChainResult.isErr() ? [2, resolvedChainResult] : (chainedResult = chainCallback(resolvedChainResult.value), [2,
+              chainedResult instanceof AsyncResultConstructor ? chainedResult.promise : chainedResult
             ])
           })
         })
       })
-    }, t.prototype.map = function(e) {
-      var o = this;
-      return this.thenInternal(function(r) {
-        return ls(o, void 0, void 0, function() {
-          var i;
-          return cs(this, function(s) {
-            switch (s.label) {
+    }, AsyncResultConstructor.prototype.map = function(mapCallback) {
+      var asyncResultSelf = this;
+      return this.thenInternal(function(resolvedMapResult) {
+        return asyncAwaiter(asyncResultSelf, void 0, void 0, function() {
+          var mappedResult;
+          return generatorRunner(this, function(mapGeneratorStep) {
+            switch (mapGeneratorStep.label) {
               case 0:
-                return r.isErr() ? [2, r] : (i = At, [4, e(r
+                return resolvedMapResult.isErr() ? [2, resolvedMapResult] : (mappedResult = OkResult, [4, mapCallback(resolvedMapResult
                   .value)]);
               case 1:
-                return [2, i.apply(void 0, [s.sent()])]
+                return [2, mappedResult.apply(void 0, [mapGeneratorStep.sent()])]
             }
           })
         })
       })
-    }, t.prototype.thenInternal = function(e) {
-      return new t(this.promise.then(e))
-    }, t
+    }, AsyncResultConstructor.prototype.thenInternal = function(thenCallback) {
+      return new AsyncResultConstructor(this.promise.then(thenCallback))
+    }, AsyncResultConstructor
   }();
 
-function bt(t) {
-  return Object.assign(t.prototype, {
-    find: function(e) {
-      for (let o of this)
-        if (e(o)) return tt(o);
-      return P
+function createLazyIterable(iteratorFactory) {
+  return Object.assign(iteratorFactory.prototype, {
+    find: function(findPredicate) {
+      for (let findItem of this)
+        if (findPredicate(findItem)) return Some(findItem);
+      return None
     },
-    count: function(e) {
-      return this.reduce((o, r) => (e(r) && o++, o), 0)
+    count: function(countPredicate) {
+      return this.reduce((countAccumulator, countItem) => (countPredicate(countItem) && countAccumulator++, countAccumulator), 0)
     },
-    reduce: function(e, o) {
-      let r = o;
-      for (let i of this) r = e(r, i);
-      return r
+    reduce: function(reducer, reduceInitialValue) {
+      let reduceAccumulator = reduceInitialValue;
+      for (let reduceItem of this) reduceAccumulator = reducer(reduceAccumulator, reduceItem);
+      return reduceAccumulator
     },
-    every: function(e) {
-      return !this.any(o => !e(o))
+    every: function(everyPredicate) {
+      return !this.any(everyItem => !everyPredicate(everyItem))
     },
-    any: function(e) {
-      for (let o of this)
-        if (e(o)) return !0;
+    any: function(anyPredicate) {
+      for (let anyItem of this)
+        if (anyPredicate(anyItem)) return !0;
       return !1
     },
-    map: function(e) {
-      return this.filterMap(o => tt(e(o)))
+    map: function(mapTransform) {
+      return this.filterMap(mapItem => Some(mapTransform(mapItem)))
     },
-    filter: function(e) {
-      return this.filterMap(o => e(o) ? tt(o) : P)
+    filter: function(filterPredicate) {
+      return this.filterMap(filterItem => filterPredicate(filterItem) ? Some(filterItem) : None)
     },
     enumerate: function() {
-      let e = this;
-      return bt(function*() {
-        let o = 0;
-        for (let r of e) yield [o, r], o++
+      let enumerateSource = this;
+      return createLazyIterable(function*() {
+        let enumerateIndex = 0;
+        for (let enumerateItem of enumerateSource) yield [enumerateIndex, enumerateItem], enumerateIndex++
       })()
     },
-    filterMap: function(e) {
-      let o = this;
-      return bt(function*() {
-        for (let r of o) {
-          let i = e(r);
-          i.isSome() && (yield i.unwrap())
+    filterMap: function(filterMapTransform) {
+      let filterMapSource = this;
+      return createLazyIterable(function*() {
+        for (let filterMapItem of filterMapSource) {
+          let filterMapResult = filterMapTransform(filterMapItem);
+          filterMapResult.isSome() && (yield filterMapResult.unwrap())
         }
       })()
     },
-    sort: function(e) {
-      let o = this.toArray();
-      return o.sort(e), o
+    sort: function(sortComparator) {
+      let sortArrayCopy = this.toArray();
+      return sortArrayCopy.sort(sortComparator), sortArrayCopy
     },
     toArray: function() {
       return [...this]
     }
-  }), t
+  }), iteratorFactory
 }
 Array.prototype.as_iter || (Array.prototype.as_iter = function() {
-  let t = this;
-  return bt(function*() {
-    for (let e of t) yield e
+  let takeSource = this;
+  return createLazyIterable(function*() {
+    for (let takeItem of takeSource) yield takeItem
   })()
 });
 Set.prototype.as_iter || (Set.prototype.as_iter = function() {
-  let t = this;
-  return bt(function*() {
-    for (let e of t) yield e
+  let skipSource = this;
+  return createLazyIterable(function*() {
+    for (let skipItem of skipSource) yield skipItem
   })()
 });
 Map.prototype.as_iter || (Map.prototype.as_iter = function() {
-  let t = this;
-  return bt(function*() {
-    for (let e of t) yield e
+  let chainSource = this;
+  return createLazyIterable(function*() {
+    for (let chainItem of chainSource) yield chainItem
   })()
 });
-var xe = /.^/,
-  us = {
+var neverMatchRegex = /.^/,
+  browserDefinitions = {
     Av1: {
       name: "Av1",
       type: "video",
@@ -10989,7 +10989,7 @@ var xe = /.^/,
     H263: {
       name: "H263",
       type: "video",
-      mimetype: xe,
+      mimetype: neverMatchRegex,
       defacto_container: "3gp"
     },
     H265: {
@@ -11007,13 +11007,13 @@ var xe = /.^/,
     MPEG1: {
       name: "MPEG1",
       type: "video",
-      mimetype: xe,
+      mimetype: neverMatchRegex,
       defacto_container: "Mpeg"
     },
     MPEG2: {
       name: "MPEG2",
       type: "video",
-      mimetype: xe,
+      mimetype: neverMatchRegex,
       defacto_container: "Mpeg"
     },
     Theora: {
@@ -11037,11 +11037,11 @@ var xe = /.^/,
     unknown: {
       name: "unknown",
       type: "video",
-      mimetype: xe,
+      mimetype: neverMatchRegex,
       defacto_container: "Mp4"
     }
   },
-  ds = {
+  engineDefinitions = {
     AAC: {
       name: "AAC",
       type: "audio",
@@ -11081,30 +11081,30 @@ var xe = /.^/,
     Wav: {
       name: "Wav",
       type: "audio",
-      mimetype: xe,
+      mimetype: neverMatchRegex,
       defacto_container: "Wav"
     },
     unknown: {
       name: "unknown",
       type: "audio",
-      mimetype: xe,
+      mimetype: neverMatchRegex,
       defacto_container: "Mp4"
     }
   },
-  ps = bt(function*() {
-    for (let t of Object.keys(us)) yield us[t]
+  browserList = createLazyIterable(function*() {
+    for (let browserKey of Object.keys(browserDefinitions)) yield browserDefinitions[browserKey]
   }),
-  hs = bt(function*() {
-    for (let t of Object.keys(ds)) yield ds[t]
+  engineList = createLazyIterable(function*() {
+    for (let engineKey of Object.keys(engineDefinitions)) yield engineDefinitions[engineKey]
   });
-var ms = {
+var osDefinitions = {
     Mp4: {
       name: "Mp4",
       extension: "mp4",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: P,
-        video: P
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2",
         "unknown"],
@@ -11116,16 +11116,16 @@ var ms = {
       extension: "mkv",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: P,
-        video: P
+        audio: None,
+        video: None
       },
-      supported_video_codecs: ps()
-        .filter(t => t.name != "unknown")
-        .map(t => t.name)
+      supported_video_codecs: browserList()
+        .filter(detectedBrowser => detectedBrowser.name != "unknown")
+        .map(matchedBrowser => matchedBrowser.name)
         .toArray(),
-      supported_audio_codecs: hs()
-        .filter(t => t.name != "unknown")
-        .map(t => t.name)
+      supported_audio_codecs: engineList()
+        .filter(detectedEngine => detectedEngine.name != "unknown")
+        .map(matchedEngine => matchedEngine.name)
         .toArray(),
       mimetype: /(?:x-)?matroska/i
     },
@@ -11134,8 +11134,8 @@ var ms = {
       extension: "webm",
       audio_only_extension: "oga",
       defacto_codecs: {
-        audio: P,
-        video: P
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "VP8", "VP9", "Av1"],
       supported_audio_codecs: ["Opus", "Vorbis"],
@@ -11146,8 +11146,8 @@ var ms = {
       extension: "mt2s",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: P,
-        video: P
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2", "VP9",
         "unknown"
@@ -11160,8 +11160,8 @@ var ms = {
       extension: "mp2t",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: tt("MP3"),
-        video: tt("H264")
+        audio: Some("MP3"),
+        video: Some("H264")
       },
       supported_video_codecs: ["MPEG2", "MPEG1"],
       supported_audio_codecs: ["MP3"],
@@ -11172,8 +11172,8 @@ var ms = {
       extension: "flv",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: P,
-        video: P
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264"],
       supported_audio_codecs: ["AAC"],
@@ -11184,8 +11184,8 @@ var ms = {
       extension: "m4v",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: P,
-        video: P
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2"],
       supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC"],
@@ -11197,8 +11197,8 @@ var ms = {
       other_extensions: ["aac"],
       audio_only_extension: "m4a",
       defacto_codecs: {
-        audio: tt("AAC"),
-        video: P
+        audio: Some("AAC"),
+        video: None
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC", "unknown"],
@@ -11209,8 +11209,8 @@ var ms = {
       extension: "flac",
       audio_only_extension: "flac",
       defacto_codecs: {
-        audio: tt("FLAC"),
-        video: P
+        audio: Some("FLAC"),
+        video: None
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["FLAC"],
@@ -11221,8 +11221,8 @@ var ms = {
       extension: "mpeg",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: tt("MP3"),
-        video: tt("H264")
+        audio: Some("MP3"),
+        video: Some("H264")
       },
       supported_video_codecs: ["MPEG2", "MPEG1"],
       supported_audio_codecs: ["MP3"],
@@ -11233,8 +11233,8 @@ var ms = {
       extension: "ogv",
       audio_only_extension: "oga",
       defacto_codecs: {
-        audio: P,
-        video: P
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["VP9", "VP8", "Theora"],
       supported_audio_codecs: ["Opus", "Vorbis", "FLAC"],
@@ -11245,8 +11245,8 @@ var ms = {
       extension: "wav",
       audio_only_extension: "wav",
       defacto_codecs: {
-        audio: tt("Wav"),
-        video: P
+        audio: Some("Wav"),
+        video: None
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["Wav", "PCM"],
@@ -11257,8 +11257,8 @@ var ms = {
       extension: "3gpp",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: P,
-        video: P
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "H263", "MP4V", "VP8"],
       supported_audio_codecs: ["MP3", "AAC"],
@@ -11269,21 +11269,21 @@ var ms = {
       extension: "mov",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: P,
-        video: P
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["MPEG1", "MPEG2"],
       supported_audio_codecs: [],
       mimetype: /(?:x-)?mov/i
     }
   },
-  In = bt(function*() {
-    for (let t of Object.keys(ms)) yield t
+  osKeyList = createLazyIterable(function*() {
+    for (let osKey of Object.keys(osDefinitions)) yield osKey
   }),
-  mA = bt(function*() {
-    for (let t of In()) yield ms[t]
+  osList = createLazyIterable(function*() {
+    for (let osIterKey of osKeyList()) yield osDefinitions[osIterKey]
   });
-var fs = {
+var platformDefinitions = {
   240: {
     id: "240",
     loose_name: "Small"
@@ -11317,66 +11317,66 @@ var fs = {
     loose_name: "8K"
   }
 };
-var Bn = bt(function*() {
-    for (let t of Object.keys(fs)) yield t
+var platformKeyList = createLazyIterable(function*() {
+    for (let platformKey of Object.keys(platformDefinitions)) yield platformKey
   }),
-  _A = bt(function*() {
-    for (let t of Bn()) yield fs[t]
+  platformList = createLazyIterable(function*() {
+    for (let platformIterKey of platformKeyList()) yield platformDefinitions[platformIterKey]
   });
-var Hn = ur(er(), 1);
+var browserApiPolyfill = toEsm(webextPolyfillModule(), 1);
 
-function ir(t, e) {
-  if (t == null || e === null || e === void 0) return t === e;
-  if (t.constructor !== e.constructor) return !1;
-  if (t instanceof Function || t instanceof RegExp) return t === e;
-  if (t === e || t.valueOf() === e.valueOf()) return !0;
-  if (Array.isArray(t) && t.length !== e.length || t instanceof Date || !(
-      t instanceof Object) || !(e instanceof Object)) return !1;
-  let o = Object.keys(t),
-    r = Object.keys(e)
-    .every(s => o.indexOf(s) !== -1),
-    i = o.every(s => ir(t[s], e[s]));
-  return r && i
+function deepEqual(objectA, objectB) {
+  if (objectA == null || objectB === null || objectB === void 0) return objectA === objectB;
+  if (objectA.constructor !== objectB.constructor) return !1;
+  if (objectA instanceof Function || objectA instanceof RegExp) return objectA === objectB;
+  if (objectA === objectB || objectA.valueOf() === objectB.valueOf()) return !0;
+  if (Array.isArray(objectA) && objectA.length !== objectB.length || objectA instanceof Date || !(
+      objectA instanceof Object) || !(objectB instanceof Object)) return !1;
+  let keysOfA = Object.keys(objectA),
+    keysOfB = Object.keys(objectB)
+    .every(keyFromB => keysOfA.indexOf(keyFromB) !== -1),
+    allValuesEqual = keysOfA.every(keyFromA => deepEqual(objectA[keyFromA], objectB[keyFromA]));
+  return keysOfB && allValuesEqual
 }
-async function rr(t) {
-  let e = await sr.storage[t.where].get(t.name);
-  if (t.name in e) {
-    let o = e[t.name];
-    return t.hooks ? t.hooks.getter(o, t) : o
+async function readStorageValue(storageDescriptor) {
+  let storageResult = await browserPolyfill.storage[storageDescriptor.where].get(storageDescriptor.name);
+  if (storageDescriptor.name in storageResult) {
+    let storedValue = storageResult[storageDescriptor.name];
+    return storageDescriptor.hooks ? storageDescriptor.hooks.getter(storedValue, storageDescriptor) : storedValue
   }
-  return t.default()
+  return storageDescriptor.default()
 }
 
-function gs(t, e) {
-  sr.storage[t.where].onChanged.addListener(o => {
-    let r = o[t.name];
-    if (r) {
-      if (ir(r.oldValue, r.newValue)) return;
-      typeof r.newValue > "u" ? e(t.default()) : t.hooks ? e(t.hooks.getter(
-        r.newValue, t)) : e(r.newValue)
+function onStorageChange(storageDescriptor, changeCallback) {
+  browserPolyfill.storage[storageDescriptor.where].onChanged.addListener(storageChanges => {
+    let changeRecord = storageChanges[storageDescriptor.name];
+    if (changeRecord) {
+      if (deepEqual(changeRecord.oldValue, changeRecord.newValue)) return;
+      typeof changeRecord.newValue > "u" ? changeCallback(storageDescriptor.default()) : storageDescriptor.hooks ? changeCallback(storageDescriptor.hooks.getter(
+        changeRecord.newValue, storageDescriptor)) : changeCallback(changeRecord.newValue)
     }
   })
 }
-var nr = {
+var themeStorageDescriptor = {
   name: "theme",
   default: () => "system",
   where: "local"
 };
-Pe("/content2/shoelace/");
-var bs = window.matchMedia("(prefers-color-scheme:dark)"),
-  ys = bs.matches,
-  ar = await rr(nr),
-  lr = () => {
-    let t = ar == "dark" || ar == "system" && ys;
-    document.documentElement.classList.toggle("sl-theme-dark", t)
+setBasePath("/content2/shoelace/");
+var darkModeMediaQuery = window.matchMedia("(prefers-color-scheme:dark)"),
+  prefersDarkScheme = darkModeMediaQuery.matches,
+  storedThemePreference = await readStorageValue(themeStorageDescriptor),
+  applyTheme = () => {
+    let isDarkMode = storedThemePreference == "dark" || storedThemePreference == "system" && prefersDarkScheme;
+    document.documentElement.classList.toggle("sl-theme-dark", isDarkMode)
   };
-bs.addEventListener("change", t => {
-  ys = t.matches, lr()
+darkModeMediaQuery.addEventListener("change", mediaChangeEvent => {
+  prefersDarkScheme = mediaChangeEvent.matches, applyTheme()
 });
-gs(nr, t => {
-  ar = t, lr()
+onStorageChange(themeStorageDescriptor, newThemeValue => {
+  storedThemePreference = newThemeValue, applyTheme()
 });
-lr();
+applyTheme();
 /*! Bundled license information:
 
 @lit/reactive-element/css-tag.js:

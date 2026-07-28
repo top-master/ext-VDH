@@ -1,43 +1,43 @@
 "use strict";
 (() => {
-  var c = Object.defineProperty;
-  var _ = Object.getOwnPropertyDescriptor;
-  var m = Object.getOwnPropertyNames;
-  var f = Object.prototype.hasOwnProperty;
-  var d = (s, t) => () => (s && (t = s(s = 0)), t);
-  var k = (s, t) => () => (t || s((t = {
+  var defineProperty = Object.defineProperty;
+  var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var getOwnPropNames = Object.getOwnPropertyNames;
+  var hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+  var defineLazyModule = (initModule, cachedModule) => () => (initModule && (cachedModule = initModule(initModule = 0)), cachedModule);
+  var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
         exports: {}
       })
-      .exports, t), t.exports),
-    h = (s, t) => {
-      for (var e in t) c(s, e, {
-        get: t[e],
+      .exports, cachedExports), cachedExports.exports),
+    defineExports = (target, source) => {
+      for (var key in source) defineProperty(target, key, {
+        get: source[key],
         enumerable: !0
       })
     },
-    C = (s, t, e, i) => {
-      if (t && typeof t == "object" || typeof t == "function")
-        for (let a of m(t)) !f.call(s, a) && a !== e && c(s, a, {
-          get: () => t[a],
-          enumerable: !(i = _(t, a)) || i.enumerable
+    copyProps = (targetObj, from, except, desc) => {
+      if (from && typeof from == "object" || typeof from == "function")
+        for (let key of getOwnPropNames(from)) !hasOwnPropertyRef.call(targetObj, key) && key !== except && defineProperty(targetObj, key, {
+          get: () => from[key],
+          enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable
         });
-      return s
+      return targetObj
     };
-  var u = s => C(c({}, "__esModule", {
+  var toCommonjs = mod => copyProps(defineProperty({}, "__esModule", {
     value: !0
-  }), s);
-  var p = {};
-  h(p, {
-    info: () => x
+  }), mod);
+  var versionNs = {};
+  defineExports(versionNs, {
+    info: () => versionInfo
   });
-  var x, b = d(() => {
+  var versionInfo, initVersion = defineLazyModule(() => {
     "use strict";
-    x = {
+    versionInfo = {
       lastVersion: "2.0.19"
     }
   });
-  var g = k((S, L) => {
-    L.exports = {
+  var requireBuildInfo = defineCommonjsModule((buildExports, buildModule) => {
+    buildModule.exports = {
       prod: !0,
       channel: "stable",
       buildDate: "2024-10-15",
@@ -49,15 +49,15 @@
       }
     }
   });
-  var v = {};
-  h(v, {
-    LicInfoPanelComponent: () => r
+  var licPanelNs = {};
+  defineExports(licPanelNs, {
+    LicInfoPanelComponent: () => LicInfoPanelComponent
   });
-  var r, y = d(() => {
+  var LicInfoPanelComponent, initLicPanel = defineLazyModule(() => {
     "use strict";
-    r = class extends React.Component {
-      constructor(t) {
-        super(t), this.state = {
+    LicInfoPanelComponent = class extends React.Component {
+      constructor(props) {
+        super(props), this.state = {
           status: "verifying",
           email: null,
           key: null,
@@ -69,40 +69,40 @@
         this.check()
       }
       check() {
-        var t = this;
-        t.setState({
+        var self = this;
+        self.setState({
             status: "verifying",
             email: null,
             key: null
           }), weh.rpc.call("checkLicense")
-          .then(e => {
-            t.setState(e)
+          .then(license => {
+            self.setState(license)
           })
-          .catch(e => {
-            console.error("Error checking license", e)
+          .catch(error => {
+            console.error("Error checking license", error)
           })
       }
       onLicKeyChanged() {
-        var t = this;
-        return e => {
-          t.setState({
-            editKey: e.target.value
+        var self = this;
+        return event => {
+          self.setState({
+            editKey: event.target.value
           })
         }
       }
       onLicKeyPressed() {
-        var t = this;
-        return e => {
-          e.key == "Enter" ? t.register() : e.key == "Escape" && t
+        var self = this;
+        return event => {
+          event.key == "Enter" ? self.register() : event.key == "Escape" && self
             .setState({
               editing: !1
             })
         }
       }
       registerEdit() {
-        var t = this;
+        var self = this;
         return () => {
-          t.setState({
+          self.setState({
             editing: !0,
             editKey: ""
           })
@@ -110,46 +110,46 @@
       }
       getLicense() {
         return () => {
-          let t = g()
+          let browserTarget = requireBuildInfo()
             .buildOptions.browser,
-            i = "https://www.downloadhelper.net/convert" + (t ?
-              "?browser=" + encodeURIComponent(t) : "");
-          weh.rpc.call("goto", i)
+            convertUrl = "https://www.downloadhelper.net/convert" + (browserTarget ?
+              "?browser=" + encodeURIComponent(browserTarget) : "");
+          weh.rpc.call("goto", convertUrl)
         }
       }
       cancelRegister() {
-        var t = this;
+        var self = this;
         return () => {
-          t.setState({
+          self.setState({
             editing: !1
           })
         }
       }
       register() {
-        var t = this;
+        var self = this;
         this.setState({
             editing: !1,
             status: "verifying"
           }), this.validate(this.state.editKey.trim())
-          .catch(e => {
-            t.setState({
+          .catch(error => {
+            self.setState({
               status: "error",
-              error: e.message
+              error: error.message
             })
           })
       }
-      validate(t) {
-        var e = this;
-        return weh.rpc.call("validateLicense", t)
-          .then(i => {
-            i && i.status == "nocoapp" ? e.setState({
+      validate(key) {
+        var self = this;
+        return weh.rpc.call("validateLicense", key)
+          .then(result => {
+            result && result.status == "nocoapp" ? self.setState({
               status: "nocoapp",
-              key: i.key
-            }) : e.check()
+              key: result.key
+            }) : self.check()
           })
       }
       render() {
-        let t = {
+        let statusesWithKey = {
           unverified: 1,
           locked: 1,
           accepted: 1,
@@ -158,8 +158,8 @@
           error: 1,
           mismatch: 1
         };
-        var e = weh._("lic_status_" + this.state.status),
-          i = React.createElement("div", {
+        var statusLabel = weh._("lic_status_" + this.state.status),
+          panel = React.createElement("div", {
               className: "lic-info-panel"
             }, this.state.editing && React.createElement("div", {
               className: "input-license"
@@ -168,7 +168,7 @@
               value: this.state.editKey,
               onChange: this.onLicKeyChanged(),
               onKeyDown: this.onLicKeyPressed()
-            })), !this.state.editing && t[this.state.status] && this
+            })), !this.state.editing && statusesWithKey[this.state.status] && this
             .state.key && React.createElement("div", {
               className: "license-details"
             }, React.createElement("table", null, React
@@ -235,46 +235,46 @@
                 }, weh._("validate_license"))))));
         return React.createElement("div", null, React.createElement(
           CollapsibleSection, {
-            title: e,
-            content: i,
+            title: statusLabel,
+            content: panel,
             open: this.props.open
           }))
       }
     };
-    window.LicInfoPanel = r
+    window.LicInfoPanel = LicInfoPanelComponent
   });
   var {
-    info: $
-  } = (b(), u(p));
-  y();
+    info: importedVersion
+  } = (initVersion(), toCommonjs(versionNs));
+  initLicPanel();
   window.CopyButton = class extends React.Component {
-    constructor(s) {
-      super(s), this.state = {}
+    constructor(props) {
+      super(props), this.state = {}
     }
     copyInfoToClipboard() {
       return async () => {
-        let s = browser.runtime.getManifest(),
-          t = s.version_name ?? s.version,
-          e = await weh.rpc.call("getBuild"),
-          i = e.buildOptions,
-          a = await browser.runtime.getPlatformInfo(),
-          w = browser.i18n.getUILanguage(),
-          o = await weh.rpc.call("checkCoApp"),
-          l = await weh.rpc.call("checkLicense"),
-          n = "";
-        n += `version: ${t}
-`, n += `channel: ${e.channel}
-`, n += `build date: ${e.buildDate}
-`, n += `build options: linuxlic: ${i.linuxlic}, noyt: ${i.noyt}, browser: ${i.browser}
-`, n += `lang: ${w}
-`, n += `license: ${l.status}
-`, l.key && (n += `key (only 16 first characters): ${l.key.substring(0,16)}
-`), n += `platform: ${a.arch} ${a.os}
-`, n += `UA: ${navigator.userAgent}
-`, o && o.status ? (n += `coapp: yes. Info:
-`, n += JSON.stringify(o.info, null, 2) + `
-`) : n += `coapp: no.
-`, await navigator.clipboard.writeText(n), window.alert(weh._(
+        let manifest = browser.runtime.getManifest(),
+          version = manifest.version_name ?? manifest.version,
+          build = await weh.rpc.call("getBuild"),
+          buildOptions = build.buildOptions,
+          platformInfo = await browser.runtime.getPlatformInfo(),
+          uiLanguage = browser.i18n.getUILanguage(),
+          coappStatus = await weh.rpc.call("checkCoApp"),
+          licenseStatus = await weh.rpc.call("checkLicense"),
+          info = "";
+        info += `version: ${version}
+`, info += `channel: ${build.channel}
+`, info += `build date: ${build.buildDate}
+`, info += `build options: linuxlic: ${buildOptions.linuxlic}, noyt: ${buildOptions.noyt}, browser: ${buildOptions.browser}
+`, info += `lang: ${uiLanguage}
+`, info += `license: ${licenseStatus.status}
+`, licenseStatus.key && (info += `key (only 16 first characters): ${licenseStatus.key.substring(0,16)}
+`), info += `platform: ${platformInfo.arch} ${platformInfo.os}
+`, info += `UA: ${navigator.userAgent}
+`, coappStatus && coappStatus.status ? (info += `coapp: yes. Info:
+`, info += JSON.stringify(coappStatus.info, null, 2) + `
+`) : info += `coapp: no.
+`, await navigator.clipboard.writeText(info), window.alert(weh._(
           "copy_settings_info_to_clipboard_success"))
       }
     }

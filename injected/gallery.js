@@ -1,32 +1,32 @@
 "use strict";
 (() => {
-  var j = (r, e) => () => (e || r((e = {
+  var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
       exports: {}
     })
-    .exports, e), e.exports);
-  var I = j((F, W) => {
-    (function(r, e) {
+    .exports, cachedExports), cachedExports.exports);
+  var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
+    (function(globalScope, factory) {
       if (typeof define == "function" && define.amd) define(
-        "webextension-polyfill", ["module"], e);
-      else if (typeof F < "u") e(W);
+        "webextension-polyfill", ["module"], factory);
+      else if (typeof polyfillExports < "u") factory(polyfillModule);
       else {
-        var o = {
+        var moduleShim = {
           exports: {}
         };
-        e(o), r.browser = o.exports
+        factory(moduleShim), globalScope.browser = moduleShim.exports
       }
     })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self :
-      F,
-      function(r) {
+      polyfillExports,
+      function(browserGlobal) {
         "use strict";
         if (!globalThis.chrome?.runtime?.id) throw new Error(
           "This script should only be loaded in a browser extension.");
         if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
             globalThis.browser) !== Object.prototype) {
-          let e =
+          let messagePortClosedMessage =
             "The message port closed before a response was received.",
-            o = l => {
-              let n = {
+            wrapApis = chromeApi => {
+              let apiMetadata = {
                 alarms: {
                   clear: {
                     minArgs: 0,
@@ -698,206 +698,206 @@
                   }
                 }
               };
-              if (Object.keys(n)
+              if (Object.keys(apiMetadata)
                 .length === 0) throw new Error(
                 "api-metadata.json has not been included in browser-polyfill"
                 );
-              class i extends WeakMap {
-                constructor(t, a = void 0) {
-                  super(a), this.createItem = t
+              class DefaultWeakMap extends WeakMap {
+                constructor(createItem, entries = void 0) {
+                  super(entries), this.createItem = createItem
                 }
-                get(t) {
-                  return this.has(t) || this.set(t, this.createItem(t)),
-                    super.get(t)
+                get(key) {
+                  return this.has(key) || this.set(key, this.createItem(key)),
+                    super.get(key)
                 }
               }
-              let A = s => s && typeof s == "object" && typeof s.then ==
+              let isThenable = value => value && typeof value == "object" && typeof value.then ==
                 "function",
-                T = (s, t) => (...a) => {
-                  l.runtime.lastError ? s.reject(new Error(l.runtime
-                      .lastError.message)) : t.singleCallbackArg || a
-                    .length <= 1 && t.singleCallbackArg !== !1 ? s
-                    .resolve(a[0]) : s.resolve(a)
+                makeCallback = (promiseCallbacks, metadata) => (...callbackArgs) => {
+                  chromeApi.runtime.lastError ? promiseCallbacks.reject(new Error(chromeApi.runtime
+                      .lastError.message)) : metadata.singleCallbackArg || callbackArgs
+                    .length <= 1 && metadata.singleCallbackArg !== !1 ? promiseCallbacks
+                    .resolve(callbackArgs[0]) : promiseCallbacks.resolve(callbackArgs)
                 },
-                v = s => s == 1 ? "argument" : "arguments",
-                h = (s, t) => function(m, ...u) {
-                  if (u.length < t.minArgs) throw new Error(
-                    `Expected at least ${t.minArgs} ${v(t.minArgs)} for ${s}(), got ${u.length}`
+                pluralizeArgs = count => count == 1 ? "argument" : "arguments",
+                wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (u.length > t.maxArgs) throw new Error(
-                    `Expected at most ${t.maxArgs} ${v(t.maxArgs)} for ${s}(), got ${u.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((p, b) => {
-                    if (t.fallbackToNoCallback) try {
-                      m[s](...u, T({
-                        resolve: p,
-                        reject: b
-                      }, t))
-                    } catch (g) {
+                  return new Promise((resolve, reject) => {
+                    if (metadata.fallbackToNoCallback) try {
+                      apiTarget[name](...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
+                    } catch (error) {
                       console.warn(
-                          `${s} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                          g), m[s](...u), t.fallbackToNoCallback = !
-                        1, t.noCallback = !0, p()
-                    } else t.noCallback ? (m[s](...u), p()) : m[s](
-                      ...u, T({
-                        resolve: p,
-                        reject: b
-                      }, t))
+                          `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                          error), apiTarget[name](...args), metadata.fallbackToNoCallback = !
+                        1, metadata.noCallback = !0, resolve()
+                    } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](
+                      ...args, makeCallback({
+                        resolve: resolve,
+                        reject: reject
+                      }, metadata))
                   })
                 },
-                x = (s, t, a) => new Proxy(t, {
-                  apply(m, u, p) {
-                    return a.call(u, s, ...p)
+                wrapMethod = (target, method, wrapper) => new Proxy(method, {
+                  apply(fnTarget, thisArg, callArgs) {
+                    return wrapper.call(thisArg, target, ...callArgs)
                   }
                 }),
-                y = Function.call.bind(Object.prototype.hasOwnProperty),
-                _ = (s, t = {}, a = {}) => {
-                  let m = Object.create(null),
-                    u = {
-                      has(b, g) {
-                        return g in s || g in m
+                hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty),
+                wrapObject = (target, wrappers = {}, metadata = {}) => {
+                  let cache = Object.create(null),
+                    handler = {
+                      has(proxyTarget, prop) {
+                        return prop in target || prop in cache
                       },
-                      get(b, g, w) {
-                        if (g in m) return m[g];
-                        if (!(g in s)) return;
-                        let c = s[g];
-                        if (typeof c == "function")
-                          if (typeof t[g] == "function") c = x(s, s[g],
-                            t[g]);
-                          else if (y(a, g)) {
-                          let M = h(g, a[g]);
-                          c = x(s, s[g], M)
-                        } else c = c.bind(s);
-                        else if (typeof c == "object" && c !== null && (
-                            y(t, g) || y(a, g))) c = _(c, t[g], a[g]);
-                        else if (y(a, "*")) c = _(c, t[g], a["*"]);
-                        else return Object.defineProperty(m, g, {
+                      get(proxyTarget, prop, receiver) {
+                        if (prop in cache) return cache[prop];
+                        if (!(prop in target)) return;
+                        let value = target[prop];
+                        if (typeof value == "function")
+                          if (typeof wrappers[prop] == "function") value = wrapMethod(target, target[prop],
+                            wrappers[prop]);
+                          else if (hasOwnProperty(metadata, prop)) {
+                          let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
+                          value = wrapMethod(target, target[prop], wrappedFn)
+                        } else value = value.bind(target);
+                        else if (typeof value == "object" && value !== null && (
+                            hasOwnProperty(wrappers, prop) || hasOwnProperty(metadata, prop))) value = wrapObject(value, wrappers[prop], metadata[prop]);
+                        else if (hasOwnProperty(metadata, "*")) value = wrapObject(value, wrappers[prop], metadata["*"]);
+                        else return Object.defineProperty(cache, prop, {
                           configurable: !0,
                           enumerable: !0,
                           get() {
-                            return s[g]
+                            return target[prop]
                           },
-                          set(M) {
-                            s[g] = M
+                          set(newValue) {
+                            target[prop] = newValue
                           }
-                        }), c;
-                        return m[g] = c, c
+                        }), value;
+                        return cache[prop] = value, value
                       },
-                      set(b, g, w, c) {
-                        return g in m ? m[g] = w : s[g] = w, !0
+                      set(proxyTarget, prop, value, receiver) {
+                        return prop in cache ? cache[prop] = value : target[prop] = value, !0
                       },
-                      defineProperty(b, g, w) {
-                        return Reflect.defineProperty(m, g, w)
+                      defineProperty(proxyTarget, prop, desc) {
+                        return Reflect.defineProperty(cache, prop, desc)
                       },
-                      deleteProperty(b, g) {
-                        return Reflect.deleteProperty(m, g)
+                      deleteProperty(proxyTarget, prop) {
+                        return Reflect.deleteProperty(cache, prop)
                       }
                     },
-                    p = Object.create(s);
-                  return new Proxy(p, u)
+                    proxyBase = Object.create(target);
+                  return new Proxy(proxyBase, handler)
                 },
-                d = s => ({
-                  addListener(t, a, ...m) {
-                    t.addListener(s.get(a), ...m)
+                wrapEvent = wrapperMap => ({
+                  addListener(target, listener, ...args) {
+                    target.addListener(wrapperMap.get(listener), ...args)
                   },
-                  hasListener(t, a) {
-                    return t.hasListener(s.get(a))
+                  hasListener(target, listener) {
+                    return target.hasListener(wrapperMap.get(listener))
                   },
-                  removeListener(t, a) {
-                    t.removeListener(s.get(a))
+                  removeListener(target, listener) {
+                    target.removeListener(wrapperMap.get(listener))
                   }
                 }),
-                N = new i(s => typeof s != "function" ? s : function(a) {
-                  let m = _(a, {}, {
+                onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
+                  let wrappedRequest = wrapObject(request, {}, {
                     getContent: {
                       minArgs: 0,
                       maxArgs: 0
                     }
                   });
-                  s(m)
+                  listener(wrappedRequest)
                 }),
-                U = new i(s => typeof s != "function" ? s : function(a, m,
-                  u) {
-                  let p = !1,
-                    b, g = new Promise(S => {
-                      b = function(k) {
-                        p = !0, S(k)
+                onMessageWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(message, sender,
+                  sendResponse) {
+                  let responseSent = !1,
+                    resolveResponse, responsePromise = new Promise(resolvePromise => {
+                      resolveResponse = function(response) {
+                        responseSent = !0, resolvePromise(response)
                       }
                     }),
-                    w;
+                    result;
                   try {
-                    w = s(a, m, b)
-                  } catch (S) {
-                    w = Promise.reject(S)
+                    result = listener(message, sender, resolveResponse)
+                  } catch (error) {
+                    result = Promise.reject(error)
                   }
-                  let c = w !== !0 && A(w);
-                  if (w !== !0 && !c && !p) return !1;
-                  let M = S => {
-                    S.then(k => {
-                        u(k)
-                      }, k => {
-                        let R;
-                        k && (k instanceof Error || typeof k
-                            .message == "string") ? R = k.message :
-                          R = "An unexpected error occurred", u({
+                  let resultIsThenable = result !== !0 && isThenable(result);
+                  if (result !== !0 && !resultIsThenable && !responseSent) return !1;
+                  let sendResolvedResponse = resultPromise => {
+                    resultPromise.then(response => {
+                        sendResponse(response)
+                      }, error => {
+                        let errorMessage;
+                        error && (error instanceof Error || typeof error
+                            .message == "string") ? errorMessage = error.message :
+                          errorMessage = "An unexpected error occurred", sendResponse({
                             __mozWebExtensionPolyfillReject__: !0,
-                            message: R
+                            message: errorMessage
                           })
                       })
-                      .catch(k => {
+                      .catch(replyError => {
                         console.error(
                           "Failed to send onMessage rejected reply",
-                          k)
+                          replyError)
                       })
                   };
-                  return M(c ? w : g), !0
+                  return sendResolvedResponse(resultIsThenable ? result : responsePromise), !0
                 }),
-                ee = ({
-                  reject: s,
-                  resolve: t
-                }, a) => {
-                  l.runtime.lastError ? l.runtime.lastError.message ===
-                    e ? t() : s(new Error(l.runtime.lastError.message)) :
-                    a && a.__mozWebExtensionPolyfillReject__ ? s(
-                      new Error(a.message)) : t(a)
+                processResponse = ({
+                  reject: reject,
+                  resolve: resolve
+                }, response) => {
+                  chromeApi.runtime.lastError ? chromeApi.runtime.lastError.message ===
+                    messagePortClosedMessage ? resolve() : reject(new Error(chromeApi.runtime.lastError.message)) :
+                    response && response.__mozWebExtensionPolyfillReject__ ? reject(
+                      new Error(response.message)) : resolve(response)
                 },
-                H = (s, t, a, ...m) => {
-                  if (m.length < t.minArgs) throw new Error(
-                    `Expected at least ${t.minArgs} ${v(t.minArgs)} for ${s}(), got ${m.length}`
+                wrapSendMessage = (name, metadata, apiTarget, ...args) => {
+                  if (args.length < metadata.minArgs) throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                     );
-                  if (m.length > t.maxArgs) throw new Error(
-                    `Expected at most ${t.maxArgs} ${v(t.maxArgs)} for ${s}(), got ${m.length}`
+                  if (args.length > metadata.maxArgs) throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                     );
-                  return new Promise((u, p) => {
-                    let b = ee.bind(null, {
-                      resolve: u,
-                      reject: p
+                  return new Promise((resolve, reject) => {
+                    let boundCallback = processResponse.bind(null, {
+                      resolve: resolve,
+                      reject: reject
                     });
-                    m.push(b), a.sendMessage(...m)
+                    args.push(boundCallback), apiTarget.sendMessage(...args)
                   })
                 },
-                re = {
+                staticWrappers = {
                   devtools: {
                     network: {
-                      onRequestFinished: d(N)
+                      onRequestFinished: wrapEvent(onRequestFinishedWrappers)
                     }
                   },
                   runtime: {
-                    onMessage: d(U),
-                    onMessageExternal: d(U),
-                    sendMessage: H.bind(null, "sendMessage", {
+                    onMessage: wrapEvent(onMessageWrappers),
+                    onMessageExternal: wrapEvent(onMessageWrappers),
+                    sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                       minArgs: 1,
                       maxArgs: 3
                     })
                   },
                   tabs: {
-                    sendMessage: H.bind(null, "sendMessage", {
+                    sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                       minArgs: 2,
                       maxArgs: 3
                     })
                   }
                 },
-                $ = {
+                settingMetadata = {
                   clear: {
                     minArgs: 1,
                     maxArgs: 1
@@ -911,336 +911,336 @@
                     maxArgs: 1
                   }
                 };
-              return n.privacy = {
+              return apiMetadata.privacy = {
                 network: {
-                  "*": $
+                  "*": settingMetadata
                 },
                 services: {
-                  "*": $
+                  "*": settingMetadata
                 },
                 websites: {
-                  "*": $
+                  "*": settingMetadata
                 }
-              }, _(l, re, n)
+              }, wrapObject(chromeApi, staticWrappers, apiMetadata)
             };
-          r.exports = o(chrome)
-        } else r.exports = globalThis.browser
+          browserGlobal.exports = wrapApis(chrome)
+        } else browserGlobal.exports = globalThis.browser
       })
   });
-  var D = j((ge, C) => {
+  var requireWehCore = defineCommonjsModule((wehCoreExports, wehCoreModule) => {
     "use strict";
-    C.exports.browser = I();
-    var L;
+    wehCoreModule.exports.browser = requirePolyfill();
+    var cachedBrowserType;
     typeof browser > "u" && typeof chrome < "u" && chrome.runtime ?
-      /\bOPR\//.test(navigator.userAgent) ? L = "opera" : L = "chrome" :
-      /\bEdge\//.test(navigator.userAgent) ? L = "edge" : L = "firefox", C
-      .exports.browserType = L, typeof C.exports.browser.action > "u" && (
-        C.exports.browser.action = C.exports.browser.browserAction), C
-      .exports.isBrowser = (...r) => {
-        for (let e = 0; e < r.length; e++)
-          if (r[e] == C.exports.browserType) return !0;
+      /\bOPR\//.test(navigator.userAgent) ? cachedBrowserType = "opera" : cachedBrowserType = "chrome" :
+      /\bEdge\//.test(navigator.userAgent) ? cachedBrowserType = "edge" : cachedBrowserType = "firefox", wehCoreModule
+      .exports.browserType = cachedBrowserType, typeof wehCoreModule.exports.browser.action > "u" && (
+        wehCoreModule.exports.browser.action = wehCoreModule.exports.browser.browserAction), wehCoreModule
+      .exports.isBrowser = (...browserNames) => {
+        for (let index = 0; index < browserNames.length; index++)
+          if (browserNames[index] == wehCoreModule.exports.browserType) return !0;
         return !1
-      }, C.exports.error = r => {
-        console.groupCollapsed(r.message), r.stack && console.error(r
+      }, wehCoreModule.exports.error = errorValue => {
+        console.groupCollapsed(errorValue.message), errorValue.stack && console.error(errorValue
           .stack), console.groupEnd()
       }
   });
-  var z = j((oe, G) => {
+  var requireRpc = defineCommonjsModule((rpcExports, rpcModule) => {
     "use strict";
-    var O = class {
+    var Rpc = class {
       constructor() {
         this.replyId = 0, this.replies = {}, this.listeners = {}, this
           .hook = this.nullHook, this.debugLevel = 0, this
           .useTarget = !1, this.logger = console, this.posts = {}
       }
-      setPost(e, o) {
-        typeof e == "string" ? this.posts[e] = o : this.post = e
+      setPost(peerOrPostFn, postFn) {
+        typeof peerOrPostFn == "string" ? this.posts[peerOrPostFn] = postFn : this.post = peerOrPostFn
       }
-      setUseTarget(e) {
-        this.useTarget = e
+      setUseTarget(useTarget) {
+        this.useTarget = useTarget
       }
-      setDebugLevel(e) {
-        this.debugLevel = e
+      setDebugLevel(debugLevel) {
+        this.debugLevel = debugLevel
       }
-      setHook(e) {
-        let o = this,
-          l = Date.now();
+      setHook(hook) {
+        let self = this,
+          startTime = Date.now();
 
-        function n() {
+        function now() {
           return typeof window < "u" && typeof window.performance <
-            "u" ? window.performance.now() : Date.now() - l
+            "u" ? window.performance.now() : Date.now() - startTime
         }
-        e ? this.hook = i => {
-          i.timestamp = n();
+        hook ? this.hook = hookArg => {
+          hookArg.timestamp = now();
           try {
-            e(i)
-          } catch (A) {
-            o.logger.warn("Hoor error", A)
+            hook(hookArg)
+          } catch (error) {
+            self.logger.warn("Hoor error", error)
           }
         } : this.hook = this.nullHook
       }
       nullHook() {}
       call() {
-        let e = this,
-          o, l, n, i, A = Array.prototype.slice.call(arguments);
-        return typeof A[0] == "function" && (o = A.shift()), e
-          .useTarget ? [l, n, ...i] = A : [n, ...i] = A, new Promise(
-            function(T, v) {
-              let h = ++e.replyId;
-              e.debugLevel >= 2 && e.logger.info("rpc #" + h,
-                "call =>", n, i), e.hook({
+        let self = this,
+          postFn, peer, method, args, callArgs = Array.prototype.slice.call(arguments);
+        return typeof callArgs[0] == "function" && (postFn = callArgs.shift()), self
+          .useTarget ? [peer, method, ...args] = callArgs : [method, ...args] = callArgs, new Promise(
+            function(resolve, reject) {
+              let replyId = ++self.replyId;
+              self.debugLevel >= 2 && self.logger.info("rpc #" + replyId,
+                "call =>", method, args), self.hook({
                 type: "call",
-                callee: l,
-                rid: h,
-                method: n,
-                args: i
-              }), e.replies[h] = {
-                resolve: T,
-                reject: v,
-                peer: l
+                callee: peer,
+                rid: replyId,
+                method: method,
+                args: args
+              }), self.replies[replyId] = {
+                resolve: resolve,
+                reject: reject,
+                peer: peer
               };
-              let x = o || e.useTarget && e.posts[l] || e.post;
-              e.useTarget ? x(l, {
+              let post = postFn || self.useTarget && self.posts[peer] || self.post;
+              self.useTarget ? post(peer, {
                 type: "weh#rpc",
-                _request: h,
-                _method: n,
-                _args: [...i]
-              }) : x({
+                _request: replyId,
+                _method: method,
+                _args: [...args]
+              }) : post({
                 type: "weh#rpc",
-                _request: h,
-                _method: n,
-                _args: [...i]
+                _request: replyId,
+                _method: method,
+                _args: [...args]
               })
             })
       }
-      receive(e, o, l) {
-        let n = this;
-        if (e._request) Promise.resolve()
+      receive(message, sendReply, caller) {
+        let self = this;
+        if (message._request) Promise.resolve()
           .then(() => {
-            let i = n.listeners[e._method];
-            if (typeof i == "function") return n.debugLevel >= 2 &&
-              n.logger.info("rpc #" + e._request, "serve <= ", e
-                ._method, e._args), n.hook({
+            let listener = self.listeners[message._method];
+            if (typeof listener == "function") return self.debugLevel >= 2 &&
+              self.logger.info("rpc #" + message._request, "serve <= ", message
+                ._method, message._args), self.hook({
                 type: "call",
-                caller: l,
-                rid: e._request,
-                method: e._method,
-                args: e._args
-              }), Promise.resolve(i.apply(null, e._args))
-              .then(A => (n.hook({
+                caller: caller,
+                rid: message._request,
+                method: message._method,
+                args: message._args
+              }), Promise.resolve(listener.apply(null, message._args))
+              .then(result => (self.hook({
                 type: "reply",
-                caller: l,
-                rid: e._request,
-                result: A
-              }), A))
-              .catch(A => {
-                throw n.hook({
+                caller: caller,
+                rid: message._request,
+                result: result
+              }), result))
+              .catch(error => {
+                throw self.hook({
                   type: "reply",
-                  caller: l,
-                  rid: e._request,
-                  error: A.message
-                }), A
+                  caller: caller,
+                  rid: message._request,
+                  error: error.message
+                }), error
               });
-            throw new Error("Method " + e._method +
+            throw new Error("Method " + message._method +
               " is not a function")
           })
-          .then(i => {
-            n.debugLevel >= 2 && n.logger.info("rpc #" + e._request,
-              "serve => ", i), o({
+          .then(result => {
+            self.debugLevel >= 2 && self.logger.info("rpc #" + message._request,
+              "serve => ", result), sendReply({
               type: "weh#rpc",
-              _reply: e._request,
-              _result: i
+              _reply: message._request,
+              _result: result
             })
           })
-          .catch(i => {
-            n.debugLevel >= 1 && n.logger.info("rpc #" + e._request,
-              "serve => !", i.message), o({
+          .catch(error => {
+            self.debugLevel >= 1 && self.logger.info("rpc #" + message._request,
+              "serve => !", error.message), sendReply({
               type: "weh#rpc",
-              _reply: e._request,
-              _error: i.message
+              _reply: message._request,
+              _error: error.message
             })
           });
-        else if (e._reply) {
-          let i = n.replies[e._reply];
-          delete n.replies[e._reply], i ? e._error ? (n.debugLevel >=
-            1 && n.logger.info("rpc #" + e._reply, "call <= !", e
-              ._error), n.hook({
+        else if (message._reply) {
+          let pending = self.replies[message._reply];
+          delete self.replies[message._reply], pending ? message._error ? (self.debugLevel >=
+            1 && self.logger.info("rpc #" + message._reply, "call <= !", message
+              ._error), self.hook({
               type: "reply",
-              callee: i.peer,
-              rid: e._reply,
-              error: e._error
-            }), i.reject(new Error(e._error))) : (n.debugLevel >=
-            2 && n.logger.info("rpc #" + e._reply, "call <= ", e
-              ._result), n.hook({
+              callee: pending.peer,
+              rid: message._reply,
+              error: message._error
+            }), pending.reject(new Error(message._error))) : (self.debugLevel >=
+            2 && self.logger.info("rpc #" + message._reply, "call <= ", message
+              ._result), self.hook({
               type: "reply",
-              callee: i.peer,
-              rid: e._reply,
-              result: e._result
-            }), i.resolve(e._result)) : n.logger.error(
+              callee: pending.peer,
+              rid: message._reply,
+              result: message._result
+            }), pending.resolve(message._result)) : self.logger.error(
             "Missing reply handler")
         }
       }
-      listen(e) {
-        Object.assign(this.listeners, e)
+      listen(listeners) {
+        Object.assign(this.listeners, listeners)
       }
     };
-    G.exports = new O
+    rpcModule.exports = new Rpc
   });
-  var K = j((ae, V) => {
+  var requireAppTab = defineCommonjsModule((appTabExports, appTabModule) => {
     "use strict";
-    var f = D(),
-      Z = f.browser;
-    f.rpc = z();
-    f.uiName = window._wehPanelName;
-    f.uiName || (f.uiName = "injected-" + Math.round(Math.random() *
+    var weh = requireWehCore(),
+      wehBrowser = weh.browser;
+    weh.rpc = requireRpc();
+    weh.uiName = window._wehPanelName;
+    weh.uiName || (weh.uiName = "injected-" + Math.round(Math.random() *
     1e9));
-    var se = "weh:" + Z.runtime.id + ":" + f.uiName,
-      q = Z.runtime.connect({
-        name: se
+    var wehKey = "weh:" + wehBrowser.runtime.id + ":" + weh.uiName,
+      port = wehBrowser.runtime.connect({
+        name: wehKey
       });
-    f.rpc.setPost(q.postMessage.bind(q));
-    q.onMessage.addListener(r => {
-      f.rpc.receive(r, q.postMessage.bind(q))
+    weh.rpc.setPost(port.postMessage.bind(port));
+    port.onMessage.addListener(message => {
+      weh.rpc.receive(message, port.postMessage.bind(port))
     });
-    f.rpc.listen({
+    weh.rpc.listen({
       setPrefs: () => {},
       close: () => {}
     });
-    f.is_safe = (async () => {
-      await f.rpc.call("appStarted", {
-        uiName: f.uiName
-      }), await f.rpc.call("appReady", {
-        uiName: f.uiName
+    weh.is_safe = (async () => {
+      await weh.rpc.call("appStarted", {
+        uiName: weh.uiName
+      }), await weh.rpc.call("appReady", {
+        uiName: weh.uiName
       })
     })();
-    V.exports = f
+    appTabModule.exports = weh
   });
-  var te = K(),
-    E = {};
+  var weh = requireAppTab(),
+    galleryGroups = {};
 
-  function J(r) {
-    let e = 0,
-      o, l, n;
-    if (r.length == 0) return e;
-    for (o = 0, n = r.length; o < n; o++) l = r.charCodeAt(o), e = (e << 5) -
-      e + l, e |= 0;
-    return "" + Math.abs(e)
+  function hashString(str) {
+    let hash = 0,
+      charIndex, charCode, length;
+    if (str.length == 0) return hash;
+    for (charIndex = 0, length = str.length; charIndex < length; charIndex++) charCode = str.charCodeAt(charIndex), hash = (hash << 5) -
+      hash + charCode, hash |= 0;
+    return "" + Math.abs(hash)
   }
 
-  function Q(r, e) {
-    let o = 0,
-      l = 0,
-      n = r.offsetWidth,
-      i = r.offsetHeight;
-    for (; r;) o += r.offsetTop, l += r.offsetLeft, r = r.offsetParent;
-    r = document.createElement("div"), r.setAttribute("style", "width:" + n +
-        "px;height:" + i + "px;top:" + o + "px;left:" + l + "px;"), r
-      .setAttribute("class", "vdh-mask " + e), document.body.appendChild(r)
+  function addMask(element, maskClass) {
+    let top = 0,
+      left = 0,
+      width = element.offsetWidth,
+      height = element.offsetHeight;
+    for (; element;) top += element.offsetTop, left += element.offsetLeft, element = element.offsetParent;
+    element = document.createElement("div"), element.setAttribute("style", "width:" + width +
+        "px;height:" + height + "px;top:" + top + "px;left:" + left + "px;"), element
+      .setAttribute("class", "vdh-mask " + maskClass), document.body.appendChild(element)
   }
 
-  function ne(r) {
-    let e = [];
-    for (; r;) {
-      let o = r.nodeName.toLowerCase();
-      if (r.getAttribute && r.getAttribute("id") && (o += "#" + r
-          .getAttribute("id")), document.querySelectorAll(e.concat([o])
+  function computeSelector(node) {
+    let segments = [];
+    for (; node;) {
+      let segment = node.nodeName.toLowerCase();
+      if (node.getAttribute && node.getAttribute("id") && (segment += "#" + node
+          .getAttribute("id")), document.querySelectorAll(segments.concat([segment])
           .join(" > "))
         .length == 1) {
-        e.push(o);
+        segments.push(segment);
         break
       }
-      let l = 1,
-        n = r.prevSibling;
-      for (; n;) n.nodeName == r.nodeName && l++, n = n.prevSibling;
-      if (o += ":nth-of-type(" + l + ")", e.push(o), document
-        .querySelectorAll(e.concat([o])
+      let nthOfType = 1,
+        sibling = node.prevSibling;
+      for (; sibling;) sibling.nodeName == node.nodeName && nthOfType++, sibling = sibling.prevSibling;
+      if (segment += ":nth-of-type(" + nthOfType + ")", segments.push(segment), document
+        .querySelectorAll(segments.concat([segment])
           .join(" > "))
         .length == 1) break;
-      r = r.parentNode
+      node = node.parentNode
     }
-    return e.join(" > ")
+    return segments.join(" > ")
   }
 
-  function X(r, e, o) {
-    let l = document.querySelectorAll(r);
-    for (let n = 0; n < l.length && (o.maxHits == 0 || n < o.maxHits); n++) {
-      let i = l.item(n),
-        A = null,
-        T = !1;
-      switch (e) {
+  function scanElements(selector, type, params) {
+    let elements = document.querySelectorAll(selector);
+    for (let index = 0; index < elements.length && (params.maxHits == 0 || index < params.maxHits); index++) {
+      let element = elements.item(index),
+        url = null,
+        matched = !1;
+      switch (type) {
         case "link":
-          A = i.getAttribute("href")
-            .trim(), T = !0;
+          url = element.getAttribute("href")
+            .trim(), matched = !0;
           break;
         case "image":
-          i.width && i.height && e == "image" && Math.min(i.width, i
-            .height) >= o.minImgSize && (A = i.getAttribute("src")
-              .trim(), T = !0);
+          element.width && element.height && type == "image" && Math.min(element.width, element
+            .height) >= params.minImgSize && (url = element.getAttribute("src")
+              .trim(), matched = !0);
           break
       }
-      if (!T) continue;
-      let v = [],
-        h = i;
-      for (; h && h != document;) v.unshift(h.nodeName.toLowerCase()), h = h
+      if (!matched) continue;
+      let nodePath = [],
+        ancestor = element;
+      for (; ancestor && ancestor != document;) nodePath.unshift(ancestor.nodeName.toLowerCase()), ancestor = ancestor
         .parentNode;
-      if (A) {
-        let x = null;
-        if (A) {
-          let N = /\.([^\.]{1,5})(?:\?.*)?$/.exec(A);
-          N && (x = N[1].toLowerCase())
+      if (url) {
+        let extension = null;
+        if (url) {
+          let extMatch = /\.([^\.]{1,5})(?:\?.*)?$/.exec(url);
+          extMatch && (extension = extMatch[1].toLowerCase())
         }
-        let y = J(window.location.href + "@" + v.join("/") + "@" + x),
-          _ = "vdh-" + y,
-          d = E[y];
-        d || (d = E[y] = {
+        let groupId = hashString(window.location.href + "@" + nodePath.join("/") + "@" + extension),
+          selectorAttr = "vdh-" + groupId,
+          group = galleryGroups[groupId];
+        group || (group = galleryGroups[groupId] = {
           urlsMap: {},
           urls: [],
           baseUrl: window.location.href,
           extensions: {},
-          selectorAttr: _,
-          type: e
-        }), d.urlsMap[A] || (i.firstChild && i.firstChild.nodeName
-          .toLowerCase() == "img" && (i = i.firstChild), Q(i, d
-            .selectorAttr), d.urlsMap[A] = 1, d.urls.push(A), x && (d
-            .extensions[x] ? d.extensions[x]++ : d.extensions[x] = 1))
+          selectorAttr: selectorAttr,
+          type: type
+        }), group.urlsMap[url] || (element.firstChild && element.firstChild.nodeName
+          .toLowerCase() == "img" && (element = element.firstChild), addMask(element, group
+            .selectorAttr), group.urlsMap[url] = 1, group.urls.push(url), extension && (group
+            .extensions[extension] ? group.extensions[extension]++ : group.extensions[extension] = 1))
       } else {
-        let x = ne(i),
-          y = J(window.location.href + "@" + x + "@scrap"),
-          _ = "vdh-" + y;
-        Q(i, _), E[y] = {
+        let selector = computeSelector(element),
+          groupId = hashString(window.location.href + "@" + selector + "@scrap"),
+          selectorAttr = "vdh-" + groupId;
+        addMask(element, selectorAttr), galleryGroups[groupId] = {
           baseUrl: window.location.href,
-          selectorAttr: _,
-          selector: x,
-          type: e,
-          size: i.offsetWidth + "x" + i.offsetHeight
+          selectorAttr: selectorAttr,
+          selector: selector,
+          type: type,
+          size: element.offsetWidth + "x" + element.offsetHeight
         }
       }
     }
   }
   document.querySelectorAll(".vdh-mask")
-    .forEach(r => {
-      r.remove()
+    .forEach(mask => {
+      mask.remove()
     });
-  var P = window._$vdhParams,
-    B = [];
-  P.extensions.split("|")
-    .forEach(function(r) {
-      B.push("a[href$='" + r + "']"), B.push("a[href$='" + r.toUpperCase() +
+  var params = window._$vdhParams,
+    selectors = [];
+  params.extensions.split("|")
+    .forEach(function(ext) {
+      selectors.push("a[href$='" + ext + "']"), selectors.push("a[href$='" + ext.toUpperCase() +
         "']")
     });
-  P.scanLinks && X(B.join(","), "link", P);
-  P.scanImages && X("img[src]", "image", P);
-  var Y = 0;
-  for (let r in E) {
-    let e = E[r];
-    if (e.urls && e.urls.length < P.minFilesPerGroup) {
-      delete E[r];
+  params.scanLinks && scanElements(selectors.join(","), "link", params);
+  params.scanImages && scanElements("img[src]", "image", params);
+  var groupCount = 0;
+  for (let groupId in galleryGroups) {
+    let group = galleryGroups[groupId];
+    if (group.urls && group.urls.length < params.minFilesPerGroup) {
+      delete galleryGroups[groupId];
       continue
     }
-    Y++
+    groupCount++
   }
-  Y > 0 && te.rpc.call("galleryGroups", {
+  groupCount > 0 && weh.rpc.call("galleryGroups", {
     pageUrl: window.location.href,
-    groups: E
+    groups: galleryGroups
   });
 })();

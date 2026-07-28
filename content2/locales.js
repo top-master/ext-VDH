@@ -1,53 +1,53 @@
-var be = Object.create;
-var G = Object.defineProperty;
-var ke = Object.getOwnPropertyDescriptor;
-var ye = Object.getOwnPropertyNames;
-var ze = Object.getPrototypeOf,
-  je = Object.prototype.hasOwnProperty;
-var xe = (e, a) => () => (a || e((a = {
+var objectCreate = Object.create;
+var defineProperty = Object.defineProperty;
+var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var getOwnPropNames = Object.getOwnPropertyNames;
+var getPrototypeOf = Object.getPrototypeOf,
+  hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
       exports: {}
     })
-    .exports, a), a.exports),
-  Ae = (e, a) => {
-    for (var i in a) G(e, i, {
-      get: a[i],
+    .exports, cachedExports), cachedExports.exports),
+  defineExports = (exportsTarget, getterMap) => {
+    for (var exportKey in getterMap) defineProperty(exportsTarget, exportKey, {
+      get: getterMap[exportKey],
       enumerable: !0
     })
   },
-  De = (e, a, i, s) => {
-    if (a && typeof a == "object" || typeof a == "function")
-      for (let n of ye(a)) !je.call(e, n) && n !== i && G(e, n, {
-        get: () => a[n],
-        enumerable: !(s = ke(a, n)) || s.enumerable
+  copyProps = (targetObj, from, except, desc) => {
+    if (from && typeof from == "object" || typeof from == "function")
+      for (let key of getOwnPropNames(from)) !hasOwnPropertyRef.call(targetObj, key) && key !== except && defineProperty(targetObj, key, {
+        get: () => from[key],
+        enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable
       });
-    return e
+    return targetObj
   };
-var W = (e, a, i) => (i = e != null ? be(ze(e)) : {}, De(a || !e || !e
-  .__esModule ? G(i, "default", {
-    value: e,
+var toEsm = (mod, isNodeMode, target) => (target = mod != null ? objectCreate(getPrototypeOf(mod)) : {}, copyProps(isNodeMode || !mod || !mod
+  .__esModule ? defineProperty(target, "default", {
+    value: mod,
     enumerable: !0
-  }) : i, e));
-var R = xe((J, oe) => {
-  (function(e, a) {
+  }) : target, mod));
+var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
+  (function(globalScope, factory) {
     if (typeof define == "function" && define.amd) define(
-      "webextension-polyfill", ["module"], a);
-    else if (typeof J < "u") a(oe);
+      "webextension-polyfill", ["module"], factory);
+    else if (typeof polyfillExports < "u") factory(polyfillModule);
     else {
-      var i = {
+      var moduleShim = {
         exports: {}
       };
-      a(i), e.browser = i.exports
+      factory(moduleShim), globalScope.browser = moduleShim.exports
     }
-  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : J,
-    function(e) {
+  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : polyfillExports,
+    function(browserModule) {
       "use strict";
       if (!globalThis.chrome?.runtime?.id) throw new Error(
         "This script should only be loaded in a browser extension.");
       if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
           globalThis.browser) !== Object.prototype) {
-        let a = "The message port closed before a response was received.",
-          i = s => {
-            let n = {
+        let messagePortClosedMessage = "The message port closed before a response was received.",
+          wrapApis = chromeApi => {
+            let apiMetadata = {
               alarms: {
                 clear: {
                   minArgs: 0,
@@ -719,205 +719,205 @@ var R = xe((J, oe) => {
                 }
               }
             };
-            if (Object.keys(n)
+            if (Object.keys(apiMetadata)
               .length === 0) throw new Error(
               "api-metadata.json has not been included in browser-polyfill"
               );
-            class o extends WeakMap {
-              constructor(_, u = void 0) {
-                super(u), this.createItem = _
+            class DefaultWeakMap extends WeakMap {
+              constructor(createItem, entries = void 0) {
+                super(entries), this.createItem = createItem
               }
-              get(_) {
-                return this.has(_) || this.set(_, this.createItem(_)),
-                  super.get(_)
+              get(key) {
+                return this.has(key) || this.set(key, this.createItem(key)),
+                  super.get(key)
               }
             }
-            let l = t => t && typeof t == "object" && typeof t.then ==
+            let isThenable = value => value && typeof value == "object" && typeof value.then ==
               "function",
-              d = (t, _) => (...u) => {
-                s.runtime.lastError ? t.reject(new Error(s.runtime.lastError
-                    .message)) : _.singleCallbackArg || u.length <= 1 && _
-                  .singleCallbackArg !== !1 ? t.resolve(u[0]) : t.resolve(u)
+              makeCallback = (promiseCallbacks, metadata) => (...callbackArgs) => {
+                chromeApi.runtime.lastError ? promiseCallbacks.reject(new Error(chromeApi.runtime.lastError
+                    .message)) : metadata.singleCallbackArg || callbackArgs.length <= 1 && metadata
+                  .singleCallbackArg !== !1 ? promiseCallbacks.resolve(callbackArgs[0]) : promiseCallbacks.resolve(callbackArgs)
               },
-              m = t => t == 1 ? "argument" : "arguments",
-              r = (t, _) => function(f, ...k) {
-                if (k.length < _.minArgs) throw new Error(
-                  `Expected at least ${_.minArgs} ${m(_.minArgs)} for ${t}(), got ${k.length}`
+              pluralizeArgs = count => count == 1 ? "argument" : "arguments",
+              wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
+                if (args.length < metadata.minArgs) throw new Error(
+                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                   );
-                if (k.length > _.maxArgs) throw new Error(
-                  `Expected at most ${_.maxArgs} ${m(_.maxArgs)} for ${t}(), got ${k.length}`
+                if (args.length > metadata.maxArgs) throw new Error(
+                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                   );
-                return new Promise((z, j) => {
-                  if (_.fallbackToNoCallback) try {
-                    f[t](...k, d({
-                      resolve: z,
-                      reject: j
-                    }, _))
-                  } catch (c) {
+                return new Promise((resolve, reject) => {
+                  if (metadata.fallbackToNoCallback) try {
+                    apiTarget[name](...args, makeCallback({
+                      resolve: resolve,
+                      reject: reject
+                    }, metadata))
+                  } catch (error) {
                     console.warn(
-                        `${t} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                        c), f[t](...k), _.fallbackToNoCallback = !1, _
-                      .noCallback = !0, z()
-                  } else _.noCallback ? (f[t](...k), z()) : f[t](...k,
-                    d({
-                      resolve: z,
-                      reject: j
-                    }, _))
+                        `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                        error), apiTarget[name](...args), metadata.fallbackToNoCallback = !1, metadata
+                      .noCallback = !0, resolve()
+                  } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](...args,
+                    makeCallback({
+                      resolve: resolve,
+                      reject: reject
+                    }, metadata))
                 })
               },
-              v = (t, _, u) => new Proxy(_, {
-                apply(f, k, z) {
-                  return u.call(k, t, ...z)
+              wrapMethod = (target, method, wrapper) => new Proxy(method, {
+                apply(fnTarget, thisArg, callArgs) {
+                  return wrapper.call(thisArg, target, ...callArgs)
                 }
               }),
-              w = Function.call.bind(Object.prototype.hasOwnProperty),
-              P = (t, _ = {}, u = {}) => {
-                let f = Object.create(null),
-                  k = {
-                    has(j, c) {
-                      return c in t || c in f
+              hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty),
+              wrapObject = (target, wrappers = {}, metadata = {}) => {
+                let cache = Object.create(null),
+                  handler = {
+                    has(proxyTarget, prop) {
+                      return prop in target || prop in cache
                     },
-                    get(j, c, x) {
-                      if (c in f) return f[c];
-                      if (!(c in t)) return;
-                      let b = t[c];
-                      if (typeof b == "function")
-                        if (typeof _[c] == "function") b = v(t, t[c], _[
-                          c]);
-                        else if (w(u, c)) {
-                        let C = r(c, u[c]);
-                        b = v(t, t[c], C)
-                      } else b = b.bind(t);
-                      else if (typeof b == "object" && b !== null && (w(_,
-                          c) || w(u, c))) b = P(b, _[c], u[c]);
-                      else if (w(u, "*")) b = P(b, _[c], u["*"]);
-                      else return Object.defineProperty(f, c, {
+                    get(proxyTarget, prop, receiver) {
+                      if (prop in cache) return cache[prop];
+                      if (!(prop in target)) return;
+                      let value = target[prop];
+                      if (typeof value == "function")
+                        if (typeof wrappers[prop] == "function") value = wrapMethod(target, target[prop], wrappers[
+                          prop]);
+                        else if (hasOwnProperty(metadata, prop)) {
+                        let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
+                        value = wrapMethod(target, target[prop], wrappedFn)
+                      } else value = value.bind(target);
+                      else if (typeof value == "object" && value !== null && (hasOwnProperty(wrappers,
+                          prop) || hasOwnProperty(metadata, prop))) value = wrapObject(value, wrappers[prop], metadata[prop]);
+                      else if (hasOwnProperty(metadata, "*")) value = wrapObject(value, wrappers[prop], metadata["*"]);
+                      else return Object.defineProperty(cache, prop, {
                         configurable: !0,
                         enumerable: !0,
                         get() {
-                          return t[c]
+                          return target[prop]
                         },
-                        set(C) {
-                          t[c] = C
+                        set(newValue) {
+                          target[prop] = newValue
                         }
-                      }), b;
-                      return f[c] = b, b
+                      }), value;
+                      return cache[prop] = value, value
                     },
-                    set(j, c, x, b) {
-                      return c in f ? f[c] = x : t[c] = x, !0
+                    set(proxyTarget, prop, value, receiver) {
+                      return prop in cache ? cache[prop] = value : target[prop] = value, !0
                     },
-                    defineProperty(j, c, x) {
-                      return Reflect.defineProperty(f, c, x)
+                    defineProperty(proxyTarget, prop, desc) {
+                      return Reflect.defineProperty(cache, prop, desc)
                     },
-                    deleteProperty(j, c) {
-                      return Reflect.deleteProperty(f, c)
+                    deleteProperty(proxyTarget, prop) {
+                      return Reflect.deleteProperty(cache, prop)
                     }
                   },
-                  z = Object.create(t);
-                return new Proxy(z, k)
+                  proxyBase = Object.create(target);
+                return new Proxy(proxyBase, handler)
               },
-              I = t => ({
-                addListener(_, u, ...f) {
-                  _.addListener(t.get(u), ...f)
+              wrapEvent = wrapperMap => ({
+                addListener(target, listener, ...args) {
+                  target.addListener(wrapperMap.get(listener), ...args)
                 },
-                hasListener(_, u) {
-                  return _.hasListener(t.get(u))
+                hasListener(target, listener) {
+                  return target.hasListener(wrapperMap.get(listener))
                 },
-                removeListener(_, u) {
-                  _.removeListener(t.get(u))
+                removeListener(target, listener) {
+                  target.removeListener(wrapperMap.get(listener))
                 }
               }),
-              fe = new o(t => typeof t != "function" ? t : function(u) {
-                let f = P(u, {}, {
+              onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
+                let wrappedRequest = wrapObject(request, {}, {
                   getContent: {
                     minArgs: 0,
                     maxArgs: 0
                   }
                 });
-                t(f)
+                listener(wrappedRequest)
               }),
-              ae = new o(t => typeof t != "function" ? t : function(u, f,
-              k) {
-                let z = !1,
-                  j, c = new Promise(E => {
-                    j = function(S) {
-                      z = !0, E(S)
+              onMessageWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(message, sender,
+              sendResponse) {
+                let responseSent = !1,
+                  resolveResponse, responsePromise = new Promise(resolvePromise => {
+                    resolveResponse = function(response) {
+                      responseSent = !0, resolvePromise(response)
                     }
                   }),
-                  x;
+                  result;
                 try {
-                  x = t(u, f, j)
-                } catch (E) {
-                  x = Promise.reject(E)
+                  result = listener(message, sender, resolveResponse)
+                } catch (error) {
+                  result = Promise.reject(error)
                 }
-                let b = x !== !0 && l(x);
-                if (x !== !0 && !b && !z) return !1;
-                let C = E => {
-                  E.then(S => {
-                      k(S)
-                    }, S => {
-                      let U;
-                      S && (S instanceof Error || typeof S.message ==
-                          "string") ? U = S.message : U =
-                        "An unexpected error occurred", k({
+                let resultIsThenable = result !== !0 && isThenable(result);
+                if (result !== !0 && !resultIsThenable && !responseSent) return !1;
+                let sendResolvedResponse = resultPromise => {
+                  resultPromise.then(response => {
+                      sendResponse(response)
+                    }, error => {
+                      let errorMessage;
+                      error && (error instanceof Error || typeof error.message ==
+                          "string") ? errorMessage = error.message : errorMessage =
+                        "An unexpected error occurred", sendResponse({
                           __mozWebExtensionPolyfillReject__: !0,
-                          message: U
+                          message: errorMessage
                         })
                     })
-                    .catch(S => {
+                    .catch(replyError => {
                       console.error(
-                        "Failed to send onMessage rejected reply", S
+                        "Failed to send onMessage rejected reply", replyError
                         )
                     })
                 };
-                return C(b ? x : c), !0
+                return sendResolvedResponse(resultIsThenable ? result : responsePromise), !0
               }),
-              ge = ({
-                reject: t,
-                resolve: _
-              }, u) => {
-                s.runtime.lastError ? s.runtime.lastError.message === a ?
-                  _() : t(new Error(s.runtime.lastError.message)) : u && u
-                  .__mozWebExtensionPolyfillReject__ ? t(new Error(u
-                    .message)) : _(u)
+              processResponse = ({
+                reject: reject,
+                resolve: resolve
+              }, response) => {
+                chromeApi.runtime.lastError ? chromeApi.runtime.lastError.message === messagePortClosedMessage ?
+                  resolve() : reject(new Error(chromeApi.runtime.lastError.message)) : response && response
+                  .__mozWebExtensionPolyfillReject__ ? reject(new Error(response
+                    .message)) : resolve(response)
               },
-              ie = (t, _, u, ...f) => {
-                if (f.length < _.minArgs) throw new Error(
-                  `Expected at least ${_.minArgs} ${m(_.minArgs)} for ${t}(), got ${f.length}`
+              wrapSendMessage = (name, metadata, apiTarget, ...args) => {
+                if (args.length < metadata.minArgs) throw new Error(
+                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                   );
-                if (f.length > _.maxArgs) throw new Error(
-                  `Expected at most ${_.maxArgs} ${m(_.maxArgs)} for ${t}(), got ${f.length}`
+                if (args.length > metadata.maxArgs) throw new Error(
+                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                   );
-                return new Promise((k, z) => {
-                  let j = ge.bind(null, {
-                    resolve: k,
-                    reject: z
+                return new Promise((resolve, reject) => {
+                  let boundCallback = processResponse.bind(null, {
+                    resolve: resolve,
+                    reject: reject
                   });
-                  f.push(j), u.sendMessage(...f)
+                  args.push(boundCallback), apiTarget.sendMessage(...args)
                 })
               },
-              we = {
+              staticWrappers = {
                 devtools: {
                   network: {
-                    onRequestFinished: I(fe)
+                    onRequestFinished: wrapEvent(onRequestFinishedWrappers)
                   }
                 },
                 runtime: {
-                  onMessage: I(ae),
-                  onMessageExternal: I(ae),
-                  sendMessage: ie.bind(null, "sendMessage", {
+                  onMessage: wrapEvent(onMessageWrappers),
+                  onMessageExternal: wrapEvent(onMessageWrappers),
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 1,
                     maxArgs: 3
                   })
                 },
                 tabs: {
-                  sendMessage: ie.bind(null, "sendMessage", {
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 2,
                     maxArgs: 3
                   })
                 }
               },
-              K = {
+              settingMetadata = {
                 clear: {
                   minArgs: 1,
                   maxArgs: 1
@@ -931,58 +931,58 @@ var R = xe((J, oe) => {
                   maxArgs: 1
                 }
               };
-            return n.privacy = {
+            return apiMetadata.privacy = {
               network: {
-                "*": K
+                "*": settingMetadata
               },
               services: {
-                "*": K
+                "*": settingMetadata
               },
               websites: {
-                "*": K
+                "*": settingMetadata
               }
-            }, P(s, we, n)
+            }, wrapObject(chromeApi, staticWrappers, apiMetadata)
           };
-        e.exports = i(chrome)
-      } else e.exports = globalThis.browser
+        browserModule.exports = wrapApis(chrome)
+      } else browserModule.exports = globalThis.browser
     })
 });
-var Y = {};
-Ae(Y, {
-  bg: () => Se,
-  ca: () => Me,
-  co: () => Pe,
-  cs: () => Ce,
-  da: () => qe,
-  de: () => Te,
-  default: () => na,
-  dsb: () => Ee,
-  el: () => $e,
-  en_US: () => Z,
-  es: () => Le,
-  fr: () => He,
-  hsb: () => Ve,
-  hu: () => Ne,
-  id: () => Fe,
-  is: () => Re,
-  it: () => Be,
-  ja: () => Oe,
-  ko: () => Ie,
-  nb: () => Ke,
-  nl: () => Ue,
-  pl: () => Ge,
-  pt_BR: () => We,
-  ro: () => Ye,
-  ru: () => Ze,
-  sk: () => Je,
-  sl: () => Qe,
-  sv: () => Xe,
-  tr: () => ea,
-  uk: () => aa,
-  zh_CN: () => ia,
-  zh_TW: () => oa
+var translationsByLanguage = {};
+defineExports(translationsByLanguage, {
+  bg: () => translationsBg,
+  ca: () => translationsCa,
+  co: () => translationsCo,
+  cs: () => translationsCs,
+  da: () => translationsDa,
+  de: () => translationsDe,
+  default: () => translationsDefault,
+  dsb: () => translationsDsb,
+  el: () => translationsEl,
+  en_US: () => translationsEnUS,
+  es: () => translationsEs,
+  fr: () => translationsFr,
+  hsb: () => translationsHsb,
+  hu: () => translationsHu,
+  id: () => translationsId,
+  is: () => translationsIs,
+  it: () => translationsIt,
+  ja: () => translationsJa,
+  ko: () => translationsKo,
+  nb: () => translationsNb,
+  nl: () => translationsNl,
+  pl: () => translationsPl,
+  pt_BR: () => translationsPtBR,
+  ro: () => translationsRo,
+  ru: () => translationsRu,
+  sk: () => translationsSk,
+  sl: () => translationsSl,
+  sv: () => translationsSv,
+  tr: () => translationsTr,
+  uk: () => translationsUk,
+  zh_CN: () => translationsZhCN,
+  zh_TW: () => translationsZhTW
 });
-var Se = {
+var translationsBg = {
     Bytes: "$1 \u0431\u0430\u0439\u0442\u0430",
     KB: "$1 KB",
     MB: "$1 MB",
@@ -1208,7 +1208,7 @@ var Se = {
     v9_vdh_notification: "Video DownloadHelper",
     v9_file_ready: '"$1" \u0435 \u0432\u0435\u0447\u0435 \u0433\u043E\u0442\u043E\u0432'
   },
-  Me = {
+  translationsCa = {
     Bytes: "$1 Bytes",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -1748,7 +1748,7 @@ var Se = {
     v9_lic_mismatch2: "La llic\xE8ncia \xE9s per $1, per\xF2 el muntatge de la extensi\xF3 \xE9s per $2",
     v9_no_license_registered: "No s'ha registrat cap llic\xE8ncia"
   },
-  Pe = {
+  translationsCo = {
     __MSG_appDesc_: "Video DownloadHelper",
     Bytes: "$1 ottetti",
     GB: "$1 Go",
@@ -2426,7 +2426,7 @@ var Se = {
     v9_date_x_days_ago: "$1 ghjorni f\xE0",
     v9_date_long_ago: "tempi f\xE0"
   },
-  Ce = {
+  translationsCs = {
     Bytes: "bajt\u016F",
     GB: "GB",
     KB: "KB",
@@ -3065,7 +3065,7 @@ var Se = {
     v9_user_message_one_hundred_downloads_never_show_again: "U\u017E se m\u011B neptejte",
     v9_panel_error_unknown_description: "Bohu\u017Eel, v roz\u0161\xED\u0159en\xED do\u0161lo k ne\u010Dekan\xE9 chyb\u011B. Moc by n\xE1m pomohlo, kdybyste n\xE1m tuto chybu nahl\xE1sili (je to anonymn\xED)!"
   },
-  qe = {
+  translationsDa = {
     Bytes: "$1 Byte",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -3446,7 +3446,7 @@ var Se = {
     v9_lic_status_locked: "Licens l\xE5st (revalideres)",
     v9_no_license_registered: "Der blev ikke registreret en licens"
   },
-  Te = {
+  translationsDe = {
     Bytes: "$1 Bytes",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -4133,7 +4133,7 @@ var Se = {
     v9_date_x_days_ago: "vor $1 Tagen",
     v9_date_long_ago: "vor langer Zeit"
   },
-  Ee = {
+  translationsDsb = {
     Bytes: "$1 bajtow",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -4654,7 +4654,7 @@ var Se = {
     v9_lic_status_locked: "Licenca je zastajona (p\u015Begl\u011Bdujo se znowego)",
     v9_no_license_registered: "\u017Dedna licenca zregistr\u011Browana"
   },
-  $e = {
+  translationsEl = {
     Bytes: "$1 Bytes",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -5292,7 +5292,7 @@ var Se = {
     v9_user_message_one_hundred_downloads_leave_review: "\u0391\u03C6\u03AE\u03C3\u03C4\u03B5 \u03BC\u03B9\u03B1 \u03B1\u03BE\u03B9\u03BF\u03BB\u03CC\u03B3\u03B7\u03C3\u03B7",
     v9_user_message_one_hundred_downloads_never_show_again: "\u039D\u03B1 \u03BC\u03B7\u03BD \u03B5\u03C1\u03C9\u03C4\u03B7\u03B8\u03CE \u03BE\u03B1\u03BD\u03AC"
   },
-  Z = {
+  translationsEnUS = {
     __MSG_appDesc_: "Video DownloadHelper",
     Bytes: "$1 Bytes",
     GB: "$1 GB",
@@ -5976,7 +5976,7 @@ var Se = {
     v9_date_x_days_ago: "$1 days ago",
     v9_date_long_ago: "long time ago"
   },
-  Le = {
+  translationsEs = {
     Bytes: "$1 Bytes",
     GB: "$1 GBytes",
     KB: "$1 KB",
@@ -6556,7 +6556,7 @@ var Se = {
     v9_dialog_audio_impossible: "Este tipo de soporte no admite descarga s\xF3lo de audio",
     v9_mup_max_variants: "Conteo de variantes"
   },
-  He = {
+  translationsFr = {
     Bytes: "$1 Octet",
     GB: "$1 GO",
     KB: "$1 KO",
@@ -7243,7 +7243,7 @@ var Se = {
     v9_date_x_days_ago: "$1 jours auparavant",
     v9_date_long_ago: "Il y a longtemps"
   },
-  Ve = {
+  translationsHsb = {
     Bytes: "$1 bajtow",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -7764,7 +7764,7 @@ var Se = {
     v9_lic_status_locked: "Licenca je zawrjena (p\u0159epruwuje so znowa).",
     v9_no_license_registered: "\u017Dana licenca zregistrowana"
   },
-  Ne = {
+  translationsHu = {
     Bytes: "b\xE1jt",
     GB: "GB",
     KB: "kB",
@@ -8306,7 +8306,7 @@ var Se = {
     v9_lic_mismatch2: "A licensz $1-ra \xE9rv\xE9nyes, de a b\u0151v\xEDtm\xE9ny build-je $2-ra",
     v9_no_license_registered: "Nincs regisztr\xE1lt licensz"
   },
-  Fe = {
+  translationsId = {
     Bytes: "$1 Bytes",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -8846,7 +8846,7 @@ var Se = {
     v9_lic_mismatch2: "Lisensi untuk $1 tetapi pembuatan ekstensi untuk $2",
     v9_no_license_registered: "Tidak ada lisensi yang didaftarkan"
   },
-  Re = {
+  translationsIs = {
     Bytes: "$1 b\xE6ti",
     KB: "$1 KB",
     MB: "$1 MB",
@@ -9099,7 +9099,7 @@ var Se = {
     v9_vdh_notification: "Video DownloadHelper",
     v9_file_ready: '"$1" er n\xFAna tilb\xFAi\xF0'
   },
-  Be = {
+  translationsIt = {
     __MSG_appDesc_: "Video DownloadHelper",
     Bytes: "$1 Byte",
     GB: "$1 GB",
@@ -9783,7 +9783,7 @@ var Se = {
     v9_date_x_days_ago: "$1 giorni fa",
     v9_date_long_ago: "molto tempo fa"
   },
-  Oe = {
+  translationsJa = {
     Bytes: "$1 \u30D0\u30A4\u30C8",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -10409,7 +10409,7 @@ var Se = {
     v9_user_message_one_hundred_downloads_body: "Video DownloadHelper \u3092\u304A\u697D\u3057\u307F\u3044\u305F\u3060\u3051\u308C\u3070\u5E78\u3044\u3067\u3059 :) \u30A2\u30C9\u30AA\u30F3 Web \u30B5\u30A4\u30C8\u306B\u7D20\u6575\u306A\u30EC\u30D3\u30E5\u30FC\u3092\u66F8\u3044\u3066\u3044\u305F\u3060\u3051\u307E\u305B\u3093\u304B?",
     v9_yt_bulk_detected_trigger: "\u4E00\u62EC\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3092\u958B\u59CB"
   },
-  Ie = {
+  translationsKo = {
     Bytes: "$1\uBC14\uC774\uD2B8",
     GB: "$1GB",
     KB: "$1KB",
@@ -10714,7 +10714,7 @@ var Se = {
     v9_weh_prefs_label_downloadControlledMax: "\uCD5C\uB300 \uB3D9\uC2DC \uB2E4\uC6B4\uB85C\uB4DC",
     v9_file_ready: '"$1" \uAC00 \uC900\uBE44\uB418\uC5C8\uC2B5\uB2C8\uB2E4.'
   },
-  Ke = {
+  translationsNb = {
     Bytes: "Bytes",
     GB: "GB",
     KB: "KB",
@@ -10971,7 +10971,7 @@ var Se = {
     v9_vdh_notification: "Video DownloadHelper",
     v9_file_ready: '"$1" er n\xE5 klar'
   },
-  Ue = {
+  translationsNl = {
     Bytes: "$1 Bytes",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -11624,7 +11624,7 @@ var Se = {
     v9_date_x_days_ago: "$1 dagen geleden",
     v9_date_long_ago: "Lang geleden"
   },
-  Ge = {
+  translationsPl = {
     Bytes: "$1 bajt\xF3w",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -12262,7 +12262,7 @@ var Se = {
     v9_yt_bulk_detected: "Wykryto $1 video z Youtube",
     v9_yt_bulk_detected_trigger: "Rozpocznij pobieranie zbiorcze"
   },
-  We = {
+  translationsPtBR = {
     Bytes: "$1 Bytes",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -12934,7 +12934,7 @@ var Se = {
     v9_user_message_one_hundred_downloads_leave_review: "Deixe um coment\xE1rio",
     v9_user_message_one_hundred_downloads_never_show_again: "N\xE3o pergunte novamente"
   },
-  Ye = {
+  translationsRo = {
     Bytes: "$1 Octe\u021Bi",
     KB: "$1 KO",
     MB: "$1 MO",
@@ -13159,7 +13159,7 @@ var Se = {
     v9_panel_view_sort_reverse: "Sortare invers\u0103",
     __MSG_appDesc_: "Video DownloadHelper"
   },
-  Ze = {
+  translationsRu = {
     Bytes: "$1 \u0411\u0430\u0439\u0442",
     GB: "$1 \u0413\u0411",
     KB: "$1 \u041A\u0411",
@@ -13739,7 +13739,7 @@ var Se = {
     v9_copy_settings_info_to_clipboard: "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u044E \u0432 \u0431\u0443\u0444\u0435\u0440 \u043E\u0431\u043C\u0435\u043D\u0430",
     v9_mup_max_variants: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u0432\u0430\u0440\u0438\u0430\u043D\u0442\u043E\u0432"
   },
-  Je = {
+  translationsSk = {
     Bytes: "$1 Bytov",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -14276,7 +14276,7 @@ var Se = {
     v9_lic_mismatch2: "Licencia je pre $1 ale verzia dplnku je pre $2",
     v9_no_license_registered: "\u017Diadna licencia nebola registrovan\xE1"
   },
-  Qe = {
+  translationsSl = {
     Bytes: "$1 B",
     GB: "$1 GB",
     KB: "$1 kB",
@@ -14818,7 +14818,7 @@ var Se = {
     v9_lic_mismatch2: "Licenca je za $1 toda gradnja raz\u0161iritve je za $2",
     v9_no_license_registered: "Dovoljenje ni bilo registrirano"
   },
-  Xe = {
+  translationsSv = {
     Bytes: "$1 byte",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -15360,7 +15360,7 @@ var Se = {
     v9_lic_mismatch2: "Licensen g\xE4ller f\xF6r $1 men till\xE4ggets version \xE4r f\xF6r $2",
     v9_no_license_registered: "Ingen licens har blivit registrerad"
   },
-  ea = {
+  translationsTr = {
     Bytes: "$1 Byte",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -15979,7 +15979,7 @@ var Se = {
     v9_user_message_one_hundred_downloads_leave_review: "Bizi De\u011Ferlendir.",
     v9_user_message_one_hundred_downloads_never_show_again: "Bir Daha Sorma"
   },
-  aa = {
+  translationsUk = {
     __MSG_appDesc_: "Video DownloadHelper",
     Bytes: "$1 \u0431\u0430\u0439\u0442",
     GB: "$1 \u0413\u0431",
@@ -16650,7 +16650,7 @@ var Se = {
     yes: "\u0422\u0430\u043A",
     you_downloaded_n_videos: "\u0412\u0438 \u0442\u0456\u043B\u044C\u043A\u0438 \u0449\u043E \u0443\u0441\u043F\u0456\u0448\u043D\u043E \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0438\u043B\u0438 \u0432\u0430\u0448 $1\u0439 \u0444\u0430\u0439\u043B \u0437 Video DownloadHelper."
   },
-  ia = {
+  translationsZhCN = {
     Bytes: "$1 \u5B57\u8282",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -17316,7 +17316,7 @@ var Se = {
     v9_user_message_one_hundred_downloads_leave_review: "\u53BB\u8BC4\u8BBA",
     v9_user_message_one_hundred_downloads_never_show_again: "\u4E0D\u518D\u8BE2\u95EE"
   },
-  oa = {
+  translationsZhTW = {
     Bytes: "$1 Bytes",
     GB: "$1 GB",
     KB: "$1 KB",
@@ -17959,56 +17959,56 @@ var Se = {
     v9_user_message_one_hundred_downloads_leave_review: "\u767C\u8868\u8A55\u8AD6",
     v9_user_message_one_hundred_downloads_never_show_again: "\u4E0D\u518D\u986F\u793A"
   },
-  na = {
-    bg: Se,
-    ca: Me,
-    co: Pe,
-    cs: Ce,
-    da: qe,
-    de: Te,
-    dsb: Ee,
-    el: $e,
-    en_US: Z,
-    es: Le,
-    fr: He,
-    hsb: Ve,
-    hu: Ne,
-    id: Fe,
-    is: Re,
-    it: Be,
-    ja: Oe,
-    ko: Ie,
-    nb: Ke,
-    nl: Ue,
-    pl: Ge,
-    pt_BR: We,
-    ro: Ye,
-    ru: Ze,
-    sk: Je,
-    sl: Qe,
-    sv: Xe,
-    tr: ea,
-    uk: aa,
-    zh_CN: ia,
-    zh_TW: oa
+  translationsDefault = {
+    bg: translationsBg,
+    ca: translationsCa,
+    co: translationsCo,
+    cs: translationsCs,
+    da: translationsDa,
+    de: translationsDe,
+    dsb: translationsDsb,
+    el: translationsEl,
+    en_US: translationsEnUS,
+    es: translationsEs,
+    fr: translationsFr,
+    hsb: translationsHsb,
+    hu: translationsHu,
+    id: translationsId,
+    is: translationsIs,
+    it: translationsIt,
+    ja: translationsJa,
+    ko: translationsKo,
+    nb: translationsNb,
+    nl: translationsNl,
+    pl: translationsPl,
+    pt_BR: translationsPtBR,
+    ro: translationsRo,
+    ru: translationsRu,
+    sk: translationsSk,
+    sl: translationsSl,
+    sv: translationsSv,
+    tr: translationsTr,
+    uk: translationsUk,
+    zh_CN: translationsZhCN,
+    zh_TW: translationsZhTW
   };
-var F = W(R(), 1);
-var B = W(R(), 1);
+var browserApi = toEsm(requirePolyfill(), 1);
+var browserStorageApi = toEsm(requirePolyfill(), 1);
 
-function M(e) {
-  var a = String(e);
-  if (a === "[object Object]") try {
-    a = JSON.stringify(e)
+function stringifyValue(value) {
+  var text = String(value);
+  if (text === "[object Object]") try {
+    text = JSON.stringify(value)
   } catch {}
-  return a
+  return text
 }
-var ra = function() {
-    function e() {}
-    return e.prototype.isSome = function() {
+var NoneImpl = function() {
+    function NoneConstructor() {}
+    return NoneConstructor.prototype.isSome = function() {
       return !1
-    }, e.prototype.isNone = function() {
+    }, NoneConstructor.prototype.isNone = function() {
       return !0
-    }, e.prototype[Symbol.iterator] = function() {
+    }, NoneConstructor.prototype[Symbol.iterator] = function() {
       return {
         next: function() {
           return {
@@ -18017,44 +18017,44 @@ var ra = function() {
           }
         }
       }
-    }, e.prototype.unwrapOr = function(a) {
-      return a
-    }, e.prototype.expect = function(a) {
-      throw new Error("".concat(a))
-    }, e.prototype.unwrap = function() {
+    }, NoneConstructor.prototype.unwrapOr = function(fallback) {
+      return fallback
+    }, NoneConstructor.prototype.expect = function(message) {
+      throw new Error("".concat(message))
+    }, NoneConstructor.prototype.unwrap = function() {
       throw new Error("Tried to unwrap None")
-    }, e.prototype.map = function(a) {
+    }, NoneConstructor.prototype.map = function(mapper) {
       return this
-    }, e.prototype.mapOr = function(a, i) {
-      return a
-    }, e.prototype.mapOrElse = function(a, i) {
-      return a()
-    }, e.prototype.or = function(a) {
-      return a
-    }, e.prototype.orElse = function(a) {
-      return a()
-    }, e.prototype.andThen = function(a) {
+    }, NoneConstructor.prototype.mapOr = function(defaultValue, mapper) {
+      return defaultValue
+    }, NoneConstructor.prototype.mapOrElse = function(defaultFn, mapper) {
+      return defaultFn()
+    }, NoneConstructor.prototype.or = function(alternative) {
+      return alternative
+    }, NoneConstructor.prototype.orElse = function(alternativeFn) {
+      return alternativeFn()
+    }, NoneConstructor.prototype.andThen = function(mapper) {
       return this
-    }, e.prototype.toResult = function(a) {
-      return D(a)
-    }, e.prototype.toString = function() {
+    }, NoneConstructor.prototype.toResult = function(errorValue) {
+      return ErrResult(errorValue)
+    }, NoneConstructor.prototype.toString = function() {
       return "None"
-    }, e
+    }, NoneConstructor
   }(),
-  p = new ra;
-Object.freeze(p);
-var ta = function() {
-    function e(a) {
-      if (!(this instanceof e)) return new e(a);
-      this.value = a
+  None = new NoneImpl;
+Object.freeze(None);
+var SomeImpl = function() {
+    function SomeConstructor(value) {
+      if (!(this instanceof SomeConstructor)) return new SomeConstructor(value);
+      this.value = value
     }
-    return e.prototype.isSome = function() {
+    return SomeConstructor.prototype.isSome = function() {
       return !0
-    }, e.prototype.isNone = function() {
+    }, SomeConstructor.prototype.isNone = function() {
       return !1
-    }, e.prototype[Symbol.iterator] = function() {
-      var a = Object(this.value);
-      return Symbol.iterator in a ? a[Symbol.iterator]() : {
+    }, SomeConstructor.prototype[Symbol.iterator] = function() {
+      var boxedValue = Object(this.value);
+      return Symbol.iterator in boxedValue ? boxedValue[Symbol.iterator]() : {
         next: function() {
           return {
             done: !0,
@@ -18062,78 +18062,78 @@ var ta = function() {
           }
         }
       }
-    }, e.prototype.unwrapOr = function(a) {
+    }, SomeConstructor.prototype.unwrapOr = function(fallback) {
       return this.value
-    }, e.prototype.expect = function(a) {
+    }, SomeConstructor.prototype.expect = function(message) {
       return this.value
-    }, e.prototype.unwrap = function() {
+    }, SomeConstructor.prototype.unwrap = function() {
       return this.value
-    }, e.prototype.map = function(a) {
-      return g(a(this.value))
-    }, e.prototype.mapOr = function(a, i) {
-      return i(this.value)
-    }, e.prototype.mapOrElse = function(a, i) {
-      return i(this.value)
-    }, e.prototype.or = function(a) {
+    }, SomeConstructor.prototype.map = function(mapper) {
+      return Some(mapper(this.value))
+    }, SomeConstructor.prototype.mapOr = function(defaultValue, mapper) {
+      return mapper(this.value)
+    }, SomeConstructor.prototype.mapOrElse = function(defaultFn, mapper) {
+      return mapper(this.value)
+    }, SomeConstructor.prototype.or = function(alternative) {
       return this
-    }, e.prototype.orElse = function(a) {
+    }, SomeConstructor.prototype.orElse = function(alternativeFn) {
       return this
-    }, e.prototype.andThen = function(a) {
-      return a(this.value)
-    }, e.prototype.toResult = function(a) {
-      return A(this.value)
-    }, e.prototype.safeUnwrap = function() {
+    }, SomeConstructor.prototype.andThen = function(mapper) {
+      return mapper(this.value)
+    }, SomeConstructor.prototype.toResult = function(errorArg) {
+      return OkResult(this.value)
+    }, SomeConstructor.prototype.safeUnwrap = function() {
       return this.value
-    }, e.prototype.toString = function() {
-      return "Some(".concat(M(this.value), ")")
-    }, e.EMPTY = new e(void 0), e
+    }, SomeConstructor.prototype.toString = function() {
+      return "Some(".concat(stringifyValue(this.value), ")")
+    }, SomeConstructor.EMPTY = new SomeConstructor(void 0), SomeConstructor
   }(),
-  g = ta,
-  $;
-(function(e) {
-  function a() {
-    for (var n = [], o = 0; o < arguments.length; o++) n[o] = arguments[o];
-    for (var l = [], d = 0, m = n; d < m.length; d++) {
-      var r = m[d];
-      if (r.isSome()) l.push(r.value);
-      else return r
+  Some = SomeImpl,
+  Option;
+(function(optionNamespace) {
+  function allSome() {
+    for (var args = [], index = 0; index < arguments.length; index++) args[index] = arguments[index];
+    for (var collectedValues = [], optionIndex = 0, options = args; optionIndex < options.length; optionIndex++) {
+      var option = options[optionIndex];
+      if (option.isSome()) collectedValues.push(option.value);
+      else return option
     }
-    return g(l)
+    return Some(collectedValues)
   }
-  e.all = a;
+  optionNamespace.all = allSome;
 
-  function i() {
-    for (var n = [], o = 0; o < arguments.length; o++) n[o] = arguments[o];
-    for (var l = 0, d = n; l < d.length; l++) {
-      var m = d[l];
-      return m.isSome(), m
+  function anySome() {
+    for (var args = [], index = 0; index < arguments.length; index++) args[index] = arguments[index];
+    for (var optionIndex = 0, options = args; optionIndex < options.length; optionIndex++) {
+      var option = options[optionIndex];
+      return option.isSome(), option
     }
-    return p
+    return None
   }
-  e.any = i;
+  optionNamespace.any = anySome;
 
-  function s(n) {
-    return n instanceof g || n === p
+  function isOptionInstance(candidate) {
+    return candidate instanceof Some || candidate === None
   }
-  e.isOption = s
-})($ || ($ = {}));
-var _a = function() {
-  function e(a) {
-    if (!(this instanceof e)) return new e(a);
-    this.error = a;
-    var i = new Error()
+  optionNamespace.isOption = isOptionInstance
+})(Option || (Option = {}));
+var ErrImpl = function() {
+  function ErrConstructor(errorValue) {
+    if (!(this instanceof ErrConstructor)) return new ErrConstructor(errorValue);
+    this.error = errorValue;
+    var stackLines = new Error()
       .stack.split(`
 `)
       .slice(2);
-    i && i.length > 0 && i[0].includes("ErrImpl") && i.shift(), this._stack =
-      i.join(`
+    stackLines && stackLines.length > 0 && stackLines[0].includes("ErrImpl") && stackLines.shift(), this._stack =
+      stackLines.join(`
 `)
   }
-  return e.prototype.isOk = function() {
+  return ErrConstructor.prototype.isOk = function() {
     return !1
-  }, e.prototype.isErr = function() {
+  }, ErrConstructor.prototype.isErr = function() {
     return !0
-  }, e.prototype[Symbol.iterator] = function() {
+  }, ErrConstructor.prototype[Symbol.iterator] = function() {
     return {
       next: function() {
         return {
@@ -18142,46 +18142,46 @@ var _a = function() {
         }
       }
     }
-  }, e.prototype.else = function(a) {
-    return a
-  }, e.prototype.unwrapOr = function(a) {
-    return a
-  }, e.prototype.expect = function(a) {
-    throw new Error("".concat(a, " - Error: ")
-      .concat(M(this.error), `
+  }, ErrConstructor.prototype.else = function(fallback) {
+    return fallback
+  }, ErrConstructor.prototype.unwrapOr = function(fallback) {
+    return fallback
+  }, ErrConstructor.prototype.expect = function(message) {
+    throw new Error("".concat(message, " - Error: ")
+      .concat(stringifyValue(this.error), `
 `)
       .concat(this._stack), {
         cause: this.error
       })
-  }, e.prototype.expectErr = function(a) {
+  }, ErrConstructor.prototype.expectErr = function(messageArg) {
     return this.error
-  }, e.prototype.unwrap = function() {
-    throw new Error("Tried to unwrap Error: ".concat(M(this.error), `
+  }, ErrConstructor.prototype.unwrap = function() {
+    throw new Error("Tried to unwrap Error: ".concat(stringifyValue(this.error), `
 `)
       .concat(this._stack), {
         cause: this.error
       })
-  }, e.prototype.unwrapErr = function() {
+  }, ErrConstructor.prototype.unwrapErr = function() {
     return this.error
-  }, e.prototype.map = function(a) {
+  }, ErrConstructor.prototype.map = function(mapper) {
     return this
-  }, e.prototype.andThen = function(a) {
+  }, ErrConstructor.prototype.andThen = function(mapper) {
     return this
-  }, e.prototype.mapErr = function(a) {
-    return new D(a(this.error))
-  }, e.prototype.mapOr = function(a, i) {
-    return a
-  }, e.prototype.mapOrElse = function(a, i) {
-    return a(this.error)
-  }, e.prototype.or = function(a) {
-    return a
-  }, e.prototype.orElse = function(a) {
-    return a(this.error)
-  }, e.prototype.toOption = function() {
-    return p
-  }, e.prototype.toString = function() {
-    return "Err(".concat(M(this.error), ")")
-  }, Object.defineProperty(e.prototype, "stack", {
+  }, ErrConstructor.prototype.mapErr = function(errorMapper) {
+    return new ErrResult(errorMapper(this.error))
+  }, ErrConstructor.prototype.mapOr = function(defaultValue, mapper) {
+    return defaultValue
+  }, ErrConstructor.prototype.mapOrElse = function(errorFn, mapper) {
+    return errorFn(this.error)
+  }, ErrConstructor.prototype.or = function(alternative) {
+    return alternative
+  }, ErrConstructor.prototype.orElse = function(alternativeFn) {
+    return alternativeFn(this.error)
+  }, ErrConstructor.prototype.toOption = function() {
+    return None
+  }, ErrConstructor.prototype.toString = function() {
+    return "Err(".concat(stringifyValue(this.error), ")")
+  }, Object.defineProperty(ErrConstructor.prototype, "stack", {
     get: function() {
       return "".concat(this, `
 `)
@@ -18189,23 +18189,23 @@ var _a = function() {
     },
     enumerable: !1,
     configurable: !0
-  }), e.prototype.toAsyncResult = function() {
-    return new Q(this)
-  }, e.EMPTY = new e(void 0), e
+  }), ErrConstructor.prototype.toAsyncResult = function() {
+    return new AsyncResultImpl(this)
+  }, ErrConstructor.EMPTY = new ErrConstructor(void 0), ErrConstructor
 }();
-var D = _a,
-  sa = function() {
-    function e(a) {
-      if (!(this instanceof e)) return new e(a);
-      this.value = a
+var ErrResult = ErrImpl,
+  OkImpl = function() {
+    function OkConstructor(value) {
+      if (!(this instanceof OkConstructor)) return new OkConstructor(value);
+      this.value = value
     }
-    return e.prototype.isOk = function() {
+    return OkConstructor.prototype.isOk = function() {
       return !0
-    }, e.prototype.isErr = function() {
+    }, OkConstructor.prototype.isErr = function() {
       return !1
-    }, e.prototype[Symbol.iterator] = function() {
-      var a = Object(this.value);
-      return Symbol.iterator in a ? a[Symbol.iterator]() : {
+    }, OkConstructor.prototype[Symbol.iterator] = function() {
+      var boxedValue = Object(this.value);
+      return Symbol.iterator in boxedValue ? boxedValue[Symbol.iterator]() : {
         next: function() {
           return {
             done: !0,
@@ -18213,321 +18213,321 @@ var D = _a,
           }
         }
       }
-    }, e.prototype.else = function(a) {
+    }, OkConstructor.prototype.else = function(fallback) {
       return this.value
-    }, e.prototype.unwrapOr = function(a) {
+    }, OkConstructor.prototype.unwrapOr = function(fallback) {
       return this.value
-    }, e.prototype.expect = function(a) {
+    }, OkConstructor.prototype.expect = function(message) {
       return this.value
-    }, e.prototype.expectErr = function(a) {
-      throw new Error(a)
-    }, e.prototype.unwrap = function() {
+    }, OkConstructor.prototype.expectErr = function(message) {
+      throw new Error(message)
+    }, OkConstructor.prototype.unwrap = function() {
       return this.value
-    }, e.prototype.unwrapErr = function() {
-      throw new Error("Tried to unwrap Ok: ".concat(M(this.value)), {
+    }, OkConstructor.prototype.unwrapErr = function() {
+      throw new Error("Tried to unwrap Ok: ".concat(stringifyValue(this.value)), {
         cause: this.value
       })
-    }, e.prototype.map = function(a) {
-      return new A(a(this.value))
-    }, e.prototype.andThen = function(a) {
-      return a(this.value)
-    }, e.prototype.mapErr = function(a) {
+    }, OkConstructor.prototype.map = function(mapper) {
+      return new OkResult(mapper(this.value))
+    }, OkConstructor.prototype.andThen = function(mapper) {
+      return mapper(this.value)
+    }, OkConstructor.prototype.mapErr = function(errorMapper) {
       return this
-    }, e.prototype.mapOr = function(a, i) {
-      return i(this.value)
-    }, e.prototype.mapOrElse = function(a, i) {
-      return i(this.value)
-    }, e.prototype.or = function(a) {
+    }, OkConstructor.prototype.mapOr = function(defaultValue, mapper) {
+      return mapper(this.value)
+    }, OkConstructor.prototype.mapOrElse = function(defaultFn, mapper) {
+      return mapper(this.value)
+    }, OkConstructor.prototype.or = function(alternative) {
       return this
-    }, e.prototype.orElse = function(a) {
+    }, OkConstructor.prototype.orElse = function(alternativeFn) {
       return this
-    }, e.prototype.toOption = function() {
-      return g(this.value)
-    }, e.prototype.safeUnwrap = function() {
+    }, OkConstructor.prototype.toOption = function() {
+      return Some(this.value)
+    }, OkConstructor.prototype.safeUnwrap = function() {
       return this.value
-    }, e.prototype.toString = function() {
-      return "Ok(".concat(M(this.value), ")")
-    }, e.prototype.toAsyncResult = function() {
-      return new Q(this)
-    }, e.EMPTY = new e(void 0), e
+    }, OkConstructor.prototype.toString = function() {
+      return "Ok(".concat(stringifyValue(this.value), ")")
+    }, OkConstructor.prototype.toAsyncResult = function() {
+      return new AsyncResultImpl(this)
+    }, OkConstructor.EMPTY = new OkConstructor(void 0), OkConstructor
   }();
-var A = sa,
-  L;
-(function(e) {
-  function a() {
-    for (var l = [], d = 0; d < arguments.length; d++) l[d] = arguments[d];
-    for (var m = [], r = 0, v = l; r < v.length; r++) {
-      var w = v[r];
-      if (w.isOk()) m.push(w.value);
-      else return w
+var OkResult = OkImpl,
+  Result;
+(function(resultNamespace) {
+  function allOk() {
+    for (var args = [], index = 0; index < arguments.length; index++) args[index] = arguments[index];
+    for (var collectedValues = [], resultIndex = 0, results = args; resultIndex < results.length; resultIndex++) {
+      var result = results[resultIndex];
+      if (result.isOk()) collectedValues.push(result.value);
+      else return result
     }
-    return new A(m)
+    return new OkResult(collectedValues)
   }
-  e.all = a;
+  resultNamespace.all = allOk;
 
-  function i() {
-    for (var l = [], d = 0; d < arguments.length; d++) l[d] = arguments[d];
-    for (var m = [], r = 0, v = l; r < v.length; r++) {
-      var w = v[r];
-      if (w.isOk()) return w;
-      m.push(w.error)
+  function anyOk() {
+    for (var args = [], index = 0; index < arguments.length; index++) args[index] = arguments[index];
+    for (var collectedErrors = [], resultIndex = 0, results = args; resultIndex < results.length; resultIndex++) {
+      var result = results[resultIndex];
+      if (result.isOk()) return result;
+      collectedErrors.push(result.error)
     }
-    return new D(m)
+    return new ErrResult(collectedErrors)
   }
-  e.any = i;
+  resultNamespace.any = anyOk;
 
-  function s(l) {
+  function wrapResult(operation) {
     try {
-      return new A(l())
-    } catch (d) {
-      return new D(d)
+      return new OkResult(operation())
+    } catch (error) {
+      return new ErrResult(error)
     }
   }
-  e.wrap = s;
+  resultNamespace.wrap = wrapResult;
 
-  function n(l) {
+  function wrapAsyncResult(operation) {
     try {
-      return l()
-        .then(function(d) {
-          return new A(d)
+      return operation()
+        .then(function(resolvedValue) {
+          return new OkResult(resolvedValue)
         })
-        .catch(function(d) {
-          return new D(d)
+        .catch(function(caughtError) {
+          return new ErrResult(caughtError)
         })
-    } catch (d) {
-      return Promise.resolve(new D(d))
+    } catch (error) {
+      return Promise.resolve(new ErrResult(error))
     }
   }
-  e.wrapAsync = n;
+  resultNamespace.wrapAsync = wrapAsyncResult;
 
-  function o(l) {
-    return l instanceof D || l instanceof A
+  function isResultInstance(candidate) {
+    return candidate instanceof ErrResult || candidate instanceof OkResult
   }
-  e.isResult = o
-})(L || (L = {}));
-var ne = function(e, a, i, s) {
-    function n(o) {
-      return o instanceof i ? o : new i(function(l) {
-        l(o)
+  resultNamespace.isResult = isResultInstance
+})(Result || (Result = {}));
+var awaiter = function(thisArg, argsList, promiseCtor, generatorFn) {
+    function adopt(valueOrPromise) {
+      return valueOrPromise instanceof promiseCtor ? valueOrPromise : new promiseCtor(function(resolve) {
+        resolve(valueOrPromise)
       })
     }
-    return new(i || (i = Promise))(function(o, l) {
-      function d(v) {
+    return new(promiseCtor || (promiseCtor = Promise))(function(resolve, reject) {
+      function onFulfilled(value) {
         try {
-          r(s.next(v))
-        } catch (w) {
-          l(w)
+          step(generatorFn.next(value))
+        } catch (error) {
+          reject(error)
         }
       }
 
-      function m(v) {
+      function onRejected(value) {
         try {
-          r(s.throw(v))
-        } catch (w) {
-          l(w)
+          step(generatorFn.throw(value))
+        } catch (error) {
+          reject(error)
         }
       }
 
-      function r(v) {
-        v.done ? o(v.value) : n(v.value)
-          .then(d, m)
+      function step(result) {
+        result.done ? resolve(result.value) : adopt(result.value)
+          .then(onFulfilled, onRejected)
       }
-      r((s = s.apply(e, a || []))
+      step((generatorFn = generatorFn.apply(thisArg, argsList || []))
         .next())
     })
   },
-  re = function(e, a) {
-    var i = {
+  generatorHelper = function(thisArg, bodyFn) {
+    var state = {
         label: 0,
         sent: function() {
-          if (o[0] & 1) throw o[1];
-          return o[1]
+          if (currentOp[0] & 1) throw currentOp[1];
+          return currentOp[1]
         },
         trys: [],
         ops: []
       },
-      s, n, o, l;
-    return l = {
-      next: d(0),
-      throw: d(1),
-      return: d(2)
-    }, typeof Symbol == "function" && (l[Symbol.iterator] = function() {
+      executing, delegate, currentOp, iteratorObj;
+    return iteratorObj = {
+      next: createVerb(0),
+      throw: createVerb(1),
+      return: createVerb(2)
+    }, typeof Symbol == "function" && (iteratorObj[Symbol.iterator] = function() {
       return this
-    }), l;
+    }), iteratorObj;
 
-    function d(r) {
-      return function(v) {
-        return m([r, v])
+    function createVerb(verbCode) {
+      return function(verbArg) {
+        return step([verbCode, verbArg])
       }
     }
 
-    function m(r) {
-      if (s) throw new TypeError("Generator is already executing.");
-      for (; l && (l = 0, r[0] && (i = 0)), i;) try {
-        if (s = 1, n && (o = r[0] & 2 ? n.return : r[0] ? n.throw || ((o = n
-            .return) && o.call(n), 0) : n.next) && !(o = o.call(n, r[1]))
-          .done) return o;
-        switch (n = 0, o && (r = [r[0] & 2, o.value]), r[0]) {
+    function step(opPair) {
+      if (executing) throw new TypeError("Generator is already executing.");
+      for (; iteratorObj && (iteratorObj = 0, opPair[0] && (state = 0)), state;) try {
+        if (executing = 1, delegate && (currentOp = opPair[0] & 2 ? delegate.return : opPair[0] ? delegate.throw || ((currentOp = delegate
+            .return) && currentOp.call(delegate), 0) : delegate.next) && !(currentOp = currentOp.call(delegate, opPair[1]))
+          .done) return currentOp;
+        switch (delegate = 0, currentOp && (opPair = [opPair[0] & 2, currentOp.value]), opPair[0]) {
           case 0:
           case 1:
-            o = r;
+            currentOp = opPair;
             break;
           case 4:
-            return i.label++, {
-              value: r[1],
+            return state.label++, {
+              value: opPair[1],
               done: !1
             };
           case 5:
-            i.label++, n = r[1], r = [0];
+            state.label++, delegate = opPair[1], opPair = [0];
             continue;
           case 7:
-            r = i.ops.pop(), i.trys.pop();
+            opPair = state.ops.pop(), state.trys.pop();
             continue;
           default:
-            if (o = i.trys, !(o = o.length > 0 && o[o.length - 1]) && (r[
-                0] === 6 || r[0] === 2)) {
-              i = 0;
+            if (currentOp = state.trys, !(currentOp = currentOp.length > 0 && currentOp[currentOp.length - 1]) && (opPair[
+                0] === 6 || opPair[0] === 2)) {
+              state = 0;
               continue
             }
-            if (r[0] === 3 && (!o || r[1] > o[0] && r[1] < o[3])) {
-              i.label = r[1];
+            if (opPair[0] === 3 && (!currentOp || opPair[1] > currentOp[0] && opPair[1] < currentOp[3])) {
+              state.label = opPair[1];
               break
             }
-            if (r[0] === 6 && i.label < o[1]) {
-              i.label = o[1], o = r;
+            if (opPair[0] === 6 && state.label < currentOp[1]) {
+              state.label = currentOp[1], currentOp = opPair;
               break
             }
-            if (o && i.label < o[2]) {
-              i.label = o[2], i.ops.push(r);
+            if (currentOp && state.label < currentOp[2]) {
+              state.label = currentOp[2], state.ops.push(opPair);
               break
             }
-            o[2] && i.ops.pop(), i.trys.pop();
+            currentOp[2] && state.ops.pop(), state.trys.pop();
             continue
         }
-        r = a.call(e, i)
-      } catch (v) {
-        r = [6, v], n = 0
+        opPair = bodyFn.call(thisArg, state)
+      } catch (caughtError) {
+        opPair = [6, caughtError], delegate = 0
       } finally {
-        s = o = 0
+        executing = currentOp = 0
       }
-      if (r[0] & 5) throw r[1];
+      if (opPair[0] & 5) throw opPair[1];
       return {
-        value: r[0] ? r[1] : void 0,
+        value: opPair[0] ? opPair[1] : void 0,
         done: !0
       }
     }
   },
-  Q = function() {
-    function e(a) {
-      this.promise = Promise.resolve(a)
+  AsyncResultImpl = function() {
+    function AsyncResultConstructor(resultOrPromise) {
+      this.promise = Promise.resolve(resultOrPromise)
     }
-    return e.prototype.andThen = function(a) {
-      var i = this;
-      return this.thenInternal(function(s) {
-        return ne(i, void 0, void 0, function() {
-          var n;
-          return re(this, function(o) {
-            return s.isErr() ? [2, s] : (n = a(s.value), [2,
-              n instanceof e ? n.promise : n
+    return AsyncResultConstructor.prototype.andThen = function(mapper) {
+      var self = this;
+      return this.thenInternal(function(result) {
+        return awaiter(self, void 0, void 0, function() {
+          var mappedResult;
+          return generatorHelper(this, function(genState) {
+            return result.isErr() ? [2, result] : (mappedResult = mapper(result.value), [2,
+              mappedResult instanceof AsyncResultConstructor ? mappedResult.promise : mappedResult
             ])
           })
         })
       })
-    }, e.prototype.map = function(a) {
-      var i = this;
-      return this.thenInternal(function(s) {
-        return ne(i, void 0, void 0, function() {
-          var n;
-          return re(this, function(o) {
-            switch (o.label) {
+    }, AsyncResultConstructor.prototype.map = function(mapper) {
+      var self = this;
+      return this.thenInternal(function(result) {
+        return awaiter(self, void 0, void 0, function() {
+          var okWrapper;
+          return generatorHelper(this, function(genState) {
+            switch (genState.label) {
               case 0:
-                return s.isErr() ? [2, s] : (n = A, [4, a(s
+                return result.isErr() ? [2, result] : (okWrapper = OkResult, [4, mapper(result
                   .value)]);
               case 1:
-                return [2, n.apply(void 0, [o.sent()])]
+                return [2, okWrapper.apply(void 0, [genState.sent()])]
             }
           })
         })
       })
-    }, e.prototype.thenInternal = function(a) {
-      return new e(this.promise.then(a))
-    }, e
+    }, AsyncResultConstructor.prototype.thenInternal = function(callback) {
+      return new AsyncResultConstructor(this.promise.then(callback))
+    }, AsyncResultConstructor
   }();
 
-function y(e) {
-  return Object.assign(e.prototype, {
-    find: function(a) {
-      for (let i of this)
-        if (a(i)) return g(i);
-      return p
+function withIteratorHelpers(generatorFn) {
+  return Object.assign(generatorFn.prototype, {
+    find: function(predicate) {
+      for (let item of this)
+        if (predicate(item)) return Some(item);
+      return None
     },
-    count: function(a) {
-      return this.reduce((i, s) => (a(s) && i++, i), 0)
+    count: function(predicate) {
+      return this.reduce((runningCount, item) => (predicate(item) && runningCount++, runningCount), 0)
     },
-    reduce: function(a, i) {
-      let s = i;
-      for (let n of this) s = a(s, n);
-      return s
+    reduce: function(reducer, initialValue) {
+      let accumulator = initialValue;
+      for (let item of this) accumulator = reducer(accumulator, item);
+      return accumulator
     },
-    every: function(a) {
-      return !this.any(i => !a(i))
+    every: function(predicate) {
+      return !this.any(item => !predicate(item))
     },
-    any: function(a) {
-      for (let i of this)
-        if (a(i)) return !0;
+    any: function(predicate) {
+      for (let item of this)
+        if (predicate(item)) return !0;
       return !1
     },
-    map: function(a) {
-      return this.filterMap(i => g(a(i)))
+    map: function(mapper) {
+      return this.filterMap(item => Some(mapper(item)))
     },
-    filter: function(a) {
-      return this.filterMap(i => a(i) ? g(i) : p)
+    filter: function(predicate) {
+      return this.filterMap(item => predicate(item) ? Some(item) : None)
     },
     enumerate: function() {
-      let a = this;
-      return y(function*() {
-        let i = 0;
-        for (let s of a) yield [i, s], i++
+      let source = this;
+      return withIteratorHelpers(function*() {
+        let index = 0;
+        for (let item of source) yield [index, item], index++
       })()
     },
-    filterMap: function(a) {
-      let i = this;
-      return y(function*() {
-        for (let s of i) {
-          let n = a(s);
-          n.isSome() && (yield n.unwrap())
+    filterMap: function(mapper) {
+      let source = this;
+      return withIteratorHelpers(function*() {
+        for (let item of source) {
+          let mapped = mapper(item);
+          mapped.isSome() && (yield mapped.unwrap())
         }
       })()
     },
-    sort: function(a) {
-      let i = this.toArray();
-      return i.sort(a), i
+    sort: function(comparator) {
+      let items = this.toArray();
+      return items.sort(comparator), items
     },
     toArray: function() {
       return [...this]
     }
-  }), e
+  }), generatorFn
 }
 Array.prototype.as_iter || (Array.prototype.as_iter = function() {
-  let e = this;
-  return y(function*() {
-    for (let a of e) yield a
+  let self = this;
+  return withIteratorHelpers(function*() {
+    for (let item of self) yield item
   })()
 });
 Set.prototype.as_iter || (Set.prototype.as_iter = function() {
-  let e = this;
-  return y(function*() {
-    for (let a of e) yield a
+  let self = this;
+  return withIteratorHelpers(function*() {
+    for (let item of self) yield item
   })()
 });
 Map.prototype.as_iter || (Map.prototype.as_iter = function() {
-  let e = this;
-  return y(function*() {
-    for (let a of e) yield a
+  let self = this;
+  return withIteratorHelpers(function*() {
+    for (let item of self) yield item
   })()
 });
-var q = /.^/,
-  te = {
+var neverMatchRegex = /.^/,
+  videoCodecs = {
     Av1: {
       name: "Av1",
       type: "video",
@@ -18543,7 +18543,7 @@ var q = /.^/,
     H263: {
       name: "H263",
       type: "video",
-      mimetype: q,
+      mimetype: neverMatchRegex,
       defacto_container: "3gp"
     },
     H265: {
@@ -18561,13 +18561,13 @@ var q = /.^/,
     MPEG1: {
       name: "MPEG1",
       type: "video",
-      mimetype: q,
+      mimetype: neverMatchRegex,
       defacto_container: "Mpeg"
     },
     MPEG2: {
       name: "MPEG2",
       type: "video",
-      mimetype: q,
+      mimetype: neverMatchRegex,
       defacto_container: "Mpeg"
     },
     Theora: {
@@ -18591,11 +18591,11 @@ var q = /.^/,
     unknown: {
       name: "unknown",
       type: "video",
-      mimetype: q,
+      mimetype: neverMatchRegex,
       defacto_container: "Mp4"
     }
   },
-  _e = {
+  audioCodecs = {
     AAC: {
       name: "AAC",
       type: "audio",
@@ -18635,30 +18635,30 @@ var q = /.^/,
     Wav: {
       name: "Wav",
       type: "audio",
-      mimetype: q,
+      mimetype: neverMatchRegex,
       defacto_container: "Wav"
     },
     unknown: {
       name: "unknown",
       type: "audio",
-      mimetype: q,
+      mimetype: neverMatchRegex,
       defacto_container: "Mp4"
     }
   },
-  se = y(function*() {
-    for (let e of Object.keys(te)) yield te[e]
+  videoCodecsIterable = withIteratorHelpers(function*() {
+    for (let codecKey of Object.keys(videoCodecs)) yield videoCodecs[codecKey]
   }),
-  le = y(function*() {
-    for (let e of Object.keys(_e)) yield _e[e]
+  audioCodecsIterable = withIteratorHelpers(function*() {
+    for (let codecKey of Object.keys(audioCodecs)) yield audioCodecs[codecKey]
   });
-var de = {
+var containers = {
     Mp4: {
       name: "Mp4",
       extension: "mp4",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2",
         "unknown"],
@@ -18670,16 +18670,16 @@ var de = {
       extension: "mkv",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: None,
+        video: None
       },
-      supported_video_codecs: se()
-        .filter(e => e.name != "unknown")
-        .map(e => e.name)
+      supported_video_codecs: videoCodecsIterable()
+        .filter(codec => codec.name != "unknown")
+        .map(codec => codec.name)
         .toArray(),
-      supported_audio_codecs: le()
-        .filter(e => e.name != "unknown")
-        .map(e => e.name)
+      supported_audio_codecs: audioCodecsIterable()
+        .filter(codec => codec.name != "unknown")
+        .map(codec => codec.name)
         .toArray(),
       mimetype: /(?:x-)?matroska/i
     },
@@ -18688,8 +18688,8 @@ var de = {
       extension: "webm",
       audio_only_extension: "oga",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "VP8", "VP9", "Av1"],
       supported_audio_codecs: ["Opus", "Vorbis"],
@@ -18700,8 +18700,8 @@ var de = {
       extension: "mt2s",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2", "VP9",
         "unknown"
@@ -18714,8 +18714,8 @@ var de = {
       extension: "mp2t",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: g("MP3"),
-        video: g("H264")
+        audio: Some("MP3"),
+        video: Some("H264")
       },
       supported_video_codecs: ["MPEG2", "MPEG1"],
       supported_audio_codecs: ["MP3"],
@@ -18726,8 +18726,8 @@ var de = {
       extension: "flv",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264"],
       supported_audio_codecs: ["AAC"],
@@ -18738,8 +18738,8 @@ var de = {
       extension: "m4v",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2"],
       supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC"],
@@ -18751,8 +18751,8 @@ var de = {
       other_extensions: ["aac"],
       audio_only_extension: "m4a",
       defacto_codecs: {
-        audio: g("AAC"),
-        video: p
+        audio: Some("AAC"),
+        video: None
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC", "unknown"],
@@ -18763,8 +18763,8 @@ var de = {
       extension: "flac",
       audio_only_extension: "flac",
       defacto_codecs: {
-        audio: g("FLAC"),
-        video: p
+        audio: Some("FLAC"),
+        video: None
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["FLAC"],
@@ -18775,8 +18775,8 @@ var de = {
       extension: "mpeg",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: g("MP3"),
-        video: g("H264")
+        audio: Some("MP3"),
+        video: Some("H264")
       },
       supported_video_codecs: ["MPEG2", "MPEG1"],
       supported_audio_codecs: ["MP3"],
@@ -18787,8 +18787,8 @@ var de = {
       extension: "ogv",
       audio_only_extension: "oga",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["VP9", "VP8", "Theora"],
       supported_audio_codecs: ["Opus", "Vorbis", "FLAC"],
@@ -18799,8 +18799,8 @@ var de = {
       extension: "wav",
       audio_only_extension: "wav",
       defacto_codecs: {
-        audio: g("Wav"),
-        video: p
+        audio: Some("Wav"),
+        video: None
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["Wav", "PCM"],
@@ -18811,8 +18811,8 @@ var de = {
       extension: "3gpp",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["H264", "H263", "MP4V", "VP8"],
       supported_audio_codecs: ["MP3", "AAC"],
@@ -18823,21 +18823,21 @@ var de = {
       extension: "mov",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: None,
+        video: None
       },
       supported_video_codecs: ["MPEG1", "MPEG2"],
       supported_audio_codecs: [],
       mimetype: /(?:x-)?mov/i
     }
   },
-  la = y(function*() {
-    for (let e of Object.keys(de)) yield e
+  containerNamesIterable = withIteratorHelpers(function*() {
+    for (let containerKey of Object.keys(containers)) yield containerKey
   }),
-  ei = y(function*() {
-    for (let e of la()) yield de[e]
+  containersIterable = withIteratorHelpers(function*() {
+    for (let containerKey of containerNamesIterable()) yield containers[containerKey]
   });
-var ce = {
+var resolutions = {
   240: {
     id: "240",
     loose_name: "Small"
@@ -18871,115 +18871,115 @@ var ce = {
     loose_name: "8K"
   }
 };
-var da = y(function*() {
-    for (let e of Object.keys(ce)) yield e
+var resolutionKeysIterable = withIteratorHelpers(function*() {
+    for (let resolutionKey of Object.keys(resolutions)) yield resolutionKey
   }),
-  ti = y(function*() {
-    for (let e of da()) yield ce[e]
+  resolutionsIterable = withIteratorHelpers(function*() {
+    for (let resolutionKey of resolutionKeysIterable()) yield resolutions[resolutionKey]
   });
-var ma = W(R(), 1);
-async function pe(e, a) {
-  let i = a;
-  e.hooks && (i = e.hooks.setter(a)), await B.storage[e.where].set({
-    [e.name]: i
+var browserApiSpare = toEsm(requirePolyfill(), 1);
+async function saveSetting(setting, value) {
+  let valueToStore = value;
+  setting.hooks && (valueToStore = setting.hooks.setter(value)), await browserStorageApi.storage[setting.where].set({
+    [setting.name]: valueToStore
   })
 }
-async function N(e) {
-  let a = await B.storage[e.where].get(e.name);
-  if (e.name in a) {
-    let i = a[e.name];
-    return e.hooks ? e.hooks.getter(i, e) : i
+async function loadSetting(setting) {
+  let stored = await browserStorageApi.storage[setting.where].get(setting.name);
+  if (setting.name in stored) {
+    let rawValue = stored[setting.name];
+    return setting.hooks ? setting.hooks.getter(rawValue, setting) : rawValue
   }
-  return e.default()
+  return setting.default()
 }
-async function me(e) {
-  await B.storage[e.where].remove(e.name)
+async function removeSetting(setting) {
+  await browserStorageApi.storage[setting.where].remove(setting.name)
 }
-var T = {
+var viewOptionsSetting = {
   name: "view_options",
   default: () => ({}),
   where: "session"
 };
-var X = F.default.i18n.getUILanguage()
+var uiLanguage = browserApi.default.i18n.getUILanguage()
   .replace("-", "_"),
-  ee = Y[X],
-  ue = Z;
+  uiLanguageStrings = translationsByLanguage[uiLanguage],
+  englishStrings = translationsEnUS;
 
-function he() {
-  let e = document.querySelector("#only-empty"),
-    i = document.querySelector("#filter")
+function applyFilter() {
+  let onlyEmptyCheckbox = document.querySelector("#only-empty"),
+    filterText = document.querySelector("#filter")
     .value.toLowerCase(),
-    s = e.checked,
-    n = Array.from(document.querySelectorAll("#entries > vbox"));
-  for (let o of n) {
-    let l = o.querySelector(".reference"),
-      d = o.querySelector("sl-input"),
-      r = ((d.getAttribute("label") || "") + (l.textContent || "") + d.value)
+    onlyEmpty = onlyEmptyCheckbox.checked,
+    entryElements = Array.from(document.querySelectorAll("#entries > vbox"));
+  for (let entryElement of entryElements) {
+    let referenceElement = entryElement.querySelector(".reference"),
+      inputElement = entryElement.querySelector("sl-input"),
+      searchableText = ((inputElement.getAttribute("label") || "") + (referenceElement.textContent || "") + inputElement.value)
       .toLowerCase();
-    (i.length == 0 || r.includes(i)) && (!s || d.value.length == 0) ? o
-      .removeAttribute("hidden"): o.setAttribute("hidden", "true")
+    (filterText.length == 0 || searchableText.includes(filterText)) && (!onlyEmpty || inputElement.value.length == 0) ? entryElement
+      .removeAttribute("hidden"): entryElement.setAttribute("hidden", "true")
   }
 }
-async function ve() {
-  let e = await N(T),
-    a = document.querySelector("#entries");
-  a.innerHTML = "";
-  for (let i of Object.keys(ue)) {
-    if (!i.startsWith("v9") && !i.startsWith("_")) continue;
-    let s = ue[i] || "",
-      n = document.createElement("vbox");
-    n.dataset.key = i;
-    let o = document.createElement("sl-input");
-    o.setAttribute("label", i + ":"), o.setAttribute("clearable", "true");
-    let l = document.createElement("p");
-    l.className = "reference", n.appendChild(o), n.appendChild(l), i in e ? (o
-        .value = e[i], n.classList.add("custom")) : o.value = ee[i] ?? "", l
-      .textContent = "English: " + s, a.appendChild(n)
+async function renderEntries() {
+  let savedValues = await loadSetting(viewOptionsSetting),
+    entriesContainer = document.querySelector("#entries");
+  entriesContainer.innerHTML = "";
+  for (let key of Object.keys(englishStrings)) {
+    if (!key.startsWith("v9") && !key.startsWith("_")) continue;
+    let englishText = englishStrings[key] || "",
+      entryBox = document.createElement("vbox");
+    entryBox.dataset.key = key;
+    let inputField = document.createElement("sl-input");
+    inputField.setAttribute("label", key + ":"), inputField.setAttribute("clearable", "true");
+    let referenceParagraph = document.createElement("p");
+    referenceParagraph.className = "reference", entryBox.appendChild(inputField), entryBox.appendChild(referenceParagraph), key in savedValues ? (inputField
+        .value = savedValues[key], entryBox.classList.add("custom")) : inputField.value = uiLanguageStrings[key] ?? "", referenceParagraph
+      .textContent = "English: " + englishText, entriesContainer.appendChild(entryBox)
   }
-  he()
+  applyFilter()
 }
-async function O(e) {
-  let a = e.target;
-  if (a) {
-    let i = a.closest("#filter"),
-      s = a.closest("#only-empty"),
-      n = a.closest("vbox[data-key]"),
-      o = a.closest("#button-help"),
-      l = a.closest("#button-reset"),
-      d = a.closest("#button-export");
-    if ((i || s) && he(), o && F.default.tabs.create({
+async function handleEvent(event) {
+  let target = event.target;
+  if (target) {
+    let filterEl = target.closest("#filter"),
+      onlyEmptyEl = target.closest("#only-empty"),
+      entryBox = target.closest("vbox[data-key]"),
+      helpButton = target.closest("#button-help"),
+      resetButton = target.closest("#button-reset"),
+      exportButton = target.closest("#button-export");
+    if ((filterEl || onlyEmptyEl) && applyFilter(), helpButton && browserApi.default.tabs.create({
         url: "https://github.com/aclap-dev/video-downloadhelper/wiki/Translations"
-      }), l && (await me(T), ve()), d) {
-      let m = `[${X}]
+      }), resetButton && (await removeSetting(viewOptionsSetting), renderEntries()), exportButton) {
+      let exportText = `[${uiLanguage}]
 `;
-      m += `# v${F.default.runtime.getManifest().version}
+      exportText += `# v${browserApi.default.runtime.getManifest().version}
 `;
-      let r = await N(T);
-      for (let P of Object.keys(r)) m += `${P} = '''${r[P]}'''
+      let savedValues = await loadSetting(viewOptionsSetting);
+      for (let key of Object.keys(savedValues)) exportText += `${key} = '''${savedValues[key]}'''
 `;
-      let v = new Blob([m], {
+      let blob = new Blob([exportText], {
           type: "text/plain;charset=utf-8"
         }),
-        w = URL.createObjectURL(v);
-      F.default.downloads.download({
-        url: w,
-        filename: `${X}.txt`,
+        objectUrl = URL.createObjectURL(blob);
+      browserApi.default.downloads.download({
+        url: objectUrl,
+        filename: `${uiLanguage}.txt`,
         saveAs: !0,
         conflictAction: "uniquify"
       })
     }
-    if (n && e.type != "click") {
-      let m = n.dataset.key,
-        r = n.querySelector("sl-input"),
-        v = await N(T);
-      r.value != v[m] && (r.value.length > 0 && r.value != ee[m] ? (n
-        .classList.add("custom"), v[m] = r.value) : (n.classList.remove(
-        "custom"), r.value = ee[m] || "", delete v[m]), await pe(T, v))
+    if (entryBox && event.type != "click") {
+      let entryKey = entryBox.dataset.key,
+        inputField = entryBox.querySelector("sl-input"),
+        savedValues = await loadSetting(viewOptionsSetting);
+      inputField.value != savedValues[entryKey] && (inputField.value.length > 0 && inputField.value != uiLanguageStrings[entryKey] ? (entryBox
+        .classList.add("custom"), savedValues[entryKey] = inputField.value) : (entryBox.classList.remove(
+        "custom"), inputField.value = uiLanguageStrings[entryKey] || "", delete savedValues[entryKey]), await saveSetting(viewOptionsSetting, savedValues))
     }
   }
 }
-ve();
-window.addEventListener("click", O);
-window.addEventListener("change", O);
-window.addEventListener("input", O);
-window.addEventListener("sl-clear", O);
+renderEntries();
+window.addEventListener("click", handleEvent);
+window.addEventListener("change", handleEvent);
+window.addEventListener("input", handleEvent);
+window.addEventListener("sl-clear", handleEvent);

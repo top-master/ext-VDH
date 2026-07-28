@@ -1,53 +1,53 @@
-var it = Object.create;
-var we = Object.defineProperty;
-var st = Object.getOwnPropertyDescriptor;
-var at = Object.getOwnPropertyNames;
-var lt = Object.getPrototypeOf,
-  ut = Object.prototype.hasOwnProperty;
-var ct = (e, t) => () => (t || e((t = {
+var objectCreate = Object.create;
+var defineProperty = Object.defineProperty;
+var getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var getOwnPropNames = Object.getOwnPropertyNames;
+var getPrototypeOf = Object.getPrototypeOf,
+  hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
       exports: {}
     })
-    .exports, t), t.exports),
-  dt = (e, t) => {
-    for (var r in t) we(e, r, {
-      get: t[r],
+    .exports, cachedExports), cachedExports.exports),
+  defineExports = (exportTarget, exportsMap) => {
+    for (var exportName in exportsMap) defineProperty(exportTarget, exportName, {
+      get: exportsMap[exportName],
       enumerable: !0
     })
   },
-  mt = (e, t, r, n) => {
-    if (t && typeof t == "object" || typeof t == "function")
-      for (let o of at(t)) !ut.call(e, o) && o !== r && we(e, o, {
-        get: () => t[o],
-        enumerable: !(n = st(t, o)) || n.enumerable
+  copyProps = (targetObj, fromObj, exceptKey, descFlag) => {
+    if (fromObj && typeof fromObj == "object" || typeof fromObj == "function")
+      for (let propKey of getOwnPropNames(fromObj)) !hasOwnPropertyRef.call(targetObj, propKey) && propKey !== exceptKey && defineProperty(targetObj, propKey, {
+        get: () => fromObj[propKey],
+        enumerable: !(descFlag = getOwnPropDesc(fromObj, propKey)) || descFlag.enumerable
       });
-    return e
+    return targetObj
   };
-var _e = (e, t, r) => (r = e != null ? it(lt(e)) : {}, mt(t || !e || !e
-  .__esModule ? we(r, "default", {
-    value: e,
+var toEsm = (moduleObj, isNodeMode, esmTarget) => (esmTarget = moduleObj != null ? objectCreate(getPrototypeOf(moduleObj)) : {}, copyProps(isNodeMode || !moduleObj || !moduleObj
+  .__esModule ? defineProperty(esmTarget, "default", {
+    value: moduleObj,
     enumerable: !0
-  }) : r, e));
-var ne = ct((Se, Fe) => {
-  (function(e, t) {
+  }) : esmTarget, moduleObj));
+var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
+  (function(globalScope, factory) {
     if (typeof define == "function" && define.amd) define(
-      "webextension-polyfill", ["module"], t);
-    else if (typeof Se < "u") t(Fe);
+      "webextension-polyfill", ["module"], factory);
+    else if (typeof polyfillExports < "u") factory(polyfillModule);
     else {
-      var r = {
+      var moduleShim = {
         exports: {}
       };
-      t(r), e.browser = r.exports
+      factory(moduleShim), globalScope.browser = moduleShim.exports
     }
-  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : Se,
-    function(e) {
+  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : polyfillExports,
+    function(browserGlobal) {
       "use strict";
       if (!globalThis.chrome?.runtime?.id) throw new Error(
         "This script should only be loaded in a browser extension.");
       if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
           globalThis.browser) !== Object.prototype) {
-        let t = "The message port closed before a response was received.",
-          r = n => {
-            let o = {
+        let messagePortClosedMessage = "The message port closed before a response was received.",
+          wrapApis = chromeApi => {
+            let apiMetadata = {
               alarms: {
                 clear: {
                   minArgs: 0,
@@ -719,205 +719,205 @@ var ne = ct((Se, Fe) => {
                 }
               }
             };
-            if (Object.keys(o)
+            if (Object.keys(apiMetadata)
               .length === 0) throw new Error(
               "api-metadata.json has not been included in browser-polyfill"
               );
-            class i extends WeakMap {
-              constructor(c, m = void 0) {
-                super(m), this.createItem = c
+            class DefaultWeakMap extends WeakMap {
+              constructor(createItem, entries = void 0) {
+                super(entries), this.createItem = createItem
               }
-              get(c) {
-                return this.has(c) || this.set(c, this.createItem(c)),
-                  super.get(c)
+              get(key) {
+                return this.has(key) || this.set(key, this.createItem(key)),
+                  super.get(key)
               }
             }
-            let a = u => u && typeof u == "object" && typeof u.then ==
+            let isThenable = value => value && typeof value == "object" && typeof value.then ==
               "function",
-              s = (u, c) => (...m) => {
-                n.runtime.lastError ? u.reject(new Error(n.runtime.lastError
-                    .message)) : c.singleCallbackArg || m.length <= 1 && c
-                  .singleCallbackArg !== !1 ? u.resolve(m[0]) : u.resolve(m)
+              makeCallback = (promiseCallbacks, metadata) => (...callbackArgs) => {
+                chromeApi.runtime.lastError ? promiseCallbacks.reject(new Error(chromeApi.runtime.lastError
+                    .message)) : metadata.singleCallbackArg || callbackArgs.length <= 1 && metadata
+                  .singleCallbackArg !== !1 ? promiseCallbacks.resolve(callbackArgs[0]) : promiseCallbacks.resolve(callbackArgs)
               },
-              _ = u => u == 1 ? "argument" : "arguments",
-              l = (u, c) => function(f, ...v) {
-                if (v.length < c.minArgs) throw new Error(
-                  `Expected at least ${c.minArgs} ${_(c.minArgs)} for ${u}(), got ${v.length}`
+              pluralizeArgs = count => count == 1 ? "argument" : "arguments",
+              wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
+                if (args.length < metadata.minArgs) throw new Error(
+                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                   );
-                if (v.length > c.maxArgs) throw new Error(
-                  `Expected at most ${c.maxArgs} ${_(c.maxArgs)} for ${u}(), got ${v.length}`
+                if (args.length > metadata.maxArgs) throw new Error(
+                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                   );
-                return new Promise((T, C) => {
-                  if (c.fallbackToNoCallback) try {
-                    f[u](...v, s({
-                      resolve: T,
-                      reject: C
-                    }, c))
-                  } catch (g) {
+                return new Promise((resolve, reject) => {
+                  if (metadata.fallbackToNoCallback) try {
+                    apiTarget[name](...args, makeCallback({
+                      resolve: resolve,
+                      reject: reject
+                    }, metadata))
+                  } catch (error) {
                     console.warn(
-                        `${u} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                        g), f[u](...v), c.fallbackToNoCallback = !1, c
-                      .noCallback = !0, T()
-                  } else c.noCallback ? (f[u](...v), T()) : f[u](...v,
-                    s({
-                      resolve: T,
-                      reject: C
-                    }, c))
+                        `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                        error), apiTarget[name](...args), metadata.fallbackToNoCallback = !1, metadata
+                      .noCallback = !0, resolve()
+                  } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](...args,
+                    makeCallback({
+                      resolve: resolve,
+                      reject: reject
+                    }, metadata))
                 })
               },
-              A = (u, c, m) => new Proxy(c, {
-                apply(f, v, T) {
-                  return m.call(v, u, ...T)
+              wrapMethod = (target, method, wrapper) => new Proxy(method, {
+                apply(fnTarget, thisArg, callArgs) {
+                  return wrapper.call(thisArg, target, ...callArgs)
                 }
               }),
-              x = Function.call.bind(Object.prototype.hasOwnProperty),
-              N = (u, c = {}, m = {}) => {
-                let f = Object.create(null),
-                  v = {
-                    has(C, g) {
-                      return g in u || g in f
+              hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty),
+              wrapObject = (target, wrappers = {}, metadata = {}) => {
+                let cache = Object.create(null),
+                  handler = {
+                    has(proxyTarget, prop) {
+                      return prop in target || prop in cache
                     },
-                    get(C, g, I) {
-                      if (g in f) return f[g];
-                      if (!(g in u)) return;
-                      let k = u[g];
-                      if (typeof k == "function")
-                        if (typeof c[g] == "function") k = A(u, u[g], c[
-                          g]);
-                        else if (x(m, g)) {
-                        let M = l(g, m[g]);
-                        k = A(u, u[g], M)
-                      } else k = k.bind(u);
-                      else if (typeof k == "object" && k !== null && (x(c,
-                          g) || x(m, g))) k = N(k, c[g], m[g]);
-                      else if (x(m, "*")) k = N(k, c[g], m["*"]);
-                      else return Object.defineProperty(f, g, {
+                    get(proxyTarget, prop, receiver) {
+                      if (prop in cache) return cache[prop];
+                      if (!(prop in target)) return;
+                      let value = target[prop];
+                      if (typeof value == "function")
+                        if (typeof wrappers[prop] == "function") value = wrapMethod(target, target[prop], wrappers[
+                          prop]);
+                        else if (hasOwnProperty(metadata, prop)) {
+                        let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
+                        value = wrapMethod(target, target[prop], wrappedFn)
+                      } else value = value.bind(target);
+                      else if (typeof value == "object" && value !== null && (hasOwnProperty(wrappers,
+                          prop) || hasOwnProperty(metadata, prop))) value = wrapObject(value, wrappers[prop], metadata[prop]);
+                      else if (hasOwnProperty(metadata, "*")) value = wrapObject(value, wrappers[prop], metadata["*"]);
+                      else return Object.defineProperty(cache, prop, {
                         configurable: !0,
                         enumerable: !0,
                         get() {
-                          return u[g]
+                          return target[prop]
                         },
-                        set(M) {
-                          u[g] = M
+                        set(newValue) {
+                          target[prop] = newValue
                         }
-                      }), k;
-                      return f[g] = k, k
+                      }), value;
+                      return cache[prop] = value, value
                     },
-                    set(C, g, I, k) {
-                      return g in f ? f[g] = I : u[g] = I, !0
+                    set(proxyTarget, prop, value, receiver) {
+                      return prop in cache ? cache[prop] = value : target[prop] = value, !0
                     },
-                    defineProperty(C, g, I) {
-                      return Reflect.defineProperty(f, g, I)
+                    defineProperty(proxyTarget, prop, desc) {
+                      return Reflect.defineProperty(cache, prop, desc)
                     },
-                    deleteProperty(C, g) {
-                      return Reflect.deleteProperty(f, g)
+                    deleteProperty(proxyTarget, prop) {
+                      return Reflect.deleteProperty(cache, prop)
                     }
                   },
-                  T = Object.create(u);
-                return new Proxy(T, v)
+                  proxyBase = Object.create(target);
+                return new Proxy(proxyBase, handler)
               },
-              D = u => ({
-                addListener(c, m, ...f) {
-                  c.addListener(u.get(m), ...f)
+              wrapEvent = wrapperMap => ({
+                addListener(target, listener, ...args) {
+                  target.addListener(wrapperMap.get(listener), ...args)
                 },
-                hasListener(c, m) {
-                  return c.hasListener(u.get(m))
+                hasListener(target, listener) {
+                  return target.hasListener(wrapperMap.get(listener))
                 },
-                removeListener(c, m) {
-                  c.removeListener(u.get(m))
+                removeListener(target, listener) {
+                  target.removeListener(wrapperMap.get(listener))
                 }
               }),
-              S = new i(u => typeof u != "function" ? u : function(m) {
-                let f = N(m, {}, {
+              onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
+                let wrappedRequest = wrapObject(request, {}, {
                   getContent: {
                     minArgs: 0,
                     maxArgs: 0
                   }
                 });
-                u(f)
+                listener(wrappedRequest)
               }),
-              d = new i(u => typeof u != "function" ? u : function(m, f,
-              v) {
-                let T = !1,
-                  C, g = new Promise(J => {
-                    C = function(z) {
-                      T = !0, J(z)
+              onMessageWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(message, sender,
+              sendResponse) {
+                let responseSent = !1,
+                  resolveResponse, responsePromise = new Promise(resolvePromise => {
+                    resolveResponse = function(response) {
+                      responseSent = !0, resolvePromise(response)
                     }
                   }),
-                  I;
+                  result;
                 try {
-                  I = u(m, f, C)
-                } catch (J) {
-                  I = Promise.reject(J)
+                  result = listener(message, sender, resolveResponse)
+                } catch (error) {
+                  result = Promise.reject(error)
                 }
-                let k = I !== !0 && a(I);
-                if (I !== !0 && !k && !T) return !1;
-                let M = J => {
-                  J.then(z => {
-                      v(z)
-                    }, z => {
-                      let xe;
-                      z && (z instanceof Error || typeof z.message ==
-                          "string") ? xe = z.message : xe =
-                        "An unexpected error occurred", v({
+                let resultIsThenable = result !== !0 && isThenable(result);
+                if (result !== !0 && !resultIsThenable && !responseSent) return !1;
+                let sendResolvedResponse = resultPromise => {
+                  resultPromise.then(response => {
+                      sendResponse(response)
+                    }, error => {
+                      let errorMessage;
+                      error && (error instanceof Error || typeof error.message ==
+                          "string") ? errorMessage = error.message : errorMessage =
+                        "An unexpected error occurred", sendResponse({
                           __mozWebExtensionPolyfillReject__: !0,
-                          message: xe
+                          message: errorMessage
                         })
                     })
-                    .catch(z => {
+                    .catch(replyError => {
                       console.error(
-                        "Failed to send onMessage rejected reply", z
+                        "Failed to send onMessage rejected reply", replyError
                         )
                     })
                 };
-                return M(k ? I : g), !0
+                return sendResolvedResponse(resultIsThenable ? result : responsePromise), !0
               }),
-              H = ({
-                reject: u,
-                resolve: c
-              }, m) => {
-                n.runtime.lastError ? n.runtime.lastError.message === t ?
-                  c() : u(new Error(n.runtime.lastError.message)) : m && m
-                  .__mozWebExtensionPolyfillReject__ ? u(new Error(m
-                    .message)) : c(m)
+              processResponse = ({
+                reject: reject,
+                resolve: resolve
+              }, response) => {
+                chromeApi.runtime.lastError ? chromeApi.runtime.lastError.message === messagePortClosedMessage ?
+                  resolve() : reject(new Error(chromeApi.runtime.lastError.message)) : response && response
+                  .__mozWebExtensionPolyfillReject__ ? reject(new Error(response
+                    .message)) : resolve(response)
               },
-              F = (u, c, m, ...f) => {
-                if (f.length < c.minArgs) throw new Error(
-                  `Expected at least ${c.minArgs} ${_(c.minArgs)} for ${u}(), got ${f.length}`
+              wrapSendMessage = (name, metadata, apiTarget, ...args) => {
+                if (args.length < metadata.minArgs) throw new Error(
+                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
                   );
-                if (f.length > c.maxArgs) throw new Error(
-                  `Expected at most ${c.maxArgs} ${_(c.maxArgs)} for ${u}(), got ${f.length}`
+                if (args.length > metadata.maxArgs) throw new Error(
+                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
                   );
-                return new Promise((v, T) => {
-                  let C = H.bind(null, {
-                    resolve: v,
-                    reject: T
+                return new Promise((resolve, reject) => {
+                  let boundCallback = processResponse.bind(null, {
+                    resolve: resolve,
+                    reject: reject
                   });
-                  f.push(C), m.sendMessage(...f)
+                  args.push(boundCallback), apiTarget.sendMessage(...args)
                 })
               },
-              U = {
+              staticWrappers = {
                 devtools: {
                   network: {
-                    onRequestFinished: D(S)
+                    onRequestFinished: wrapEvent(onRequestFinishedWrappers)
                   }
                 },
                 runtime: {
-                  onMessage: D(d),
-                  onMessageExternal: D(d),
-                  sendMessage: F.bind(null, "sendMessage", {
+                  onMessage: wrapEvent(onMessageWrappers),
+                  onMessageExternal: wrapEvent(onMessageWrappers),
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 1,
                     maxArgs: 3
                   })
                 },
                 tabs: {
-                  sendMessage: F.bind(null, "sendMessage", {
+                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
                     minArgs: 2,
                     maxArgs: 3
                   })
                 }
               },
-              Q = {
+              settingMetadata = {
                 clear: {
                   minArgs: 1,
                   maxArgs: 1
@@ -931,136 +931,136 @@ var ne = ct((Se, Fe) => {
                   maxArgs: 1
                 }
               };
-            return o.privacy = {
+            return apiMetadata.privacy = {
               network: {
-                "*": Q
+                "*": settingMetadata
               },
               services: {
-                "*": Q
+                "*": settingMetadata
               },
               websites: {
-                "*": Q
+                "*": settingMetadata
               }
-            }, N(n, U, o)
+            }, wrapObject(chromeApi, staticWrappers, apiMetadata)
           };
-        e.exports = r(chrome)
-      } else e.exports = globalThis.browser
+        browserGlobal.exports = wrapApis(chrome)
+      } else browserGlobal.exports = globalThis.browser
     })
 });
-var ye = {};
-dt(ye, {
-  bg: () => pt,
-  ca: () => ft,
-  co: () => gt,
-  cs: () => _t,
-  da: () => yt,
-  de: () => ht,
-  default: () => zt,
-  dsb: () => At,
-  el: () => xt,
-  en_US: () => be,
-  es: () => wt,
-  fr: () => bt,
-  hsb: () => vt,
-  hu: () => St,
-  id: () => kt,
-  is: () => Tt,
-  it: () => Ct,
-  ja: () => Mt,
-  ko: () => Et,
-  nb: () => Ot,
-  nl: () => It,
-  pl: () => Pt,
-  pt_BR: () => Nt,
-  ro: () => Vt,
-  ru: () => jt,
-  sk: () => Lt,
-  sl: () => qt,
-  sv: () => Rt,
-  tr: () => Dt,
-  uk: () => Ht,
-  zh_CN: () => Ft,
-  zh_TW: () => Jt
+var localeStringCounts = {};
+defineExports(localeStringCounts, {
+  bg: () => bgStringCount,
+  ca: () => caStringCount,
+  co: () => coStringCount,
+  cs: () => csStringCount,
+  da: () => daStringCount,
+  de: () => deStringCount,
+  default: () => localeStringCountsDefault,
+  dsb: () => dsbStringCount,
+  el: () => elStringCount,
+  en_US: () => enUsStringCount,
+  es: () => esStringCount,
+  fr: () => frStringCount,
+  hsb: () => hsbStringCount,
+  hu: () => huStringCount,
+  id: () => idStringCount,
+  is: () => isStringCount,
+  it: () => itStringCount,
+  ja: () => jaStringCount,
+  ko: () => koStringCount,
+  nb: () => nbStringCount,
+  nl: () => nlStringCount,
+  pl: () => plStringCount,
+  pt_BR: () => ptBrStringCount,
+  ro: () => roStringCount,
+  ru: () => ruStringCount,
+  sk: () => skStringCount,
+  sl: () => slStringCount,
+  sv: () => svStringCount,
+  tr: () => trStringCount,
+  uk: () => ukStringCount,
+  zh_CN: () => zhCnStringCount,
+  zh_TW: () => zhTwStringCount
 });
-var pt = 224,
-  ft = 538,
-  gt = 676,
-  _t = 637,
-  yt = 379,
-  ht = 685,
-  At = 519,
-  xt = 636,
-  be = 682,
-  wt = 578,
-  bt = 685,
-  vt = 519,
-  St = 540,
-  kt = 538,
-  Tt = 251,
-  Ct = 682,
-  Mt = 624,
-  Et = 303,
-  Ot = 255,
-  It = 651,
-  Pt = 636,
-  Nt = 670,
-  Vt = 223,
-  jt = 578,
-  Lt = 535,
-  qt = 540,
-  Rt = 540,
-  Dt = 617,
-  Ht = 669,
-  Ft = 664,
-  Jt = 641,
-  zt = {
-    bg: pt,
-    ca: ft,
-    co: gt,
-    cs: _t,
-    da: yt,
-    de: ht,
-    dsb: At,
-    el: xt,
-    en_US: be,
-    es: wt,
-    fr: bt,
-    hsb: vt,
-    hu: St,
-    id: kt,
-    is: Tt,
-    it: Ct,
-    ja: Mt,
-    ko: Et,
-    nb: Ot,
-    nl: It,
-    pl: Pt,
-    pt_BR: Nt,
-    ro: Vt,
-    ru: jt,
-    sk: Lt,
-    sl: qt,
-    sv: Rt,
-    tr: Dt,
-    uk: Ht,
-    zh_CN: Ft,
-    zh_TW: Jt
+var bgStringCount = 224,
+  caStringCount = 538,
+  coStringCount = 676,
+  csStringCount = 637,
+  daStringCount = 379,
+  deStringCount = 685,
+  dsbStringCount = 519,
+  elStringCount = 636,
+  enUsStringCount = 682,
+  esStringCount = 578,
+  frStringCount = 685,
+  hsbStringCount = 519,
+  huStringCount = 540,
+  idStringCount = 538,
+  isStringCount = 251,
+  itStringCount = 682,
+  jaStringCount = 624,
+  koStringCount = 303,
+  nbStringCount = 255,
+  nlStringCount = 651,
+  plStringCount = 636,
+  ptBrStringCount = 670,
+  roStringCount = 223,
+  ruStringCount = 578,
+  skStringCount = 535,
+  slStringCount = 540,
+  svStringCount = 540,
+  trStringCount = 617,
+  ukStringCount = 669,
+  zhCnStringCount = 664,
+  zhTwStringCount = 641,
+  localeStringCountsDefault = {
+    bg: bgStringCount,
+    ca: caStringCount,
+    co: coStringCount,
+    cs: csStringCount,
+    da: daStringCount,
+    de: deStringCount,
+    dsb: dsbStringCount,
+    el: elStringCount,
+    en_US: enUsStringCount,
+    es: esStringCount,
+    fr: frStringCount,
+    hsb: hsbStringCount,
+    hu: huStringCount,
+    id: idStringCount,
+    is: isStringCount,
+    it: itStringCount,
+    ja: jaStringCount,
+    ko: koStringCount,
+    nb: nbStringCount,
+    nl: nlStringCount,
+    pl: plStringCount,
+    pt_BR: ptBrStringCount,
+    ro: roStringCount,
+    ru: ruStringCount,
+    sk: skStringCount,
+    sl: slStringCount,
+    sv: svStringCount,
+    tr: trStringCount,
+    uk: ukStringCount,
+    zh_CN: zhCnStringCount,
+    zh_TW: zhTwStringCount
   };
 
-function G(e) {
-  var t = String(e);
-  if (t === "[object Object]") try {
-    t = JSON.stringify(e)
+function formatValue(value) {
+  var text = String(value);
+  if (text === "[object Object]") try {
+    text = JSON.stringify(value)
   } catch {}
-  return t
+  return text
 }
-var $t = function() {
-    function e() {}
-    return e.prototype.isSome = function() {
+var NoneImpl = function() {
+    function NoneCtor() {}
+    return NoneCtor.prototype.isSome = function() {
       return !1
-    }, e.prototype.isNone = function() {
+    }, NoneCtor.prototype.isNone = function() {
       return !0
-    }, e.prototype[Symbol.iterator] = function() {
+    }, NoneCtor.prototype[Symbol.iterator] = function() {
       return {
         next: function() {
           return {
@@ -1069,44 +1069,44 @@ var $t = function() {
           }
         }
       }
-    }, e.prototype.unwrapOr = function(t) {
-      return t
-    }, e.prototype.expect = function(t) {
-      throw new Error("".concat(t))
-    }, e.prototype.unwrap = function() {
+    }, NoneCtor.prototype.unwrapOr = function(fallbackValue) {
+      return fallbackValue
+    }, NoneCtor.prototype.expect = function(errorMessage) {
+      throw new Error("".concat(errorMessage))
+    }, NoneCtor.prototype.unwrap = function() {
       throw new Error("Tried to unwrap None")
-    }, e.prototype.map = function(t) {
+    }, NoneCtor.prototype.map = function(mapFn) {
       return this
-    }, e.prototype.mapOr = function(t, r) {
-      return t
-    }, e.prototype.mapOrElse = function(t, r) {
-      return t()
-    }, e.prototype.or = function(t) {
-      return t
-    }, e.prototype.orElse = function(t) {
-      return t()
-    }, e.prototype.andThen = function(t) {
+    }, NoneCtor.prototype.mapOr = function(fallbackValue, mapFn) {
+      return fallbackValue
+    }, NoneCtor.prototype.mapOrElse = function(fallbackFn, mapFn) {
+      return fallbackFn()
+    }, NoneCtor.prototype.or = function(alternative) {
+      return alternative
+    }, NoneCtor.prototype.orElse = function(alternativeFn) {
+      return alternativeFn()
+    }, NoneCtor.prototype.andThen = function(thenFn) {
       return this
-    }, e.prototype.toResult = function(t) {
-      return P(t)
-    }, e.prototype.toString = function() {
+    }, NoneCtor.prototype.toResult = function(errorValue) {
+      return makeErr(errorValue)
+    }, NoneCtor.prototype.toString = function() {
       return "None"
-    }, e
+    }, NoneCtor
   }(),
-  p = new $t;
-Object.freeze(p);
-var Ut = function() {
-    function e(t) {
-      if (!(this instanceof e)) return new e(t);
-      this.value = t
+  NoneSingleton = new NoneImpl;
+Object.freeze(NoneSingleton);
+var SomeImpl = function() {
+    function SomeCtor(someValue) {
+      if (!(this instanceof SomeCtor)) return new SomeCtor(someValue);
+      this.value = someValue
     }
-    return e.prototype.isSome = function() {
+    return SomeCtor.prototype.isSome = function() {
       return !0
-    }, e.prototype.isNone = function() {
+    }, SomeCtor.prototype.isNone = function() {
       return !1
-    }, e.prototype[Symbol.iterator] = function() {
-      var t = Object(this.value);
-      return Symbol.iterator in t ? t[Symbol.iterator]() : {
+    }, SomeCtor.prototype[Symbol.iterator] = function() {
+      var valueObject = Object(this.value);
+      return Symbol.iterator in valueObject ? valueObject[Symbol.iterator]() : {
         next: function() {
           return {
             done: !0,
@@ -1114,78 +1114,78 @@ var Ut = function() {
           }
         }
       }
-    }, e.prototype.unwrapOr = function(t) {
+    }, SomeCtor.prototype.unwrapOr = function(fallbackValue) {
       return this.value
-    }, e.prototype.expect = function(t) {
+    }, SomeCtor.prototype.expect = function(errorMessage) {
       return this.value
-    }, e.prototype.unwrap = function() {
+    }, SomeCtor.prototype.unwrap = function() {
       return this.value
-    }, e.prototype.map = function(t) {
-      return w(t(this.value))
-    }, e.prototype.mapOr = function(t, r) {
-      return r(this.value)
-    }, e.prototype.mapOrElse = function(t, r) {
-      return r(this.value)
-    }, e.prototype.or = function(t) {
+    }, SomeCtor.prototype.map = function(mapFn) {
+      return makeSome(mapFn(this.value))
+    }, SomeCtor.prototype.mapOr = function(fallbackValue, mapFn) {
+      return mapFn(this.value)
+    }, SomeCtor.prototype.mapOrElse = function(fallbackFn, mapFn) {
+      return mapFn(this.value)
+    }, SomeCtor.prototype.or = function(alternative) {
       return this
-    }, e.prototype.orElse = function(t) {
+    }, SomeCtor.prototype.orElse = function(alternativeFn) {
       return this
-    }, e.prototype.andThen = function(t) {
-      return t(this.value)
-    }, e.prototype.toResult = function(t) {
-      return y(this.value)
-    }, e.prototype.safeUnwrap = function() {
+    }, SomeCtor.prototype.andThen = function(thenFn) {
+      return thenFn(this.value)
+    }, SomeCtor.prototype.toResult = function(errorValue) {
+      return makeOk(this.value)
+    }, SomeCtor.prototype.safeUnwrap = function() {
       return this.value
-    }, e.prototype.toString = function() {
-      return "Some(".concat(G(this.value), ")")
-    }, e.EMPTY = new e(void 0), e
+    }, SomeCtor.prototype.toString = function() {
+      return "Some(".concat(formatValue(this.value), ")")
+    }, SomeCtor.EMPTY = new SomeCtor(void 0), SomeCtor
   }(),
-  w = Ut,
-  K;
-(function(e) {
-  function t() {
-    for (var o = [], i = 0; i < arguments.length; i++) o[i] = arguments[i];
-    for (var a = [], s = 0, _ = o; s < _.length; s++) {
-      var l = _[s];
-      if (l.isSome()) a.push(l.value);
-      else return l
+  makeSome = SomeImpl,
+  OptionNamespace;
+(function(optionNs) {
+  function allSome() {
+    for (var optionArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) optionArgs[argIndex] = arguments[argIndex];
+    for (var collected = [], scanIndex = 0, optionList = optionArgs; scanIndex < optionList.length; scanIndex++) {
+      var option = optionList[scanIndex];
+      if (option.isSome()) collected.push(option.value);
+      else return option
     }
-    return w(a)
+    return makeSome(collected)
   }
-  e.all = t;
+  optionNs.all = allSome;
 
-  function r() {
-    for (var o = [], i = 0; i < arguments.length; i++) o[i] = arguments[i];
-    for (var a = 0, s = o; a < s.length; a++) {
-      var _ = s[a];
-      return _.isSome(), _
+  function firstSome() {
+    for (var optionArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) optionArgs[argIndex] = arguments[argIndex];
+    for (var scanIndex = 0, optionList = optionArgs; scanIndex < optionList.length; scanIndex++) {
+      var option = optionList[scanIndex];
+      return option.isSome(), option
     }
-    return p
+    return NoneSingleton
   }
-  e.any = r;
+  optionNs.any = firstSome;
 
-  function n(o) {
-    return o instanceof w || o === p
+  function isOptionGuard(candidate) {
+    return candidate instanceof makeSome || candidate === NoneSingleton
   }
-  e.isOption = n
-})(K || (K = {}));
-var Qt = function() {
-  function e(t) {
-    if (!(this instanceof e)) return new e(t);
-    this.error = t;
-    var r = new Error()
+  optionNs.isOption = isOptionGuard
+})(OptionNamespace || (OptionNamespace = {}));
+var ErrImpl = function() {
+  function ErrCtor(errorValue) {
+    if (!(this instanceof ErrCtor)) return new ErrCtor(errorValue);
+    this.error = errorValue;
+    var stackLines = new Error()
       .stack.split(`
 `)
       .slice(2);
-    r && r.length > 0 && r[0].includes("ErrImpl") && r.shift(), this._stack =
-      r.join(`
+    stackLines && stackLines.length > 0 && stackLines[0].includes("ErrImpl") && stackLines.shift(), this._stack =
+      stackLines.join(`
 `)
   }
-  return e.prototype.isOk = function() {
+  return ErrCtor.prototype.isOk = function() {
     return !1
-  }, e.prototype.isErr = function() {
+  }, ErrCtor.prototype.isErr = function() {
     return !0
-  }, e.prototype[Symbol.iterator] = function() {
+  }, ErrCtor.prototype[Symbol.iterator] = function() {
     return {
       next: function() {
         return {
@@ -1194,46 +1194,46 @@ var Qt = function() {
         }
       }
     }
-  }, e.prototype.else = function(t) {
-    return t
-  }, e.prototype.unwrapOr = function(t) {
-    return t
-  }, e.prototype.expect = function(t) {
-    throw new Error("".concat(t, " - Error: ")
-      .concat(G(this.error), `
+  }, ErrCtor.prototype.else = function(fallbackValue) {
+    return fallbackValue
+  }, ErrCtor.prototype.unwrapOr = function(fallbackValue) {
+    return fallbackValue
+  }, ErrCtor.prototype.expect = function(errorMessage) {
+    throw new Error("".concat(errorMessage, " - Error: ")
+      .concat(formatValue(this.error), `
 `)
       .concat(this._stack), {
         cause: this.error
       })
-  }, e.prototype.expectErr = function(t) {
+  }, ErrCtor.prototype.expectErr = function(errorMessage) {
     return this.error
-  }, e.prototype.unwrap = function() {
-    throw new Error("Tried to unwrap Error: ".concat(G(this.error), `
+  }, ErrCtor.prototype.unwrap = function() {
+    throw new Error("Tried to unwrap Error: ".concat(formatValue(this.error), `
 `)
       .concat(this._stack), {
         cause: this.error
       })
-  }, e.prototype.unwrapErr = function() {
+  }, ErrCtor.prototype.unwrapErr = function() {
     return this.error
-  }, e.prototype.map = function(t) {
+  }, ErrCtor.prototype.map = function(mapFn) {
     return this
-  }, e.prototype.andThen = function(t) {
+  }, ErrCtor.prototype.andThen = function(thenFn) {
     return this
-  }, e.prototype.mapErr = function(t) {
-    return new P(t(this.error))
-  }, e.prototype.mapOr = function(t, r) {
-    return t
-  }, e.prototype.mapOrElse = function(t, r) {
-    return t(this.error)
-  }, e.prototype.or = function(t) {
-    return t
-  }, e.prototype.orElse = function(t) {
-    return t(this.error)
-  }, e.prototype.toOption = function() {
-    return p
-  }, e.prototype.toString = function() {
-    return "Err(".concat(G(this.error), ")")
-  }, Object.defineProperty(e.prototype, "stack", {
+  }, ErrCtor.prototype.mapErr = function(mapErrFn) {
+    return new makeErr(mapErrFn(this.error))
+  }, ErrCtor.prototype.mapOr = function(fallbackValue, mapFn) {
+    return fallbackValue
+  }, ErrCtor.prototype.mapOrElse = function(fallbackFn, mapFn) {
+    return fallbackFn(this.error)
+  }, ErrCtor.prototype.or = function(alternative) {
+    return alternative
+  }, ErrCtor.prototype.orElse = function(alternativeFn) {
+    return alternativeFn(this.error)
+  }, ErrCtor.prototype.toOption = function() {
+    return NoneSingleton
+  }, ErrCtor.prototype.toString = function() {
+    return "Err(".concat(formatValue(this.error), ")")
+  }, Object.defineProperty(ErrCtor.prototype, "stack", {
     get: function() {
       return "".concat(this, `
 `)
@@ -1241,23 +1241,23 @@ var Qt = function() {
     },
     enumerable: !1,
     configurable: !0
-  }), e.prototype.toAsyncResult = function() {
-    return new ve(this)
-  }, e.EMPTY = new e(void 0), e
+  }), ErrCtor.prototype.toAsyncResult = function() {
+    return new AsyncResultImpl(this)
+  }, ErrCtor.EMPTY = new ErrCtor(void 0), ErrCtor
 }();
-var P = Qt,
-  Gt = function() {
-    function e(t) {
-      if (!(this instanceof e)) return new e(t);
-      this.value = t
+var makeErr = ErrImpl,
+  OkImpl = function() {
+    function OkCtor(okValue) {
+      if (!(this instanceof OkCtor)) return new OkCtor(okValue);
+      this.value = okValue
     }
-    return e.prototype.isOk = function() {
+    return OkCtor.prototype.isOk = function() {
       return !0
-    }, e.prototype.isErr = function() {
+    }, OkCtor.prototype.isErr = function() {
       return !1
-    }, e.prototype[Symbol.iterator] = function() {
-      var t = Object(this.value);
-      return Symbol.iterator in t ? t[Symbol.iterator]() : {
+    }, OkCtor.prototype[Symbol.iterator] = function() {
+      var valueObject = Object(this.value);
+      return Symbol.iterator in valueObject ? valueObject[Symbol.iterator]() : {
         next: function() {
           return {
             done: !0,
@@ -1265,513 +1265,513 @@ var P = Qt,
           }
         }
       }
-    }, e.prototype.else = function(t) {
+    }, OkCtor.prototype.else = function(fallbackValue) {
       return this.value
-    }, e.prototype.unwrapOr = function(t) {
+    }, OkCtor.prototype.unwrapOr = function(fallbackValue) {
       return this.value
-    }, e.prototype.expect = function(t) {
+    }, OkCtor.prototype.expect = function(errorMessage) {
       return this.value
-    }, e.prototype.expectErr = function(t) {
-      throw new Error(t)
-    }, e.prototype.unwrap = function() {
+    }, OkCtor.prototype.expectErr = function(errorMessage) {
+      throw new Error(errorMessage)
+    }, OkCtor.prototype.unwrap = function() {
       return this.value
-    }, e.prototype.unwrapErr = function() {
-      throw new Error("Tried to unwrap Ok: ".concat(G(this.value)), {
+    }, OkCtor.prototype.unwrapErr = function() {
+      throw new Error("Tried to unwrap Ok: ".concat(formatValue(this.value)), {
         cause: this.value
       })
-    }, e.prototype.map = function(t) {
-      return new y(t(this.value))
-    }, e.prototype.andThen = function(t) {
-      return t(this.value)
-    }, e.prototype.mapErr = function(t) {
+    }, OkCtor.prototype.map = function(mapFn) {
+      return new makeOk(mapFn(this.value))
+    }, OkCtor.prototype.andThen = function(thenFn) {
+      return thenFn(this.value)
+    }, OkCtor.prototype.mapErr = function(mapErrFn) {
       return this
-    }, e.prototype.mapOr = function(t, r) {
-      return r(this.value)
-    }, e.prototype.mapOrElse = function(t, r) {
-      return r(this.value)
-    }, e.prototype.or = function(t) {
+    }, OkCtor.prototype.mapOr = function(fallbackValue, mapFn) {
+      return mapFn(this.value)
+    }, OkCtor.prototype.mapOrElse = function(fallbackFn, mapFn) {
+      return mapFn(this.value)
+    }, OkCtor.prototype.or = function(alternative) {
       return this
-    }, e.prototype.orElse = function(t) {
+    }, OkCtor.prototype.orElse = function(alternativeFn) {
       return this
-    }, e.prototype.toOption = function() {
-      return w(this.value)
-    }, e.prototype.safeUnwrap = function() {
+    }, OkCtor.prototype.toOption = function() {
+      return makeSome(this.value)
+    }, OkCtor.prototype.safeUnwrap = function() {
       return this.value
-    }, e.prototype.toString = function() {
-      return "Ok(".concat(G(this.value), ")")
-    }, e.prototype.toAsyncResult = function() {
-      return new ve(this)
-    }, e.EMPTY = new e(void 0), e
+    }, OkCtor.prototype.toString = function() {
+      return "Ok(".concat(formatValue(this.value), ")")
+    }, OkCtor.prototype.toAsyncResult = function() {
+      return new AsyncResultImpl(this)
+    }, OkCtor.EMPTY = new OkCtor(void 0), OkCtor
   }();
-var y = Gt,
-  Y;
-(function(e) {
-  function t() {
-    for (var a = [], s = 0; s < arguments.length; s++) a[s] = arguments[s];
-    for (var _ = [], l = 0, A = a; l < A.length; l++) {
-      var x = A[l];
-      if (x.isOk()) _.push(x.value);
-      else return x
+var makeOk = OkImpl,
+  ResultNamespace;
+(function(resultNs) {
+  function allOk() {
+    for (var resultArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) resultArgs[argIndex] = arguments[argIndex];
+    for (var collected = [], scanIndex = 0, resultList = resultArgs; scanIndex < resultList.length; scanIndex++) {
+      var result = resultList[scanIndex];
+      if (result.isOk()) collected.push(result.value);
+      else return result
     }
-    return new y(_)
+    return new makeOk(collected)
   }
-  e.all = t;
+  resultNs.all = allOk;
 
-  function r() {
-    for (var a = [], s = 0; s < arguments.length; s++) a[s] = arguments[s];
-    for (var _ = [], l = 0, A = a; l < A.length; l++) {
-      var x = A[l];
-      if (x.isOk()) return x;
-      _.push(x.error)
+  function firstOk() {
+    for (var resultArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) resultArgs[argIndex] = arguments[argIndex];
+    for (var collectedErrors = [], scanIndex = 0, resultList = resultArgs; scanIndex < resultList.length; scanIndex++) {
+      var result = resultList[scanIndex];
+      if (result.isOk()) return result;
+      collectedErrors.push(result.error)
     }
-    return new P(_)
+    return new makeErr(collectedErrors)
   }
-  e.any = r;
+  resultNs.any = firstOk;
 
-  function n(a) {
+  function wrapCall(operation) {
     try {
-      return new y(a())
-    } catch (s) {
-      return new P(s)
+      return new makeOk(operation())
+    } catch (caughtError) {
+      return new makeErr(caughtError)
     }
   }
-  e.wrap = n;
+  resultNs.wrap = wrapCall;
 
-  function o(a) {
+  function wrapAsyncCall(asyncOperation) {
     try {
-      return a()
-        .then(function(s) {
-          return new y(s)
+      return asyncOperation()
+        .then(function(resolvedValue) {
+          return new makeOk(resolvedValue)
         })
-        .catch(function(s) {
-          return new P(s)
+        .catch(function(rejectedError) {
+          return new makeErr(rejectedError)
         })
-    } catch (s) {
-      return Promise.resolve(new P(s))
+    } catch (caughtError) {
+      return Promise.resolve(new makeErr(caughtError))
     }
   }
-  e.wrapAsync = o;
+  resultNs.wrapAsync = wrapAsyncCall;
 
-  function i(a) {
-    return a instanceof P || a instanceof y
+  function isResultGuard(candidate) {
+    return candidate instanceof makeErr || candidate instanceof makeOk
   }
-  e.isResult = i
-})(Y || (Y = {}));
-var De = function(e, t, r, n) {
-    function o(i) {
-      return i instanceof r ? i : new r(function(a) {
-        a(i)
+  resultNs.isResult = isResultGuard
+})(ResultNamespace || (ResultNamespace = {}));
+var runAwaiter = function(thisArg, argsList, PromiseCtor, generatorFn) {
+    function adopt(value) {
+      return value instanceof PromiseCtor ? value : new PromiseCtor(function(resolveAdopted) {
+        resolveAdopted(value)
       })
     }
-    return new(r || (r = Promise))(function(i, a) {
-      function s(A) {
+    return new(PromiseCtor || (PromiseCtor = Promise))(function(resolve, reject) {
+      function fulfilled(nextValue) {
         try {
-          l(n.next(A))
-        } catch (x) {
-          a(x)
+          step(generatorFn.next(nextValue))
+        } catch (stepError) {
+          reject(stepError)
         }
       }
 
-      function _(A) {
+      function rejected(thrownValue) {
         try {
-          l(n.throw(A))
-        } catch (x) {
-          a(x)
+          step(generatorFn.throw(thrownValue))
+        } catch (stepError) {
+          reject(stepError)
         }
       }
 
-      function l(A) {
-        A.done ? i(A.value) : o(A.value)
-          .then(s, _)
+      function step(stepResult) {
+        stepResult.done ? resolve(stepResult.value) : adopt(stepResult.value)
+          .then(fulfilled, rejected)
       }
-      l((n = n.apply(e, t || []))
+      step((generatorFn = generatorFn.apply(thisArg, argsList || []))
         .next())
     })
   },
-  He = function(e, t) {
-    var r = {
+  stepGenerator = function(thisArg, body) {
+    var state = {
         label: 0,
         sent: function() {
-          if (i[0] & 1) throw i[1];
-          return i[1]
+          if (tempResult[0] & 1) throw tempResult[1];
+          return tempResult[1]
         },
         trys: [],
         ops: []
       },
-      n, o, i, a;
-    return a = {
-      next: s(0),
-      throw: s(1),
-      return: s(2)
-    }, typeof Symbol == "function" && (a[Symbol.iterator] = function() {
+      executingFlag, currentIterator, tempResult, iteratorApi;
+    return iteratorApi = {
+      next: makeVerb(0),
+      throw: makeVerb(1),
+      return: makeVerb(2)
+    }, typeof Symbol == "function" && (iteratorApi[Symbol.iterator] = function() {
       return this
-    }), a;
+    }), iteratorApi;
 
-    function s(l) {
-      return function(A) {
-        return _([l, A])
+    function makeVerb(verbKind) {
+      return function(verbArg) {
+        return runStep([verbKind, verbArg])
       }
     }
 
-    function _(l) {
-      if (n) throw new TypeError("Generator is already executing.");
-      for (; a && (a = 0, l[0] && (r = 0)), r;) try {
-        if (n = 1, o && (i = l[0] & 2 ? o.return : l[0] ? o.throw || ((i = o
-            .return) && i.call(o), 0) : o.next) && !(i = i.call(o, l[1]))
-          .done) return i;
-        switch (o = 0, i && (l = [l[0] & 2, i.value]), l[0]) {
+    function runStep(operation) {
+      if (executingFlag) throw new TypeError("Generator is already executing.");
+      for (; iteratorApi && (iteratorApi = 0, operation[0] && (state = 0)), state;) try {
+        if (executingFlag = 1, currentIterator && (tempResult = operation[0] & 2 ? currentIterator.return : operation[0] ? currentIterator.throw || ((tempResult = currentIterator
+            .return) && tempResult.call(currentIterator), 0) : currentIterator.next) && !(tempResult = tempResult.call(currentIterator, operation[1]))
+          .done) return tempResult;
+        switch (currentIterator = 0, tempResult && (operation = [operation[0] & 2, tempResult.value]), operation[0]) {
           case 0:
           case 1:
-            i = l;
+            tempResult = operation;
             break;
           case 4:
-            return r.label++, {
-              value: l[1],
+            return state.label++, {
+              value: operation[1],
               done: !1
             };
           case 5:
-            r.label++, o = l[1], l = [0];
+            state.label++, currentIterator = operation[1], operation = [0];
             continue;
           case 7:
-            l = r.ops.pop(), r.trys.pop();
+            operation = state.ops.pop(), state.trys.pop();
             continue;
           default:
-            if (i = r.trys, !(i = i.length > 0 && i[i.length - 1]) && (l[
-                0] === 6 || l[0] === 2)) {
-              r = 0;
+            if (tempResult = state.trys, !(tempResult = tempResult.length > 0 && tempResult[tempResult.length - 1]) && (operation[
+                0] === 6 || operation[0] === 2)) {
+              state = 0;
               continue
             }
-            if (l[0] === 3 && (!i || l[1] > i[0] && l[1] < i[3])) {
-              r.label = l[1];
+            if (operation[0] === 3 && (!tempResult || operation[1] > tempResult[0] && operation[1] < tempResult[3])) {
+              state.label = operation[1];
               break
             }
-            if (l[0] === 6 && r.label < i[1]) {
-              r.label = i[1], i = l;
+            if (operation[0] === 6 && state.label < tempResult[1]) {
+              state.label = tempResult[1], tempResult = operation;
               break
             }
-            if (i && r.label < i[2]) {
-              r.label = i[2], r.ops.push(l);
+            if (tempResult && state.label < tempResult[2]) {
+              state.label = tempResult[2], state.ops.push(operation);
               break
             }
-            i[2] && r.ops.pop(), r.trys.pop();
+            tempResult[2] && state.ops.pop(), state.trys.pop();
             continue
         }
-        l = t.call(e, r)
-      } catch (A) {
-        l = [6, A], o = 0
+        operation = body.call(thisArg, state)
+      } catch (caughtError) {
+        operation = [6, caughtError], currentIterator = 0
       } finally {
-        n = i = 0
+        executingFlag = tempResult = 0
       }
-      if (l[0] & 5) throw l[1];
+      if (operation[0] & 5) throw operation[1];
       return {
-        value: l[0] ? l[1] : void 0,
+        value: operation[0] ? operation[1] : void 0,
         done: !0
       }
     }
   },
-  ve = function() {
-    function e(t) {
-      this.promise = Promise.resolve(t)
+  AsyncResultImpl = function() {
+    function AsyncResultCtor(initialResult) {
+      this.promise = Promise.resolve(initialResult)
     }
-    return e.prototype.andThen = function(t) {
-      var r = this;
-      return this.thenInternal(function(n) {
-        return De(r, void 0, void 0, function() {
-          var o;
-          return He(this, function(i) {
-            return n.isErr() ? [2, n] : (o = t(n.value), [2,
-              o instanceof e ? o.promise : o
+    return AsyncResultCtor.prototype.andThen = function(thenFn) {
+      var selfAndThen = this;
+      return this.thenInternal(function(innerResult) {
+        return runAwaiter(selfAndThen, void 0, void 0, function() {
+          var mappedResult;
+          return stepGenerator(this, function(genState) {
+            return innerResult.isErr() ? [2, innerResult] : (mappedResult = thenFn(innerResult.value), [2,
+              mappedResult instanceof AsyncResultCtor ? mappedResult.promise : mappedResult
             ])
           })
         })
       })
-    }, e.prototype.map = function(t) {
-      var r = this;
-      return this.thenInternal(function(n) {
-        return De(r, void 0, void 0, function() {
-          var o;
-          return He(this, function(i) {
-            switch (i.label) {
+    }, AsyncResultCtor.prototype.map = function(mapFn) {
+      var selfMap = this;
+      return this.thenInternal(function(innerResult) {
+        return runAwaiter(selfMap, void 0, void 0, function() {
+          var okCtorRef;
+          return stepGenerator(this, function(genState) {
+            switch (genState.label) {
               case 0:
-                return n.isErr() ? [2, n] : (o = y, [4, t(n
+                return innerResult.isErr() ? [2, innerResult] : (okCtorRef = makeOk, [4, mapFn(innerResult
                   .value)]);
               case 1:
-                return [2, o.apply(void 0, [i.sent()])]
+                return [2, okCtorRef.apply(void 0, [genState.sent()])]
             }
           })
         })
       })
-    }, e.prototype.thenInternal = function(t) {
-      return new e(this.promise.then(t))
-    }, e
+    }, AsyncResultCtor.prototype.thenInternal = function(onResult) {
+      return new AsyncResultCtor(this.promise.then(onResult))
+    }, AsyncResultCtor
   }();
 
-function V(e) {
-  return Object.assign(e.prototype, {
-    find: function(t) {
-      for (let r of this)
-        if (t(r)) return w(r);
-      return p
+function withIteratorMethods(generatorFactory) {
+  return Object.assign(generatorFactory.prototype, {
+    find: function(predicate) {
+      for (let item of this)
+        if (predicate(item)) return makeSome(item);
+      return NoneSingleton
     },
-    count: function(t) {
-      return this.reduce((r, n) => (t(n) && r++, r), 0)
+    count: function(predicate) {
+      return this.reduce((matchCount, countItem) => (predicate(countItem) && matchCount++, matchCount), 0)
     },
-    reduce: function(t, r) {
-      let n = r;
-      for (let o of this) n = t(n, o);
-      return n
+    reduce: function(reducer, initialAcc) {
+      let accumulator = initialAcc;
+      for (let reduceItem of this) accumulator = reducer(accumulator, reduceItem);
+      return accumulator
     },
-    every: function(t) {
-      return !this.any(r => !t(r))
+    every: function(predicate) {
+      return !this.any(everyItem => !predicate(everyItem))
     },
-    any: function(t) {
-      for (let r of this)
-        if (t(r)) return !0;
+    any: function(predicate) {
+      for (let anyItem of this)
+        if (predicate(anyItem)) return !0;
       return !1
     },
-    map: function(t) {
-      return this.filterMap(r => w(t(r)))
+    map: function(mapFn) {
+      return this.filterMap(mapItem => makeSome(mapFn(mapItem)))
     },
-    filter: function(t) {
-      return this.filterMap(r => t(r) ? w(r) : p)
+    filter: function(predicate) {
+      return this.filterMap(filterItem => predicate(filterItem) ? makeSome(filterItem) : NoneSingleton)
     },
     enumerate: function() {
-      let t = this;
-      return V(function*() {
-        let r = 0;
-        for (let n of t) yield [r, n], r++
+      let enumSource = this;
+      return withIteratorMethods(function*() {
+        let enumIndex = 0;
+        for (let enumItem of enumSource) yield [enumIndex, enumItem], enumIndex++
       })()
     },
-    filterMap: function(t) {
-      let r = this;
-      return V(function*() {
-        for (let n of r) {
-          let o = t(n);
-          o.isSome() && (yield o.unwrap())
+    filterMap: function(transform) {
+      let filterSource = this;
+      return withIteratorMethods(function*() {
+        for (let filterMapItem of filterSource) {
+          let mappedOption = transform(filterMapItem);
+          mappedOption.isSome() && (yield mappedOption.unwrap())
         }
       })()
     },
-    sort: function(t) {
-      let r = this.toArray();
-      return r.sort(t), r
+    sort: function(comparator) {
+      let sortedItems = this.toArray();
+      return sortedItems.sort(comparator), sortedItems
     },
     toArray: function() {
       return [...this]
     }
-  }), e
+  }), generatorFactory
 }
 Array.prototype.as_iter || (Array.prototype.as_iter = function() {
-  let e = this;
-  return V(function*() {
-    for (let t of e) yield t
+  let arraySource = this;
+  return withIteratorMethods(function*() {
+    for (let arrayItem of arraySource) yield arrayItem
   })()
 });
 Set.prototype.as_iter || (Set.prototype.as_iter = function() {
-  let e = this;
-  return V(function*() {
-    for (let t of e) yield t
+  let setSource = this;
+  return withIteratorMethods(function*() {
+    for (let setItem of setSource) yield setItem
   })()
 });
 Map.prototype.as_iter || (Map.prototype.as_iter = function() {
-  let e = this;
-  return V(function*() {
-    for (let t of e) yield t
+  let mapSource = this;
+  return withIteratorMethods(function*() {
+    for (let mapEntryItem of mapSource) yield mapEntryItem
   })()
 });
-var O = _e(ne(), 1);
-var ze = _e(ne(), 1);
+var browserRuntimeApi = toEsm(requirePolyfill(), 1);
+var browserI18nApi = toEsm(requirePolyfill(), 1);
 
-function Je(e) {
-  return e ? e.replaceAll("&", "&amp;")
+function escapeHtml(text) {
+  return text ? text.replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;") : ""
 }
 
-function $(e, t, r) {
-  let n = () => (console.error(`Requesting unknown i18n string ${e}`), e);
-  t = t.map(o => o.toString())
-    .map(Je);
+function getI18nMessage(messageKey, substitutions, overrides) {
+  let reportUnknown = () => (console.error(`Requesting unknown i18n string ${messageKey}`), messageKey);
+  substitutions = substitutions.map(substitution => substitution.toString())
+    .map(escapeHtml);
   try {
-    if (e in r) {
-      let o = r[e],
-        i = 1;
-      for (let a = 0; a < t.length; a++) o = o.replace(`$${i}`, t[a]);
-      return o
+    if (messageKey in overrides) {
+      let template = overrides[messageKey],
+        placeholderIndex = 1;
+      for (let subIndex = 0; subIndex < substitutions.length; subIndex++) template = template.replace(`$${placeholderIndex}`, substitutions[subIndex]);
+      return template
     } else {
-      let o = ze.default.i18n.getMessage(e, t);
-      return o || n()
+      let message = browserI18nApi.default.i18n.getMessage(messageKey, substitutions);
+      return message || reportUnknown()
     }
   } catch {
-    return n()
+    return reportUnknown()
   }
 }
 
-function ke(e, t) {
-  for (let r of Array.from(e.querySelectorAll("[data-i18n]"))) {
-    let n = r.dataset.i18nArgs,
-      o = r.dataset.i18nAttr,
-      i;
-    n ? i = $(r.dataset.i18n, JSON.parse(n), t) : i = $(r.dataset.i18n, [], t),
-      o ? r.setAttribute(o, i) : r.textContent = i
+function applyI18nToDom(root, overrides) {
+  for (let element of Array.from(root.querySelectorAll("[data-i18n]"))) {
+    let argsJson = element.dataset.i18nArgs,
+      attrName = element.dataset.i18nAttr,
+      translated;
+    argsJson ? translated = getI18nMessage(element.dataset.i18n, JSON.parse(argsJson), overrides) : translated = getI18nMessage(element.dataset.i18n, [], overrides),
+      attrName ? element.setAttribute(attrName, translated) : element.textContent = translated
   }
 }
-var Te = "stable";
-var Ce = "google";
-var W = _e(ne(), 1);
-var Ue = (e, t) => typeof e[t] == "string";
+var releaseChannel = "stable";
+var browserVendor = "google";
+var browserStorageApi = toEsm(requirePolyfill(), 1);
+var isStringProperty = (targetObject, propName) => typeof targetObject[propName] == "string";
 
-function j(e) {
+function deserializeValue(value) {
   try {
-    if (Ue(e, "__serializer_tag")) {
-      if (e.__serializer_tag === "primitive") return y(e.__serializer_value);
-      if (e.__serializer_tag === "regex") {
-        let n = new RegExp(e.__serializer_value);
-        return y(n)
-      } else if (e.__serializer_tag === "array") {
-        let n = [];
-        for (let o of e.__serializer_value) {
-          let i = j(o);
-          if (i.isErr()) return i;
-          n.push(i.unwrap())
+    if (isStringProperty(value, "__serializer_tag")) {
+      if (value.__serializer_tag === "primitive") return makeOk(value.__serializer_value);
+      if (value.__serializer_tag === "regex") {
+        let regex = new RegExp(value.__serializer_value);
+        return makeOk(regex)
+      } else if (value.__serializer_tag === "array") {
+        let arrayItems = [];
+        for (let arrayEntry of value.__serializer_value) {
+          let parsedArrayItem = deserializeValue(arrayEntry);
+          if (parsedArrayItem.isErr()) return parsedArrayItem;
+          arrayItems.push(parsedArrayItem.unwrap())
         }
-        return y(n)
-      } else if (e.__serializer_tag === "map") {
-        let n = [];
-        for (let o of e.__serializer_value) {
-          let i = j(o);
-          if (i.isErr()) return i;
-          n.push(i.unwrap())
+        return makeOk(arrayItems)
+      } else if (value.__serializer_tag === "map") {
+        let mapEntries = [];
+        for (let mapEntry of value.__serializer_value) {
+          let parsedMapEntry = deserializeValue(mapEntry);
+          if (parsedMapEntry.isErr()) return parsedMapEntry;
+          mapEntries.push(parsedMapEntry.unwrap())
         }
-        return y(new Map(n))
-      } else if (e.__serializer_tag === "set") {
-        let n = [];
-        for (let o of e.__serializer_value) {
-          let i = j(o);
-          if (i.isErr()) return i;
-          n.push(i.unwrap())
+        return makeOk(new Map(mapEntries))
+      } else if (value.__serializer_tag === "set") {
+        let setItems = [];
+        for (let setEntry of value.__serializer_value) {
+          let parsedSetItem = deserializeValue(setEntry);
+          if (parsedSetItem.isErr()) return parsedSetItem;
+          setItems.push(parsedSetItem.unwrap())
         }
-        return y(new Set(n))
-      } else if (e.__serializer_tag === "result_ok") {
-        let n = e.__serializer_value,
-          o = j(n);
-        return o.isErr() ? o : y(y(o.unwrap()))
-      } else if (e.__serializer_tag === "result_err") {
-        let n = e.__serializer_value,
-          o = j(n);
-        return o.isErr() ? o : y(P(o.unwrap()))
-      } else if (e.__serializer_tag === "option_some") {
-        let n = e.__serializer_value,
-          o = j(n);
-        return o.isErr() ? o : y(w(o.unwrap()))
-      } else if (e.__serializer_tag === "option_none") return y(p)
+        return makeOk(new Set(setItems))
+      } else if (value.__serializer_tag === "result_ok") {
+        let okInner = value.__serializer_value,
+          parsedOkInner = deserializeValue(okInner);
+        return parsedOkInner.isErr() ? parsedOkInner : makeOk(makeOk(parsedOkInner.unwrap()))
+      } else if (value.__serializer_tag === "result_err") {
+        let errInner = value.__serializer_value,
+          parsedErrInner = deserializeValue(errInner);
+        return parsedErrInner.isErr() ? parsedErrInner : makeOk(makeErr(parsedErrInner.unwrap()))
+      } else if (value.__serializer_tag === "option_some") {
+        let someInner = value.__serializer_value,
+          parsedSomeInner = deserializeValue(someInner);
+        return parsedSomeInner.isErr() ? parsedSomeInner : makeOk(makeSome(parsedSomeInner.unwrap()))
+      } else if (value.__serializer_tag === "option_none") return makeOk(NoneSingleton)
     }
-    let t = typeof e;
-    if (t === "string" || t === "number" || t === "boolean" || t ===
-      "undefined" || Array.isArray(e) || e == null) return P(
+    let valueType = typeof value;
+    if (valueType === "string" || valueType === "number" || valueType === "boolean" || valueType ===
+      "undefined" || Array.isArray(value) || value == null) return makeErr(
       "This object was not serialized with Serialize");
-    let r = {};
-    for (let n of Object.keys(e))
-      if (typeof n == "string") {
-        let o = j(e[n]);
-        if (o.isErr()) return o;
-        r[n] = o.unwrap()
-      } return y(r)
+    let resultObj = {};
+    for (let propKey of Object.keys(value))
+      if (typeof propKey == "string") {
+        let parsedProp = deserializeValue(value[propKey]);
+        if (parsedProp.isErr()) return parsedProp;
+        resultObj[propKey] = parsedProp.unwrap()
+      } return makeOk(resultObj)
   } catch {
-    return P("Failed to inspect object. Not JSON?")
+    return makeErr("Failed to inspect object. Not JSON?")
   }
 }
 
-function L(e) {
-  let t = typeof e;
-  if (t === "string" || t === "number" || t === "boolean" || t ===
-    "undefined" || e == null) return y({
+function serializeValue(value) {
+  let valueType = typeof value;
+  if (valueType === "string" || valueType === "number" || valueType === "boolean" || valueType ===
+    "undefined" || value == null) return makeOk({
     __serializer_tag: "primitive",
-    __serializer_value: e
+    __serializer_value: value
   });
-  if (e instanceof RegExp) return y({
+  if (value instanceof RegExp) return makeOk({
     __serializer_tag: "regex",
-    __serializer_value: e.source
+    __serializer_value: value.source
   });
-  if (Array.isArray(e)) {
-    let r = e.map(i => L(i)),
-      n = r.as_iter()
-      .find(i => i.isErr());
-    if (n.isSome()) return n.unwrap();
-    let o = r.as_iter()
-      .map(i => i.unwrap())
+  if (Array.isArray(value)) {
+    let serializedItems = value.map(arrayItem => serializeValue(arrayItem)),
+      firstError = serializedItems.as_iter()
+      .find(errorCheck => errorCheck.isErr());
+    if (firstError.isSome()) return firstError.unwrap();
+    let unwrappedItems = serializedItems.as_iter()
+      .map(unwrapItem => unwrapItem.unwrap())
       .toArray();
-    return y({
+    return makeOk({
       __serializer_tag: "array",
-      __serializer_value: o
+      __serializer_value: unwrappedItems
     })
-  } else if (e instanceof Map) {
-    let r = [...e.entries()].map(i => L(i)),
-      n = r.as_iter()
-      .find(i => i.isErr());
-    if (n.isSome()) return n.unwrap();
-    let o = r.as_iter()
-      .map(i => i.unwrap())
+  } else if (value instanceof Map) {
+    let serializedEntries = [...value.entries()].map(mapEntry => serializeValue(mapEntry)),
+      firstError = serializedEntries.as_iter()
+      .find(errorCheck => errorCheck.isErr());
+    if (firstError.isSome()) return firstError.unwrap();
+    let unwrappedEntries = serializedEntries.as_iter()
+      .map(unwrapEntry => unwrapEntry.unwrap())
       .toArray();
-    return y({
+    return makeOk({
       __serializer_tag: "map",
-      __serializer_value: o
+      __serializer_value: unwrappedEntries
     })
-  } else if (e instanceof Set) {
-    let r = [...e.values()].map(i => L(i)),
-      n = r.as_iter()
-      .find(i => i.isErr());
-    if (n.isSome()) return n.unwrap();
-    let o = r.as_iter()
-      .map(i => i.unwrap())
+  } else if (value instanceof Set) {
+    let serializedValues = [...value.values()].map(setValue => serializeValue(setValue)),
+      firstError = serializedValues.as_iter()
+      .find(errorCheck => errorCheck.isErr());
+    if (firstError.isSome()) return firstError.unwrap();
+    let unwrappedValues = serializedValues.as_iter()
+      .map(unwrapValue => unwrapValue.unwrap())
       .toArray();
-    return y({
+    return makeOk({
       __serializer_tag: "set",
-      __serializer_value: o
+      __serializer_value: unwrappedValues
     })
-  } else if (Y.isResult(e))
-    if (e.isOk()) {
-      let r = e.unwrap(),
-        n = L(r);
-      return n.isErr() ? n : y({
+  } else if (ResultNamespace.isResult(value))
+    if (value.isOk()) {
+      let okValue = value.unwrap(),
+        serializedOk = serializeValue(okValue);
+      return serializedOk.isErr() ? serializedOk : makeOk({
         __serializer_tag: "result_ok",
-        __serializer_value: n.unwrap()
+        __serializer_value: serializedOk.unwrap()
       })
     } else {
-      let r = e.unwrapErr(),
-        n = L(r);
-      return n.isErr() ? n : y({
+      let errValue = value.unwrapErr(),
+        serializedErr = serializeValue(errValue);
+      return serializedErr.isErr() ? serializedErr : makeOk({
         __serializer_tag: "result_err",
-        __serializer_value: n.unwrap()
+        __serializer_value: serializedErr.unwrap()
       })
     }
-  else if (K.isOption(e))
-    if (e.isSome()) {
-      let r = e.unwrap(),
-        n = L(r);
-      return n.isErr() ? n : y({
+  else if (OptionNamespace.isOption(value))
+    if (value.isSome()) {
+      let someValue = value.unwrap(),
+        serializedSome = serializeValue(someValue);
+      return serializedSome.isErr() ? serializedSome : makeOk({
         __serializer_tag: "option_some",
-        __serializer_value: n.unwrap()
+        __serializer_value: serializedSome.unwrap()
       })
-    } else return y({
+    } else return makeOk({
       __serializer_tag: "option_none"
     });
-  else if (t === "object") {
-    let r = {},
-      n = e;
-    for (let o of Object.keys(e)) {
-      let i = n[o],
-        a = L(i);
-      if (a.isErr()) continue;
-      let s = a.unwrap();
-      r[o] = s
+  else if (valueType === "object") {
+    let resultObj = {},
+      sourceObj = value;
+    for (let propKey of Object.keys(value)) {
+      let propValue = sourceObj[propKey],
+        serializedProp = serializeValue(propValue);
+      if (serializedProp.isErr()) continue;
+      let unwrappedProp = serializedProp.unwrap();
+      resultObj[propKey] = unwrappedProp
     }
-    return y(r)
-  } else return P("Unsupported value")
+    return makeOk(resultObj)
+  } else return makeErr("Unsupported value")
 }
-var Z = /.^/,
-  Me = {
+var neverMatchRegex = /.^/,
+  videoCodecs = {
     Av1: {
       name: "Av1",
       type: "video",
@@ -1787,7 +1787,7 @@ var Z = /.^/,
     H263: {
       name: "H263",
       type: "video",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "3gp"
     },
     H265: {
@@ -1805,13 +1805,13 @@ var Z = /.^/,
     MPEG1: {
       name: "MPEG1",
       type: "video",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Mpeg"
     },
     MPEG2: {
       name: "MPEG2",
       type: "video",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Mpeg"
     },
     Theora: {
@@ -1835,11 +1835,11 @@ var Z = /.^/,
     unknown: {
       name: "unknown",
       type: "video",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Mp4"
     }
   },
-  Qe = {
+  audioCodecs = {
     AAC: {
       name: "AAC",
       type: "audio",
@@ -1879,34 +1879,34 @@ var Z = /.^/,
     Wav: {
       name: "Wav",
       type: "audio",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Wav"
     },
     unknown: {
       name: "unknown",
       type: "audio",
-      mimetype: Z,
+      mimetype: neverMatchRegex,
       defacto_container: "Mp4"
     }
   },
-  Ge = V(function*() {
-    for (let e of Object.keys(Me)) yield Me[e]
+  videoCodecIterator = withIteratorMethods(function*() {
+    for (let videoCodecName of Object.keys(videoCodecs)) yield videoCodecs[videoCodecName]
   }),
-  We = V(function*() {
-    for (let e of Object.keys(Qe)) yield Qe[e]
+  audioCodecIterator = withIteratorMethods(function*() {
+    for (let audioCodecName of Object.keys(audioCodecs)) yield audioCodecs[audioCodecName]
   });
 
-function Ee(e) {
-  return typeof e == "string" && e in Me ? w(e) : p
+function parseVideoCodec(codecName) {
+  return typeof codecName == "string" && codecName in videoCodecs ? makeSome(codecName) : NoneSingleton
 }
-var Oe = {
+var mediaContainers = {
     Mp4: {
       name: "Mp4",
       extension: "mp4",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: NoneSingleton,
+        video: NoneSingleton
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2",
         "unknown"],
@@ -1918,16 +1918,16 @@ var Oe = {
       extension: "mkv",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: NoneSingleton,
+        video: NoneSingleton
       },
-      supported_video_codecs: Ge()
-        .filter(e => e.name != "unknown")
-        .map(e => e.name)
+      supported_video_codecs: videoCodecIterator()
+        .filter(videoCodecDef => videoCodecDef.name != "unknown")
+        .map(videoCodecDef2 => videoCodecDef2.name)
         .toArray(),
-      supported_audio_codecs: We()
-        .filter(e => e.name != "unknown")
-        .map(e => e.name)
+      supported_audio_codecs: audioCodecIterator()
+        .filter(audioCodecDef => audioCodecDef.name != "unknown")
+        .map(audioCodecDef2 => audioCodecDef2.name)
         .toArray(),
       mimetype: /(?:x-)?matroska/i
     },
@@ -1936,8 +1936,8 @@ var Oe = {
       extension: "webm",
       audio_only_extension: "oga",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: NoneSingleton,
+        video: NoneSingleton
       },
       supported_video_codecs: ["H264", "VP8", "VP9", "Av1"],
       supported_audio_codecs: ["Opus", "Vorbis"],
@@ -1948,8 +1948,8 @@ var Oe = {
       extension: "mt2s",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: NoneSingleton,
+        video: NoneSingleton
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2", "VP9",
         "unknown"
@@ -1962,8 +1962,8 @@ var Oe = {
       extension: "mp2t",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: w("MP3"),
-        video: w("H264")
+        audio: makeSome("MP3"),
+        video: makeSome("H264")
       },
       supported_video_codecs: ["MPEG2", "MPEG1"],
       supported_audio_codecs: ["MP3"],
@@ -1974,8 +1974,8 @@ var Oe = {
       extension: "flv",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: NoneSingleton,
+        video: NoneSingleton
       },
       supported_video_codecs: ["H264"],
       supported_audio_codecs: ["AAC"],
@@ -1986,8 +1986,8 @@ var Oe = {
       extension: "m4v",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: NoneSingleton,
+        video: NoneSingleton
       },
       supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2"],
       supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC"],
@@ -1999,8 +1999,8 @@ var Oe = {
       other_extensions: ["aac"],
       audio_only_extension: "m4a",
       defacto_codecs: {
-        audio: w("AAC"),
-        video: p
+        audio: makeSome("AAC"),
+        video: NoneSingleton
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC", "unknown"],
@@ -2011,8 +2011,8 @@ var Oe = {
       extension: "flac",
       audio_only_extension: "flac",
       defacto_codecs: {
-        audio: w("FLAC"),
-        video: p
+        audio: makeSome("FLAC"),
+        video: NoneSingleton
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["FLAC"],
@@ -2023,8 +2023,8 @@ var Oe = {
       extension: "mpeg",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: w("MP3"),
-        video: w("H264")
+        audio: makeSome("MP3"),
+        video: makeSome("H264")
       },
       supported_video_codecs: ["MPEG2", "MPEG1"],
       supported_audio_codecs: ["MP3"],
@@ -2035,8 +2035,8 @@ var Oe = {
       extension: "ogv",
       audio_only_extension: "oga",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: NoneSingleton,
+        video: NoneSingleton
       },
       supported_video_codecs: ["VP9", "VP8", "Theora"],
       supported_audio_codecs: ["Opus", "Vorbis", "FLAC"],
@@ -2047,8 +2047,8 @@ var Oe = {
       extension: "wav",
       audio_only_extension: "wav",
       defacto_codecs: {
-        audio: w("Wav"),
-        video: p
+        audio: makeSome("Wav"),
+        video: NoneSingleton
       },
       supported_video_codecs: [],
       supported_audio_codecs: ["Wav", "PCM"],
@@ -2059,8 +2059,8 @@ var Oe = {
       extension: "3gpp",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: NoneSingleton,
+        video: NoneSingleton
       },
       supported_video_codecs: ["H264", "H263", "MP4V", "VP8"],
       supported_audio_codecs: ["MP3", "AAC"],
@@ -2071,25 +2071,25 @@ var Oe = {
       extension: "mov",
       audio_only_extension: "mp3",
       defacto_codecs: {
-        audio: p,
-        video: p
+        audio: NoneSingleton,
+        video: NoneSingleton
       },
       supported_video_codecs: ["MPEG1", "MPEG2"],
       supported_audio_codecs: [],
       mimetype: /(?:x-)?mov/i
     }
   },
-  Wt = V(function*() {
-    for (let e of Object.keys(Oe)) yield e
+  containerNameIterator = withIteratorMethods(function*() {
+    for (let containerName of Object.keys(mediaContainers)) yield containerName
   }),
-  rn = V(function*() {
-    for (let e of Wt()) yield Oe[e]
+  containerIterator = withIteratorMethods(function*() {
+    for (let containerKey of containerNameIterator()) yield mediaContainers[containerKey]
   });
 
-function Ie(e) {
-  return typeof e == "string" && e in Oe ? w(e) : p
+function parseContainer(containerName) {
+  return typeof containerName == "string" && containerName in mediaContainers ? makeSome(containerName) : NoneSingleton
 }
-var Be = {
+var videoQualities = {
   240: {
     id: "240",
     loose_name: "Small"
@@ -2123,24 +2123,24 @@ var Be = {
     loose_name: "8K"
   }
 };
-var Ke = V(function*() {
-    for (let e of Object.keys(Be)) yield e
+var qualityIdIterator = withIteratorMethods(function*() {
+    for (let qualityId of Object.keys(videoQualities)) yield qualityId
   }),
-  un = V(function*() {
-    for (let e of Ke()) yield Be[e]
+  qualityIterator = withIteratorMethods(function*() {
+    for (let qualityKey of qualityIdIterator()) yield videoQualities[qualityKey]
   });
 
-function oe(e) {
-  if (typeof e == "string") return Ke()
-    .find(t => t == e);
-  if (typeof e == "number") {
-    let t = e.toString();
-    return oe(t)
+function parseVideoQuality(quality) {
+  if (typeof quality == "string") return qualityIdIterator()
+    .find(qualityCandidate => qualityCandidate == quality);
+  if (typeof quality == "number") {
+    let qualityStr = quality.toString();
+    return parseVideoQuality(qualityStr)
   }
-  return p
+  return NoneSingleton
 }
 
-function Pe() {
+function makeDefaultVariantConfig() {
   return {
     prefer_60fps: !0,
     ignore_low_quality_hits: !0,
@@ -2154,64 +2154,64 @@ function Pe() {
   }
 }
 
-function Ye(e) {
-  return L(e)
+function serializeVariantConfig(config) {
+  return serializeValue(config)
     .unwrap()
 }
 
-function Ze(e) {
-  let t = j(e)
+function deserializeVariantConfig(rawConfig) {
+  let parsed = deserializeValue(rawConfig)
     .unwrapOr({}),
-    r = Pe(),
-    n = Ie(t.container)
-    .unwrapOr(r.container),
-    o = Ee(t.video_codec)
-    .unwrapOr(r.video_codec),
-    i = oe(t.best_video_quality)
-    .unwrapOr(r.best_video_quality),
-    a = oe(t.lowest_video_quality)
-    .unwrapOr(r.lowest_video_quality),
-    s;
-  if ("prefered_video_quality" in t) {
-    let S = oe(t.prefered_video_quality);
-    S.isSome() && (s = S.unwrap())
+    defaults = makeDefaultVariantConfig(),
+    container = parseContainer(parsed.container)
+    .unwrapOr(defaults.container),
+    videoCodec = parseVideoCodec(parsed.video_codec)
+    .unwrapOr(defaults.video_codec),
+    bestQuality = parseVideoQuality(parsed.best_video_quality)
+    .unwrapOr(defaults.best_video_quality),
+    lowestQuality = parseVideoQuality(parsed.lowest_video_quality)
+    .unwrapOr(defaults.lowest_video_quality),
+    preferredQuality;
+  if ("prefered_video_quality" in parsed) {
+    let preferredOpt = parseVideoQuality(parsed.prefered_video_quality);
+    preferredOpt.isSome() && (preferredQuality = preferredOpt.unwrap())
   }
-  let _ = r.max_variants;
-  if (typeof t.max_variants == "number") {
-    let S = t.max_variants;
-    Number.isInteger(S) && S <= 11 && S > 0 && (_ = S)
+  let maxVariants = defaults.max_variants;
+  if (typeof parsed.max_variants == "number") {
+    let candidateMaxVariants = parsed.max_variants;
+    Number.isInteger(candidateMaxVariants) && candidateMaxVariants <= 11 && candidateMaxVariants > 0 && (maxVariants = candidateMaxVariants)
   }
-  let l = r.prefer_60fps;
-  typeof t.prefer_60fps == "boolean" && (l = t.prefer_60fps);
-  let A = r.ignore_low_quality_hits;
-  typeof t.ignore_low_quality_hits == "boolean" && (A = t
+  let prefer60fps = defaults.prefer_60fps;
+  typeof parsed.prefer_60fps == "boolean" && (prefer60fps = parsed.prefer_60fps);
+  let ignoreLowQuality = defaults.ignore_low_quality_hits;
+  typeof parsed.ignore_low_quality_hits == "boolean" && (ignoreLowQuality = parsed
     .ignore_low_quality_hits);
-  let x = [];
-  if (Array.isArray(t.ignored_containers))
-    for (let S of t.ignored_containers) {
-      let d = Ie(S);
-      d.isSome() && x.push(d.unwrap())
+  let ignoredContainers = [];
+  if (Array.isArray(parsed.ignored_containers))
+    for (let ignoredContainerName of parsed.ignored_containers) {
+      let parsedContainer = parseContainer(ignoredContainerName);
+      parsedContainer.isSome() && ignoredContainers.push(parsedContainer.unwrap())
     }
-  let N = [];
-  if (Array.isArray(t.ignored_video_codecs))
-    for (let S of t.ignored_video_codecs) {
-      let d = Ee(S);
-      d.isSome() && N.push(d.unwrap())
+  let ignoredVideoCodecs = [];
+  if (Array.isArray(parsed.ignored_video_codecs))
+    for (let ignoredCodecName of parsed.ignored_video_codecs) {
+      let parsedCodec = parseVideoCodec(ignoredCodecName);
+      parsedCodec.isSome() && ignoredVideoCodecs.push(parsedCodec.unwrap())
     }
-  let D = {
-    prefer_60fps: l,
-    ignore_low_quality_hits: A,
-    container: n,
-    max_variants: _,
-    video_codec: o,
-    lowest_video_quality: a,
-    best_video_quality: i,
-    ignored_containers: x,
-    ignored_video_codecs: N
+  let variantResult = {
+    prefer_60fps: prefer60fps,
+    ignore_low_quality_hits: ignoreLowQuality,
+    container: container,
+    max_variants: maxVariants,
+    video_codec: videoCodec,
+    lowest_video_quality: lowestQuality,
+    best_video_quality: bestQuality,
+    ignored_containers: ignoredContainers,
+    ignored_video_codecs: ignoredVideoCodecs
   };
-  return typeof s < "u" && (D.prefered_video_quality = s), D
+  return typeof preferredQuality < "u" && (variantResult.prefered_video_quality = preferredQuality), variantResult
 }
-var Xe = {
+var defaultViewOptions = {
   all_tabs: !1,
   low_quality: !1,
   sort_by_status: !0,
@@ -2221,249 +2221,249 @@ var Xe = {
   show_button_convert_local: !1,
   hide_downloaded: !1
 };
-var Bt = _e(ne(), 1);
+var browserDownloadsApi = toEsm(requirePolyfill(), 1);
 
-function et() {
+function makeDefaultNamingTemplate() {
   return {
     template: "%title",
     max_length: 64
   }
 }
 
-function Ne(e, t) {
-  if (e == null || t === null || t === void 0) return e === t;
-  if (e.constructor !== t.constructor) return !1;
-  if (e instanceof Function || e instanceof RegExp) return e === t;
-  if (e === t || e.valueOf() === t.valueOf()) return !0;
-  if (Array.isArray(e) && e.length !== t.length || e instanceof Date || !(
-      e instanceof Object) || !(t instanceof Object)) return !1;
-  let r = Object.keys(e),
-    n = Object.keys(t)
-    .every(i => r.indexOf(i) !== -1),
-    o = r.every(i => Ne(e[i], t[i]));
-  return n && o
+function deepEqual(leftValue, rightValue) {
+  if (leftValue == null || rightValue === null || rightValue === void 0) return leftValue === rightValue;
+  if (leftValue.constructor !== rightValue.constructor) return !1;
+  if (leftValue instanceof Function || leftValue instanceof RegExp) return leftValue === rightValue;
+  if (leftValue === rightValue || leftValue.valueOf() === rightValue.valueOf()) return !0;
+  if (Array.isArray(leftValue) && leftValue.length !== rightValue.length || leftValue instanceof Date || !(
+      leftValue instanceof Object) || !(rightValue instanceof Object)) return !1;
+  let leftKeys = Object.keys(leftValue),
+    rightKeys = Object.keys(rightValue)
+    .every(leftKey => leftKeys.indexOf(leftKey) !== -1),
+    valuesEqual = leftKeys.every(pairKey => deepEqual(leftValue[pairKey], rightValue[pairKey]));
+  return rightKeys && valuesEqual
 }
-async function q(e, t) {
-  let r = t;
-  e.hooks && (r = e.hooks.setter(t)), await W.storage[e.where].set({
-    [e.name]: r
+async function setSetting(setting, value) {
+  let storedValue = value;
+  setting.hooks && (storedValue = setting.hooks.setter(value)), await browserStorageApi.storage[setting.where].set({
+    [setting.name]: storedValue
   })
 }
-async function b(e) {
-  let t = await W.storage[e.where].get(e.name);
-  if (e.name in t) {
-    let r = t[e.name];
-    return e.hooks ? e.hooks.getter(r, e) : r
+async function getSetting(setting) {
+  let storedRecord = await browserStorageApi.storage[setting.where].get(setting.name);
+  if (setting.name in storedRecord) {
+    let rawValue = storedRecord[setting.name];
+    return setting.hooks ? setting.hooks.getter(rawValue, setting) : rawValue
   }
-  return e.default()
+  return setting.default()
 }
-async function Ve(e) {
-  await W.storage[e.where].remove(e.name)
+async function removeSetting(setting) {
+  await browserStorageApi.storage[setting.where].remove(setting.name)
 }
 
-function E(e, t) {
-  W.storage[e.where].onChanged.addListener(r => {
-    let n = r[e.name];
-    if (n) {
-      if (Ne(n.oldValue, n.newValue)) return;
-      typeof n.newValue > "u" ? t(e.default()) : e.hooks ? t(e.hooks.getter(
-        n.newValue, e)) : t(n.newValue)
+function watchSetting(setting, callback) {
+  browserStorageApi.storage[setting.where].onChanged.addListener(changes => {
+    let change = changes[setting.name];
+    if (change) {
+      if (deepEqual(change.oldValue, change.newValue)) return;
+      typeof change.newValue > "u" ? callback(setting.default()) : setting.hooks ? callback(setting.hooks.getter(
+        change.newValue, setting)) : callback(change.newValue)
     }
   })
 }
-var ie = {
+var downloadStrategySetting = {
     name: "http_media_download_strategy",
     default: () => "coapp",
     where: "local"
   },
-  Kt = {
+  debuggerEnabledSetting = {
     name: "debugger_enabled",
     default: () => !1,
     where: "local"
   },
-  Yt = {
+  debuggerLogsSetting = {
     name: "debugger_logs",
     default: () => [],
     where: "session"
   },
-  Zt = {
+  usedHistoryButtonSetting = {
     name: "used_history_button",
     default: () => !1,
     where: "local"
   },
-  Xt = {
+  useSidebarSetting = {
     name: "use_sidebar",
     default: () => !1,
     where: "local"
   };
-var he = {
+var downloadDirectorySetting = {
     name: "download_directory",
     default: () => "dwhelper",
     where: "local"
   },
-  se = {
+  concurrentDownloadsMaxSetting = {
     name: "concurrent_downloads_max",
     default: () => 6,
     where: "local"
   },
-  ae = {
+  showThumbnailInNotificationSetting = {
     name: "show_thumbnail_in_notification",
     default: () => !0,
     where: "local"
   },
-  le = {
+  showSuccessNotificationSetting = {
     name: "show_success_notification",
     default: () => !0,
     where: "local"
   },
-  ue = {
+  showIncognitoNotificationSetting = {
     name: "show_success_notification_for_icognito",
     default: () => !1,
     where: "local"
   },
-  ce = {
+  themeSetting = {
     name: "theme",
     default: () => "system",
     where: "local"
   },
-  X = {
+  viewOptionsSetting = {
     name: "view_options",
-    default: () => structuredClone(Xe),
+    default: () => structuredClone(defaultViewOptions),
     where: "local"
   },
-  de = {
+  showContextMenuSetting = {
     name: "show_context_menu",
     default: () => !0,
     where: "local"
   },
-  me = {
+  forgetMediaOnTabCloseSetting = {
     name: "forget_media_on_tab_close",
     default: () => !0,
     where: "local"
   },
-  er = {
+  defaultActionSetting = {
     name: "default_action",
     default: () => "download",
     where: "local"
   },
-  tr = {
+  ytWarningSetting = {
     name: "yt_warning",
     default: () => !0,
     where: "local"
   },
-  pe = {
+  useWideUiSetting = {
     name: "use_wide_ui",
     default: () => !1,
     where: "local"
   },
-  Ae = {
+  useLegacyUiSetting = {
     name: "use_legacy_ui",
     default: () => !0,
     where: "local"
   },
-  rr = {
+  neverShowNoIncognitoMsgSetting = {
     name: "never_show_no_incognito_msg_again",
     default: () => !1,
     where: "local"
   },
-  nr = {
+  autoHideDownloadedMsgShownSetting = {
     name: "auto_hide_downloaded_message_has_been_displayed",
     default: () => !0,
     where: "local"
   },
-  or = {
+  validLicenseMsgShownSetting = {
     name: "valid_license_message_has_been_displayed",
     default: () => !1,
     where: "local"
   },
-  ir = {
+  openCountStoreSetting = {
     name: "open_count_store",
     default: () => 0,
     where: "session"
   },
-  sr = {
+  successfulDownloadCountSetting = {
     name: "successfull_dl",
     default: () => 0,
     where: "local"
   },
-  ar = {
+  neverShowSuccessfulDlMsgSetting = {
     name: "never_show_successfull_dl_message",
     default: () => !1,
     where: "local"
   },
-  lr = {
+  recordDownloadHistorySetting = {
     name: "record_download_history",
     default: () => !1,
     where: "local"
   },
-  fe = {
+  historyLimitInDaysSetting = {
     name: "history_limit_in_days",
     default: () => 30,
     where: "local"
   },
-  ee = {
+  sessionViewOptionsSetting = {
     name: "view_options",
     default: () => ({}),
     where: "session"
   };
-var ur = {
+var blacklistSetting = {
     name: "blacklist",
     default: () => [],
     where: "local",
     hooks: {
-      setter: e => e.filter(t => t.length > 0),
-      getter: e => e
+      setter: list => list.filter(entry => entry.length > 0),
+      getter: storedList => storedList
     }
   },
-  cr = {
+  lastDownloadDirectorySetting = {
     name: "last_download_directory",
-    default: () => p,
+    default: () => NoneSingleton,
     where: "local",
     hooks: {
-      setter: e => L(e)
+      setter: value => serializeValue(value)
         .unwrap(),
-      getter: (e, t) => j(e)
-        .unwrapOr(t.default())
+      getter: (rawValue, setting) => deserializeValue(rawValue)
+        .unwrapOr(setting.default())
     }
   },
-  B = {
+  mediaUserPrefSetting = {
     name: "media_user_pref",
     where: "local",
-    default: () => Pe(),
+    default: () => makeDefaultVariantConfig(),
     hooks: {
-      setter: e => Ye(e),
-      getter: e => Ze(e)
+      setter: config => serializeVariantConfig(config),
+      getter: rawValue => deserializeVariantConfig(rawValue)
     }
   },
-  dr = {
+  downloadHistorySetting = {
     name: "download_history",
     where: "local",
     default: () => new Map,
     hooks: {
-      setter: e => L(e)
+      setter: value => serializeValue(value)
         .unwrap(),
-      getter: (e, t) => j(e)
-        .unwrapOr(t.default())
+      getter: (rawValue, setting) => deserializeValue(rawValue)
+        .unwrapOr(setting.default())
     }
   },
-  tt = {
+  smartNamingSetting = {
     name: "smartnaming",
     where: "local",
     default: () => new Map([
-      ["*", et()]
+      ["*", makeDefaultNamingTemplate()]
     ]),
     hooks: {
-      setter: e => L(e)
+      setter: value => serializeValue(value)
         .unwrap(),
-      getter: (e, t) => j(e)
-        .unwrapOr(t.default())
+      getter: (rawValue, setting) => deserializeValue(rawValue)
+        .unwrapOr(setting.default())
     }
   },
-  ge = {
+  databaseSetting = {
     name: "database",
     where: "session",
     default: () => ({
-      yt_bulk: p,
+      yt_bulk: NoneSingleton,
       user_messages: new Set,
       coapp_status: "checking",
       license_status: {
@@ -2477,308 +2477,308 @@ var ur = {
       download_errors: new Map
     }),
     hooks: {
-      setter: e => L(e)
+      setter: value => serializeValue(value)
         .unwrap(),
-      getter: (e, t) => j(e)
-        .unwrapOr(t.default())
+      getter: (rawValue, setting) => deserializeValue(rawValue)
+        .unwrapOr(setting.default())
     }
   },
-  je = [Kt, Yt, nr, or, ie, Zt, he, cr, se, B, ae, le, ue, rr, ce, X, ee, de,
-    me, ur, tt, er, tr, pe, Ae, Xt, ir, sr, ar, dr, lr, fe
+  allSettings = [debuggerEnabledSetting, debuggerLogsSetting, autoHideDownloadedMsgShownSetting, validLicenseMsgShownSetting, downloadStrategySetting, usedHistoryButtonSetting, downloadDirectorySetting, lastDownloadDirectorySetting, concurrentDownloadsMaxSetting, mediaUserPrefSetting, showThumbnailInNotificationSetting, showSuccessNotificationSetting, showIncognitoNotificationSetting, neverShowNoIncognitoMsgSetting, themeSetting, viewOptionsSetting, sessionViewOptionsSetting, showContextMenuSetting,
+    forgetMediaOnTabCloseSetting, blacklistSetting, smartNamingSetting, defaultActionSetting, ytWarningSetting, useWideUiSetting, useLegacyUiSetting, useSidebarSetting, openCountStoreSetting, successfulDownloadCountSetting, neverShowSuccessfulDlMsgSetting, downloadHistorySetting, recordDownloadHistorySetting, historyLimitInDaysSetting
   ];
-async function rt(e) {
-  for (let t in e)
-    for (let r of je) r.name == t && await W.storage[r.where].set({
-      [t]: e[t]
+async function applyImportedSettings(values) {
+  for (let settingName in values)
+    for (let setting of allSettings) setting.name == settingName && await browserStorageApi.storage[setting.where].set({
+      [settingName]: values[settingName]
     })
 }
-async function Le() {
-  let e = {};
-  for (let t of je) {
-    let r = await W.storage[t.where].get(t.name);
-    t.name in r && (e = {
-      ...e,
-      ...r
+async function collectAllSettings() {
+  let result = {};
+  for (let setting of allSettings) {
+    let storedRecord = await browserStorageApi.storage[setting.where].get(setting.name);
+    setting.name in storedRecord && (result = {
+      ...result,
+      ...storedRecord
     })
   }
-  return e
+  return result
 }
-async function nt() {
-  for (let e of je) await Ve(e)
+async function clearAllSettings() {
+  for (let setting of allSettings) await removeSetting(setting)
 }
 
-function qe(e) {
-  O.default.runtime.sendMessage(e)
+function sendRuntimeMessage(message) {
+  browserRuntimeApi.default.runtime.sendMessage(message)
 }
-async function R() {
-  let e = await b(he),
-    t = await b(ie),
-    r = await b(se),
-    n = await b(de),
-    o = await b(le),
-    i = await b(ae),
-    a = await b(ue),
-    s = await b(X),
-    _ = await b(B),
-    l = await b(ce),
-    A = await b(me),
-    x = await b(pe),
-    N = await b(Ae),
-    D = await b(fe);
+async function refreshSettingsUi() {
+  let downloadDirectory = await getSetting(downloadDirectorySetting),
+    downloadStrategy = await getSetting(downloadStrategySetting),
+    concurrentMax = await getSetting(concurrentDownloadsMaxSetting),
+    showContextMenu = await getSetting(showContextMenuSetting),
+    showSuccessNotification = await getSetting(showSuccessNotificationSetting),
+    showThumbnail = await getSetting(showThumbnailInNotificationSetting),
+    showIncognitoNotification = await getSetting(showIncognitoNotificationSetting),
+    viewOptions = await getSetting(viewOptionsSetting),
+    mediaUserPref = await getSetting(mediaUserPrefSetting),
+    theme = await getSetting(themeSetting),
+    forgetOnClose = await getSetting(forgetMediaOnTabCloseSetting),
+    useWideUi = await getSetting(useWideUiSetting),
+    useLegacyUi = await getSetting(useLegacyUiSetting),
+    historyLimit = await getSetting(historyLimitInDaysSetting);
   document.querySelector("#settings-download-directory > i")
-    .textContent = e;
-  let S = document.querySelector("#radio-theme");
-  S.value = l;
-  let d = document.querySelector("#settings-browser-download > sl-checkbox");
-  d.indeterminate = !1, t == "inbrowser" ? d.checked = !0 : d.checked = !1,
-    d = document.querySelector("#settings-show-notification > sl-checkbox"), d
-    .indeterminate = !1, o ? d.checked = !0 : d.checked = !1, d = document
-    .querySelector("#settings-show-tb-in-notification > sl-checkbox"), d
-    .indeterminate = !1, i ? d.checked = !0 : d.checked = !1, d = document
-    .querySelector("#settings-context-menu > sl-checkbox"), d
-    .indeterminate = !1, n ? d.checked = !0 : d.checked = !1, d = document
-    .querySelector("#settings-forget-on-close > sl-checkbox"), d
-    .indeterminate = !1, A ? d.checked = !0 : d.checked = !1, d = document
+    .textContent = downloadDirectory;
+  let themeRadioEl = document.querySelector("#radio-theme");
+  themeRadioEl.value = theme;
+  let checkboxEl = document.querySelector("#settings-browser-download > sl-checkbox");
+  checkboxEl.indeterminate = !1, downloadStrategy == "inbrowser" ? checkboxEl.checked = !0 : checkboxEl.checked = !1,
+    checkboxEl = document.querySelector("#settings-show-notification > sl-checkbox"), checkboxEl
+    .indeterminate = !1, showSuccessNotification ? checkboxEl.checked = !0 : checkboxEl.checked = !1, checkboxEl = document
+    .querySelector("#settings-show-tb-in-notification > sl-checkbox"), checkboxEl
+    .indeterminate = !1, showThumbnail ? checkboxEl.checked = !0 : checkboxEl.checked = !1, checkboxEl = document
+    .querySelector("#settings-context-menu > sl-checkbox"), checkboxEl
+    .indeterminate = !1, showContextMenu ? checkboxEl.checked = !0 : checkboxEl.checked = !1, checkboxEl = document
+    .querySelector("#settings-forget-on-close > sl-checkbox"), checkboxEl
+    .indeterminate = !1, forgetOnClose ? checkboxEl.checked = !0 : checkboxEl.checked = !1, checkboxEl = document
     .querySelector("#settings-show-notification-for-incognito > sl-checkbox"),
-    d.indeterminate = !1, a ? d.checked = !0 : d.checked = !1, d = document
-    .querySelector("#settings-view-convert-local > sl-checkbox"), d
-    .indeterminate = !1, s.show_button_convert_local ? d.checked = !0 : d
-    .checked = !1, d = document.querySelector(
-      "#settings-use-wide-ui > sl-checkbox"), d.indeterminate = !1, x ? d
-    .checked = !0 : d.checked = !1, d = document.querySelector(
-      "#settings-use-legacy-ui > sl-checkbox"), d.indeterminate = !1, N ? d
-    .checked = !0 : d.checked = !1;
-  let H = document.querySelector("#settings-concurrent-downloads > sl-input");
-  H.value = r.toString(), H = document.querySelector(
-    "#settings-history-limit > sl-input"), H.value = D.toString();
-  let F = document.querySelector("#settings-variants .variant-quality");
-  _.prefered_video_quality ? (F.removeAttribute("hidden"), F.textContent = _
-    .prefered_video_quality + "p", F.className =
-    `variant-quality _${_.prefered_video_quality}p`) : F.setAttribute(
+    checkboxEl.indeterminate = !1, showIncognitoNotification ? checkboxEl.checked = !0 : checkboxEl.checked = !1, checkboxEl = document
+    .querySelector("#settings-view-convert-local > sl-checkbox"), checkboxEl
+    .indeterminate = !1, viewOptions.show_button_convert_local ? checkboxEl.checked = !0 : checkboxEl
+    .checked = !1, checkboxEl = document.querySelector(
+      "#settings-use-wide-ui > sl-checkbox"), checkboxEl.indeterminate = !1, useWideUi ? checkboxEl
+    .checked = !0 : checkboxEl.checked = !1, checkboxEl = document.querySelector(
+      "#settings-use-legacy-ui > sl-checkbox"), checkboxEl.indeterminate = !1, useLegacyUi ? checkboxEl
+    .checked = !0 : checkboxEl.checked = !1;
+  let numberInputEl = document.querySelector("#settings-concurrent-downloads > sl-input");
+  numberInputEl.value = concurrentMax.toString(), numberInputEl = document.querySelector(
+    "#settings-history-limit > sl-input"), numberInputEl.value = historyLimit.toString();
+  let variantQualityEl = document.querySelector("#settings-variants .variant-quality");
+  mediaUserPref.prefered_video_quality ? (variantQualityEl.removeAttribute("hidden"), variantQualityEl.textContent = mediaUserPref
+    .prefered_video_quality + "p", variantQualityEl.className =
+    `variant-quality _${mediaUserPref.prefered_video_quality}p`) : variantQualityEl.setAttribute(
     "hidden", "true");
-  let U = document.querySelector("#settings-variants .variant-container");
-  U.textContent = _.container, H = document.querySelector(
-    "#settings-max-variants > sl-input"), H.value = _.max_variants
+  let variantContainerEl = document.querySelector("#settings-variants .variant-container");
+  variantContainerEl.textContent = mediaUserPref.container, numberInputEl = document.querySelector(
+    "#settings-max-variants > sl-input"), numberInputEl.value = mediaUserPref.max_variants
   .toString()
 }
 
-function Re(e, t) {
-  let r = e.coapp_status,
-    n = document.querySelector("#drawer-settings-coapp");
-  if (r == "checking") n.setAttribute("coapp-status", "checking");
-  else if (r.found) {
-    let i = Array.from(n.querySelectorAll(".coapp-path"));
-    for (let s of i) s.textContent = r.path;
-    let a = Array.from(n.querySelectorAll(".coapp-version"));
-    for (let s of a) s.textContent = r.version;
-    r.new_version ? (n.setAttribute("coapp-status", "outdated"), n
+function renderStatusDrawers(state, i18nOverrides) {
+  let coappStatus = state.coapp_status,
+    coappDrawerEl = document.querySelector("#drawer-settings-coapp");
+  if (coappStatus == "checking") coappDrawerEl.setAttribute("coapp-status", "checking");
+  else if (coappStatus.found) {
+    let pathEls = Array.from(coappDrawerEl.querySelectorAll(".coapp-path"));
+    for (let pathEl of pathEls) pathEl.textContent = coappStatus.path;
+    let versionEls = Array.from(coappDrawerEl.querySelectorAll(".coapp-version"));
+    for (let versionEl of versionEls) versionEl.textContent = coappStatus.version;
+    coappStatus.new_version ? (coappDrawerEl.setAttribute("coapp-status", "outdated"), coappDrawerEl
       .querySelector("#coapp-new-version")
-      .textContent = r.new_version) : n.setAttribute("coapp-status", "found")
-  } else n.setAttribute("coapp-status", "not-found"), n.querySelector(
+      .textContent = coappStatus.new_version) : coappDrawerEl.setAttribute("coapp-status", "found")
+  } else coappDrawerEl.setAttribute("coapp-status", "not-found"), coappDrawerEl.querySelector(
       "#coapp-error")
-    .textContent = r.error;
-  let o = e.license_status;
-  if (n = document.querySelector("#drawer-settings-license"), "unneeded" in o) n
+    .textContent = coappStatus.error;
+  let licenseStatus = state.license_status;
+  if (coappDrawerEl = document.querySelector("#drawer-settings-license"), "unneeded" in licenseStatus) coappDrawerEl
     .setAttribute("license-status", "unneeded");
-  else if ("nocoapp" in o) n.setAttribute("license-status", "nocoapp");
-  else if ("checking" in o) n.setAttribute("license-status", "checking");
+  else if ("nocoapp" in licenseStatus) coappDrawerEl.setAttribute("license-status", "nocoapp");
+  else if ("checking" in licenseStatus) coappDrawerEl.setAttribute("license-status", "checking");
   else {
-    n.setAttribute("license-status", "checked");
-    let i = document.querySelector("#input-license-number");
-    i.classList.contains("had_focus") || ("key" in o ? i.value = o.key : i
+    coappDrawerEl.setAttribute("license-status", "checked");
+    let licenseInputEl = document.querySelector("#input-license-number");
+    licenseInputEl.classList.contains("had_focus") || ("key" in licenseStatus ? licenseInputEl.value = licenseStatus.key : licenseInputEl
       .value = "");
-    let a = document.querySelector("#settings-license-checked-msg");
-    a.classList.toggle("settings-success", !1), a.classList.toggle(
-        "settings-warning", !1), "unset" in o ? a.textContent = $(
-        "v9_lic_status_unset", [], t) : "blocked" in o ? (a.classList.toggle(
-        "settings-warning", !0), a.textContent = $("v9_lic_status_blocked",
-      [], t)) : "locked" in o ? (a.classList.toggle("settings-warning", !0), a
-        .textContent = $("v9_lic_status_locked2", [], t)) : "accepted" in o ? (a
-        .classList.toggle("settings-success", !0), a.textContent =
-        `${$("v9_lic_status_accepted",[],t)} (${o.email})`) : "mismatch" in o ?
-      (a.classList.toggle("settings-warning", !0), a.textContent = $(
-        "v9_lic_mismatch2", [o.other_browser, o.this_browser], t)) :
-      "invalid" in o && (a.classList.toggle("settings-warning", !0), a
-        .textContent = $("v9_no_license_registered", [], t))
+    let licenseMsgEl = document.querySelector("#settings-license-checked-msg");
+    licenseMsgEl.classList.toggle("settings-success", !1), licenseMsgEl.classList.toggle(
+        "settings-warning", !1), "unset" in licenseStatus ? licenseMsgEl.textContent = getI18nMessage(
+        "v9_lic_status_unset", [], i18nOverrides) : "blocked" in licenseStatus ? (licenseMsgEl.classList.toggle(
+        "settings-warning", !0), licenseMsgEl.textContent = getI18nMessage("v9_lic_status_blocked",
+      [], i18nOverrides)) : "locked" in licenseStatus ? (licenseMsgEl.classList.toggle("settings-warning", !0), licenseMsgEl
+        .textContent = getI18nMessage("v9_lic_status_locked2", [], i18nOverrides)) : "accepted" in licenseStatus ? (licenseMsgEl
+        .classList.toggle("settings-success", !0), licenseMsgEl.textContent =
+        `${getI18nMessage("v9_lic_status_accepted",[],i18nOverrides)} (${licenseStatus.email})`) : "mismatch" in licenseStatus ?
+      (licenseMsgEl.classList.toggle("settings-warning", !0), licenseMsgEl.textContent = getI18nMessage(
+        "v9_lic_mismatch2", [licenseStatus.other_browser, licenseStatus.this_browser], i18nOverrides)) :
+      "invalid" in licenseStatus && (licenseMsgEl.classList.toggle("settings-warning", !0), licenseMsgEl
+        .textContent = getI18nMessage("v9_no_license_registered", [], i18nOverrides))
   }
 }
-async function mr() {
-  let e = await b(ee);
-  ke(document, e), document.querySelector("#settings-version")
-    .textContent = O.default.runtime.getManifest()
+async function initSettingsPage() {
+  let sessionViewOptions = await getSetting(sessionViewOptionsSetting);
+  applyI18nToDom(document, sessionViewOptions), document.querySelector("#settings-version")
+    .textContent = browserRuntimeApi.default.runtime.getManifest()
     .version, document.querySelector("#settings-channel")
-    .textContent = Te, document.querySelector("#settings-target")
-    .textContent = Ce, document.querySelector("#settings-locale")
-    .textContent = O.default.i18n.getUILanguage();
+    .textContent = releaseChannel, document.querySelector("#settings-target")
+    .textContent = browserVendor, document.querySelector("#settings-locale")
+    .textContent = browserRuntimeApi.default.i18n.getUILanguage();
   {
-    let t = O.default.i18n.getUILanguage()
+    let localeTag = browserRuntimeApi.default.i18n.getUILanguage()
       .replace("-", "_");
-    if (t in ye) {
+    if (localeTag in localeStringCounts) {
       document.querySelector("#settings-locales")
         .removeAttribute("hidden");
-      let r = ye[t],
-        n = be;
+      let localeStringCount = localeStringCounts[localeTag],
+        referenceStringCount = enUsStringCount;
       document.querySelector("#settings-locales-missing-strings-count")
-        .textContent = (n - r)
+        .textContent = (referenceStringCount - localeStringCount)
         .toString(), document.querySelector("#settings-locales-locale-name")
-        .textContent = t
+        .textContent = localeTag
     } else document.querySelector("#settings-locales")
       .setAttribute("hidden", "true")
   } {
-    let t = document.querySelector("#settings-incognito-mode");
-    await O.default.extension.isAllowedIncognitoAccess() && t.setAttribute(
+    let incognitoModeEl = document.querySelector("#settings-incognito-mode");
+    await browserRuntimeApi.default.extension.isAllowedIncognitoAccess() && incognitoModeEl.setAttribute(
       "hidden", "true")
   }
-  E(he, R), E(ie, R), E(se, R), E(B, R), E(de, R), E(le, R), E(ae, R), E(ue,
-    R), E(X, R), E(ce, R), E(me, R), E(pe, R), E(fe, R), R();
+  watchSetting(downloadDirectorySetting, refreshSettingsUi), watchSetting(downloadStrategySetting, refreshSettingsUi), watchSetting(concurrentDownloadsMaxSetting, refreshSettingsUi), watchSetting(mediaUserPrefSetting, refreshSettingsUi), watchSetting(showContextMenuSetting, refreshSettingsUi), watchSetting(showSuccessNotificationSetting, refreshSettingsUi), watchSetting(showThumbnailInNotificationSetting, refreshSettingsUi), watchSetting(showIncognitoNotificationSetting,
+    refreshSettingsUi), watchSetting(viewOptionsSetting, refreshSettingsUi), watchSetting(themeSetting, refreshSettingsUi), watchSetting(forgetMediaOnTabCloseSetting, refreshSettingsUi), watchSetting(useWideUiSetting, refreshSettingsUi), watchSetting(historyLimitInDaysSetting, refreshSettingsUi), refreshSettingsUi();
   {
-    E(ge, async a => {
-      let s = await b(ee);
-      Re(a, s)
-    }), E(ee, async a => {
-      let s = await b(ge);
-      Re(s, a), ke(document, a)
+    watchSetting(databaseSetting, async changedState => {
+      let currentViewOptions = await getSetting(sessionViewOptionsSetting);
+      renderStatusDrawers(changedState, currentViewOptions)
+    }), watchSetting(sessionViewOptionsSetting, async changedViewOptions => {
+      let currentState = await getSetting(databaseSetting);
+      renderStatusDrawers(currentState, changedViewOptions), applyI18nToDom(document, changedViewOptions)
     });
-    let t = await b(ee),
-      r = await b(ge);
-    Re(r, t);
-    async function n(a) {
-      let s = a.target;
-      if (s) {
-        let _ = s.closest("#settings-concurrent-downloads > sl-input"),
-          l = s.closest("#settings-max-variants > sl-input"),
-          A = s.closest("#settings-history-limit > sl-input"),
-          x = s.closest("#radio-theme"),
-          N = s.closest("#settings-browser-download > sl-checkbox"),
-          D = s.closest("#settings-context-menu > sl-checkbox"),
-          S = s.closest("#settings-forget-on-close > sl-checkbox"),
-          d = s.closest("#settings-show-notification > sl-checkbox"),
-          H = s.closest("#settings-show-tb-in-notification > sl-checkbox"),
-          F = s.closest(
+    let viewOptionsState = await getSetting(sessionViewOptionsSetting),
+      databaseState = await getSetting(databaseSetting);
+    renderStatusDrawers(databaseState, viewOptionsState);
+    async function onSettingChange(changeEvent) {
+      let changeTarget = changeEvent.target;
+      if (changeTarget) {
+        let concurrentInputEl = changeTarget.closest("#settings-concurrent-downloads > sl-input"),
+          maxVariantsInputEl = changeTarget.closest("#settings-max-variants > sl-input"),
+          historyLimitInputEl = changeTarget.closest("#settings-history-limit > sl-input"),
+          themeRadioEl = changeTarget.closest("#radio-theme"),
+          browserDownloadCheckbox = changeTarget.closest("#settings-browser-download > sl-checkbox"),
+          contextMenuCheckbox = changeTarget.closest("#settings-context-menu > sl-checkbox"),
+          forgetOnCloseCheckbox = changeTarget.closest("#settings-forget-on-close > sl-checkbox"),
+          showNotificationCheckbox = changeTarget.closest("#settings-show-notification > sl-checkbox"),
+          showThumbnailCheckbox = changeTarget.closest("#settings-show-tb-in-notification > sl-checkbox"),
+          incognitoNotificationCheckbox = changeTarget.closest(
             "#settings-show-notification-for-incognito > sl-checkbox"),
-          U = s.closest("#settings-view-convert-local > sl-checkbox"),
-          Q = s.closest("#settings-use-wide-ui > sl-checkbox"),
-          u = s.closest("#settings-use-legacy-ui > sl-checkbox");
-        if (x && q(ce, x.value), _ && q(se, parseInt(_.value)), l) {
-          let c = await b(B);
-          c.max_variants = Math.max(1, Math.min(10, parseInt(l.value))), q(
-            B, c)
+          convertLocalCheckbox = changeTarget.closest("#settings-view-convert-local > sl-checkbox"),
+          wideUiCheckbox = changeTarget.closest("#settings-use-wide-ui > sl-checkbox"),
+          legacyUiCheckbox = changeTarget.closest("#settings-use-legacy-ui > sl-checkbox");
+        if (themeRadioEl && setSetting(themeSetting, themeRadioEl.value), concurrentInputEl && setSetting(concurrentDownloadsMaxSetting, parseInt(concurrentInputEl.value)), maxVariantsInputEl) {
+          let mediaPrefForVariants = await getSetting(mediaUserPrefSetting);
+          mediaPrefForVariants.max_variants = Math.max(1, Math.min(10, parseInt(maxVariantsInputEl.value))), setSetting(
+            mediaUserPrefSetting, mediaPrefForVariants)
         }
-        if (A && q(fe, Math.min(99, parseInt(A.value))), N && q(ie, N
-            .checked ? "inbrowser" : "coapp"), D && q(de, D.checked), S &&
-          q(me, S.checked), d && q(le, d.checked), H && q(ae, H.checked),
-          F && q(ue, F.checked), Q && q(pe, Q.checked), u && q(Ae, u
-            .checked), U) {
-          let c = await b(X);
-          c.show_button_convert_local = U.checked, q(X, c)
+        if (historyLimitInputEl && setSetting(historyLimitInDaysSetting, Math.min(99, parseInt(historyLimitInputEl.value))), browserDownloadCheckbox && setSetting(downloadStrategySetting, browserDownloadCheckbox
+            .checked ? "inbrowser" : "coapp"), contextMenuCheckbox && setSetting(showContextMenuSetting, contextMenuCheckbox.checked), forgetOnCloseCheckbox &&
+          setSetting(forgetMediaOnTabCloseSetting, forgetOnCloseCheckbox.checked), showNotificationCheckbox && setSetting(showSuccessNotificationSetting, showNotificationCheckbox.checked), showThumbnailCheckbox && setSetting(showThumbnailInNotificationSetting, showThumbnailCheckbox.checked),
+          incognitoNotificationCheckbox && setSetting(showIncognitoNotificationSetting, incognitoNotificationCheckbox.checked), wideUiCheckbox && setSetting(useWideUiSetting, wideUiCheckbox.checked), legacyUiCheckbox && setSetting(useLegacyUiSetting, legacyUiCheckbox
+            .checked), convertLocalCheckbox) {
+          let viewOptionsForConvert = await getSetting(viewOptionsSetting);
+          viewOptionsForConvert.show_button_convert_local = convertLocalCheckbox.checked, setSetting(viewOptionsSetting, viewOptionsForConvert)
         }
       }
     }
-    async function o(a) {
-      let s = a.target;
-      if (s) {
-        let _ = s.closest(".button-coapp-check"),
-          l = s.closest(".button-license-check"),
-          A = s.closest(".button-license-help"),
-          x = s.closest(".button-license-get"),
-          N = s.closest(".button-coapp-install"),
-          D = s.closest(".button-coapp-help"),
-          S = s.closest("#button-reset-settings"),
-          d = s.closest("#button-export-settings"),
-          H = s.closest("#button-import-settings"),
-          F = s.closest("#button-reload-addon"),
-          U = s.closest("#button-download-directory-change"),
-          Q = s.closest("#button-variants-clear"),
-          u = s.closest("#button-translate");
-        if (s.closest("#button-copy-settings")) {
+    async function onWindowClick(clickEvent) {
+      let clickTarget = clickEvent.target;
+      if (clickTarget) {
+        let coappCheckBtn = clickTarget.closest(".button-coapp-check"),
+          licenseCheckBtn = clickTarget.closest(".button-license-check"),
+          licenseHelpBtn = clickTarget.closest(".button-license-help"),
+          licenseGetBtn = clickTarget.closest(".button-license-get"),
+          coappInstallBtn = clickTarget.closest(".button-coapp-install"),
+          coappHelpBtn = clickTarget.closest(".button-coapp-help"),
+          resetSettingsBtn = clickTarget.closest("#button-reset-settings"),
+          exportSettingsBtn = clickTarget.closest("#button-export-settings"),
+          importSettingsBtn = clickTarget.closest("#button-import-settings"),
+          reloadAddonBtn = clickTarget.closest("#button-reload-addon"),
+          changeDirectoryBtn = clickTarget.closest("#button-download-directory-change"),
+          clearVariantsBtn = clickTarget.closest("#button-variants-clear"),
+          translateBtn = clickTarget.closest("#button-translate");
+        if (clickTarget.closest("#button-copy-settings")) {
           let {
-            coapp_status: m,
-            license_status: f
-          } = await b(ge);
-          "key" in f && (f.key = f.key.substring(0, 16)), "email" in f && (f
+            coapp_status: coappStatus,
+            license_status: licenseStatus
+          } = await getSetting(databaseSetting);
+          "key" in licenseStatus && (licenseStatus.key = licenseStatus.key.substring(0, 16)), "email" in licenseStatus && (licenseStatus
             .email = "<removed>");
-          let v = JSON.stringify(m),
-            T = JSON.stringify(f),
-            C = O.default.runtime.getManifest(),
-            g = C.version_name ?? C.version,
-            I = await O.default.runtime.getPlatformInfo(),
-            k = O.default.i18n.getUILanguage(),
-            M = "";
-          M += `version: ${g}
-`, M += `target: ${Ce}
-`, M += `channel: ${Te}
-`, M += `lang: ${k}
-`, M += `coapp: ${v}
-`, M += `license: ${T}
-`, M += `platform: ${I.arch} ${I.os}
-`, M += `UA: ${navigator.userAgent}
+          let coappJson = JSON.stringify(coappStatus),
+            licenseJson = JSON.stringify(licenseStatus),
+            manifest = browserRuntimeApi.default.runtime.getManifest(),
+            addonVersion = manifest.version_name ?? manifest.version,
+            platformInfo = await browserRuntimeApi.default.runtime.getPlatformInfo(),
+            uiLanguageTag = browserRuntimeApi.default.i18n.getUILanguage(),
+            diagnosticsText = "";
+          diagnosticsText += `version: ${addonVersion}
+`, diagnosticsText += `target: ${browserVendor}
+`, diagnosticsText += `channel: ${releaseChannel}
+`, diagnosticsText += `lang: ${uiLanguageTag}
+`, diagnosticsText += `coapp: ${coappJson}
+`, diagnosticsText += `license: ${licenseJson}
+`, diagnosticsText += `platform: ${platformInfo.arch} ${platformInfo.os}
+`, diagnosticsText += `UA: ${navigator.userAgent}
 `;
-          let J = await Le();
-          delete J.blacklist, delete J.media_user_pref, delete J
-            .smartnaming, M += JSON.stringify(J, null, 4), navigator
-            .clipboard.writeText(M)
+          let exportedSettings = await collectAllSettings();
+          delete exportedSettings.blacklist, delete exportedSettings.media_user_pref, delete exportedSettings
+            .smartnaming, diagnosticsText += JSON.stringify(exportedSettings, null, 4), navigator
+            .clipboard.writeText(diagnosticsText)
         }
-        if (l) {
-          let m = document.querySelector("#input-license-number");
-          qe({
-            license_check: m.value || null
+        if (licenseCheckBtn) {
+          let licenseInputEl = document.querySelector("#input-license-number");
+          sendRuntimeMessage({
+            license_check: licenseInputEl.value || null
           })
         }
-        if (u && O.default.tabs.create({
+        if (translateBtn && browserRuntimeApi.default.tabs.create({
             url: "/content2/locales.html"
-          }), x && O.default.tabs.create({
+          }), licenseGetBtn && browserRuntimeApi.default.tabs.create({
             url: "https://www.downloadhelper.net/convert"
-          }), A && O.default.tabs.create({
+          }), licenseHelpBtn && browserRuntimeApi.default.tabs.create({
             url: "https://www.downloadhelper.net/help"
-          }), _ && qe({
+          }), coappCheckBtn && sendRuntimeMessage({
             coapp_check: !0
-          }), N && O.default.tabs.create({
+          }), coappInstallBtn && browserRuntimeApi.default.tabs.create({
             url: "https://downloadhelper.net/install-coapp-v2"
-          }), D && O.default.tabs.create({
+          }), coappHelpBtn && browserRuntimeApi.default.tabs.create({
             url: "https://github.com/aclap-dev/video-downloadhelper/wiki/CoApp-not-recognized"
-          }), Q && Ve(B), S && nt(), U && qe("select_download_directory"),
-          d) {
-          let m = await Le(),
-            f = JSON.stringify(m, null, 4),
-            v = new Blob([f], {
+          }), clearVariantsBtn && removeSetting(mediaUserPrefSetting), resetSettingsBtn && clearAllSettings(), changeDirectoryBtn && sendRuntimeMessage("select_download_directory"),
+          exportSettingsBtn) {
+          let allSettingsData = await collectAllSettings(),
+            settingsJson = JSON.stringify(allSettingsData, null, 4),
+            settingsBlob = new Blob([settingsJson], {
               type: "text/json;charset=utf-8"
             }),
-            T = URL.createObjectURL(v),
-            C = document.documentElement.id == "sidebar";
-          O.default.downloads.download({
-            url: T,
+            blobUrl = URL.createObjectURL(settingsBlob),
+            isSidebar = document.documentElement.id == "sidebar";
+          browserRuntimeApi.default.downloads.download({
+            url: blobUrl,
             filename: "vdh-settings.json",
-            saveAs: C,
+            saveAs: isSidebar,
             conflictAction: "uniquify"
           })
         }
-        if (H) {
-          let m = document.querySelector("#button-import-settings-input"),
-            f = async () => {
-              if (m.removeEventListener("change", f), m.files && m.files
+        if (importSettingsBtn) {
+          let importInputEl = document.querySelector("#button-import-settings-input"),
+            onFileSelected = async () => {
+              if (importInputEl.removeEventListener("change", onFileSelected), importInputEl.files && importInputEl.files
                 .length > 0) {
-                let v = await m.files[0].text(),
-                  T = JSON.parse(v);
-                await rt(T)
+                let fileText = await importInputEl.files[0].text(),
+                  importedData = JSON.parse(fileText);
+                await applyImportedSettings(importedData)
               }
             };
-          m.addEventListener("change", f), m.click()
+          importInputEl.addEventListener("change", onFileSelected), importInputEl.click()
         }
-        F && O.default.runtime.reload()
+        reloadAddonBtn && browserRuntimeApi.default.runtime.reload()
       }
     }
-    let i = document.querySelector("#input-license-number");
-    i.addEventListener("sl-focus", () => {
-      i.classList.add("had_focus")
-    }), window.addEventListener("click", o), window.addEventListener(
-      "sl-change", n)
+    let licenseFocusInputEl = document.querySelector("#input-license-number");
+    licenseFocusInputEl.addEventListener("sl-focus", () => {
+      licenseFocusInputEl.classList.add("had_focus")
+    }), window.addEventListener("click", onWindowClick), window.addEventListener(
+      "sl-change", onSettingChange)
   }
 }
-var ot = document.querySelector("#include-settings");
-ot.addEventListener("sl-load", e => {
-  e.eventPhase === Event.AT_TARGET && mr()
+var includeSettingsEl = document.querySelector("#include-settings");
+includeSettingsEl.addEventListener("sl-load", loadEvent => {
+  loadEvent.eventPhase === Event.AT_TARGET && initSettingsPage()
 });
-ot.addEventListener("sl-error", e => {
-  e.eventPhase === Event.AT_TARGET && console.error("sl-include error", e
+includeSettingsEl.addEventListener("sl-error", errorEvent => {
+  errorEvent.eventPhase === Event.AT_TARGET && console.error("sl-include error", errorEvent
     .detail?.status)
 });
