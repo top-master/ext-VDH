@@ -63,7 +63,7 @@ const textFileExtensions = new Set([
   ".ts",
 ]);
 
-const ignoredDirectories = new Set([".git", "node_modules"]);
+const ignoredDirectories = new Set([".git", "node_modules", "todo"]);
 
 const ignoredRelativePaths = new Set([
   "CLEANROOM_STATUS.md",

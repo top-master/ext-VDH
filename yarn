@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Find the absolute directory this script is in (the project root)
+DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# When invoked from a real terminal, advertise colour support to
+# every Node process Yarn spawns via its built-in script shell.
+# Without this, Yarn pipes child stdio through its logger and any
+# chalk-based tool (nest-cli, jest, eslint, fetch-shared, …) sees
+# a non-TTY and turns colours off. `FORCE_COLOR` is the
+# cross-tool convention; an explicit user value (including `0`)
+# wins so non-interactive pipelines keep their plain output.
+if [ -t 1 ] && [ -z "${FORCE_COLOR+x}" ]; then
+    FORCE_COLOR=1
+    export FORCE_COLOR
+fi
+
+# Search for the localized Yarn Javascript release file
+for YARN_FILE in "$DIR"/.yarn/releases/yarn-*.cjs; do
+    if [ -f "$YARN_FILE" ]; then
+        # Tell Node to securely execute that file, passing along every CLI argument "$@"
+        exec node "$YARN_FILE" "$@"
+    fi
+done
+
+# Failsafe if it goes missing
+printf 'Error: Local yarn-*.cjs file not found in %s\n' "$DIR/.yarn/releases" >&2
+exit 1
