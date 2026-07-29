@@ -4,10 +4,19 @@
   "packageManager": "yarn@4.9.4",
   "scripts": {
     "test": "vitest run",
-    "test:cleanroom": "vitest run tests/cleanroom-audit.ts"
+    "test:cleanroom": "vitest run tests/cleanroom-audit.ts",
+    "postinstall": "node 3rd-party/automation/git-dependency-reuse.js"
+  },
+  "gitDependencies": {
+    "git@github.com:top-master/XDTestUtils-JS.git": {
+      "^1.0.0": "3rd-party/xdtestutils",
+      "@reuse": "../XDTestUtils-JS/."
+    }
   },
   "devDependencies": {
+    "@types/jsdom": "^28.0.0",
     "@types/node": "^25.6.0",
+    "jsdom": "^28.1.0",
     "typescript": "^6.0.2",
     "vite": "^8.0.8",
     "vitest": "^4.1.4"

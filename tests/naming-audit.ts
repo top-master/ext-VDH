@@ -21,7 +21,7 @@ const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDirectory, "..");
 
 const codeFileExtensions = new Set([".d.ts", ".js", ".jsx", ".ts", ".tsx"]);
-const ignoredDirectories = new Set([".git", "node_modules", "todo"]);
+const ignoredDirectories = new Set([".git", "node_modules", "todo", "vendor", "3rd-party"]);
 // Standalone, unreferenced files that ship nothing and are exempt from the
 // naming rule. tests/main.js is an older formatted main.js variant kept by the
 // repo owner; the extension loads background/main.js, not this copy.
