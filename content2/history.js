@@ -2,2188 +2,2784 @@ var objectCreate = Object.create;
 var defineProperty = Object.defineProperty;
 var getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var getOwnPropNames = Object.getOwnPropertyNames;
-var getPrototypeOf = Object.getPrototypeOf,
-  hasOwnPropertyRef = Object.prototype.hasOwnProperty;
-var defineCommonjsModule = (defineModule, cachedExports) => () => (cachedExports || defineModule((cachedExports = {
-    exports: {}
-  })
-  .exports, cachedExports), cachedExports.exports);
+var getPrototypeOf = Object.getPrototypeOf;
+var hasOwnPropertyRef = Object.prototype.hasOwnProperty;
+var defineCommonjsModule = (defineModule, cachedExports) => () => (
+  cachedExports
+    || defineModule(
+      (cachedExports = {
+        exports: {},
+      }).exports,
+      cachedExports,
+    ),
+  cachedExports.exports
+);
 var copyProps = (targetObj, from, except, desc) => {
-  if (from && typeof from == "object" || typeof from == "function")
-    for (let key of getOwnPropNames(from)) !hasOwnPropertyRef.call(targetObj, key) && key !== except && defineProperty(targetObj, key, {
-      get: () => from[key],
-      enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable
-    });
-  return targetObj
-};
-var toEsm = (mod, isNodeMode, target) => (target = mod != null ? objectCreate(getPrototypeOf(mod)) : {}, copyProps(isNodeMode || !mod || !mod
-  .__esModule ? defineProperty(target, "default", {
-    value: mod,
-    enumerable: !0
-  }) : target, mod));
-var requirePolyfill = defineCommonjsModule((polyfillExports, polyfillModule) => {
-  (function(globalScope, factory) {
-    if (typeof define == "function" && define.amd) define(
-      "webextension-polyfill", ["module"], factory);
-    else if (typeof polyfillExports < "u") factory(polyfillModule);
-    else {
-      var moduleShim = {
-        exports: {}
-      };
-      factory(moduleShim), globalScope.browser = moduleShim.exports
+  if ((from && typeof from == 'object') || typeof from == 'function') {
+    for (let key of getOwnPropNames(from)) {
+      if (!hasOwnPropertyRef.call(targetObj, key) && key !== except) {
+        defineProperty(targetObj, key, {
+          get: () => from[key],
+          enumerable: !(desc = getOwnPropDesc(from, key)) || desc.enumerable,
+        });
+      }
     }
-  })(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : polyfillExports,
-    function(browserGlobal) {
-      "use strict";
-      if (!globalThis.chrome?.runtime?.id) throw new Error(
-        "This script should only be loaded in a browser extension.");
-      if (typeof globalThis.browser > "u" || Object.getPrototypeOf(
-          globalThis.browser) !== Object.prototype) {
-        let messagePortClosedMessage = "The message port closed before a response was received.",
-          wrapApis = chromeApi => {
+  }
+  return targetObj;
+};
+var toEsm = (mod, isNodeMode, target) => (
+  (target = mod != null ? objectCreate(getPrototypeOf(mod)) : {}),
+  copyProps(
+    isNodeMode || !mod || !mod.__esModule
+      ? defineProperty(target, 'default', {
+          value: mod,
+          enumerable: !0,
+        })
+      : target,
+    mod,
+  )
+);
+var requirePolyfill = defineCommonjsModule(
+  (polyfillExports, polyfillModule) => {
+    (function (globalScope, factory) {
+      if (typeof define == 'function' && define.amd) {
+        define('webextension-polyfill', ['module'], factory);
+      } else if (typeof polyfillExports < 'u') {
+        factory(polyfillModule);
+      } else {
+        var moduleShim = {
+          exports: {},
+        };
+        factory(moduleShim);
+        globalScope.browser = moduleShim.exports;
+      }
+    })(
+      typeof globalThis < 'u'
+        ? globalThis
+        : typeof self < 'u'
+          ? self
+          : polyfillExports,
+      function (browserGlobal) {
+        'use strict';
+
+        if (!globalThis.chrome?.runtime?.id) {
+          throw new Error(
+            'This script should only be loaded in a browser extension.',
+          );
+        }
+        if (
+          typeof globalThis.browser > 'u'
+          || Object.getPrototypeOf(globalThis.browser) !== Object.prototype
+        ) {
+          let messagePortClosedMessage =
+            'The message port closed before a response was received.';
+          let wrapApis = chromeApi => {
             let apiMetadata = {
               alarms: {
                 clear: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 clearAll: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 get: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getAll: {
                   minArgs: 0,
-                  maxArgs: 0
-                }
+                  maxArgs: 0,
+                },
               },
               bookmarks: {
                 create: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 get: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getChildren: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getRecent: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getSubTree: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getTree: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 move: {
                   minArgs: 2,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 remove: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removeTree: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 search: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 update: {
                   minArgs: 2,
-                  maxArgs: 2
-                }
+                  maxArgs: 2,
+                },
               },
               browserAction: {
                 disable: {
                   minArgs: 0,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
+                  fallbackToNoCallback: !0,
                 },
                 enable: {
                   minArgs: 0,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
+                  fallbackToNoCallback: !0,
                 },
                 getBadgeBackgroundColor: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getBadgeText: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getPopup: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getTitle: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 openPopup: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 setBadgeBackgroundColor: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
+                  fallbackToNoCallback: !0,
                 },
                 setBadgeText: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
+                  fallbackToNoCallback: !0,
                 },
                 setIcon: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 setPopup: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
+                  fallbackToNoCallback: !0,
                 },
                 setTitle: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
-                }
+                  fallbackToNoCallback: !0,
+                },
               },
               browsingData: {
                 remove: {
                   minArgs: 2,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 removeCache: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removeCookies: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removeDownloads: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removeFormData: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removeHistory: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removeLocalStorage: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removePasswords: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removePluginData: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 settings: {
                   minArgs: 0,
-                  maxArgs: 0
-                }
+                  maxArgs: 0,
+                },
               },
               commands: {
                 getAll: {
                   minArgs: 0,
-                  maxArgs: 0
-                }
+                  maxArgs: 0,
+                },
               },
               contextMenus: {
                 remove: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removeAll: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 update: {
                   minArgs: 2,
-                  maxArgs: 2
-                }
+                  maxArgs: 2,
+                },
               },
               cookies: {
                 get: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getAll: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getAllCookieStores: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 remove: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 set: {
                   minArgs: 1,
-                  maxArgs: 1
-                }
+                  maxArgs: 1,
+                },
               },
               devtools: {
                 inspectedWindow: {
                   eval: {
                     minArgs: 1,
                     maxArgs: 2,
-                    singleCallbackArg: !1
-                  }
+                    singleCallbackArg: !1,
+                  },
                 },
                 panels: {
                   create: {
                     minArgs: 3,
                     maxArgs: 3,
-                    singleCallbackArg: !0
+                    singleCallbackArg: !0,
                   },
                   elements: {
                     createSidebarPane: {
                       minArgs: 1,
-                      maxArgs: 1
-                    }
-                  }
-                }
+                      maxArgs: 1,
+                    },
+                  },
+                },
               },
               downloads: {
                 cancel: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 download: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 erase: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getFileIcon: {
                   minArgs: 1,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 open: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
+                  fallbackToNoCallback: !0,
                 },
                 pause: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removeFile: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 resume: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 search: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 show: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
-                }
+                  fallbackToNoCallback: !0,
+                },
               },
               extension: {
                 isAllowedFileSchemeAccess: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 isAllowedIncognitoAccess: {
                   minArgs: 0,
-                  maxArgs: 0
-                }
+                  maxArgs: 0,
+                },
               },
               history: {
                 addUrl: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 deleteAll: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 deleteRange: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 deleteUrl: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getVisits: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 search: {
                   minArgs: 1,
-                  maxArgs: 1
-                }
+                  maxArgs: 1,
+                },
               },
               i18n: {
                 detectLanguage: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getAcceptLanguages: {
                   minArgs: 0,
-                  maxArgs: 0
-                }
+                  maxArgs: 0,
+                },
               },
               identity: {
                 launchWebAuthFlow: {
                   minArgs: 1,
-                  maxArgs: 1
-                }
+                  maxArgs: 1,
+                },
               },
               idle: {
                 queryState: {
                   minArgs: 1,
-                  maxArgs: 1
-                }
+                  maxArgs: 1,
+                },
               },
               management: {
                 get: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getAll: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 getSelf: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 setEnabled: {
                   minArgs: 2,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 uninstallSelf: {
                   minArgs: 0,
-                  maxArgs: 1
-                }
+                  maxArgs: 1,
+                },
               },
               notifications: {
                 clear: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 create: {
                   minArgs: 1,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 getAll: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 getPermissionLevel: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 update: {
                   minArgs: 2,
-                  maxArgs: 2
-                }
+                  maxArgs: 2,
+                },
               },
               pageAction: {
                 getPopup: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getTitle: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 hide: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
+                  fallbackToNoCallback: !0,
                 },
                 setIcon: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 setPopup: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
+                  fallbackToNoCallback: !0,
                 },
                 setTitle: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
+                  fallbackToNoCallback: !0,
                 },
                 show: {
                   minArgs: 1,
                   maxArgs: 1,
-                  fallbackToNoCallback: !0
-                }
+                  fallbackToNoCallback: !0,
+                },
               },
               permissions: {
                 contains: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getAll: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 remove: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 request: {
                   minArgs: 1,
-                  maxArgs: 1
-                }
+                  maxArgs: 1,
+                },
               },
               runtime: {
                 getBackgroundPage: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 getPlatformInfo: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 openOptionsPage: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 requestUpdateCheck: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 sendMessage: {
                   minArgs: 1,
-                  maxArgs: 3
+                  maxArgs: 3,
                 },
                 sendNativeMessage: {
                   minArgs: 2,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 setUninstallURL: {
                   minArgs: 1,
-                  maxArgs: 1
-                }
+                  maxArgs: 1,
+                },
               },
               sessions: {
                 getDevices: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getRecentlyClosed: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 restore: {
                   minArgs: 0,
-                  maxArgs: 1
-                }
+                  maxArgs: 1,
+                },
               },
               storage: {
                 local: {
                   clear: {
                     minArgs: 0,
-                    maxArgs: 0
+                    maxArgs: 0,
                   },
                   get: {
                     minArgs: 0,
-                    maxArgs: 1
+                    maxArgs: 1,
                   },
                   getBytesInUse: {
                     minArgs: 0,
-                    maxArgs: 1
+                    maxArgs: 1,
                   },
                   remove: {
                     minArgs: 1,
-                    maxArgs: 1
+                    maxArgs: 1,
                   },
                   set: {
                     minArgs: 1,
-                    maxArgs: 1
-                  }
+                    maxArgs: 1,
+                  },
                 },
                 managed: {
                   get: {
                     minArgs: 0,
-                    maxArgs: 1
+                    maxArgs: 1,
                   },
                   getBytesInUse: {
                     minArgs: 0,
-                    maxArgs: 1
-                  }
+                    maxArgs: 1,
+                  },
                 },
                 sync: {
                   clear: {
                     minArgs: 0,
-                    maxArgs: 0
+                    maxArgs: 0,
                   },
                   get: {
                     minArgs: 0,
-                    maxArgs: 1
+                    maxArgs: 1,
                   },
                   getBytesInUse: {
                     minArgs: 0,
-                    maxArgs: 1
+                    maxArgs: 1,
                   },
                   remove: {
                     minArgs: 1,
-                    maxArgs: 1
+                    maxArgs: 1,
                   },
                   set: {
                     minArgs: 1,
-                    maxArgs: 1
-                  }
-                }
+                    maxArgs: 1,
+                  },
+                },
               },
               tabs: {
                 captureVisibleTab: {
                   minArgs: 0,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 create: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 detectLanguage: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 discard: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 duplicate: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 executeScript: {
                   minArgs: 1,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 get: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getCurrent: {
                   minArgs: 0,
-                  maxArgs: 0
+                  maxArgs: 0,
                 },
                 getZoom: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getZoomSettings: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 goBack: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 goForward: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 highlight: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 insertCSS: {
                   minArgs: 1,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 move: {
                   minArgs: 2,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 query: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 reload: {
                   minArgs: 0,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 remove: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 removeCSS: {
                   minArgs: 1,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 sendMessage: {
                   minArgs: 2,
-                  maxArgs: 3
+                  maxArgs: 3,
                 },
                 setZoom: {
                   minArgs: 1,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 setZoomSettings: {
                   minArgs: 1,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 update: {
                   minArgs: 1,
-                  maxArgs: 2
-                }
+                  maxArgs: 2,
+                },
               },
               topSites: {
                 get: {
                   minArgs: 0,
-                  maxArgs: 0
-                }
+                  maxArgs: 0,
+                },
               },
               webNavigation: {
                 getAllFrames: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getFrame: {
                   minArgs: 1,
-                  maxArgs: 1
-                }
+                  maxArgs: 1,
+                },
               },
               webRequest: {
                 handlerBehaviorChanged: {
                   minArgs: 0,
-                  maxArgs: 0
-                }
+                  maxArgs: 0,
+                },
               },
               windows: {
                 create: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 get: {
                   minArgs: 1,
-                  maxArgs: 2
+                  maxArgs: 2,
                 },
                 getAll: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getCurrent: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 getLastFocused: {
                   minArgs: 0,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 remove: {
                   minArgs: 1,
-                  maxArgs: 1
+                  maxArgs: 1,
                 },
                 update: {
                   minArgs: 2,
-                  maxArgs: 2
+                  maxArgs: 2,
+                },
+              },
+            };
+            if (Object.keys(apiMetadata).length === 0) {
+              throw new Error(
+                'api-metadata.json has not been included in browser-polyfill',
+              );
+            }
+            class DefaultWeakMap extends WeakMap {
+              constructor(createItem, entries = void 0) {
+                super(entries);
+                this.createItem = createItem;
+              }
+              get(key) {
+                if (!this.has(key)) {
+                  this.set(key, this.createItem(key));
+                }
+                return super.get(key);
+              }
+            }
+            let isThenable = value =>
+              value
+              && typeof value == 'object'
+              && typeof value.then == 'function';
+            let makeCallback =
+              (promiseCallbacks, metadata) =>
+              (...callbackArgs) => {
+                if (chromeApi.runtime.lastError) {
+                  promiseCallbacks.reject(
+                    new Error(chromeApi.runtime.lastError.message),
+                  );
+                } else {
+                  if (
+                    metadata.singleCallbackArg
+                    || (callbackArgs.length <= 1
+                      && metadata.singleCallbackArg !== !1)
+                  ) {
+                    promiseCallbacks.resolve(callbackArgs[0]);
+                  } else {
+                    promiseCallbacks.resolve(callbackArgs);
+                  }
+                }
+              };
+            let pluralizeArgs = count =>
+              count == 1 ? 'argument' : 'arguments';
+            let wrapAsyncFunction = (name, metadata) =>
+              function (apiTarget, ...args) {
+                if (args.length < metadata.minArgs) {
+                  throw new Error(
+                    `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`,
+                  );
+                }
+                if (args.length > metadata.maxArgs) {
+                  throw new Error(
+                    `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`,
+                  );
+                }
+                return new Promise((resolve, reject) => {
+                  if (metadata.fallbackToNoCallback) {
+                    try {
+                      apiTarget[name](
+                        ...args,
+                        makeCallback(
+                          {
+                            resolve: resolve,
+                            reject: reject,
+                          },
+                          metadata,
+                        ),
+                      );
+                    } catch (error) {
+                      console.warn(
+                        `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
+                        error,
+                      );
+                      apiTarget[name](...args);
+                      metadata.fallbackToNoCallback = !1;
+                      metadata.noCallback = !0;
+                      resolve();
+                    }
+                  } else {
+                    if (metadata.noCallback) {
+                      apiTarget[name](...args);
+                      resolve();
+                    } else {
+                      apiTarget[name](
+                        ...args,
+                        makeCallback(
+                          {
+                            resolve: resolve,
+                            reject: reject,
+                          },
+                          metadata,
+                        ),
+                      );
+                    }
+                  }
+                });
+              };
+            let wrapMethod = (target, method, wrapper) =>
+              new Proxy(method, {
+                apply(fnTarget, thisArg, callArgs) {
+                  return wrapper.call(thisArg, target, ...callArgs);
+                },
+              });
+            let hasOwnProperty = Function.call.bind(
+              Object.prototype.hasOwnProperty,
+            );
+            let wrapObject = (target, wrappers = {}, metadata = {}) => {
+              let cache = Object.create(null);
+              let handler = {
+                has(proxyTarget, prop) {
+                  return prop in target || prop in cache;
+                },
+                get(proxyTarget, prop, receiver) {
+                  if (prop in cache) {
+                    return cache[prop];
+                  }
+                  if (!(prop in target)) {
+                    return;
+                  }
+                  let value = target[prop];
+                  if (typeof value == 'function') {
+                    if (typeof wrappers[prop] == 'function') {
+                      value = wrapMethod(target, target[prop], wrappers[prop]);
+                    } else if (hasOwnProperty(metadata, prop)) {
+                      let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
+                      value = wrapMethod(target, target[prop], wrappedFn);
+                    } else {
+                      value = value.bind(target);
+                    }
+                  } else if (
+                    typeof value == 'object'
+                    && value !== null
+                    && (hasOwnProperty(wrappers, prop)
+                      || hasOwnProperty(metadata, prop))
+                  ) {
+                    value = wrapObject(value, wrappers[prop], metadata[prop]);
+                  } else if (hasOwnProperty(metadata, '*')) {
+                    value = wrapObject(value, wrappers[prop], metadata['*']);
+                  } else {
+                    Object.defineProperty(cache, prop, {
+                      configurable: !0,
+                      enumerable: !0,
+                      get() {
+                        return target[prop];
+                      },
+                      set(newValue) {
+                        target[prop] = newValue;
+                      },
+                    });
+                    return value;
+                  }
+                  cache[prop] = value;
+                  return value;
+                },
+                set(proxyTarget, prop, value, receiver) {
+                  if (prop in cache) {
+                    cache[prop] = value;
+                  } else {
+                    target[prop] = value;
+                  }
+                  return !0;
+                },
+                defineProperty(proxyTarget, prop, desc) {
+                  return Reflect.defineProperty(cache, prop, desc);
+                },
+                deleteProperty(proxyTarget, prop) {
+                  return Reflect.deleteProperty(cache, prop);
+                },
+              };
+              let proxyBase = Object.create(target);
+              return new Proxy(proxyBase, handler);
+            };
+            let wrapEvent = wrapperMap => ({
+              addListener(target, listener, ...args) {
+                target.addListener(wrapperMap.get(listener), ...args);
+              },
+              hasListener(target, listener) {
+                return target.hasListener(wrapperMap.get(listener));
+              },
+              removeListener(target, listener) {
+                target.removeListener(wrapperMap.get(listener));
+              },
+            });
+            let onRequestFinishedWrappers = new DefaultWeakMap(listener =>
+              typeof listener != 'function'
+                ? listener
+                : function (request) {
+                    let wrappedRequest = wrapObject(
+                      request,
+                      {},
+                      {
+                        getContent: {
+                          minArgs: 0,
+                          maxArgs: 0,
+                        },
+                      },
+                    );
+                    listener(wrappedRequest);
+                  },
+            );
+            let onMessageWrappers = new DefaultWeakMap(listener =>
+              typeof listener != 'function'
+                ? listener
+                : function (message, sender, sendResponse) {
+                    let responseSent = !1;
+                    let resolveResponse;
+                    let responsePromise = new Promise(resolvePromise => {
+                      resolveResponse = function (response) {
+                        responseSent = !0;
+                        resolvePromise(response);
+                      };
+                    });
+                    let result;
+                    try {
+                      result = listener(message, sender, resolveResponse);
+                    } catch (error) {
+                      result = Promise.reject(error);
+                    }
+                    let resultIsThenable = result !== !0 && isThenable(result);
+                    if (result !== !0 && !resultIsThenable && !responseSent) {
+                      return !1;
+                    }
+                    let sendResolvedResponse = resultPromise => {
+                      resultPromise
+                        .then(
+                          response => {
+                            sendResponse(response);
+                          },
+                          error => {
+                            let errorMessage;
+                            if (
+                              error
+                              && (error instanceof Error
+                                || typeof error.message == 'string')
+                            ) {
+                              errorMessage = error.message;
+                            } else {
+                              errorMessage = 'An unexpected error occurred';
+                            }
+                            sendResponse({
+                              __mozWebExtensionPolyfillReject__: !0,
+                              message: errorMessage,
+                            });
+                          },
+                        )
+                        .catch(replyError => {
+                          console.error(
+                            'Failed to send onMessage rejected reply',
+                            replyError,
+                          );
+                        });
+                    };
+                    sendResolvedResponse(
+                      resultIsThenable ? result : responsePromise,
+                    );
+                    return !0;
+                  },
+            );
+            let processResponse = (
+              { reject: reject, resolve: resolve },
+              response,
+            ) => {
+              if (chromeApi.runtime.lastError) {
+                if (
+                  chromeApi.runtime.lastError.message
+                  === messagePortClosedMessage
+                ) {
+                  resolve();
+                } else {
+                  reject(new Error(chromeApi.runtime.lastError.message));
+                }
+              } else {
+                if (response && response.__mozWebExtensionPolyfillReject__) {
+                  reject(new Error(response.message));
+                } else {
+                  resolve(response);
                 }
               }
             };
-            if (Object.keys(apiMetadata)
-              .length === 0) throw new Error(
-              "api-metadata.json has not been included in browser-polyfill"
-              );
-            class DefaultWeakMap extends WeakMap {
-              constructor(createItem, entries = void 0) {
-                super(entries), this.createItem = createItem
+            let wrapSendMessage = (name, metadata, apiTarget, ...args) => {
+              if (args.length < metadata.minArgs) {
+                throw new Error(
+                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`,
+                );
               }
-              get(key) {
-                return this.has(key) || this.set(key, this.createItem(key)),
-                  super.get(key)
+              if (args.length > metadata.maxArgs) {
+                throw new Error(
+                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`,
+                );
               }
-            }
-            let isThenable = value => value && typeof value == "object" && typeof value.then ==
-              "function",
-              makeCallback = (promiseCallbacks, metadata) => (...callbackArgs) => {
-                chromeApi.runtime.lastError ? promiseCallbacks.reject(new Error(chromeApi.runtime.lastError
-                    .message)) : metadata.singleCallbackArg || callbackArgs.length <= 1 && metadata
-                  .singleCallbackArg !== !1 ? promiseCallbacks.resolve(callbackArgs[0]) : promiseCallbacks.resolve(callbackArgs)
-              },
-              pluralizeArgs = count => count == 1 ? "argument" : "arguments",
-              wrapAsyncFunction = (name, metadata) => function(apiTarget, ...args) {
-                if (args.length < metadata.minArgs) throw new Error(
-                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
-                  );
-                if (args.length > metadata.maxArgs) throw new Error(
-                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
-                  );
-                return new Promise((resolve, reject) => {
-                  if (metadata.fallbackToNoCallback) try {
-                    apiTarget[name](...args, makeCallback({
-                      resolve: resolve,
-                      reject: reject
-                    }, metadata))
-                  } catch (error) {
-                    console.warn(
-                        `${name} API method doesn't seem to support the callback parameter, falling back to call it without a callback: `,
-                        error), apiTarget[name](...args), metadata.fallbackToNoCallback = !1, metadata
-                      .noCallback = !0, resolve()
-                  } else metadata.noCallback ? (apiTarget[name](...args), resolve()) : apiTarget[name](...args,
-                    makeCallback({
-                      resolve: resolve,
-                      reject: reject
-                    }, metadata))
-                })
-              },
-              wrapMethod = (target, method, wrapper) => new Proxy(method, {
-                apply(fnTarget, thisArg, callArgs) {
-                  return wrapper.call(thisArg, target, ...callArgs)
-                }
-              }),
-              hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty),
-              wrapObject = (target, wrappers = {}, metadata = {}) => {
-                let cache = Object.create(null),
-                  handler = {
-                    has(proxyTarget, prop) {
-                      return prop in target || prop in cache
-                    },
-                    get(proxyTarget, prop, receiver) {
-                      if (prop in cache) return cache[prop];
-                      if (!(prop in target)) return;
-                      let value = target[prop];
-                      if (typeof value == "function")
-                        if (typeof wrappers[prop] == "function") value = wrapMethod(target, target[prop], wrappers[
-                          prop]);
-                        else if (hasOwnProperty(metadata, prop)) {
-                        let wrappedFn = wrapAsyncFunction(prop, metadata[prop]);
-                        value = wrapMethod(target, target[prop], wrappedFn)
-                      } else value = value.bind(target);
-                      else if (typeof value == "object" && value !== null && (hasOwnProperty(wrappers,
-                          prop) || hasOwnProperty(metadata, prop))) value = wrapObject(value, wrappers[prop], metadata[prop]);
-                      else if (hasOwnProperty(metadata, "*")) value = wrapObject(value, wrappers[prop], metadata["*"]);
-                      else return Object.defineProperty(cache, prop, {
-                        configurable: !0,
-                        enumerable: !0,
-                        get() {
-                          return target[prop]
-                        },
-                        set(newValue) {
-                          target[prop] = newValue
-                        }
-                      }), value;
-                      return cache[prop] = value, value
-                    },
-                    set(proxyTarget, prop, value, receiver) {
-                      return prop in cache ? cache[prop] = value : target[prop] = value, !0
-                    },
-                    defineProperty(proxyTarget, prop, desc) {
-                      return Reflect.defineProperty(cache, prop, desc)
-                    },
-                    deleteProperty(proxyTarget, prop) {
-                      return Reflect.deleteProperty(cache, prop)
-                    }
-                  },
-                  proxyBase = Object.create(target);
-                return new Proxy(proxyBase, handler)
-              },
-              wrapEvent = wrapperMap => ({
-                addListener(target, listener, ...args) {
-                  target.addListener(wrapperMap.get(listener), ...args)
-                },
-                hasListener(target, listener) {
-                  return target.hasListener(wrapperMap.get(listener))
-                },
-                removeListener(target, listener) {
-                  target.removeListener(wrapperMap.get(listener))
-                }
-              }),
-              onRequestFinishedWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(request) {
-                let wrappedRequest = wrapObject(request, {}, {
-                  getContent: {
-                    minArgs: 0,
-                    maxArgs: 0
-                  }
+              return new Promise((resolve, reject) => {
+                let boundCallback = processResponse.bind(null, {
+                  resolve: resolve,
+                  reject: reject,
                 });
-                listener(wrappedRequest)
-              }),
-              onMessageWrappers = new DefaultWeakMap(listener => typeof listener != "function" ? listener : function(message, sender,
-              sendResponse) {
-                let responseSent = !1,
-                  resolveResponse, responsePromise = new Promise(resolvePromise => {
-                    resolveResponse = function(response) {
-                      responseSent = !0, resolvePromise(response)
-                    }
-                  }),
-                  result;
-                try {
-                  result = listener(message, sender, resolveResponse)
-                } catch (error) {
-                  result = Promise.reject(error)
-                }
-                let resultIsThenable = result !== !0 && isThenable(result);
-                if (result !== !0 && !resultIsThenable && !responseSent) return !1;
-                let sendResolvedResponse = resultPromise => {
-                  resultPromise.then(response => {
-                      sendResponse(response)
-                    }, error => {
-                      let errorMessage;
-                      error && (error instanceof Error || typeof error.message ==
-                          "string") ? errorMessage = error.message : errorMessage =
-                        "An unexpected error occurred", sendResponse({
-                          __mozWebExtensionPolyfillReject__: !0,
-                          message: errorMessage
-                        })
-                    })
-                    .catch(replyError => {
-                      console.error(
-                        "Failed to send onMessage rejected reply", replyError
-                        )
-                    })
-                };
-                return sendResolvedResponse(resultIsThenable ? result : responsePromise), !0
-              }),
-              processResponse = ({
-                reject: reject,
-                resolve: resolve
-              }, response) => {
-                chromeApi.runtime.lastError ? chromeApi.runtime.lastError.message === messagePortClosedMessage ?
-                  resolve() : reject(new Error(chromeApi.runtime.lastError.message)) : response && response
-                  .__mozWebExtensionPolyfillReject__ ? reject(new Error(response
-                    .message)) : resolve(response)
+                args.push(boundCallback);
+                apiTarget.sendMessage(...args);
+              });
+            };
+            let staticWrappers = {
+              devtools: {
+                network: {
+                  onRequestFinished: wrapEvent(onRequestFinishedWrappers),
+                },
               },
-              wrapSendMessage = (name, metadata, apiTarget, ...args) => {
-                if (args.length < metadata.minArgs) throw new Error(
-                  `Expected at least ${metadata.minArgs} ${pluralizeArgs(metadata.minArgs)} for ${name}(), got ${args.length}`
-                  );
-                if (args.length > metadata.maxArgs) throw new Error(
-                  `Expected at most ${metadata.maxArgs} ${pluralizeArgs(metadata.maxArgs)} for ${name}(), got ${args.length}`
-                  );
-                return new Promise((resolve, reject) => {
-                  let boundCallback = processResponse.bind(null, {
-                    resolve: resolve,
-                    reject: reject
-                  });
-                  args.push(boundCallback), apiTarget.sendMessage(...args)
-                })
+              runtime: {
+                onMessage: wrapEvent(onMessageWrappers),
+                onMessageExternal: wrapEvent(onMessageWrappers),
+                sendMessage: wrapSendMessage.bind(null, 'sendMessage', {
+                  minArgs: 1,
+                  maxArgs: 3,
+                }),
               },
-              staticWrappers = {
-                devtools: {
-                  network: {
-                    onRequestFinished: wrapEvent(onRequestFinishedWrappers)
-                  }
-                },
-                runtime: {
-                  onMessage: wrapEvent(onMessageWrappers),
-                  onMessageExternal: wrapEvent(onMessageWrappers),
-                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
-                    minArgs: 1,
-                    maxArgs: 3
-                  })
-                },
-                tabs: {
-                  sendMessage: wrapSendMessage.bind(null, "sendMessage", {
-                    minArgs: 2,
-                    maxArgs: 3
-                  })
-                }
+              tabs: {
+                sendMessage: wrapSendMessage.bind(null, 'sendMessage', {
+                  minArgs: 2,
+                  maxArgs: 3,
+                }),
               },
-              settingMetadata = {
-                clear: {
-                  minArgs: 1,
-                  maxArgs: 1
-                },
-                get: {
-                  minArgs: 1,
-                  maxArgs: 1
-                },
-                set: {
-                  minArgs: 1,
-                  maxArgs: 1
-                }
-              };
-            return apiMetadata.privacy = {
+            };
+            let settingMetadata = {
+              clear: {
+                minArgs: 1,
+                maxArgs: 1,
+              },
+              get: {
+                minArgs: 1,
+                maxArgs: 1,
+              },
+              set: {
+                minArgs: 1,
+                maxArgs: 1,
+              },
+            };
+            apiMetadata.privacy = {
               network: {
-                "*": settingMetadata
+                '*': settingMetadata,
               },
               services: {
-                "*": settingMetadata
+                '*': settingMetadata,
               },
               websites: {
-                "*": settingMetadata
-              }
-            }, wrapObject(chromeApi, staticWrappers, apiMetadata)
+                '*': settingMetadata,
+              },
+            };
+            return wrapObject(chromeApi, staticWrappers, apiMetadata);
           };
-        browserGlobal.exports = wrapApis(chrome)
-      } else browserGlobal.exports = globalThis.browser
-    })
-});
+          browserGlobal.exports = wrapApis(chrome);
+        } else {
+          browserGlobal.exports = globalThis.browser;
+        }
+      },
+    );
+  },
+);
 var browserRuntime = toEsm(requirePolyfill(), 1);
 var browserI18n = toEsm(requirePolyfill(), 1);
-
 function escapeHtml(text) {
-  return text ? text.replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;") : ""
+  if (text) {
+    return text
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  } else {
+    return '';
+  }
 }
-
 function localizeMessage(messageKey, substitutions, localMessages) {
-  let reportMissing = () => (console.error(`Requesting unknown i18n string ${messageKey}`), messageKey);
-  substitutions = substitutions.map(substitution => substitution.toString())
+  let reportMissing = () => (
+    console.error(`Requesting unknown i18n string ${messageKey}`),
+    messageKey
+  );
+  substitutions = substitutions
+    .map(substitution => substitution.toString())
     .map(escapeHtml);
   try {
     if (messageKey in localMessages) {
-      let resolvedMessage = localMessages[messageKey],
-        placeholderIndex = 1;
-      for (let argIndex = 0; argIndex < substitutions.length; argIndex++) resolvedMessage = resolvedMessage.replace(`$${placeholderIndex}`, substitutions[argIndex]);
-      return resolvedMessage
+      let resolvedMessage = localMessages[messageKey];
+      let placeholderIndex = 1;
+      for (let argIndex = 0; argIndex < substitutions.length; argIndex++) {
+        resolvedMessage = resolvedMessage.replace(
+          `$${placeholderIndex}`,
+          substitutions[argIndex],
+        );
+      }
+      return resolvedMessage;
     } else {
-      let browserMessage = browserI18n.default.i18n.getMessage(messageKey, substitutions);
-      return browserMessage || reportMissing()
+      let browserMessage = browserI18n.default.i18n.getMessage(
+        messageKey,
+        substitutions,
+      );
+      return browserMessage || reportMissing();
     }
   } catch {
-    return reportMissing()
+    return reportMissing();
   }
 }
-
 function applyI18n(rootElement, i18nMessages) {
-  for (let element of Array.from(rootElement.querySelectorAll("[data-i18n]"))) {
-    let i18nArgsRaw = element.dataset.i18nArgs,
-      i18nAttr = element.dataset.i18nAttr,
-      translatedText;
-    i18nArgsRaw ? translatedText = localizeMessage(element.dataset.i18n, JSON.parse(i18nArgsRaw), i18nMessages) : translatedText = localizeMessage(element.dataset.i18n, [], i18nMessages),
-      i18nAttr ? element.setAttribute(i18nAttr, translatedText) : element.textContent = translatedText
+  for (let element of Array.from(rootElement.querySelectorAll('[data-i18n]'))) {
+    let i18nArgsRaw = element.dataset.i18nArgs;
+    let i18nAttr = element.dataset.i18nAttr;
+    let translatedText;
+    if (i18nArgsRaw) {
+      translatedText = localizeMessage(
+        element.dataset.i18n,
+        JSON.parse(i18nArgsRaw),
+        i18nMessages,
+      );
+    } else {
+      translatedText = localizeMessage(element.dataset.i18n, [], i18nMessages);
+    }
+    if (i18nAttr) {
+      element.setAttribute(i18nAttr, translatedText);
+    } else {
+      element.textContent = translatedText;
+    }
   }
 }
-
 function formatRelativeDate(dateInput, localMessages) {
-  let today = new Date;
+  let today = new Date();
   today.setHours(0, 0, 0, 0);
   let entryDate = new Date(dateInput);
   entryDate.setHours(0, 0, 0, 0);
-  let todayMs = today.getTime(),
-    entryMs = entryDate.getTime(),
-    daysAgo = Math.floor((todayMs - entryMs) / (1e3 * 60 * 60 * 24));
-  return daysAgo == 0 ? localizeMessage("v9_date_today", [], localMessages) : daysAgo == 1 ? localizeMessage("v9_date_yesterday",
-  [], localMessages) : daysAgo < 8 ? localizeMessage("v9_date_x_days_ago", [daysAgo], localMessages) : localizeMessage("v9_date_long_ago", [],
-    localMessages)
+  let todayMs = today.getTime();
+  let entryMs = entryDate.getTime();
+  let daysAgo = Math.floor((todayMs - entryMs) / (1e3 * 60 * 60 * 24));
+  if (daysAgo == 0) {
+    return localizeMessage('v9_date_today', [], localMessages);
+  } else {
+    if (daysAgo == 1) {
+      return localizeMessage('v9_date_yesterday', [], localMessages);
+    } else {
+      if (daysAgo < 8) {
+        return localizeMessage('v9_date_x_days_ago', [daysAgo], localMessages);
+      } else {
+        return localizeMessage('v9_date_long_ago', [], localMessages);
+      }
+    }
+  }
 }
 var browserStorage = toEsm(requirePolyfill(), 1);
-
 function stringifyValue(value) {
   var text = String(value);
-  if (text === "[object Object]") try {
-    text = JSON.stringify(value)
-  } catch {}
-  return text
+  if (text === '[object Object]') {
+    try {
+      text = JSON.stringify(value);
+    } catch {}
+  }
+  return text;
 }
-var NoneImpl = function() {
-    function NoneCtor() {}
-    return NoneCtor.prototype.isSome = function() {
-      return !1
-    }, NoneCtor.prototype.isNone = function() {
-      return !0
-    }, NoneCtor.prototype[Symbol.iterator] = function() {
-      return {
-        next: function() {
-          return {
-            done: !0,
-            value: void 0
-          }
-        }
-      }
-    }, NoneCtor.prototype.unwrapOr = function(defaultValue) {
-      return defaultValue
-    }, NoneCtor.prototype.expect = function(message) {
-      throw new Error("".concat(message))
-    }, NoneCtor.prototype.unwrap = function() {
-      throw new Error("Tried to unwrap None")
-    }, NoneCtor.prototype.map = function(mapper) {
-      return this
-    }, NoneCtor.prototype.mapOr = function(defaultValue, mapper) {
-      return defaultValue
-    }, NoneCtor.prototype.mapOrElse = function(fallbackFn, mapper) {
-      return fallbackFn()
-    }, NoneCtor.prototype.or = function(alternative) {
-      return alternative
-    }, NoneCtor.prototype.orElse = function(alternativeFn) {
-      return alternativeFn()
-    }, NoneCtor.prototype.andThen = function(mapper) {
-      return this
-    }, NoneCtor.prototype.toResult = function(errorValue) {
-      return ErrResult(errorValue)
-    }, NoneCtor.prototype.toString = function() {
-      return "None"
-    }, NoneCtor
-  }(),
-  none = new NoneImpl;
-Object.freeze(none);
-var SomeImpl = function() {
-    function SomeCtor(value) {
-      if (!(this instanceof SomeCtor)) return new SomeCtor(value);
-      this.value = value
-    }
-    return SomeCtor.prototype.isSome = function() {
-      return !0
-    }, SomeCtor.prototype.isNone = function() {
-      return !1
-    }, SomeCtor.prototype[Symbol.iterator] = function() {
-      var boxedValue = Object(this.value);
-      return Symbol.iterator in boxedValue ? boxedValue[Symbol.iterator]() : {
-        next: function() {
-          return {
-            done: !0,
-            value: void 0
-          }
-        }
-      }
-    }, SomeCtor.prototype.unwrapOr = function(defaultValue) {
-      return this.value
-    }, SomeCtor.prototype.expect = function(message) {
-      return this.value
-    }, SomeCtor.prototype.unwrap = function() {
-      return this.value
-    }, SomeCtor.prototype.map = function(mapper) {
-      return Some(mapper(this.value))
-    }, SomeCtor.prototype.mapOr = function(defaultValue, mapper) {
-      return mapper(this.value)
-    }, SomeCtor.prototype.mapOrElse = function(fallbackFn, mapper) {
-      return mapper(this.value)
-    }, SomeCtor.prototype.or = function(alternative) {
-      return this
-    }, SomeCtor.prototype.orElse = function(alternativeFn) {
-      return this
-    }, SomeCtor.prototype.andThen = function(mapper) {
-      return mapper(this.value)
-    }, SomeCtor.prototype.toResult = function(errorValue) {
-      return OkResult(this.value)
-    }, SomeCtor.prototype.safeUnwrap = function() {
-      return this.value
-    }, SomeCtor.prototype.toString = function() {
-      return "Some(".concat(stringifyValue(this.value), ")")
-    }, SomeCtor.EMPTY = new SomeCtor(void 0), SomeCtor
-  }(),
-  Some = SomeImpl,
-  OptionNamespace;
-(function(optionNs) {
-  function optionAll() {
-    for (var optionArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) optionArgs[argIndex] = arguments[argIndex];
-    for (var values = [], index = 0, optionList = optionArgs; index < optionList.length; index++) {
-      var option = optionList[index];
-      if (option.isSome()) values.push(option.value);
-      else return option
-    }
-    return Some(values)
-  }
-  optionNs.all = optionAll;
-
-  function optionAny() {
-    for (var optionArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) optionArgs[argIndex] = arguments[argIndex];
-    for (var index = 0, optionList = optionArgs; index < optionList.length; index++) {
-      var option = optionList[index];
-      return option.isSome(), option
-    }
-    return none
-  }
-  optionNs.any = optionAny;
-
-  function isOption(candidate) {
-    return candidate instanceof Some || candidate === none
-  }
-  optionNs.isOption = isOption
-})(OptionNamespace || (OptionNamespace = {}));
-var ErrImpl = function() {
-  function ErrCtor(error) {
-    if (!(this instanceof ErrCtor)) return new ErrCtor(error);
-    this.error = error;
-    var stackLines = new Error()
-      .stack.split(`
-`)
-      .slice(2);
-    stackLines && stackLines.length > 0 && stackLines[0].includes("ErrImpl") && stackLines.shift(), this._stack =
-      stackLines.join(`
-`)
-  }
-  return ErrCtor.prototype.isOk = function() {
-    return !1
-  }, ErrCtor.prototype.isErr = function() {
-    return !0
-  }, ErrCtor.prototype[Symbol.iterator] = function() {
+var NoneImpl = (function () {
+  function NoneCtor() {}
+  NoneCtor.prototype.isSome = function () {
+    return !1;
+  };
+  NoneCtor.prototype.isNone = function () {
+    return !0;
+  };
+  NoneCtor.prototype[Symbol.iterator] = function () {
     return {
-      next: function() {
+      next: function () {
         return {
           done: !0,
-          value: void 0
-        }
-      }
+          value: void 0,
+        };
+      },
+    };
+  };
+  NoneCtor.prototype.unwrapOr = function (defaultValue) {
+    return defaultValue;
+  };
+  NoneCtor.prototype.expect = function (message) {
+    throw new Error(''.concat(message));
+  };
+  NoneCtor.prototype.unwrap = function () {
+    throw new Error('Tried to unwrap None');
+  };
+  NoneCtor.prototype.map = function (mapper) {
+    return this;
+  };
+  NoneCtor.prototype.mapOr = function (defaultValue, mapper) {
+    return defaultValue;
+  };
+  NoneCtor.prototype.mapOrElse = function (fallbackFn, mapper) {
+    return fallbackFn();
+  };
+  NoneCtor.prototype.or = function (alternative) {
+    return alternative;
+  };
+  NoneCtor.prototype.orElse = function (alternativeFn) {
+    return alternativeFn();
+  };
+  NoneCtor.prototype.andThen = function (mapper) {
+    return this;
+  };
+  NoneCtor.prototype.toResult = function (errorValue) {
+    return ErrResult(errorValue);
+  };
+  NoneCtor.prototype.toString = function () {
+    return 'None';
+  };
+  return NoneCtor;
+})();
+var none = new NoneImpl();
+Object.freeze(none);
+var SomeImpl = (function () {
+  function SomeCtor(value) {
+    if (!(this instanceof SomeCtor)) {
+      return new SomeCtor(value);
     }
-  }, ErrCtor.prototype.else = function(defaultValue) {
-    return defaultValue
-  }, ErrCtor.prototype.unwrapOr = function(defaultValue) {
-    return defaultValue
-  }, ErrCtor.prototype.expect = function(message) {
-    throw new Error("".concat(message, " - Error: ")
-      .concat(stringifyValue(this.error), `
-`)
-      .concat(this._stack), {
-        cause: this.error
-      })
-  }, ErrCtor.prototype.expectErr = function(message) {
-    return this.error
-  }, ErrCtor.prototype.unwrap = function() {
-    throw new Error("Tried to unwrap Error: ".concat(stringifyValue(this.error), `
-`)
-      .concat(this._stack), {
-        cause: this.error
-      })
-  }, ErrCtor.prototype.unwrapErr = function() {
-    return this.error
-  }, ErrCtor.prototype.map = function(mapper) {
-    return this
-  }, ErrCtor.prototype.andThen = function(mapper) {
-    return this
-  }, ErrCtor.prototype.mapErr = function(mapper) {
-    return new ErrResult(mapper(this.error))
-  }, ErrCtor.prototype.mapOr = function(defaultValue, mapper) {
-    return defaultValue
-  }, ErrCtor.prototype.mapOrElse = function(fallbackFn, mapper) {
-    return fallbackFn(this.error)
-  }, ErrCtor.prototype.or = function(alternative) {
-    return alternative
-  }, ErrCtor.prototype.orElse = function(alternativeFn) {
-    return alternativeFn(this.error)
-  }, ErrCtor.prototype.toOption = function() {
-    return none
-  }, ErrCtor.prototype.toString = function() {
-    return "Err(".concat(stringifyValue(this.error), ")")
-  }, Object.defineProperty(ErrCtor.prototype, "stack", {
-    get: function() {
-      return "".concat(this, `
-`)
-        .concat(this._stack)
-    },
-    enumerable: !1,
-    configurable: !0
-  }), ErrCtor.prototype.toAsyncResult = function() {
-    return new AsyncResultImpl(this)
-  }, ErrCtor.EMPTY = new ErrCtor(void 0), ErrCtor
-}();
-var ErrResult = ErrImpl,
-  OkImpl = function() {
-    function OkCtor(value) {
-      if (!(this instanceof OkCtor)) return new OkCtor(value);
-      this.value = value
-    }
-    return OkCtor.prototype.isOk = function() {
-      return !0
-    }, OkCtor.prototype.isErr = function() {
-      return !1
-    }, OkCtor.prototype[Symbol.iterator] = function() {
-      var boxedValue = Object(this.value);
-      return Symbol.iterator in boxedValue ? boxedValue[Symbol.iterator]() : {
-        next: function() {
+    this.value = value;
+  }
+  SomeCtor.prototype.isSome = function () {
+    return !0;
+  };
+  SomeCtor.prototype.isNone = function () {
+    return !1;
+  };
+  SomeCtor.prototype[Symbol.iterator] = function () {
+    var boxedValue = Object(this.value);
+    if (Symbol.iterator in boxedValue) {
+      return boxedValue[Symbol.iterator]();
+    } else {
+      return {
+        next: function () {
           return {
             done: !0,
-            value: void 0
-          }
-        }
-      }
-    }, OkCtor.prototype.else = function(defaultValue) {
-      return this.value
-    }, OkCtor.prototype.unwrapOr = function(defaultValue) {
-      return this.value
-    }, OkCtor.prototype.expect = function(message) {
-      return this.value
-    }, OkCtor.prototype.expectErr = function(message) {
-      throw new Error(message)
-    }, OkCtor.prototype.unwrap = function() {
-      return this.value
-    }, OkCtor.prototype.unwrapErr = function() {
-      throw new Error("Tried to unwrap Ok: ".concat(stringifyValue(this.value)), {
-        cause: this.value
-      })
-    }, OkCtor.prototype.map = function(mapper) {
-      return new OkResult(mapper(this.value))
-    }, OkCtor.prototype.andThen = function(mapper) {
-      return mapper(this.value)
-    }, OkCtor.prototype.mapErr = function(mapper) {
-      return this
-    }, OkCtor.prototype.mapOr = function(defaultValue, mapper) {
-      return mapper(this.value)
-    }, OkCtor.prototype.mapOrElse = function(fallbackFn, mapper) {
-      return mapper(this.value)
-    }, OkCtor.prototype.or = function(alternative) {
-      return this
-    }, OkCtor.prototype.orElse = function(alternativeFn) {
-      return this
-    }, OkCtor.prototype.toOption = function() {
-      return Some(this.value)
-    }, OkCtor.prototype.safeUnwrap = function() {
-      return this.value
-    }, OkCtor.prototype.toString = function() {
-      return "Ok(".concat(stringifyValue(this.value), ")")
-    }, OkCtor.prototype.toAsyncResult = function() {
-      return new AsyncResultImpl(this)
-    }, OkCtor.EMPTY = new OkCtor(void 0), OkCtor
-  }();
-var OkResult = OkImpl,
-  ResultNamespace;
-(function(resultNs) {
-  function resultAll() {
-    for (var resultArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) resultArgs[argIndex] = arguments[argIndex];
-    for (var values = [], index = 0, resultList = resultArgs; index < resultList.length; index++) {
-      var result = resultList[index];
-      if (result.isOk()) values.push(result.value);
-      else return result
+            value: void 0,
+          };
+        },
+      };
     }
-    return new OkResult(values)
+  };
+  SomeCtor.prototype.unwrapOr = function (defaultValue) {
+    return this.value;
+  };
+  SomeCtor.prototype.expect = function (message) {
+    return this.value;
+  };
+  SomeCtor.prototype.unwrap = function () {
+    return this.value;
+  };
+  SomeCtor.prototype.map = function (mapper) {
+    return Some(mapper(this.value));
+  };
+  SomeCtor.prototype.mapOr = function (defaultValue, mapper) {
+    return mapper(this.value);
+  };
+  SomeCtor.prototype.mapOrElse = function (fallbackFn, mapper) {
+    return mapper(this.value);
+  };
+  SomeCtor.prototype.or = function (alternative) {
+    return this;
+  };
+  SomeCtor.prototype.orElse = function (alternativeFn) {
+    return this;
+  };
+  SomeCtor.prototype.andThen = function (mapper) {
+    return mapper(this.value);
+  };
+  SomeCtor.prototype.toResult = function (errorValue) {
+    return OkResult(this.value);
+  };
+  SomeCtor.prototype.safeUnwrap = function () {
+    return this.value;
+  };
+  SomeCtor.prototype.toString = function () {
+    return 'Some('.concat(stringifyValue(this.value), ')');
+  };
+  SomeCtor.EMPTY = new SomeCtor(void 0);
+  return SomeCtor;
+})();
+var Some = SomeImpl;
+var OptionNamespace;
+(function (optionNs) {
+  function optionAll() {
+    for (
+      var optionArgs = [], argIndex = 0;
+      argIndex < arguments.length;
+      argIndex++
+    ) {
+      optionArgs[argIndex] = arguments[argIndex];
+    }
+    for (
+      var values = [], index = 0, optionList = optionArgs;
+      index < optionList.length;
+      index++
+    ) {
+      var option = optionList[index];
+      if (option.isSome()) {
+        values.push(option.value);
+      } else {
+        return option;
+      }
+    }
+    return Some(values);
+  }
+  optionNs.all = optionAll;
+  function optionAny() {
+    for (
+      var optionArgs = [], argIndex = 0;
+      argIndex < arguments.length;
+      argIndex++
+    ) {
+      optionArgs[argIndex] = arguments[argIndex];
+    }
+    for (
+      var index = 0, optionList = optionArgs;
+      index < optionList.length;
+      index++
+    ) {
+      var option = optionList[index];
+      option.isSome();
+      return option;
+    }
+    return none;
+  }
+  optionNs.any = optionAny;
+  function isOption(candidate) {
+    return candidate instanceof Some || candidate === none;
+  }
+  optionNs.isOption = isOption;
+})(OptionNamespace || (OptionNamespace = {}));
+var ErrImpl = (function () {
+  function ErrCtor(error) {
+    if (!(this instanceof ErrCtor)) {
+      return new ErrCtor(error);
+    }
+    this.error = error;
+    var stackLines = new Error().stack
+      .split(
+        `
+`,
+      )
+      .slice(2);
+    if (
+      stackLines
+      && stackLines.length > 0
+      && stackLines[0].includes('ErrImpl')
+    ) {
+      stackLines.shift();
+    }
+    this._stack = stackLines.join(`
+`);
+  }
+  ErrCtor.prototype.isOk = function () {
+    return !1;
+  };
+  ErrCtor.prototype.isErr = function () {
+    return !0;
+  };
+  ErrCtor.prototype[Symbol.iterator] = function () {
+    return {
+      next: function () {
+        return {
+          done: !0,
+          value: void 0,
+        };
+      },
+    };
+  };
+  ErrCtor.prototype.else = function (defaultValue) {
+    return defaultValue;
+  };
+  ErrCtor.prototype.unwrapOr = function (defaultValue) {
+    return defaultValue;
+  };
+  ErrCtor.prototype.expect = function (message) {
+    throw new Error(
+      ''
+        .concat(message, ' - Error: ')
+        .concat(
+          stringifyValue(this.error),
+          `
+`,
+        )
+        .concat(this._stack),
+      {
+        cause: this.error,
+      },
+    );
+  };
+  ErrCtor.prototype.expectErr = function (message) {
+    return this.error;
+  };
+  ErrCtor.prototype.unwrap = function () {
+    throw new Error(
+      'Tried to unwrap Error: '
+        .concat(
+          stringifyValue(this.error),
+          `
+`,
+        )
+        .concat(this._stack),
+      {
+        cause: this.error,
+      },
+    );
+  };
+  ErrCtor.prototype.unwrapErr = function () {
+    return this.error;
+  };
+  ErrCtor.prototype.map = function (mapper) {
+    return this;
+  };
+  ErrCtor.prototype.andThen = function (mapper) {
+    return this;
+  };
+  ErrCtor.prototype.mapErr = function (mapper) {
+    return new ErrResult(mapper(this.error));
+  };
+  ErrCtor.prototype.mapOr = function (defaultValue, mapper) {
+    return defaultValue;
+  };
+  ErrCtor.prototype.mapOrElse = function (fallbackFn, mapper) {
+    return fallbackFn(this.error);
+  };
+  ErrCtor.prototype.or = function (alternative) {
+    return alternative;
+  };
+  ErrCtor.prototype.orElse = function (alternativeFn) {
+    return alternativeFn(this.error);
+  };
+  ErrCtor.prototype.toOption = function () {
+    return none;
+  };
+  ErrCtor.prototype.toString = function () {
+    return 'Err('.concat(stringifyValue(this.error), ')');
+  };
+  Object.defineProperty(ErrCtor.prototype, 'stack', {
+    get: function () {
+      return ''
+        .concat(
+          this,
+          `
+`,
+        )
+        .concat(this._stack);
+    },
+    enumerable: !1,
+    configurable: !0,
+  });
+  ErrCtor.prototype.toAsyncResult = function () {
+    return new AsyncResultImpl(this);
+  };
+  ErrCtor.EMPTY = new ErrCtor(void 0);
+  return ErrCtor;
+})();
+var ErrResult = ErrImpl;
+var OkImpl = (function () {
+  function OkCtor(value) {
+    if (!(this instanceof OkCtor)) {
+      return new OkCtor(value);
+    }
+    this.value = value;
+  }
+  OkCtor.prototype.isOk = function () {
+    return !0;
+  };
+  OkCtor.prototype.isErr = function () {
+    return !1;
+  };
+  OkCtor.prototype[Symbol.iterator] = function () {
+    var boxedValue = Object(this.value);
+    if (Symbol.iterator in boxedValue) {
+      return boxedValue[Symbol.iterator]();
+    } else {
+      return {
+        next: function () {
+          return {
+            done: !0,
+            value: void 0,
+          };
+        },
+      };
+    }
+  };
+  OkCtor.prototype.else = function (defaultValue) {
+    return this.value;
+  };
+  OkCtor.prototype.unwrapOr = function (defaultValue) {
+    return this.value;
+  };
+  OkCtor.prototype.expect = function (message) {
+    return this.value;
+  };
+  OkCtor.prototype.expectErr = function (message) {
+    throw new Error(message);
+  };
+  OkCtor.prototype.unwrap = function () {
+    return this.value;
+  };
+  OkCtor.prototype.unwrapErr = function () {
+    throw new Error('Tried to unwrap Ok: '.concat(stringifyValue(this.value)), {
+      cause: this.value,
+    });
+  };
+  OkCtor.prototype.map = function (mapper) {
+    return new OkResult(mapper(this.value));
+  };
+  OkCtor.prototype.andThen = function (mapper) {
+    return mapper(this.value);
+  };
+  OkCtor.prototype.mapErr = function (mapper) {
+    return this;
+  };
+  OkCtor.prototype.mapOr = function (defaultValue, mapper) {
+    return mapper(this.value);
+  };
+  OkCtor.prototype.mapOrElse = function (fallbackFn, mapper) {
+    return mapper(this.value);
+  };
+  OkCtor.prototype.or = function (alternative) {
+    return this;
+  };
+  OkCtor.prototype.orElse = function (alternativeFn) {
+    return this;
+  };
+  OkCtor.prototype.toOption = function () {
+    return Some(this.value);
+  };
+  OkCtor.prototype.safeUnwrap = function () {
+    return this.value;
+  };
+  OkCtor.prototype.toString = function () {
+    return 'Ok('.concat(stringifyValue(this.value), ')');
+  };
+  OkCtor.prototype.toAsyncResult = function () {
+    return new AsyncResultImpl(this);
+  };
+  OkCtor.EMPTY = new OkCtor(void 0);
+  return OkCtor;
+})();
+var OkResult = OkImpl;
+var ResultNamespace;
+(function (resultNs) {
+  function resultAll() {
+    for (
+      var resultArgs = [], argIndex = 0;
+      argIndex < arguments.length;
+      argIndex++
+    ) {
+      resultArgs[argIndex] = arguments[argIndex];
+    }
+    for (
+      var values = [], index = 0, resultList = resultArgs;
+      index < resultList.length;
+      index++
+    ) {
+      var result = resultList[index];
+      if (result.isOk()) {
+        values.push(result.value);
+      } else {
+        return result;
+      }
+    }
+    return new OkResult(values);
   }
   resultNs.all = resultAll;
-
   function resultAny() {
-    for (var resultArgs = [], argIndex = 0; argIndex < arguments.length; argIndex++) resultArgs[argIndex] = arguments[argIndex];
-    for (var errors = [], index = 0, resultList = resultArgs; index < resultList.length; index++) {
-      var result = resultList[index];
-      if (result.isOk()) return result;
-      errors.push(result.error)
+    for (
+      var resultArgs = [], argIndex = 0;
+      argIndex < arguments.length;
+      argIndex++
+    ) {
+      resultArgs[argIndex] = arguments[argIndex];
     }
-    return new ErrResult(errors)
+    for (
+      var errors = [], index = 0, resultList = resultArgs;
+      index < resultList.length;
+      index++
+    ) {
+      var result = resultList[index];
+      if (result.isOk()) {
+        return result;
+      }
+      errors.push(result.error);
+    }
+    return new ErrResult(errors);
   }
   resultNs.any = resultAny;
-
   function wrapResult(callback) {
     try {
-      return new OkResult(callback())
+      return new OkResult(callback());
     } catch (error) {
-      return new ErrResult(error)
+      return new ErrResult(error);
     }
   }
   resultNs.wrap = wrapResult;
-
   function wrapAsyncResult(asyncFn) {
     try {
       return asyncFn()
-        .then(function(value) {
-          return new OkResult(value)
+        .then(function (value) {
+          return new OkResult(value);
         })
-        .catch(function(error) {
-          return new ErrResult(error)
-        })
+        .catch(function (error) {
+          return new ErrResult(error);
+        });
     } catch (error) {
-      return Promise.resolve(new ErrResult(error))
+      return Promise.resolve(new ErrResult(error));
     }
   }
   resultNs.wrapAsync = wrapAsyncResult;
-
   function isResult(candidate) {
-    return candidate instanceof ErrResult || candidate instanceof OkResult
+    return candidate instanceof ErrResult || candidate instanceof OkResult;
   }
-  resultNs.isResult = isResult
+  resultNs.isResult = isResult;
 })(ResultNamespace || (ResultNamespace = {}));
-var awaiter = function(thisArg, args, PromiseCtor, generator) {
-    function adopt(pendingValue) {
-      return pendingValue instanceof PromiseCtor ? pendingValue : new PromiseCtor(function(resolveInner) {
-        resolveInner(pendingValue)
-      })
+var awaiter = function (thisArg, args, PromiseCtor, generator) {
+  function adopt(pendingValue) {
+    if (pendingValue instanceof PromiseCtor) {
+      return pendingValue;
+    } else {
+      return new PromiseCtor(function (resolveInner) {
+        resolveInner(pendingValue);
+      });
     }
-    return new(PromiseCtor || (PromiseCtor = Promise))(function(resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value))
-        } catch (error) {
-          reject(error)
-        }
-      }
-
-      function rejected(value) {
-        try {
-          step(generator.throw(value))
-        } catch (error) {
-          reject(error)
-        }
-      }
-
-      function step(result) {
-        result.done ? resolve(result.value) : adopt(result.value)
-          .then(fulfilled, rejected)
-      }
-      step((generator = generator.apply(thisArg, args || []))
-        .next())
-    })
-  },
-  generatorHelper = function(thisArg, body) {
-    var state = {
-        label: 0,
-        sent: function() {
-          if (opResult[0] & 1) throw opResult[1];
-          return opResult[1]
-        },
-        trys: [],
-        ops: []
-      },
-      executing, currentIterator, opResult, iteratorApi;
-    return iteratorApi = {
-      next: verb(0),
-      throw: verb(1),
-      return: verb(2)
-    }, typeof Symbol == "function" && (iteratorApi[Symbol.iterator] = function() {
-      return this
-    }), iteratorApi;
-
-    function verb(opCode) {
-      return function(opValue) {
-        return step([opCode, opValue])
+  }
+  return new (PromiseCtor || (PromiseCtor = Promise))(function (
+    resolve,
+    reject,
+  ) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (error) {
+        reject(error);
       }
     }
-
-    function step(operation) {
-      if (executing) throw new TypeError("Generator is already executing.");
-      for (; iteratorApi && (iteratorApi = 0, operation[0] && (state = 0)), state;) try {
-        if (executing = 1, currentIterator && (opResult = operation[0] & 2 ? currentIterator.return : operation[0] ? currentIterator.throw || ((opResult = currentIterator
-            .return) && opResult.call(currentIterator), 0) : currentIterator.next) && !(opResult = opResult.call(currentIterator, operation[1]))
-          .done) return opResult;
-        switch (currentIterator = 0, opResult && (operation = [operation[0] & 2, opResult.value]), operation[0]) {
+    function rejected(value) {
+      try {
+        step(generator.throw(value));
+      } catch (error) {
+        reject(error);
+      }
+    }
+    function step(result) {
+      if (result.done) {
+        resolve(result.value);
+      } else {
+        adopt(result.value).then(fulfilled, rejected);
+      }
+    }
+    step((generator = generator.apply(thisArg, args || [])).next());
+  });
+};
+var generatorHelper = function (thisArg, body) {
+  var state = {
+    label: 0,
+    sent: function () {
+      if (opResult[0] & 1) {
+        throw opResult[1];
+      }
+      return opResult[1];
+    },
+    trys: [],
+    ops: [],
+  };
+  var executing;
+  var currentIterator;
+  var opResult;
+  var iteratorApi;
+  iteratorApi = {
+    next: verb(0),
+    throw: verb(1),
+    return: verb(2),
+  };
+  if (typeof Symbol == 'function') {
+    iteratorApi[Symbol.iterator] = function () {
+      return this;
+    };
+  }
+  return iteratorApi;
+  function verb(opCode) {
+    return function (opValue) {
+      return step([opCode, opValue]);
+    };
+  }
+  function step(operation) {
+    if (executing) {
+      throw new TypeError('Generator is already executing.');
+    }
+    for (
+      ;
+      iteratorApi && ((iteratorApi = 0), operation[0] && (state = 0)), state;
+    ) {
+      try {
+        if (
+          ((executing = 1),
+          currentIterator
+            && (opResult =
+              operation[0] & 2
+                ? currentIterator.return
+                : operation[0]
+                  ? currentIterator.throw
+                    || ((opResult = currentIterator.return)
+                      && opResult.call(currentIterator),
+                    0)
+                  : currentIterator.next)
+            && !(opResult = opResult.call(currentIterator, operation[1])).done)
+        ) {
+          return opResult;
+        }
+        switch (
+          ((currentIterator = 0),
+          opResult && (operation = [operation[0] & 2, opResult.value]),
+          operation[0])
+        ) {
           case 0:
           case 1:
             opResult = operation;
             break;
           case 4:
-            return state.label++, {
+            state.label++;
+            return {
               value: operation[1],
-              done: !1
+              done: !1,
             };
           case 5:
-            state.label++, currentIterator = operation[1], operation = [0];
+            state.label++;
+            currentIterator = operation[1];
+            operation = [0];
             continue;
           case 7:
-            operation = state.ops.pop(), state.trys.pop();
+            operation = state.ops.pop();
+            state.trys.pop();
             continue;
           default:
-            if (opResult = state.trys, !(opResult = opResult.length > 0 && opResult[opResult.length - 1]) && (operation[
-                0] === 6 || operation[0] === 2)) {
+            if (
+              ((opResult = state.trys),
+              !(opResult = opResult.length > 0 && opResult[opResult.length - 1])
+                && (operation[0] === 6 || operation[0] === 2))
+            ) {
               state = 0;
-              continue
+              continue;
             }
-            if (operation[0] === 3 && (!opResult || operation[1] > opResult[0] && operation[1] < opResult[3])) {
+            if (
+              operation[0] === 3
+              && (!opResult
+                || (operation[1] > opResult[0] && operation[1] < opResult[3]))
+            ) {
               state.label = operation[1];
-              break
+              break;
             }
             if (operation[0] === 6 && state.label < opResult[1]) {
-              state.label = opResult[1], opResult = operation;
-              break
+              state.label = opResult[1];
+              opResult = operation;
+              break;
             }
             if (opResult && state.label < opResult[2]) {
-              state.label = opResult[2], state.ops.push(operation);
-              break
+              state.label = opResult[2];
+              state.ops.push(operation);
+              break;
             }
-            opResult[2] && state.ops.pop(), state.trys.pop();
-            continue
+            if (opResult[2]) {
+              state.ops.pop();
+            }
+            state.trys.pop();
+            continue;
         }
-        operation = body.call(thisArg, state)
+        operation = body.call(thisArg, state);
       } catch (error) {
-        operation = [6, error], currentIterator = 0
+        operation = [6, error];
+        currentIterator = 0;
       } finally {
-        executing = opResult = 0
-      }
-      if (operation[0] & 5) throw operation[1];
-      return {
-        value: operation[0] ? operation[1] : void 0,
-        done: !0
+        executing = opResult = 0;
       }
     }
-  },
-  AsyncResultImpl = function() {
-    function AsyncResult(initialResult) {
-      this.promise = Promise.resolve(initialResult)
+    if (operation[0] & 5) {
+      throw operation[1];
     }
-    return AsyncResult.prototype.andThen = function(mapper) {
-      var asyncSelf = this;
-      return this.thenInternal(function(result) {
-        return awaiter(asyncSelf, void 0, void 0, function() {
-          var mappedResult;
-          return generatorHelper(this, function(genState) {
-            return result.isErr() ? [2, result] : (mappedResult = mapper(result.value), [2,
-              mappedResult instanceof AsyncResult ? mappedResult.promise : mappedResult
-            ])
-          })
-        })
-      })
-    }, AsyncResult.prototype.map = function(mapper) {
-      var asyncSelf = this;
-      return this.thenInternal(function(result) {
-        return awaiter(asyncSelf, void 0, void 0, function() {
-          var okConstructor;
-          return generatorHelper(this, function(genState) {
-            switch (genState.label) {
-              case 0:
-                return result.isErr() ? [2, result] : (okConstructor = OkResult, [4, mapper(result
-                  .value)]);
-              case 1:
-                return [2, okConstructor.apply(void 0, [genState.sent()])]
-            }
-          })
-        })
-      })
-    }, AsyncResult.prototype.thenInternal = function(onFulfilled) {
-      return new AsyncResult(this.promise.then(onFulfilled))
-    }, AsyncResult
-  }();
-var isStringProp = (obj, prop) => typeof obj[prop] == "string";
-
+    return {
+      value: operation[0] ? operation[1] : void 0,
+      done: !0,
+    };
+  }
+};
+var AsyncResultImpl = (function () {
+  function AsyncResult(initialResult) {
+    this.promise = Promise.resolve(initialResult);
+  }
+  AsyncResult.prototype.andThen = function (mapper) {
+    var asyncSelf = this;
+    return this.thenInternal(function (result) {
+      return awaiter(asyncSelf, void 0, void 0, function () {
+        var mappedResult;
+        return generatorHelper(this, function (genState) {
+          if (result.isErr()) {
+            return [2, result];
+          } else {
+            mappedResult = mapper(result.value);
+            return [
+              2,
+              mappedResult instanceof AsyncResult
+                ? mappedResult.promise
+                : mappedResult,
+            ];
+          }
+        });
+      });
+    });
+  };
+  AsyncResult.prototype.map = function (mapper) {
+    var asyncSelf = this;
+    return this.thenInternal(function (result) {
+      return awaiter(asyncSelf, void 0, void 0, function () {
+        var okConstructor;
+        return generatorHelper(this, function (genState) {
+          switch (genState.label) {
+            case 0:
+              if (result.isErr()) {
+                return [2, result];
+              } else {
+                okConstructor = OkResult;
+                return [4, mapper(result.value)];
+              }
+            case 1:
+              return [2, okConstructor.apply(void 0, [genState.sent()])];
+          }
+        });
+      });
+    });
+  };
+  AsyncResult.prototype.thenInternal = function (onFulfilled) {
+    return new AsyncResult(this.promise.then(onFulfilled));
+  };
+  return AsyncResult;
+})();
+var isStringProp = (obj, prop) => typeof obj[prop] == 'string';
 function deserialize(node) {
   try {
-    if (isStringProp(node, "__serializer_tag")) {
-      if (node.__serializer_tag === "primitive") return OkResult(node.__serializer_value);
-      if (node.__serializer_tag === "regex") {
+    if (isStringProp(node, '__serializer_tag')) {
+      if (node.__serializer_tag === 'primitive') {
+        return OkResult(node.__serializer_value);
+      }
+      if (node.__serializer_tag === 'regex') {
         let pattern = new RegExp(node.__serializer_value);
-        return OkResult(pattern)
-      } else if (node.__serializer_tag === "array") {
+        return OkResult(pattern);
+      } else if (node.__serializer_tag === 'array') {
         let items = [];
         for (let element of node.__serializer_value) {
           let deserialized = deserialize(element);
-          if (deserialized.isErr()) return deserialized;
-          items.push(deserialized.unwrap())
+          if (deserialized.isErr()) {
+            return deserialized;
+          }
+          items.push(deserialized.unwrap());
         }
-        return OkResult(items)
-      } else if (node.__serializer_tag === "map") {
+        return OkResult(items);
+      } else if (node.__serializer_tag === 'map') {
         let entries = [];
         for (let element of node.__serializer_value) {
           let deserialized = deserialize(element);
-          if (deserialized.isErr()) return deserialized;
-          entries.push(deserialized.unwrap())
+          if (deserialized.isErr()) {
+            return deserialized;
+          }
+          entries.push(deserialized.unwrap());
         }
-        return OkResult(new Map(entries))
-      } else if (node.__serializer_tag === "set") {
+        return OkResult(new Map(entries));
+      } else if (node.__serializer_tag === 'set') {
         let items = [];
         for (let element of node.__serializer_value) {
           let deserialized = deserialize(element);
-          if (deserialized.isErr()) return deserialized;
-          items.push(deserialized.unwrap())
+          if (deserialized.isErr()) {
+            return deserialized;
+          }
+          items.push(deserialized.unwrap());
         }
-        return OkResult(new Set(items))
-      } else if (node.__serializer_tag === "result_ok") {
-        let inner = node.__serializer_value,
-          deserialized = deserialize(inner);
-        return deserialized.isErr() ? deserialized : OkResult(OkResult(deserialized.unwrap()))
-      } else if (node.__serializer_tag === "result_err") {
-        let inner = node.__serializer_value,
-          deserialized = deserialize(inner);
-        return deserialized.isErr() ? deserialized : OkResult(ErrResult(deserialized.unwrap()))
-      } else if (node.__serializer_tag === "option_some") {
-        let inner = node.__serializer_value,
-          deserialized = deserialize(inner);
-        return deserialized.isErr() ? deserialized : OkResult(Some(deserialized.unwrap()))
-      } else if (node.__serializer_tag === "option_none") return OkResult(none)
+        return OkResult(new Set(items));
+      } else if (node.__serializer_tag === 'result_ok') {
+        let inner = node.__serializer_value;
+        let deserialized = deserialize(inner);
+        if (deserialized.isErr()) {
+          return deserialized;
+        } else {
+          return OkResult(OkResult(deserialized.unwrap()));
+        }
+      } else if (node.__serializer_tag === 'result_err') {
+        let inner = node.__serializer_value;
+        let deserialized = deserialize(inner);
+        if (deserialized.isErr()) {
+          return deserialized;
+        } else {
+          return OkResult(ErrResult(deserialized.unwrap()));
+        }
+      } else if (node.__serializer_tag === 'option_some') {
+        let inner = node.__serializer_value;
+        let deserialized = deserialize(inner);
+        if (deserialized.isErr()) {
+          return deserialized;
+        } else {
+          return OkResult(Some(deserialized.unwrap()));
+        }
+      } else if (node.__serializer_tag === 'option_none') {
+        return OkResult(none);
+      }
     }
     let valueType = typeof node;
-    if (valueType === "string" || valueType === "number" || valueType === "boolean" || valueType ===
-      "undefined" || Array.isArray(node) || node == null) return ErrResult(
-      "This object was not serialized with Serialize");
+    if (
+      valueType === 'string'
+      || valueType === 'number'
+      || valueType === 'boolean'
+      || valueType === 'undefined'
+      || Array.isArray(node)
+      || node == null
+    ) {
+      return ErrResult('This object was not serialized with Serialize');
+    }
     let result = {};
-    for (let key of Object.keys(node))
-      if (typeof key == "string") {
+    for (let key of Object.keys(node)) {
+      if (typeof key == 'string') {
         let deserialized = deserialize(node[key]);
-        if (deserialized.isErr()) return deserialized;
-        result[key] = deserialized.unwrap()
-      } return OkResult(result)
+        if (deserialized.isErr()) {
+          return deserialized;
+        }
+        result[key] = deserialized.unwrap();
+      }
+    }
+    return OkResult(result);
   } catch {
-    return ErrResult("Failed to inspect object. Not JSON?")
+    return ErrResult('Failed to inspect object. Not JSON?');
   }
 }
-
 function serialize(value) {
   let valueType = typeof value;
-  if (valueType === "string" || valueType === "number" || valueType === "boolean" || valueType ===
-    "undefined" || value == null) return OkResult({
-    __serializer_tag: "primitive",
-    __serializer_value: value
-  });
-  if (value instanceof RegExp) return OkResult({
-    __serializer_tag: "regex",
-    __serializer_value: value.source
-  });
+  if (
+    valueType === 'string'
+    || valueType === 'number'
+    || valueType === 'boolean'
+    || valueType === 'undefined'
+    || value == null
+  ) {
+    return OkResult({
+      __serializer_tag: 'primitive',
+      __serializer_value: value,
+    });
+  }
+  if (value instanceof RegExp) {
+    return OkResult({
+      __serializer_tag: 'regex',
+      __serializer_value: value.source,
+    });
+  }
   if (Array.isArray(value)) {
-    let serializedItems = value.map(item => serialize(item)),
-      firstError = serializedItems.as_iter()
-      .find(item => item.isErr());
-    if (firstError.isSome()) return firstError.unwrap();
-    let values = serializedItems.as_iter()
+    let serializedItems = value.map(item => serialize(item));
+    let firstError = serializedItems.as_iter().find(item => item.isErr());
+    if (firstError.isSome()) {
+      return firstError.unwrap();
+    }
+    let values = serializedItems
+      .as_iter()
       .map(item => item.unwrap())
       .toArray();
     return OkResult({
-      __serializer_tag: "array",
-      __serializer_value: values
-    })
+      __serializer_tag: 'array',
+      __serializer_value: values,
+    });
   } else if (value instanceof Map) {
-    let serializedEntries = [...value.entries()].map(entry => serialize(entry)),
-      firstError = serializedEntries.as_iter()
-      .find(entry => entry.isErr());
-    if (firstError.isSome()) return firstError.unwrap();
-    let values = serializedEntries.as_iter()
+    let serializedEntries = [...value.entries()].map(entry => serialize(entry));
+    let firstError = serializedEntries.as_iter().find(entry => entry.isErr());
+    if (firstError.isSome()) {
+      return firstError.unwrap();
+    }
+    let values = serializedEntries
+      .as_iter()
       .map(entry => entry.unwrap())
       .toArray();
     return OkResult({
-      __serializer_tag: "map",
-      __serializer_value: values
-    })
+      __serializer_tag: 'map',
+      __serializer_value: values,
+    });
   } else if (value instanceof Set) {
-    let serializedValues = [...value.values()].map(element => serialize(element)),
-      firstError = serializedValues.as_iter()
+    let serializedValues = [...value.values()].map(element =>
+      serialize(element),
+    );
+    let firstError = serializedValues
+      .as_iter()
       .find(element => element.isErr());
-    if (firstError.isSome()) return firstError.unwrap();
-    let values = serializedValues.as_iter()
+    if (firstError.isSome()) {
+      return firstError.unwrap();
+    }
+    let values = serializedValues
+      .as_iter()
       .map(element => element.unwrap())
       .toArray();
     return OkResult({
-      __serializer_tag: "set",
-      __serializer_value: values
-    })
-  } else if (ResultNamespace.isResult(value))
-    if (value.isOk()) {
-      let okValue = value.unwrap(),
-        serialized = serialize(okValue);
-      return serialized.isErr() ? serialized : OkResult({
-        __serializer_tag: "result_ok",
-        __serializer_value: serialized.unwrap()
-      })
-    } else {
-      let errValue = value.unwrapErr(),
-        serialized = serialize(errValue);
-      return serialized.isErr() ? serialized : OkResult({
-        __serializer_tag: "result_err",
-        __serializer_value: serialized.unwrap()
-      })
-    }
-  else if (OptionNamespace.isOption(value))
-    if (value.isSome()) {
-      let someValue = value.unwrap(),
-        serialized = serialize(someValue);
-      return serialized.isErr() ? serialized : OkResult({
-        __serializer_tag: "option_some",
-        __serializer_value: serialized.unwrap()
-      })
-    } else return OkResult({
-      __serializer_tag: "option_none"
+      __serializer_tag: 'set',
+      __serializer_value: values,
     });
-  else if (valueType === "object") {
-    let result = {},
-      source = value;
-    for (let key of Object.keys(value)) {
-      let propValue = source[key],
-        serialized = serialize(propValue);
-      if (serialized.isErr()) continue;
-      let unwrapped = serialized.unwrap();
-      result[key] = unwrapped
+  } else if (ResultNamespace.isResult(value)) {
+    if (value.isOk()) {
+      let okValue = value.unwrap();
+      let serialized = serialize(okValue);
+      if (serialized.isErr()) {
+        return serialized;
+      } else {
+        return OkResult({
+          __serializer_tag: 'result_ok',
+          __serializer_value: serialized.unwrap(),
+        });
+      }
+    } else {
+      let errValue = value.unwrapErr();
+      let serialized = serialize(errValue);
+      if (serialized.isErr()) {
+        return serialized;
+      } else {
+        return OkResult({
+          __serializer_tag: 'result_err',
+          __serializer_value: serialized.unwrap(),
+        });
+      }
     }
-    return OkResult(result)
-  } else return ErrResult("Unsupported value")
+  } else if (OptionNamespace.isOption(value)) {
+    if (value.isSome()) {
+      let someValue = value.unwrap();
+      let serialized = serialize(someValue);
+      if (serialized.isErr()) {
+        return serialized;
+      } else {
+        return OkResult({
+          __serializer_tag: 'option_some',
+          __serializer_value: serialized.unwrap(),
+        });
+      }
+    } else {
+      return OkResult({
+        __serializer_tag: 'option_none',
+      });
+    }
+  } else if (valueType === 'object') {
+    let result = {};
+    let source = value;
+    for (let key of Object.keys(value)) {
+      let propValue = source[key];
+      let serialized = serialize(propValue);
+      if (serialized.isErr()) {
+        continue;
+      }
+      let unwrapped = serialized.unwrap();
+      result[key] = unwrapped;
+    }
+    return OkResult(result);
+  } else {
+    return ErrResult('Unsupported value');
+  }
 }
-
 function withIterHelpers(generatorFn) {
-  return Object.assign(generatorFn.prototype, {
-    find: function(predicate) {
-      for (let element of this)
-        if (predicate(element)) return Some(element);
-      return none
+  Object.assign(generatorFn.prototype, {
+    find: function (predicate) {
+      for (let element of this) {
+        if (predicate(element)) {
+          return Some(element);
+        }
+      }
+      return none;
     },
-    count: function(predicate) {
-      return this.reduce((count, element) => (predicate(element) && count++, count), 0)
+    count: function (predicate) {
+      return this.reduce(
+        (count, element) => (predicate(element) && count++, count),
+        0,
+      );
     },
-    reduce: function(reducer, initial) {
+    reduce: function (reducer, initial) {
       let accumulator = initial;
-      for (let element of this) accumulator = reducer(accumulator, element);
-      return accumulator
+      for (let element of this) {
+        accumulator = reducer(accumulator, element);
+      }
+      return accumulator;
     },
-    every: function(predicate) {
-      return !this.any(element => !predicate(element))
+    every: function (predicate) {
+      return !this.any(element => !predicate(element));
     },
-    any: function(predicate) {
-      for (let element of this)
-        if (predicate(element)) return !0;
-      return !1
+    any: function (predicate) {
+      for (let element of this) {
+        if (predicate(element)) {
+          return !0;
+        }
+      }
+      return !1;
     },
-    map: function(mapper) {
-      return this.filterMap(element => Some(mapper(element)))
+    map: function (mapper) {
+      return this.filterMap(element => Some(mapper(element)));
     },
-    filter: function(predicate) {
-      return this.filterMap(element => predicate(element) ? Some(element) : none)
+    filter: function (predicate) {
+      return this.filterMap(element =>
+        predicate(element) ? Some(element) : none,
+      );
     },
-    enumerate: function() {
+    enumerate: function () {
       let source = this;
-      return withIterHelpers(function*() {
+      return withIterHelpers(function* () {
         let index = 0;
-        for (let element of source) yield [index, element], index++
-      })()
+        for (let element of source) {
+          yield [index, element];
+          index++;
+        }
+      })();
     },
-    filterMap: function(mapper) {
+    filterMap: function (mapper) {
       let source = this;
-      return withIterHelpers(function*() {
+      return withIterHelpers(function* () {
         for (let element of source) {
           let mapped = mapper(element);
-          mapped.isSome() && (yield mapped.unwrap())
+          if (mapped.isSome()) {
+            yield mapped.unwrap();
+          }
         }
-      })()
+      })();
     },
-    sort: function(comparator) {
+    sort: function (comparator) {
       let sorted = this.toArray();
-      return sorted.sort(comparator), sorted
+      sorted.sort(comparator);
+      return sorted;
     },
-    toArray: function() {
-      return [...this]
-    }
-  }), generatorFn
+    toArray: function () {
+      return [...this];
+    },
+  });
+  return generatorFn;
 }
-Array.prototype.as_iter || (Array.prototype.as_iter = function() {
-  let source = this;
-  return withIterHelpers(function*() {
-    for (let element of source) yield element
-  })()
-});
-Set.prototype.as_iter || (Set.prototype.as_iter = function() {
-  let source = this;
-  return withIterHelpers(function*() {
-    for (let element of source) yield element
-  })()
-});
-Map.prototype.as_iter || (Map.prototype.as_iter = function() {
-  let source = this;
-  return withIterHelpers(function*() {
-    for (let element of source) yield element
-  })()
-});
-var neverMatchRegex = /.^/,
-  videoCodecs = {
-    Av1: {
-      name: "Av1",
-      type: "video",
-      mimetype: /av01.*/i,
-      defacto_container: "WebM"
-    },
-    H264: {
-      name: "H264",
-      type: "video",
-      mimetype: /avc1.*/i,
-      defacto_container: "Mp4"
-    },
-    H263: {
-      name: "H263",
-      type: "video",
-      mimetype: neverMatchRegex,
-      defacto_container: "3gp"
-    },
-    H265: {
-      name: "H265",
-      type: "video",
-      mimetype: /(hvc1|hevc|h265|h\.265).*/i,
-      defacto_container: "Mp4"
-    },
-    MP4V: {
-      name: "MP4V",
-      type: "video",
-      mimetype: /mp4v\.20.*/i,
-      defacto_container: "Mp4"
-    },
-    MPEG1: {
-      name: "MPEG1",
-      type: "video",
-      mimetype: neverMatchRegex,
-      defacto_container: "Mpeg"
-    },
-    MPEG2: {
-      name: "MPEG2",
-      type: "video",
-      mimetype: neverMatchRegex,
-      defacto_container: "Mpeg"
-    },
-    Theora: {
-      name: "Theora",
-      type: "video",
-      mimetype: /theora/i,
-      defacto_container: "Ogg"
-    },
-    VP8: {
-      name: "VP8",
-      type: "video",
-      mimetype: /vp0?8.*/i,
-      defacto_container: "WebM"
-    },
-    VP9: {
-      name: "VP9",
-      type: "video",
-      mimetype: /vp0?9.*/i,
-      defacto_container: "WebM"
-    },
-    unknown: {
-      name: "unknown",
-      type: "video",
-      mimetype: neverMatchRegex,
-      defacto_container: "Mp4"
-    }
+if (!Array.prototype.as_iter) {
+  Array.prototype.as_iter = function () {
+    let source = this;
+    return withIterHelpers(function* () {
+      for (let element of source) {
+        yield element;
+      }
+    })();
+  };
+}
+if (!Set.prototype.as_iter) {
+  Set.prototype.as_iter = function () {
+    let source = this;
+    return withIterHelpers(function* () {
+      for (let element of source) {
+        yield element;
+      }
+    })();
+  };
+}
+if (!Map.prototype.as_iter) {
+  Map.prototype.as_iter = function () {
+    let source = this;
+    return withIterHelpers(function* () {
+      for (let element of source) {
+        yield element;
+      }
+    })();
+  };
+}
+var neverMatchRegex = /.^/;
+var videoCodecs = {
+  Av1: {
+    name: 'Av1',
+    type: 'video',
+    mimetype: /av01.*/i,
+    defacto_container: 'WebM',
   },
-  audioCodecs = {
-    AAC: {
-      name: "AAC",
-      type: "audio",
-      mimetype: /(aac|mp4a.40).*/i,
-      defacto_container: "Mp4"
-    },
-    PCM: {
-      name: "PCM",
-      type: "audio",
-      mimetype: /pcm.*/i,
-      defacto_container: "Wav"
-    },
-    FLAC: {
-      name: "FLAC",
-      type: "audio",
-      mimetype: /flac/i,
-      defacto_container: "Flac"
-    },
-    MP3: {
-      name: "MP3",
-      type: "audio",
-      mimetype: /(\.?mp3|mp4a\.69|mp4a\.6b).*/i,
-      defacto_container: "Mpeg"
-    },
-    Opus: {
-      name: "Opus",
-      type: "audio",
-      mimetype: /(opus|(mp4a\.ad.*))/i,
-      defacto_container: "Ogg"
-    },
-    Vorbis: {
-      name: "Vorbis",
-      type: "audio",
-      mimetype: /vorbis/i,
-      defacto_container: "Ogg"
-    },
-    Wav: {
-      name: "Wav",
-      type: "audio",
-      mimetype: neverMatchRegex,
-      defacto_container: "Wav"
-    },
-    unknown: {
-      name: "unknown",
-      type: "audio",
-      mimetype: neverMatchRegex,
-      defacto_container: "Mp4"
-    }
+  H264: {
+    name: 'H264',
+    type: 'video',
+    mimetype: /avc1.*/i,
+    defacto_container: 'Mp4',
   },
-  videoCodecsIter = withIterHelpers(function*() {
-    for (let codecKey of Object.keys(videoCodecs)) yield videoCodecs[codecKey]
-  }),
-  audioCodecsIter = withIterHelpers(function*() {
-    for (let codecKey of Object.keys(audioCodecs)) yield audioCodecs[codecKey]
-  });
+  H263: {
+    name: 'H263',
+    type: 'video',
+    mimetype: neverMatchRegex,
+    defacto_container: '3gp',
+  },
+  H265: {
+    name: 'H265',
+    type: 'video',
+    mimetype: /(hvc1|hevc|h265|h\.265).*/i,
+    defacto_container: 'Mp4',
+  },
+  MP4V: {
+    name: 'MP4V',
+    type: 'video',
+    mimetype: /mp4v\.20.*/i,
+    defacto_container: 'Mp4',
+  },
+  MPEG1: {
+    name: 'MPEG1',
+    type: 'video',
+    mimetype: neverMatchRegex,
+    defacto_container: 'Mpeg',
+  },
+  MPEG2: {
+    name: 'MPEG2',
+    type: 'video',
+    mimetype: neverMatchRegex,
+    defacto_container: 'Mpeg',
+  },
+  Theora: {
+    name: 'Theora',
+    type: 'video',
+    mimetype: /theora/i,
+    defacto_container: 'Ogg',
+  },
+  VP8: {
+    name: 'VP8',
+    type: 'video',
+    mimetype: /vp0?8.*/i,
+    defacto_container: 'WebM',
+  },
+  VP9: {
+    name: 'VP9',
+    type: 'video',
+    mimetype: /vp0?9.*/i,
+    defacto_container: 'WebM',
+  },
+  unknown: {
+    name: 'unknown',
+    type: 'video',
+    mimetype: neverMatchRegex,
+    defacto_container: 'Mp4',
+  },
+};
+var audioCodecs = {
+  AAC: {
+    name: 'AAC',
+    type: 'audio',
+    mimetype: /(aac|mp4a.40).*/i,
+    defacto_container: 'Mp4',
+  },
+  PCM: {
+    name: 'PCM',
+    type: 'audio',
+    mimetype: /pcm.*/i,
+    defacto_container: 'Wav',
+  },
+  FLAC: {
+    name: 'FLAC',
+    type: 'audio',
+    mimetype: /flac/i,
+    defacto_container: 'Flac',
+  },
+  MP3: {
+    name: 'MP3',
+    type: 'audio',
+    mimetype: /(\.?mp3|mp4a\.69|mp4a\.6b).*/i,
+    defacto_container: 'Mpeg',
+  },
+  Opus: {
+    name: 'Opus',
+    type: 'audio',
+    mimetype: /(opus|(mp4a\.ad.*))/i,
+    defacto_container: 'Ogg',
+  },
+  Vorbis: {
+    name: 'Vorbis',
+    type: 'audio',
+    mimetype: /vorbis/i,
+    defacto_container: 'Ogg',
+  },
+  Wav: {
+    name: 'Wav',
+    type: 'audio',
+    mimetype: neverMatchRegex,
+    defacto_container: 'Wav',
+  },
+  unknown: {
+    name: 'unknown',
+    type: 'audio',
+    mimetype: neverMatchRegex,
+    defacto_container: 'Mp4',
+  },
+};
+var videoCodecsIter = withIterHelpers(function* () {
+  for (let codecKey of Object.keys(videoCodecs)) {
+    yield videoCodecs[codecKey];
+  }
+});
+var audioCodecsIter = withIterHelpers(function* () {
+  for (let codecKey of Object.keys(audioCodecs)) {
+    yield audioCodecs[codecKey];
+  }
+});
 var containerFormats = {
-    Mp4: {
-      name: "Mp4",
-      extension: "mp4",
-      audio_only_extension: "mp3",
-      defacto_codecs: {
-        audio: none,
-        video: none
-      },
-      supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2",
-        "unknown"],
-      supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC", "unknown"],
-      mimetype: /(?:x-)?mp4/i
+  Mp4: {
+    name: 'Mp4',
+    extension: 'mp4',
+    audio_only_extension: 'mp3',
+    defacto_codecs: {
+      audio: none,
+      video: none,
     },
-    Mkv: {
-      name: "Mkv",
-      extension: "mkv",
-      audio_only_extension: "mp3",
-      defacto_codecs: {
-        audio: none,
-        video: none
-      },
-      supported_video_codecs: videoCodecsIter()
-        .filter(codec => codec.name != "unknown")
-        .map(codec => codec.name)
-        .toArray(),
-      supported_audio_codecs: audioCodecsIter()
-        .filter(codec => codec.name != "unknown")
-        .map(codec => codec.name)
-        .toArray(),
-      mimetype: /(?:x-)?matroska/i
-    },
-    WebM: {
-      name: "WebM",
-      extension: "webm",
-      audio_only_extension: "oga",
-      defacto_codecs: {
-        audio: none,
-        video: none
-      },
-      supported_video_codecs: ["H264", "VP8", "VP9", "Av1"],
-      supported_audio_codecs: ["Opus", "Vorbis"],
-      mimetype: /(?:x-)?webm/i
-    },
-    M2TS: {
-      name: "M2TS",
-      extension: "mt2s",
-      audio_only_extension: "mp3",
-      defacto_codecs: {
-        audio: none,
-        video: none
-      },
-      supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2", "VP9",
-        "unknown"
-      ],
-      supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC"],
-      mimetype: /(?:x-)?mts/i
-    },
-    MP2T: {
-      name: "MP2T",
-      extension: "mp2t",
-      audio_only_extension: "mp3",
-      defacto_codecs: {
-        audio: Some("MP3"),
-        video: Some("H264")
-      },
-      supported_video_codecs: ["MPEG2", "MPEG1"],
-      supported_audio_codecs: ["MP3"],
-      mimetype: /(?:x-)?mp2t/i
-    },
-    Flash: {
-      name: "Flash",
-      extension: "flv",
-      audio_only_extension: "mp3",
-      defacto_codecs: {
-        audio: none,
-        video: none
-      },
-      supported_video_codecs: ["H264"],
-      supported_audio_codecs: ["AAC"],
-      mimetype: /(?:x-)?flv/i
-    },
-    M4V: {
-      name: "M4V",
-      extension: "m4v",
-      audio_only_extension: "mp3",
-      defacto_codecs: {
-        audio: none,
-        video: none
-      },
-      supported_video_codecs: ["H264", "H265", "Av1", "MP4V", "MPEG2"],
-      supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC"],
-      mimetype: /(?:x-)?m4v/i
-    },
-    M4A: {
-      name: "M4A",
-      extension: "m4a",
-      other_extensions: ["aac"],
-      audio_only_extension: "m4a",
-      defacto_codecs: {
-        audio: Some("AAC"),
-        video: none
-      },
-      supported_video_codecs: [],
-      supported_audio_codecs: ["Opus", "MP3", "FLAC", "AAC", "unknown"],
-      mimetype: /(?:x-)?m4a/i
-    },
-    Flac: {
-      name: "Flac",
-      extension: "flac",
-      audio_only_extension: "flac",
-      defacto_codecs: {
-        audio: Some("FLAC"),
-        video: none
-      },
-      supported_video_codecs: [],
-      supported_audio_codecs: ["FLAC"],
-      mimetype: /(?:x-)?flac/i
-    },
-    Mpeg: {
-      name: "Mpeg",
-      extension: "mpeg",
-      audio_only_extension: "mp3",
-      defacto_codecs: {
-        audio: Some("MP3"),
-        video: Some("H264")
-      },
-      supported_video_codecs: ["MPEG2", "MPEG1"],
-      supported_audio_codecs: ["MP3"],
-      mimetype: /(?:x-)?mpeg/i
-    },
-    Ogg: {
-      name: "Ogg",
-      extension: "ogv",
-      audio_only_extension: "oga",
-      defacto_codecs: {
-        audio: none,
-        video: none
-      },
-      supported_video_codecs: ["VP9", "VP8", "Theora"],
-      supported_audio_codecs: ["Opus", "Vorbis", "FLAC"],
-      mimetype: /(?:x-)?og./i
-    },
-    Wav: {
-      name: "Wav",
-      extension: "wav",
-      audio_only_extension: "wav",
-      defacto_codecs: {
-        audio: Some("Wav"),
-        video: none
-      },
-      supported_video_codecs: [],
-      supported_audio_codecs: ["Wav", "PCM"],
-      mimetype: /(?:x-)?(?:pn-)?wave?/i
-    },
-    "3gp": {
-      name: "3gp",
-      extension: "3gpp",
-      audio_only_extension: "mp3",
-      defacto_codecs: {
-        audio: none,
-        video: none
-      },
-      supported_video_codecs: ["H264", "H263", "MP4V", "VP8"],
-      supported_audio_codecs: ["MP3", "AAC"],
-      mimetype: /(?:x-)?3gpp2?/i
-    },
-    QuickTime: {
-      name: "QuickTime",
-      extension: "mov",
-      audio_only_extension: "mp3",
-      defacto_codecs: {
-        audio: none,
-        video: none
-      },
-      supported_video_codecs: ["MPEG1", "MPEG2"],
-      supported_audio_codecs: [],
-      mimetype: /(?:x-)?mov/i
-    }
+    supported_video_codecs: ['H264', 'H265', 'Av1', 'MP4V', 'MPEG2', 'unknown'],
+    supported_audio_codecs: ['Opus', 'MP3', 'FLAC', 'AAC', 'unknown'],
+    mimetype: /(?:x-)?mp4/i,
   },
-  containerKeysIter = withIterHelpers(function*() {
-    for (let containerKey of Object.keys(containerFormats)) yield containerKey
-  }),
-  containersIter = withIterHelpers(function*() {
-    for (let containerKey of containerKeysIter()) yield containerFormats[containerKey]
-  });
+  Mkv: {
+    name: 'Mkv',
+    extension: 'mkv',
+    audio_only_extension: 'mp3',
+    defacto_codecs: {
+      audio: none,
+      video: none,
+    },
+    supported_video_codecs: videoCodecsIter()
+      .filter(codec => codec.name != 'unknown')
+      .map(codec => codec.name)
+      .toArray(),
+    supported_audio_codecs: audioCodecsIter()
+      .filter(codec => codec.name != 'unknown')
+      .map(codec => codec.name)
+      .toArray(),
+    mimetype: /(?:x-)?matroska/i,
+  },
+  WebM: {
+    name: 'WebM',
+    extension: 'webm',
+    audio_only_extension: 'oga',
+    defacto_codecs: {
+      audio: none,
+      video: none,
+    },
+    supported_video_codecs: ['H264', 'VP8', 'VP9', 'Av1'],
+    supported_audio_codecs: ['Opus', 'Vorbis'],
+    mimetype: /(?:x-)?webm/i,
+  },
+  M2TS: {
+    name: 'M2TS',
+    extension: 'mt2s',
+    audio_only_extension: 'mp3',
+    defacto_codecs: {
+      audio: none,
+      video: none,
+    },
+    supported_video_codecs: [
+      'H264',
+      'H265',
+      'Av1',
+      'MP4V',
+      'MPEG2',
+      'VP9',
+      'unknown',
+    ],
+    supported_audio_codecs: ['Opus', 'MP3', 'FLAC', 'AAC'],
+    mimetype: /(?:x-)?mts/i,
+  },
+  MP2T: {
+    name: 'MP2T',
+    extension: 'mp2t',
+    audio_only_extension: 'mp3',
+    defacto_codecs: {
+      audio: Some('MP3'),
+      video: Some('H264'),
+    },
+    supported_video_codecs: ['MPEG2', 'MPEG1'],
+    supported_audio_codecs: ['MP3'],
+    mimetype: /(?:x-)?mp2t/i,
+  },
+  Flash: {
+    name: 'Flash',
+    extension: 'flv',
+    audio_only_extension: 'mp3',
+    defacto_codecs: {
+      audio: none,
+      video: none,
+    },
+    supported_video_codecs: ['H264'],
+    supported_audio_codecs: ['AAC'],
+    mimetype: /(?:x-)?flv/i,
+  },
+  M4V: {
+    name: 'M4V',
+    extension: 'm4v',
+    audio_only_extension: 'mp3',
+    defacto_codecs: {
+      audio: none,
+      video: none,
+    },
+    supported_video_codecs: ['H264', 'H265', 'Av1', 'MP4V', 'MPEG2'],
+    supported_audio_codecs: ['Opus', 'MP3', 'FLAC', 'AAC'],
+    mimetype: /(?:x-)?m4v/i,
+  },
+  M4A: {
+    name: 'M4A',
+    extension: 'm4a',
+    other_extensions: ['aac'],
+    audio_only_extension: 'm4a',
+    defacto_codecs: {
+      audio: Some('AAC'),
+      video: none,
+    },
+    supported_video_codecs: [],
+    supported_audio_codecs: ['Opus', 'MP3', 'FLAC', 'AAC', 'unknown'],
+    mimetype: /(?:x-)?m4a/i,
+  },
+  Flac: {
+    name: 'Flac',
+    extension: 'flac',
+    audio_only_extension: 'flac',
+    defacto_codecs: {
+      audio: Some('FLAC'),
+      video: none,
+    },
+    supported_video_codecs: [],
+    supported_audio_codecs: ['FLAC'],
+    mimetype: /(?:x-)?flac/i,
+  },
+  Mpeg: {
+    name: 'Mpeg',
+    extension: 'mpeg',
+    audio_only_extension: 'mp3',
+    defacto_codecs: {
+      audio: Some('MP3'),
+      video: Some('H264'),
+    },
+    supported_video_codecs: ['MPEG2', 'MPEG1'],
+    supported_audio_codecs: ['MP3'],
+    mimetype: /(?:x-)?mpeg/i,
+  },
+  Ogg: {
+    name: 'Ogg',
+    extension: 'ogv',
+    audio_only_extension: 'oga',
+    defacto_codecs: {
+      audio: none,
+      video: none,
+    },
+    supported_video_codecs: ['VP9', 'VP8', 'Theora'],
+    supported_audio_codecs: ['Opus', 'Vorbis', 'FLAC'],
+    mimetype: /(?:x-)?og./i,
+  },
+  Wav: {
+    name: 'Wav',
+    extension: 'wav',
+    audio_only_extension: 'wav',
+    defacto_codecs: {
+      audio: Some('Wav'),
+      video: none,
+    },
+    supported_video_codecs: [],
+    supported_audio_codecs: ['Wav', 'PCM'],
+    mimetype: /(?:x-)?(?:pn-)?wave?/i,
+  },
+  '3gp': {
+    name: '3gp',
+    extension: '3gpp',
+    audio_only_extension: 'mp3',
+    defacto_codecs: {
+      audio: none,
+      video: none,
+    },
+    supported_video_codecs: ['H264', 'H263', 'MP4V', 'VP8'],
+    supported_audio_codecs: ['MP3', 'AAC'],
+    mimetype: /(?:x-)?3gpp2?/i,
+  },
+  QuickTime: {
+    name: 'QuickTime',
+    extension: 'mov',
+    audio_only_extension: 'mp3',
+    defacto_codecs: {
+      audio: none,
+      video: none,
+    },
+    supported_video_codecs: ['MPEG1', 'MPEG2'],
+    supported_audio_codecs: [],
+    mimetype: /(?:x-)?mov/i,
+  },
+};
+var containerKeysIter = withIterHelpers(function* () {
+  for (let containerKey of Object.keys(containerFormats)) {
+    yield containerKey;
+  }
+});
+var containersIter = withIterHelpers(function* () {
+  for (let containerKey of containerKeysIter()) {
+    yield containerFormats[containerKey];
+  }
+});
 var resolutions = {
   240: {
-    id: "240",
-    loose_name: "Small"
+    id: '240',
+    loose_name: 'Small',
   },
   360: {
-    id: "360",
-    loose_name: "SD"
+    id: '360',
+    loose_name: 'SD',
   },
   480: {
-    id: "480",
-    loose_name: "SD"
+    id: '480',
+    loose_name: 'SD',
   },
   720: {
-    id: "720",
-    loose_name: "HD"
+    id: '720',
+    loose_name: 'HD',
   },
   1080: {
-    id: "1080",
-    loose_name: "FullHD"
+    id: '1080',
+    loose_name: 'FullHD',
   },
   1440: {
-    id: "1440",
-    loose_name: "UHD"
+    id: '1440',
+    loose_name: 'UHD',
   },
   2160: {
-    id: "2160",
-    loose_name: "4K"
+    id: '2160',
+    loose_name: '4K',
   },
   4320: {
-    id: "4320",
-    loose_name: "8K"
-  }
+    id: '4320',
+    loose_name: '8K',
+  },
 };
-var resolutionKeysIter = withIterHelpers(function*() {
-    for (let resolutionKey of Object.keys(resolutions)) yield resolutionKey
-  }),
-  resolutionsIter = withIterHelpers(function*() {
-    for (let resolutionKey of resolutionKeysIter()) yield resolutions[resolutionKey]
-  });
+var resolutionKeysIter = withIterHelpers(function* () {
+  for (let resolutionKey of Object.keys(resolutions)) {
+    yield resolutionKey;
+  }
+});
+var resolutionsIter = withIterHelpers(function* () {
+  for (let resolutionKey of resolutionKeysIter()) {
+    yield resolutions[resolutionKey];
+  }
+});
 var browserApi = toEsm(requirePolyfill(), 1);
-
 function deepEqual(objectA, objectB) {
-  if (objectA == null || objectB === null || objectB === void 0) return objectA === objectB;
-  if (objectA.constructor !== objectB.constructor) return !1;
-  if (objectA instanceof Function || objectA instanceof RegExp) return objectA === objectB;
-  if (objectA === objectB || objectA.valueOf() === objectB.valueOf()) return !0;
-  if (Array.isArray(objectA) && objectA.length !== objectB.length || objectA instanceof Date || !(
-      objectA instanceof Object) || !(objectB instanceof Object)) return !1;
-  let keysA = Object.keys(objectA),
-    sameKeys = Object.keys(objectB)
-    .every(key => keysA.indexOf(key) !== -1),
-    valuesEqual = keysA.every(key => deepEqual(objectA[key], objectB[key]));
-  return sameKeys && valuesEqual
+  if (objectA == null || objectB === null || objectB === void 0) {
+    return objectA === objectB;
+  }
+  if (objectA.constructor !== objectB.constructor) {
+    return !1;
+  }
+  if (objectA instanceof Function || objectA instanceof RegExp) {
+    return objectA === objectB;
+  }
+  if (objectA === objectB || objectA.valueOf() === objectB.valueOf()) {
+    return !0;
+  }
+  if (
+    (Array.isArray(objectA) && objectA.length !== objectB.length)
+    || objectA instanceof Date
+    || !(objectA instanceof Object)
+    || !(objectB instanceof Object)
+  ) {
+    return !1;
+  }
+  let keysA = Object.keys(objectA);
+  let sameKeys = Object.keys(objectB).every(key => keysA.indexOf(key) !== -1);
+  let valuesEqual = keysA.every(key => deepEqual(objectA[key], objectB[key]));
+  return sameKeys && valuesEqual;
 }
 async function setStoredSetting(descriptor, value) {
   let storedValue = value;
-  descriptor.hooks && (storedValue = descriptor.hooks.setter(value)), await browserStorage.storage[descriptor.where].set({
-    [descriptor.name]: storedValue
-  })
+  if (descriptor.hooks) {
+    storedValue = descriptor.hooks.setter(value);
+  }
+  await browserStorage.storage[descriptor.where].set({
+    [descriptor.name]: storedValue,
+  });
 }
 async function getStoredSetting(descriptor) {
-  let stored = await browserStorage.storage[descriptor.where].get(descriptor.name);
+  let stored = await browserStorage.storage[descriptor.where].get(
+    descriptor.name,
+  );
   if (descriptor.name in stored) {
     let rawValue = stored[descriptor.name];
-    return descriptor.hooks ? descriptor.hooks.getter(rawValue, descriptor) : rawValue
+    if (descriptor.hooks) {
+      return descriptor.hooks.getter(rawValue, descriptor);
+    } else {
+      return rawValue;
+    }
   }
-  return descriptor.default()
+  return descriptor.default();
 }
 async function removeStoredSetting(descriptor) {
-  await browserStorage.storage[descriptor.where].remove(descriptor.name)
+  await browserStorage.storage[descriptor.where].remove(descriptor.name);
 }
-
 function watchStoredSetting(descriptor, onChange) {
   browserStorage.storage[descriptor.where].onChanged.addListener(changes => {
     let change = changes[descriptor.name];
     if (change) {
-      if (deepEqual(change.oldValue, change.newValue)) return;
-      typeof change.newValue > "u" ? onChange(descriptor.default()) : descriptor.hooks ? onChange(descriptor.hooks.getter(
-        change.newValue, descriptor)) : onChange(change.newValue)
+      if (deepEqual(change.oldValue, change.newValue)) {
+        return;
+      }
+      if (typeof change.newValue > 'u') {
+        onChange(descriptor.default());
+      } else {
+        if (descriptor.hooks) {
+          onChange(descriptor.hooks.getter(change.newValue, descriptor));
+        } else {
+          onChange(change.newValue);
+        }
+      }
     }
-  })
+  });
 }
 var recordHistorySetting = {
-  name: "record_download_history",
+  name: 'record_download_history',
   default: () => !1,
-  where: "local"
+  where: 'local',
 };
 var viewOptionsSetting = {
-  name: "view_options",
+  name: 'view_options',
   default: () => ({}),
-  where: "session"
+  where: 'session',
 };
 var downloadHistorySetting = {
-  name: "download_history",
-  where: "local",
-  default: () => new Map,
+  name: 'download_history',
+  where: 'local',
+  default: () => new Map(),
   hooks: {
-    setter: value => serialize(value)
-      .unwrap(),
-    getter: (serialized, descriptor) => deserialize(serialized)
-      .unwrapOr(descriptor.default())
-  }
+    setter: value => serialize(value).unwrap(),
+    getter: (serialized, descriptor) =>
+      deserialize(serialized).unwrapOr(descriptor.default()),
+  },
 };
 async function sendRuntimeMessage(message) {
-  browserRuntime.default.runtime.sendMessage(message)
+  browserRuntime.default.runtime.sendMessage(message);
 }
-
 function matchesSearch(entry, searchRegex) {
-  return searchRegex.test(entry.page_url) ? !0 : !!searchRegex.test(entry.download_result.filename)
+  if (searchRegex.test(entry.page_url)) {
+    return !0;
+  } else {
+    return !!searchRegex.test(entry.download_result.filename);
+  }
 }
 async function renderHistory(historyMap, isRecording, localMessages) {
-  let searchInput = document.querySelector("#search"),
-    searchRegex = searchInput.value.length == 0 ? null : new RegExp(searchInput.value, "i"),
-    templateContent = document.querySelector("template")
-    .content;
-  document.body.classList.toggle("recording", isRecording);
-  let noEntriesEl = document.querySelector("#noentries");
-  historyMap.size == 0 ? noEntriesEl.removeAttribute("hidden") : noEntriesEl.setAttribute("hidden",
-  "true");
-  let mainEl = document.querySelector("#main"),
-    existingEntries = Array.from(mainEl.querySelectorAll(".history-entry"));
+  let searchInput = document.querySelector('#search');
+  let searchRegex =
+    searchInput.value.length == 0 ? null : new RegExp(searchInput.value, 'i');
+  let templateContent = document.querySelector('template').content;
+  document.body.classList.toggle('recording', isRecording);
+  let noEntriesEl = document.querySelector('#noentries');
+  if (historyMap.size == 0) {
+    noEntriesEl.removeAttribute('hidden');
+  } else {
+    noEntriesEl.setAttribute('hidden', 'true');
+  }
+  let mainEl = document.querySelector('#main');
+  let existingEntries = Array.from(mainEl.querySelectorAll('.history-entry'));
   for (let existingEntry of existingEntries) {
     let record = historyMap.get(existingEntry.id);
-    record && searchRegex && matchesSearch(record, searchRegex) || existingEntry.remove()
+    if (!(record && searchRegex && matchesSearch(record, searchRegex))) {
+      existingEntry.remove();
+    }
   }
-  let entryTemplate = templateContent.querySelector(".history-entry"),
-    sortedEntries = [...historyMap.entries()].filter(([, entry]) => searchRegex ? matchesSearch(entry, searchRegex) : !0)
+  let entryTemplate = templateContent.querySelector('.history-entry');
+  let sortedEntries = [...historyMap.entries()]
+    .filter(([, entry]) =>
+      searchRegex ? matchesSearch(entry, searchRegex) : !0,
+    )
     .sort(([, recordA], [, recordB]) => recordB.timestamp - recordA.timestamp)
-    .slice(0, 200),
-    orderIndex = 0;
+    .slice(0, 200);
+  let orderIndex = 0;
   for (let [entryId, record] of sortedEntries) {
     orderIndex++;
     let entryEl = document.getElementById(entryId);
     if (!entryEl) {
-      entryEl = entryTemplate.cloneNode(!0), applyI18n(entryEl, localMessages), entryEl.id = entryId;
-      let pageUrl = new URL(record.page_url),
-        pageUrlLink = entryEl.querySelector(".page-url");
-      pageUrlLink.textContent = pageUrl.host, pageUrlLink.href = pageUrl.href;
-      let dateEl = entryEl.querySelector(".date");
+      entryEl = entryTemplate.cloneNode(!0);
+      applyI18n(entryEl, localMessages);
+      entryEl.id = entryId;
+      let pageUrl = new URL(record.page_url);
+      let pageUrlLink = entryEl.querySelector('.page-url');
+      pageUrlLink.textContent = pageUrl.host;
+      pageUrlLink.href = pageUrl.href;
+      let dateEl = entryEl.querySelector('.date');
       dateEl.textContent = formatRelativeDate(record.timestamp, localMessages);
-      let filenameEl = entryEl.querySelector(".filename");
-      filenameEl.style.backgroundImage = `url(${pageUrl.origin}/favicon.ico)`, filenameEl
-        .textContent = record.download_result.filename, filenameEl.title = record.download_result
-        .filename, mainEl.appendChild(entryEl)
+      let filenameEl = entryEl.querySelector('.filename');
+      filenameEl.style.backgroundImage = `url(${pageUrl.origin}/favicon.ico)`;
+      filenameEl.textContent = record.download_result.filename;
+      filenameEl.title = record.download_result.filename;
+      mainEl.appendChild(entryEl);
     }
-    entryEl.style.order = orderIndex.toString()
+    entryEl.style.order = orderIndex.toString();
   }
 }
-var initialViewOptions = await getStoredSetting(viewOptionsSetting),
-  initialHistory = await getStoredSetting(downloadHistorySetting),
-  initialRecording = await getStoredSetting(recordHistorySetting);
+var initialViewOptions = await getStoredSetting(viewOptionsSetting);
+var initialHistory = await getStoredSetting(downloadHistorySetting);
+var initialRecording = await getStoredSetting(recordHistorySetting);
 watchStoredSetting(viewOptionsSetting, async newViewOptions => {
-  let currentRecording = await getStoredSetting(recordHistorySetting),
-    currentHistory = await getStoredSetting(downloadHistorySetting);
-  renderHistory(currentHistory, currentRecording, newViewOptions)
+  let currentRecording = await getStoredSetting(recordHistorySetting);
+  let currentHistory = await getStoredSetting(downloadHistorySetting);
+  renderHistory(currentHistory, currentRecording, newViewOptions);
 });
 watchStoredSetting(recordHistorySetting, async newIsRecording => {
-  let currentViewOptions = await getStoredSetting(viewOptionsSetting),
-    currentHistory = await getStoredSetting(downloadHistorySetting);
-  renderHistory(currentHistory, newIsRecording, currentViewOptions)
+  let currentViewOptions = await getStoredSetting(viewOptionsSetting);
+  let currentHistory = await getStoredSetting(downloadHistorySetting);
+  renderHistory(currentHistory, newIsRecording, currentViewOptions);
 });
 watchStoredSetting(downloadHistorySetting, async newHistory => {
-  let currentViewOptions = await getStoredSetting(viewOptionsSetting),
-    currentRecording = await getStoredSetting(recordHistorySetting);
-  renderHistory(newHistory, currentRecording, currentViewOptions)
+  let currentViewOptions = await getStoredSetting(viewOptionsSetting);
+  let currentRecording = await getStoredSetting(recordHistorySetting);
+  renderHistory(newHistory, currentRecording, currentViewOptions);
 });
 applyI18n(document, initialViewOptions);
 renderHistory(initialHistory, initialRecording, initialViewOptions);
 async function handleUiEvent(event) {
   let target = event.target;
-  if (!target) return;
-  let entryId = target.closest(".history-entry")
-    ?.id;
-  if (target.closest("#search")) {
-    let currentHistory = await getStoredSetting(downloadHistorySetting),
-      currentRecording = await getStoredSetting(recordHistorySetting),
-      currentViewOptions = await getStoredSetting(viewOptionsSetting);
-    renderHistory(currentHistory, currentRecording, currentViewOptions)
-  } else if (target.closest("#button-clear-history")) removeStoredSetting(downloadHistorySetting);
-  else if (target.closest("#button-start-recording")) setStoredSetting(recordHistorySetting, !0);
-  else if (target.closest("#button-stop-recording")) setStoredSetting(recordHistorySetting, !1), removeStoredSetting(downloadHistorySetting);
-  else if (target.closest(".button-rm")) sendRuntimeMessage({
-    rm: entryId
-  });
-  else if (target.closest(".button-hide")) {
+  if (!target) {
+    return;
+  }
+  let entryId = target.closest('.history-entry')?.id;
+  if (target.closest('#search')) {
+    let currentHistory = await getStoredSetting(downloadHistorySetting);
+    let currentRecording = await getStoredSetting(recordHistorySetting);
+    let currentViewOptions = await getStoredSetting(viewOptionsSetting);
+    renderHistory(currentHistory, currentRecording, currentViewOptions);
+  } else if (target.closest('#button-clear-history')) {
+    removeStoredSetting(downloadHistorySetting);
+  } else if (target.closest('#button-start-recording')) {
+    setStoredSetting(recordHistorySetting, !0);
+  } else if (target.closest('#button-stop-recording')) {
+    setStoredSetting(recordHistorySetting, !1);
+    removeStoredSetting(downloadHistorySetting);
+  } else if (target.closest('.button-rm')) {
+    sendRuntimeMessage({
+      rm: entryId,
+    });
+  } else if (target.closest('.button-hide')) {
     if (entryId) {
       let currentHistory = await getStoredSetting(downloadHistorySetting);
-      currentHistory.delete(entryId), await setStoredSetting(downloadHistorySetting, currentHistory)
+      currentHistory.delete(entryId);
+      await setStoredSetting(downloadHistorySetting, currentHistory);
     }
-  } else target.closest(".button-play") ? sendRuntimeMessage({
-    play: entryId
-  }) : target.closest(".button-dir") && sendRuntimeMessage({
-    show_dir: entryId
-  })
+  } else {
+    if (target.closest('.button-play')) {
+      sendRuntimeMessage({
+        play: entryId,
+      });
+    } else {
+      if (target.closest('.button-dir')) {
+        sendRuntimeMessage({
+          show_dir: entryId,
+        });
+      }
+    }
+  }
 }
-window.addEventListener("click", handleUiEvent, !0);
-window.addEventListener("change", handleUiEvent);
-window.addEventListener("input", handleUiEvent);
-window.addEventListener("sl-clear", handleUiEvent);
+window.addEventListener('click', handleUiEvent, !0);
+window.addEventListener('change', handleUiEvent);
+window.addEventListener('input', handleUiEvent);
+window.addEventListener('sl-clear', handleUiEvent);

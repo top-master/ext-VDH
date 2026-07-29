@@ -1,10 +1,9 @@
-"use strict";
+'use strict';
 
 /** @typedef {import("./ui-types").AboutPageState} AboutPageState */
 /** @typedef {import("./ui-types").EmptyProps} EmptyProps */
 /** @typedef {import("./ui-types").ManifestLike} ManifestLike */
 /** @typedef {import("./ui-types").VoidHandler} VoidHandler */
-
 (() => {
   weh.is_safe.then(() => {
     class AboutPage extends React.Component {
@@ -28,7 +27,6 @@
           });
         };
       }
-
       render() {
         /** @type {?string} */
         let alphaIntroText = null;
@@ -36,44 +34,42 @@
         let firefoxExtraText = null;
         /** @type {ManifestLike} */
         const manifest = browser.runtime.getManifest();
-        const manifestVersion = manifest.version_name || manifest.version || "";
-
+        const manifestVersion = manifest.version_name || manifest.version || '';
         if (/a/.test(manifestVersion)) {
-          alphaIntroText = weh._("about_alpha_intro");
-          if (/^7\.0.*a/.test(manifestVersion) && weh.isBrowser("firefox")) {
-            firefoxExtraText = weh._("about_alpha_extra7_fx");
+          alphaIntroText = weh._('about_alpha_intro');
+          if (/^7\.0.*a/.test(manifestVersion) && weh.isBrowser('firefox')) {
+            firefoxExtraText = weh._('about_alpha_extra7_fx');
           }
         } else if (/b/.test(manifestVersion)) {
-          alphaIntroText = weh._("about_alpha_intro");
+          alphaIntroText = weh._('about_alpha_intro');
         }
-
         return React.createElement(
-          "div",
+          'div',
           {
-            className: "about-vdh",
+            className: 'about-vdh',
           },
-          alphaIntroText && React.createElement("p", null, alphaIntroText),
-          firefoxExtraText && React.createElement("p", null, firefoxExtraText),
+          alphaIntroText && React.createElement('p', null, alphaIntroText),
+          firefoxExtraText && React.createElement('p', null, firefoxExtraText),
           React.createElement(
-            "div",
+            'div',
             {
-              className: "about-links",
+              className: 'about-links',
             },
             React.createElement(
-              "a",
+              'a',
               {
-                href: "#",
-                onClick: this.createCloseAfterRpcHandler("openForum"),
+                href: '#',
+                onClick: this.createCloseAfterRpcHandler('openForum'),
               },
-              weh._("support_forum"),
+              weh._('support_forum'),
             ),
             React.createElement(
-              "a",
+              'a',
               {
-                href: "#",
-                onClick: this.createCloseAfterRpcHandler("openHomepage"),
+                href: '#',
+                onClick: this.createCloseAfterRpcHandler('openHomepage'),
               },
-              weh._("homepage"),
+              weh._('homepage'),
             ),
           ),
           React.createElement(CopyButton, null),
@@ -84,22 +80,25 @@
         );
       }
     }
-
     render(
       React.createElement(
-        "div",
+        'div',
         null,
         React.createElement(
-          "div",
+          'div',
           null,
           React.createElement(WehHeader, {
-            title: weh._("about_vdh"),
+            title: weh._('about_vdh'),
           }),
-          React.createElement("main", null, React.createElement(AboutPage, null)),
+          React.createElement(
+            'main',
+            null,
+            React.createElement(AboutPage, null),
+          ),
         ),
       ),
-      document.getElementById("root"),
+      document.getElementById('root'),
     );
-    weh.setPageTitle(weh._("about_vdh"));
+    weh.setPageTitle(weh._('about_vdh'));
   });
 })();

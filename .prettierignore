@@ -1,0 +1,13 @@
+# Overrides applied on top of .gitignore by the format wrapper
+# (3rd-party/automation/run-format.js), merged into one ignore set with
+# single-file gitignore semantics (last matching rule wins).
+
+# Third-party vendored libraries and automation tooling - not our code.
+/vendor/
+/3rd-party/
+
+# Unreferenced minified test fixture (also excluded from the naming audit).
+/tests/main.js
+
+# Vendored Shoelace assets (icons + themes) that setBasePath points at.
+/content2/shoelace/

@@ -1,11 +1,10 @@
-"use strict";
+'use strict';
 
 /** @typedef {import("./ui-types").CheckboxChangeEvent} CheckboxChangeEvent */
 /** @typedef {import("./ui-types").EmptyProps} EmptyProps */
 /** @typedef {import("./ui-types").ExplainQrPageState} ExplainQrPageState */
 /** @typedef {import("./ui-types").HitLike} HitLike */
 /** @typedef {import("./ui-types").VoidHandler} VoidHandler */
-
 (() => {
   class ExplainQrPage extends React.Component {
     /**
@@ -17,11 +16,10 @@
       this.state = {
         hit: {},
       };
-
       const hitId = decodeURIComponent(new URL(document.URL).hash.substr(1));
-      weh.rpc.call("getHit", hitId).then(
+      weh.rpc.call('getHit', hitId).then(
         /** @param {HitLike} hit */
-        (hit) => {
+        hit => {
           this.setState({
             hit,
           });
@@ -34,7 +32,7 @@
      */
     createOpenLicensingInfoHandler() {
       return () => {
-        weh.rpc.call("goto", "https://www.downloadhelper.net/about-licensing");
+        weh.rpc.call('goto', 'https://www.downloadhelper.net/about-licensing');
       };
     }
 
@@ -43,7 +41,7 @@
      */
     createOpenConversionLicenseHandler() {
       return () => {
-        weh.rpc.call("goto", "https://www.downloadhelper.net/convert");
+        weh.rpc.call('goto', 'https://www.downloadhelper.net/convert');
       };
     }
 
@@ -54,112 +52,113 @@
     async handleNotAgainChange(event) {
       (await weh.prefs).qrMessageNotAgain = event.target.checked;
     }
-
     render() {
       if (!this.state.hit.id) {
         return null;
       }
-
       return React.createElement(
-        "div",
+        'div',
         {
-          className: "explain-qr",
+          className: 'explain-qr',
         },
         React.createElement(
-          "div",
+          'div',
           {
-            className: "qr-text",
+            className: 'qr-text',
           },
-          weh._("file_generated", this.state.hit.localFilePath),
+          weh._('file_generated', this.state.hit.localFilePath),
         ),
         React.createElement(
-          "div",
+          'div',
           {
-            className: "qr-text",
+            className: 'qr-text',
           },
-          weh._("explain_qr1"),
+          weh._('explain_qr1'),
         ),
         React.createElement(
-          "div",
+          'div',
           {
-            className: "qr-img",
+            className: 'qr-img',
           },
-          React.createElement("img", {
-            src: "images/qr-video.png",
+          React.createElement('img', {
+            src: 'images/qr-video.png',
           }),
         ),
         React.createElement(
-          "div",
+          'div',
           null,
           React.createElement(
-            "div",
+            'div',
             {
-              className: "btn-toolbar float-right",
+              className: 'btn-toolbar float-right',
             },
             React.createElement(
-              "div",
+              'div',
               {
-                className: "btn-group",
+                className: 'btn-group',
               },
               React.createElement(
-                "button",
+                'button',
                 {
-                  className: "btn btn-outline-secondary",
+                  className: 'btn btn-outline-secondary',
                   onClick: this.createOpenLicensingInfoHandler(),
                 },
-                weh._("tell_me_more"),
+                weh._('tell_me_more'),
               ),
               React.createElement(
-                "button",
+                'button',
                 {
-                  className: "btn btn-outline-secondary",
+                  className: 'btn btn-outline-secondary',
                   onClick: this.createOpenConversionLicenseHandler(),
                 },
-                weh._("get_conversion_license"),
+                weh._('get_conversion_license'),
               ),
             ),
           ),
           React.createElement(
-            "div",
+            'div',
             {
-              className: "not-again",
+              className: 'not-again',
             },
-            React.createElement("input", {
-              id: "checkbox1",
-              type: "checkbox",
+            React.createElement('input', {
+              id: 'checkbox1',
+              type: 'checkbox',
               onChange: this.handleNotAgainChange.bind(this),
             }),
             React.createElement(
-              "label",
+              'label',
               {
-                htmlFor: "checkbox1",
+                htmlFor: 'checkbox1',
               },
-              weh._("not_see_again"),
+              weh._('not_see_again'),
             ),
           ),
         ),
       );
     }
   }
-
   weh.is_safe.then(() => {
     render(
       React.createElement(
-        "div",
+        'div',
         {
-          className: "weh-shf",
+          className: 'weh-shf',
         },
         React.createElement(
-          "div",
+          'div',
           null,
           React.createElement(WehHeader, {
-            title: weh._("about_qr"),
+            title: weh._('about_qr'),
           }),
-          React.createElement("main", null, React.createElement(ExplainQrPage, null)),
+          React.createElement(
+            'main',
+            null,
+            React.createElement(ExplainQrPage, null),
+          ),
         ),
       ),
-      document.getElementById("root"),
+      document.getElementById('root'),
     );
-    weh.setPageTitle(weh._("about_qr"));
+    weh.setPageTitle(weh._('about_qr'));
   });
 })();

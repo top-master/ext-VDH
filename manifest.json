@@ -1,5 +1,5 @@
 {
-"update_url": "https://clients2.google.com/service/update2/crx",
+  "update_url": "https://clients2.google.com/service/update2/crx",
 
   "author": "Michel Gutierrez",
   "default_locale": "en_US",
@@ -18,35 +18,21 @@
     "declarativeNetRequest",
     "sidePanel"
   ],
-  "optional_permissions": [
-    "downloads.open"
-  ],
+  "optional_permissions": ["downloads.open"],
   "content_scripts": [
     {
-      "matches": [
-        "*://*.downloadhelper.net/*"
-      ],
-      "js": [
-        "injected/downloadhelper.net.js"
-      ],
+      "matches": ["*://*.downloadhelper.net/*"],
+      "js": ["injected/downloadhelper.net.js"],
       "run_at": "document_start"
     },
     {
-      "matches": [
-        "*://*.downloadhelper.net/changelog/mozilla/*"
-      ],
-      "js": [
-        "injected/changelog.js"
-      ],
+      "matches": ["*://*.downloadhelper.net/changelog/mozilla/*"],
+      "js": ["injected/changelog.js"],
       "run_at": "document_end"
     },
     {
-      "matches": [
-        "*://*.downloadhelper.net/debugger"
-      ],
-      "js": [
-        "injected/debugger.js"
-      ],
+      "matches": ["*://*.downloadhelper.net/debugger"],
+      "js": ["injected/debugger.js"],
       "run_at": "document_end"
     }
   ],
@@ -66,9 +52,7 @@
     }
   },
   "manifest_version": 3,
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background/main.js"
   },

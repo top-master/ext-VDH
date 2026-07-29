@@ -1,7 +1,6 @@
-"use strict";
+'use strict';
 
 /** @typedef {import("./ui-types").MissingTranslationTags} MissingTranslationTags */
-
 (() => {
   weh.is_safe.then(() => {
     const translationRootReducer = combineReducers({
@@ -10,24 +9,21 @@
     const translationStore = createStore(translationRootReducer);
     /** @type {MissingTranslationTags | null} */
     let missingTranslationTags = null;
-
     try {
       missingTranslationTags = JSON.parse(
-        browser.i18n.getMessage("__missingI18nTags"),
+        browser.i18n.getMessage('__missingI18nTags'),
       );
     } catch {}
-
     function renderTranslationFooterLink() {
       return React.createElement(
-        "a",
+        'a',
         {
-          href: "#",
-          onClick: () => weh.rpc.call("openTranslationForum"),
+          href: '#',
+          onClick: () => weh.rpc.call('openTranslationForum'),
         },
-        "Please, share your translations",
+        'Please, share your translations',
       );
     }
-
     render(
       React.createElement(
         Provider,
@@ -39,8 +35,8 @@
           footerExtra: renderTranslationFooterLink(),
         }),
       ),
-      document.getElementById("root"),
+      document.getElementById('root'),
     );
-    weh.setPageTitle(weh._("translation"));
+    weh.setPageTitle(weh._('translation'));
   });
 })();
