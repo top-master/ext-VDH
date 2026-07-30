@@ -10416,6 +10416,50 @@ const store = createStore(
       }
     });
   }
+  // The coapp's json probe runs ffprobe with `-v quiet` (through v2.0.19), which
+  // silences stderr - so a failed probe rejects with just "Exit code: N" and no
+  // reason. When that happens, re-probe without the json flags (that path keeps
+  // stderr) to recover ffprobe's message, and attach it to the error so it
+  // reaches the log Details. Self-deactivating: a coapp that already returns
+  // stderr won't match the bare-exit-code test, so no second probe is made.
+  function coappGaveNoReason(probeError) {
+    let remote = (probeError && probeError.remoteError) || '';
+    return /^Exit code: \d+\s*$/.test(String(remote).trim());
+  }
+  function extractFfprobeReason(text) {
+    let lines = String(text || '')
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean)
+      .filter(line => !/^Exit code:/.test(line))
+      .filter(
+        line =>
+          !/^(ffprobe|ffmpeg) version /.test(line)
+          && !/^built with /.test(line)
+          && !/^configuration:/.test(line)
+          && !/^lib[a-z]+ +[0-9]/.test(line),
+      );
+    return lines.slice(-3).join('\n');
+  }
+  function diagnoseProbeFailure(probeError, url, headers) {
+    if (!coappGaveNoReason(probeError)) {
+      return Promise.resolve(probeError);
+    }
+    return converterCoapp
+      .call('probe', url, !1, headers)
+      .then(() => probeError)
+      .catch(verboseError => {
+        let reason = extractFfprobeReason(
+          (verboseError && verboseError.remoteError)
+            || (verboseError && verboseError.message)
+            || '',
+        );
+        if (reason) {
+          injectErrorDetails(probeError, { reason: reason });
+        }
+        return probeError;
+      });
+  }
   function info(url, parse = !1, headers = []) {
     stripBrotliEncoding(headers);
     if (converterDebug) {
@@ -10423,7 +10467,13 @@ const store = createStore(
     }
     let result = converterCoapp.call('probe', url, parse, headers);
     if (parse) {
-      return result.then(text => JSON.parse(text));
+      return result.then(
+        text => JSON.parse(text),
+        probeError =>
+          diagnoseProbeFailure(probeError, url, headers).then(() => {
+            throw probeError;
+          }),
+      );
     } else {
       return result;
     }
