@@ -26,6 +26,8 @@ export interface AboutPageState {}
 export interface LogDetailsEmbedState {
   details: string | null;
   message: string | null;
+  /** True briefly after the copy button copied the entry to the clipboard. */
+  copied: boolean;
 }
 
 export interface ExplainQrPageState {

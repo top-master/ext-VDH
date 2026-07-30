@@ -126,13 +126,74 @@ importScripts('../vendor/ts-results.js');
       return !1;
     };
     browserModule.exports.error = error => {
-      console.groupCollapsed(error.message);
+      // Collapsed title is just the first line of the message; expanding the
+      // group shows the full stack, which now carries the injected details.
+      console.groupCollapsed(
+        String((error && error.message) || error).split('\n')[0],
+      );
       if (error.stack) {
         console.error(error.stack);
       }
       console.groupEnd();
     };
   });
+  // Shared: attach open-ended, structured context to an error and render it as a
+  // block injected between the error's message and its stack frames, so a
+  // one-line message stays the title while expanding reveals the full context.
+  // Callers pass whatever they have (host, method, request, response, ...); the
+  // set is open-ended and merges across calls. Re-decorating replaces the block.
+  var errorDetailsStart = '  ----- details -----';
+  var errorDetailsEnd = '  --------------------';
+  function injectErrorDetails(error, details) {
+    if (!error || typeof error != 'object' || !details) {
+      return error;
+    }
+    error.details = Object.assign({}, error.details, details);
+    let blockLines = [errorDetailsStart];
+    for (let key of Object.keys(error.details)) {
+      let value = error.details[key];
+      let rendered;
+      try {
+        rendered = JSON.stringify(value);
+      } catch {
+        rendered = String(value);
+      }
+      if (typeof rendered == 'undefined') {
+        rendered = String(value);
+      }
+      blockLines.push('  ' + key + ': ' + rendered);
+    }
+    blockLines.push(errorDetailsEnd);
+    let stackText =
+      typeof error.stack == 'string'
+        ? error.stack
+        : String(error.message || '');
+    let cleaned = [];
+    let inOldBlock = false;
+    for (let line of stackText.split('\n')) {
+      if (line == errorDetailsStart) {
+        inOldBlock = true;
+        continue;
+      }
+      if (inOldBlock) {
+        if (line == errorDetailsEnd) {
+          inOldBlock = false;
+        }
+        continue;
+      }
+      cleaned.push(line);
+    }
+    let frameIndex = cleaned.findIndex(line => /^\s*at\s/.test(line));
+    if (frameIndex < 0) {
+      frameIndex = cleaned.length;
+    }
+    error.stack = [
+      ...cleaned.slice(0, frameIndex),
+      ...blockLines,
+      ...cleaned.slice(frameIndex),
+    ].join('\n');
+    return error;
+  }
   var requireRpc = defineCommonjsModule((rpcExports, rpcModule) => {
     'use strict';
 
@@ -216,6 +277,8 @@ importScripts('../vendor/ts-results.js');
             resolve: resolve,
             reject: reject,
             peer: peer,
+            method: method,
+            args: args,
           };
           let post =
             postFn || (self.useTarget && self.posts[peer]) || self.post;
@@ -329,7 +392,28 @@ importScripts('../vendor/ts-results.js');
               rid: message._reply,
               error: message._error,
             });
-            pending.reject(new Error(message._error));
+            // Wrap the remote error with the call that produced it - the bare
+            // remote message (e.g. "Exit code: 1") is meaningless on its own.
+            let rpcContext =
+              'RPC call '
+              + JSON.stringify(pending.method)
+              + (pending.peer ? ' to ' + JSON.stringify(pending.peer) : '')
+              + ' failed';
+            let rpcError = new Error(rpcContext + ': ' + message._error);
+            rpcError.rpcMethod = pending.method;
+            rpcError.rpcPeer = pending.peer;
+            rpcError.rpcArgs = pending.args;
+            rpcError.remoteError = message._error;
+            // Inject the full call context (for a CoApp call: the native host,
+            // the method, the request payload - url/headers/fields - and the
+            // response) between the message and the stack frames.
+            injectErrorDetails(rpcError, {
+              host: pending.peer,
+              method: pending.method,
+              request: pending.args,
+              response: message._error,
+            });
+            pending.reject(rpcError);
           } else {
             if (self.debugLevel >= 2) {
               self.logger.info(
@@ -6793,6 +6877,19 @@ const store = createStore(
     }
     return state;
   }
+  // Log-entry details must be text (the details view renders them into a <pre>);
+  // accept strings as-is and render anything else (e.g. the structured
+  // error.details object) as pretty JSON so it never blanks the view.
+  function logDetailsText(value) {
+    if (typeof value == 'string' || value === null || value === void 0) {
+      return value || void 0;
+    }
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch {
+      return String(value);
+    }
+  }
   function appLog(entry, type = 'log') {
     if (entry instanceof Error) {
       let location = '';
@@ -6808,8 +6905,11 @@ const store = createStore(
         location += entry.stack;
       }
       entry = {
+        // For errors the stack is the fullest text: injectErrorDetails() renders
+        // the structured details between the message and the frames, so prefer
+        // it over the raw details object.
         message: entry.message,
-        details: entry.details || location || void 0,
+        details: location || logDetailsText(entry.details) || void 0,
         videoTitle: entry.videoTitle || void 0,
       };
     } else {
@@ -6820,7 +6920,7 @@ const store = createStore(
       } else {
         entry = {
           message: entry.message || '' + entry,
-          details: entry.details || void 0,
+          details: logDetailsText(entry.details) || void 0,
         };
       }
     }
@@ -21023,9 +21123,18 @@ const store = createStore(
         .catch(err => {
           coappOnline = !1;
           if (!settled) {
+            // Not the "app not found" path (that resolves above via
+            // callCatchAppNotFound): the native host connected but the info
+            // request itself failed. So the CoApp is installed - it just did not
+            // answer correctly, usually an outdated or broken CoApp. Say so,
+            // instead of reporting it as missing with a bare remote message.
             resolve({
               status: !1,
-              error: err.message,
+              connected: !0,
+              error:
+                'The CoApp is installed but its info request failed: '
+                + ((err && err.message) || String(err))
+                + '. Try updating or reinstalling the CoApp.',
             });
           }
         });
