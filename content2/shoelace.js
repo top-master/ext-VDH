@@ -1,4 +1,4 @@
-// Shoelace theme/storage setup for VDH panels. The third-party UI library it
+// Shoelace theme/storage setup for the extension panels. The third-party UI library it
 // uses is vendored in ../vendor/shoelace-lib.js (importing it also registers the
 // <sl-*> elements).
 import {

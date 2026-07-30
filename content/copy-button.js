@@ -145,7 +145,7 @@
         return () => {
           let browserTarget = requireBuildInfo().buildOptions.browser;
           let convertUrl =
-            'https://www.downloadhelper.net/convert'
+            globalThis.extConfig.getUrlValue('convertUrl')
             + (browserTarget
               ? '?browser=' + encodeURIComponent(browserTarget)
               : '');

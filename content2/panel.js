@@ -2950,7 +2950,7 @@ function renderPanel(state, viewOptions, defaultAction, overrides) {
     let downloadableId = downloadEl?.dataset.downloadableId;
     if (target.closest('.error-nocoapp-button-install')) {
       browserRuntimeApi.default.tabs.create({
-        url: 'https://www.downloadhelper.net/install-coapp-v2',
+        url: globalThis.extConfig.getUrlValue('installCoappUrl'),
       });
     } else if (target.closest('.button-report-error')) {
       let errorEl = target.closest('.download-error');
@@ -2981,11 +2981,11 @@ function renderPanel(state, viewOptions, defaultAction, overrides) {
       });
     } else if (target.closest('.error-why-qr')) {
       browserRuntimeApi.default.tabs.create({
-        url: 'https://www.downloadhelper.net/about-licensing',
+        url: globalThis.extConfig.getUrlValue('licenseInfoUrl'),
       });
     } else if (target.closest('.error-invalid-license-get')) {
       browserRuntimeApi.default.tabs.create({
-        url: 'https://www.downloadhelper.net/convert',
+        url: globalThis.extConfig.getUrlValue('convertUrl'),
       });
     } else if (
       target.closest('.download-error .button-hide')
@@ -3146,7 +3146,7 @@ function renderPanel(state, viewOptions, defaultAction, overrides) {
     } else if (target.closest('.button-open-browser-settings')) {
       if (browserTarget == 'mozilla') {
         browserRuntimeApi.default.tabs.create({
-          url: 'https://github.com/aclap-dev/video-downloadhelper/wiki/Enable-Incognito',
+          url: globalThis.extConfig.getUrlValue('incognitoHelpUrl'),
         });
       } else {
         browserRuntimeApi.default.tabs.create({

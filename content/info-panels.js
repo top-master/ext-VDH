@@ -145,7 +145,7 @@
         return () => {
           let browserTarget = requireBuildInfo().buildOptions.browser;
           let convertUrl =
-            'https://www.downloadhelper.net/convert'
+            globalThis.extConfig.getUrlValue('convertUrl')
             + (browserTarget
               ? '?browser=' + encodeURIComponent(browserTarget)
               : '');
@@ -692,7 +692,7 @@
                 'a',
                 {
                   target: '_blank',
-                  href: 'https://github.com/aclap-dev/video-downloadhelper/wiki/CoApp-not-recognized',
+                  href: globalThis.extConfig.getUrlValue('coappHelpUrl'),
                 },
                 weh._('coapp_help'),
               ),

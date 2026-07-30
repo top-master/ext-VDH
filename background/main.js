@@ -1,5 +1,10 @@
 'use strict';
 
+// Clean-room config (globalThis.extConfig): single-source brand + upstream-URL
+// guards. Loaded first so its i18n.getMessage and URL guards are in place before
+// any app code runs.
+importScripts('../cleanroom-shared.js');
+
 // De-vendored: the webextension-polyfill ships as vendor/browser-polyfill.js
 // and is loaded here (service workers use importScripts, not <script>). It sets
 // globalThis.browser, which the bundle's polyfill module returns below.
@@ -10079,7 +10084,7 @@ const store = createStore(
     let response;
     try {
       response = await licenseUtil.request({
-        url: 'https://www.downloadhelper.net/license-check.json',
+        url: globalThis.extConfig.getUrlValue('licenseCheckUrl'),
         content: 'key=' + encodeURIComponent(key) + '&product=converthelper',
         headers: {
           'Content-type': 'application/x-www-form-urlencoded',
@@ -10226,7 +10231,7 @@ const store = createStore(
           className: 'btn-success',
           rpcMethod: 'goto',
           rpcArgs: [
-            'https://www.downloadhelper.net/convert'
+            globalThis.extConfig.getUrlValue('convertUrl')
               + (browserTarget
                 ? '?browser=' + encodeURIComponent(browserTarget)
                 : ''),
@@ -12560,16 +12565,19 @@ const store = createStore(
                     lang: mainBrowser.default.i18n.getUILanguage(),
                     details: errorEntry.details,
                   };
-                  await fetch('https://api.downloadhelper.net/v1/reports', {
-                    method: 'POST',
-                    cache: 'no-cache',
-                    headers: {
-                      'Content-Type': 'application/json',
+                  await fetch(
+                    globalThis.extConfig.getUrlValue('reportsApiUrl'),
+                    {
+                      method: 'POST',
+                      cache: 'no-cache',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      redirect: 'follow',
+                      referrerPolicy: 'no-referrer',
+                      body: JSON.stringify(reportBody),
                     },
-                    redirect: 'follow',
-                    referrerPolicy: 'no-referrer',
-                    body: JSON.stringify(reportBody),
-                  });
+                  );
                 }
                 errorEntry.report_status = 'reported';
               } catch {
@@ -12746,7 +12754,7 @@ const store = createStore(
       );
     await create({
       id: 'vdh-top',
-      title: 'Video DownloadHelper',
+      title: globalThis.extConfig.getLiteralValue('productName'),
       contexts: ['page'],
     });
     for (let menuIndex = 0; menuIndex < MAX_CONTEXT_MENU_ITEMS; menuIndex++) {
@@ -18392,7 +18400,7 @@ const store = createStore(
         try {
           await buildTbvwsDownloadable(detectedVideo);
         } catch (err) {
-          console.error('VDH error: detectedVideo', err);
+          console.error('error: detectedVideo', err);
         }
       },
     });
@@ -18435,7 +18443,7 @@ const store = createStore(
               '/injected/tbvws-bulk.js',
             );
           } catch (err) {
-            console.error('VDH error: could not inject bulk script', err);
+            console.error('error: could not inject bulk script', err);
           }
         }
       },
@@ -18733,7 +18741,7 @@ const store = createStore(
         let limitMs = limitMinutes * 60 * 1e3;
         let lastConvertTime = await getSetting(settingLastAdvancedDownload);
         let elapsed = startTime - lastConvertTime;
-        let convertUrl = 'https://www.downloadhelper.net/convert';
+        let convertUrl = globalThis.extConfig.getUrlValue('convertUrl');
         if (
           audioOnly
           && (strategy == 'mpd' || strategy == 'hls' || forbidden)
@@ -19488,7 +19496,7 @@ const store = createStore(
               text: actionsWeh._('get_conversion_license'),
               className: 'btn-success',
               rpcMethod: 'goto',
-              rpcArgs: ['https://www.downloadhelper.net/convert'],
+              rpcArgs: [globalThis.extConfig.getUrlValue('convertUrl')],
             },
           ],
         });
@@ -19623,7 +19631,7 @@ const store = createStore(
               text: actionsWeh._('get_conversion_license'),
               className: 'btn-success',
               rpcMethod: 'goto',
-              rpcArgs: ['https://www.downloadhelper.net/convert'],
+              rpcArgs: [globalThis.extConfig.getUrlValue('convertUrl')],
             },
           ],
         });
@@ -20976,7 +20984,9 @@ const store = createStore(
   function gotoInstall() {
     installGate(async () => {
       let prefs = await coappWeh.prefs;
-      let installUrl = `https://www.downloadhelper.net/install-coapp-v2?channel=${coappChannel}`;
+      let installUrl = globalThis.extConfig.getUrlValue('installCoappUrl', {
+        channel: coappChannel,
+      });
       if (prefs.forcedCoappVersion) {
         installUrl += '&version=' + prefs.forcedCoappVersion;
       }
@@ -21890,7 +21900,7 @@ const store = createStore(
     let build = requireBuildInfo();
     if (!build.prod) {
       console.info(
-        '=========== VDH started',
+        '=========== started',
         new Date().toLocaleTimeString(),
         '==========',
       );
@@ -21918,16 +21928,18 @@ const store = createStore(
         weh.ui.close('main');
       },
       openSites: () =>
-        tabTracker.gotoOrOpenTab('https://www.downloadhelper.net/sites'),
+        tabTracker.gotoOrOpenTab(globalThis.extConfig.getUrlValue('sitesUrl')),
       openForum: () =>
         tabTracker.gotoOrOpenTab(
-          'https://github.com/aclap-dev/video-downloadhelper/discussions',
+          globalThis.extConfig.getUrlValue('communityDiscussionsUrl'),
         ),
       openHomepage: () =>
-        tabTracker.gotoOrOpenTab('https://www.downloadhelper.net/'),
+        tabTracker.gotoOrOpenTab(
+          globalThis.extConfig.getUrlValue('rootWebsiteUrl'),
+        ),
       openTranslationForum: () =>
         tabTracker.gotoOrOpenTab(
-          'https://github.com/aclap-dev/video-downloadhelper/discussions/categories/language-translation',
+          globalThis.extConfig.getUrlValue('translationDiscussionsUrl'),
         ),
       openWeh: () => tabTracker.gotoOrOpenTab('https://github.com/mi-g/weh'),
       openAbout: () => {

@@ -106,7 +106,7 @@ describe('ESM bundles import and route ts-results to the shared copy', () => {
 
 /**
  * The lazy-iterable helpers (createLazyIterable / as_iter, patched onto
- * Array/Set/Map.prototype on load) are VDH app code that uses ts-results - a
+ * Array/Set/Map.prototype on load) are extension app code that uses ts-results - a
  * find() returns an Option, filter()/map() route through it. This code lives in
  * the content-script bundles (e.g. blacklist). Importing one patches as_iter, so
  * we can drive it and confirm it resolves to the shared globalThis.tsResults.

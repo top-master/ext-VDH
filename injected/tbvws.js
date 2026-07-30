@@ -1538,7 +1538,7 @@
       }
     }
     if (!baseJsUrl) {
-      console.log('VDH ExtractBaseJS: no base.js ref');
+      console.log('ExtractBaseJS: no base.js ref');
       return pageUrl;
     }
     try {
@@ -1560,7 +1560,7 @@
       pageUrl.baseJs = cachedApiKey;
       return pageUrl;
     } catch (error) {
-      console.error('VDH ExtractBaseJS: getting base.js', error);
+      console.error('ExtractBaseJS: getting base.js', error);
       return null;
     }
   }
@@ -1580,7 +1580,7 @@
             let parsed = JSON.parse(json);
             if (parsed.streamingData) {
               if (playerResponse) {
-                console.log('VDH initial multiple candidates');
+                console.log('initial multiple candidates');
               }
               playerResponse = parsed;
             }
@@ -1732,7 +1732,7 @@
         }
       }
     } catch (error) {
-      console.log('VDH: getting player data', error);
+      console.log('getting player data', error);
     }
     return params;
   }
@@ -1898,7 +1898,7 @@
       }
     } catch (error) {
       if (specsByMode.videoId) {
-        console.log('VDH ProcessPage:', error);
+        console.log('ProcessPage:', error);
       }
     }
   }

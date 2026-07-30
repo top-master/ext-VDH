@@ -2933,11 +2933,11 @@ async function initSettingsPage() {
             }),
           licenseGetBtn
             && browserRuntimeApi.default.tabs.create({
-              url: 'https://www.downloadhelper.net/convert',
+              url: globalThis.extConfig.getUrlValue('convertUrl'),
             }),
           licenseHelpBtn
             && browserRuntimeApi.default.tabs.create({
-              url: 'https://www.downloadhelper.net/help',
+              url: globalThis.extConfig.getUrlValue('helpUrl'),
             }),
           coappCheckBtn
             && sendRuntimeMessage({
@@ -2945,11 +2945,11 @@ async function initSettingsPage() {
             }),
           coappInstallBtn
             && browserRuntimeApi.default.tabs.create({
-              url: 'https://downloadhelper.net/install-coapp-v2',
+              url: globalThis.extConfig.getUrlValue('installCoappUrl'),
             }),
           coappHelpBtn
             && browserRuntimeApi.default.tabs.create({
-              url: 'https://github.com/aclap-dev/video-downloadhelper/wiki/CoApp-not-recognized',
+              url: globalThis.extConfig.getUrlValue('coappHelpUrl'),
             }),
           clearVariantsBtn && removeSetting(mediaUserPrefSetting),
           resetSettingsBtn && clearAllSettings(),

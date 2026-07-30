@@ -1155,7 +1155,7 @@ var translationsBg = {
     '\u0422\u043E\u0432\u0430 \u0435 \u0442\u0435\u0441\u0442\u043E\u0432\u0430 \u0432\u0435\u0440\u0441\u0438\u044F',
   about_qr:
     '\u0424\u0430\u0439\u043B\u044A\u0442 \u0435 \u0433\u0435\u043D\u0435\u0440\u0438\u0440\u0430\u043D',
-  about_vdh: '\u041E\u0442\u043D\u043E\u0441\u043D\u043E Video DownloadHelper',
+  about_vdh: '\u041E\u0442\u043D\u043E\u0441\u043D\u043E :appName',
   action_abort_description:
     '\u041F\u0440\u0435\u043A\u044A\u0441\u043D\u0438 \u0438\u0437\u043F\u044A\u043B\u043D\u044F\u0432\u0430\u043D\u0430\u0442\u0430 \u0437\u0430\u0434\u0430\u0447\u0430',
   action_abort_title: '\u041F\u0440\u0435\u043A\u044A\u0441\u043D\u0438',
@@ -1203,7 +1203,7 @@ var translationsBg = {
   analyze_page:
     '\u0410\u043D\u0430\u043B\u0438\u0437\u0438\u0440\u0430\u0439 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0430\u0442\u0430',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: '\u0418\u0437\u0433\u043B\u0435\u0434',
   audio_only: '\u0421\u0430\u043C\u043E \u0430\u0443\u0434\u0438\u043E.',
   behavior: '\u041F\u043E\u0432\u0435\u0434\u0435\u043D\u0438\u0435',
@@ -1212,11 +1212,11 @@ var translationsBg = {
   cancel: '\u041E\u0442\u043A\u0430\u0437',
   chrome_install_firefox:
     '\u0418\u043D\u0441\u0442\u0430\u043B\u0438\u0440\u0430\u0439\u0442\u0435 Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper \u0437\u0430 Firefox',
+  chrome_install_fx_vdh: ':appName \u0437\u0430 Firefox',
   chrome_noyt_text:
     '\u0417\u0430 \u0441\u044A\u0436\u0430\u043B\u0435\u043D\u0438\u0435 Chrome Web Store \u043D\u0435 \u043F\u043E\u0437\u0432\u043E\u043B\u044F\u0432\u0430 \u0440\u0430\u0437\u0448\u0438\u0440\u0435\u043D\u0438\u044F \u0437\u0430 \u0441\u0432\u0430\u043B\u044F\u043D\u0435 \u043D\u0430 YouTube \u0432\u0438\u0434\u0435\u043E, \u0442\u0430\u043A\u0430 \u0447\u0435 \u0441\u0435 \u043D\u0430\u043B\u043E\u0436\u0438 \u0434\u0430 \u043F\u0440\u0435\u043C\u0430\u0445\u043D\u0435\u043C \u0442\u0430\u0437\u0438 \u043E\u043F\u0446\u0438\u044F.',
   chrome_noyt_text2:
-    '\u041C\u043E\u0436\u0435 \u0434\u0430 \u043F\u043E\u043B\u0437\u0432\u0430\u0442\u0435 Video DownloadHelper \u0437\u0430 \u0441\u0432\u0430\u043B\u044F\u043D\u0435 \u043D\u0430 YouTube \u0432\u0438\u0434\u0435\u043E \u0432\u044A\u0432 Firefox \u0432\u0435\u0440\u0441\u0438\u044F\u0442\u0430.',
+    '\u041C\u043E\u0436\u0435 \u0434\u0430 \u043F\u043E\u043B\u0437\u0432\u0430\u0442\u0435 :appName \u0437\u0430 \u0441\u0432\u0430\u043B\u044F\u043D\u0435 \u043D\u0430 YouTube \u0432\u0438\u0434\u0435\u043E \u0432\u044A\u0432 Firefox \u0432\u0435\u0440\u0441\u0438\u044F\u0442\u0430.',
   chrome_warning_yt:
     '\u041F\u0440\u0435\u0434\u0443\u043F\u0440\u0435\u0436\u0434\u0435\u043D\u0438\u0435 \u043F\u0440\u0438 Chrome \u0440\u0430\u0437\u0448\u0438\u0440\u0435\u043D\u0438\u044F \u0438 YouTube',
   clear_hits:
@@ -1297,7 +1297,7 @@ var translationsBg = {
   dlconv_output_details:
     '\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u0432\u0430\u043D\u0435 \u043D\u0430 \u0438\u0437\u0445\u043E\u0434\u043D\u0438\u0442\u0435 \u0434\u0435\u0442\u0430\u0439\u043B\u0438',
   donate: '\u0414\u0430\u0440\u0435\u043D\u0438\u0435',
-  donate_vdh: 'Video DownloadHelper \u043F\u043E\u043C\u043E\u0449',
+  donate_vdh: ':appName \u043F\u043E\u043C\u043E\u0449',
   downloading: '\u0421\u0432\u0430\u043B\u044F\u043D\u0435...',
   errors: '\u0413\u0440\u0435\u0448\u043A\u0438',
   explain_qr1:
@@ -1360,7 +1360,7 @@ var translationsBg = {
   req_review:
     '\u0415\u0432\u0435\u043D\u0442\u0443\u0430\u043B\u043D\u043E, \u0438\u043C\u0430\u0442\u0435 \u043B\u0438 \u043D\u0435\u0449\u043E \u043F\u0440\u043E\u0442\u0438\u0432 \u0434\u0430 \u043D\u0430\u043F\u0438\u0448\u0435\u0442\u0435 \u0434\u043E\u0431\u044A\u0440 \u043E\u0442\u0437\u0432\u0443\u043A \u0432 \u0441\u0430\u0439\u0442\u0430 \u043D\u0430 Mozilla addon?',
   req_review_link:
-    '\u041D\u0430\u043F\u0438\u0448\u0435\u0442\u0435 \u0440\u0435\u0432\u044E \u0437\u0430 Video DownloadHelper',
+    '\u041D\u0430\u043F\u0438\u0448\u0435\u0442\u0435 \u0440\u0435\u0432\u044E \u0437\u0430 :appName',
   running: '\u0421\u0442\u0430\u0440\u0442\u0438\u0440\u0430\u043D\u0438',
   save: '\u0417\u0430\u043F\u0438\u0448\u0438',
   select_files_to_convert:
@@ -1386,13 +1386,13 @@ var translationsBg = {
     '\u041F\u043E\u0434\u0434\u044A\u0440\u0436\u0430\u043D\u0438 \u0441\u0430\u0439\u0442\u043E\u0432\u0435',
   tell_me_more:
     '\u041A\u0430\u0436\u0435\u0442\u0435 \u043C\u0438 \u043F\u043E\u0432\u0435\u0447\u0435 \u0437\u0430 \u0442\u043E\u0432\u0430',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   validate_license:
     '\u0420\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u043E\u043D\u0435\u043D \u043B\u0438\u0446\u0435\u043D\u0437',
   variants_list_adp:
     '\u0410\u0434\u0430\u043F\u0442\u0438\u0432\u043D\u0438 \u0432\u0430\u0440\u0438\u0430\u043D\u0442\u0438',
   variants_list_full: '\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u0438',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: '\u0412\u0435\u0440\u0441\u0438\u044F $1',
   video_only: '\u0421\u0430\u043C\u043E \u0432\u0438\u0434\u0435\u043E.',
   video_qualities:
@@ -1492,7 +1492,7 @@ var translationsBg = {
   weh_prefs_titleMode_option_right:
     '\u041C\u043D\u043E\u0433\u043E\u0442\u043E\u0447\u0438\u0435 \u043E\u0442\u0434\u044F\u0441\u043D\u043E',
   you_downloaded_n_videos:
-    '\u0442\u043E\u043A\u0443 \u0449\u043E \u0443\u0441\u043F\u0435\u0448\u043D\u043E \u0441\u0432\u0430\u043B\u0438\u0445\u0442\u0435 \u0412\u0430\u0448\u0438\u044F $1th \u0444\u0430\u0439\u043B \u0441 Video DownloadHelper.',
+    '\u0442\u043E\u043A\u0443 \u0449\u043E \u0443\u0441\u043F\u0435\u0448\u043D\u043E \u0441\u0432\u0430\u043B\u0438\u0445\u0442\u0435 \u0412\u0430\u0448\u0438\u044F $1th \u0444\u0430\u0439\u043B \u0441 :appName.',
   v9_converter_needs_reg:
     '\u041D\u0443\u0436\u043D\u0430 \u0435 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u044F.',
   v9_get_conversion_license:
@@ -1502,7 +1502,7 @@ var translationsBg = {
   v9_chrome_warning_yt:
     '\u041F\u0440\u0435\u0434\u0443\u043F\u0440\u0435\u0436\u0434\u0435\u043D\u0438\u0435 \u043F\u0440\u0438 Chrome \u0440\u0430\u0437\u0448\u0438\u0440\u0435\u043D\u0438\u044F \u0438 YouTube',
   v9_chrome_noyt_text2:
-    '\u041C\u043E\u0436\u0435 \u0434\u0430 \u043F\u043E\u043B\u0437\u0432\u0430\u0442\u0435 Video DownloadHelper \u0437\u0430 \u0441\u0432\u0430\u043B\u044F\u043D\u0435 \u043D\u0430 YouTube \u0432\u0438\u0434\u0435\u043E \u0432\u044A\u0432 Firefox \u0432\u0435\u0440\u0441\u0438\u044F\u0442\u0430.',
+    '\u041C\u043E\u0436\u0435 \u0434\u0430 \u043F\u043E\u043B\u0437\u0432\u0430\u0442\u0435 :appName \u0437\u0430 \u0441\u0432\u0430\u043B\u044F\u043D\u0435 \u043D\u0430 YouTube \u0432\u0438\u0434\u0435\u043E \u0432\u044A\u0432 Firefox \u0432\u0435\u0440\u0441\u0438\u044F\u0442\u0430.',
   v9_about_qr:
     '\u0424\u0430\u0439\u043B\u044A\u0442 \u0435 \u0433\u0435\u043D\u0435\u0440\u0438\u0440\u0430\u043D',
   v9_explain_qr1:
@@ -1514,7 +1514,7 @@ var translationsBg = {
   v9_settings: '\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438',
   v9_weh_prefs_label_downloadControlledMax:
     '\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u043D\u043E \u0442\u0435\u043A\u0443\u0449\u0438 \u0441\u0432\u0430\u043B\u044F\u043D\u0438\u044F',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready:
     '"$1" \u0435 \u0432\u0435\u0447\u0435 \u0433\u043E\u0442\u043E\u0432',
 };
@@ -1530,7 +1530,7 @@ var translationsCa = {
   about_beta_intro: 'Aix\xF2 \xE9s una versi\xF3 beta',
   about_chrome_licenses: 'Sobre llic\xE8ncies Chrome',
   about_qr: 'Fitxer generat',
-  about_vdh: 'Quant a Video DownloadHelper',
+  about_vdh: 'Quant a :appName',
   action_abort_description: "Interromp l'acci\xF3 en progr\xE9s",
   action_abort_title: 'Interromp',
   action_as_default: 'Fes servir aquesta acci\xF3 per omissi\xF3',
@@ -1574,7 +1574,7 @@ var translationsCa = {
   aggregating: "S'est\xE0 agregant...",
   analyze_page: 'Analitza la p\xE0gina',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Aparen\xE7a',
   audio_only: 'Nom\xE9s \xC0udio',
   behavior: 'Comportament',
@@ -1589,7 +1589,7 @@ var translationsCa = {
   build_options: 'Opcions de compilaci\xF3: $1',
   built_on: 'Compilat sobre $1',
   bulk_in_progress:
-    "L'operaci\xF3 en grup del Video DownloadHelper est\xE0 en progr\xE9s. No tanquis aquesta pestanya, aix\xF2 es far\xE0 autom\xE0ticament",
+    "L'operaci\xF3 en grup del :appName est\xE0 en progr\xE9s. No tanquis aquesta pestanya, aix\xF2 es far\xE0 autom\xE0ticament",
   bulk_n_videos: '$1 v\xEDdeos',
   cancel: 'Cancel\xB7la',
   change: 'Canvia',
@@ -1606,14 +1606,14 @@ var translationsCa = {
   chrome_inapp_premium_monthly: 'Subscripci\xF3 Premium Mensual',
   chrome_inapp_premium_yearly: 'Subscripci\xF3 Premium Anual',
   chrome_install_firefox: 'Instal\xB7la el Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper per a Firefox',
+  chrome_install_fx_vdh: ':appName per a Firefox',
   chrome_license_webstore_accepted:
     'LLic\xE8ncia activa de la botiga web de Chrome',
   chrome_licensing: 'Llic\xE8ncia de Chrome',
   chrome_noyt_text:
     "Desgraciadament, la Botiga Web de Chrome no permet extensions per a baixar v\xEDdeos de YouTube, aix\xED que hem hagut d'eliminar aquesta caracter\xEDstica.",
   chrome_noyt_text2:
-    'Pots fer servir el Video DownloadHelper per baixar v\xEDdeos de YouTube amb la versi\xF3 de Firefox.',
+    'Pots fer servir el :appName per baixar v\xEDdeos de YouTube amb la versi\xF3 de Firefox.',
   chrome_noyt_text3:
     "Desafortunadament, la botiga web de Chrome no permet extensions per baixar videos de YouTube i per tant no podem incloure aquesta caracter\xEDstica a la versi\xF3 Chrome de l'extensi\xF3",
   chrome_premium_audio:
@@ -1738,7 +1738,7 @@ var translationsCa = {
   dlconv_download_and_convert: 'Baixa i Converteix',
   dlconv_output_details: 'Configura els detalls de la sortida',
   donate: 'D\xF3na',
-  donate_vdh: 'Ajuda el Video DownloadHelper',
+  donate_vdh: 'Ajuda el :appName',
   download_error: 'Error en la baixada',
   download_method: 'M\xE8tode de baixada',
   download_method_not_again:
@@ -1862,7 +1862,7 @@ var translationsCa = {
     "O potser vols ajudar a traduir el connector a '$1' (hi ha $2 textos que falten) ?",
   req_review:
     'De forma alternativa, voldries donar una bona opini\xF3 al lloc de connectors de Mozilla?',
-  req_review_link: 'D\xF3na una opini\xF3 del Video DownloadHelper',
+  req_review_link: 'D\xF3na una opini\xF3 del :appName',
   reset_settings: 'Reinicia la configuraci\xF3',
   running: "S'est\xE0 executant",
   save: 'Desa',
@@ -1904,13 +1904,13 @@ var translationsCa = {
   tbsn_quality_hd: 'Qualitat mitjana',
   tbsn_quality_sd: 'Qualitat baixa',
   tell_me_more: "Explica me'n m\xE9s coses",
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Traducci\xF3',
   up: 'Amunt',
   validate_license: 'Registra la llic\xE8ncia',
   variants_list_adp: 'Variacions adaptatives',
   variants_list_full: 'Variacions',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Versi\xF3 $1',
   video_only: 'Nom\xE9s v\xEDdeo',
   video_qualities: 'Qualitats de v\xEDdeo',
@@ -2138,8 +2138,7 @@ var translationsCa = {
   weh_prefs_titleMode_option_multiline: 'Sobre diverses l\xEDnies',
   weh_prefs_titleMode_option_right: 'Punts suspensius a la dreta',
   yes: 'S\xED',
-  you_downloaded_n_videos:
-    'Has baixat el teu $1\xE8 fitxer amb Video DownloadHelper ',
+  you_downloaded_n_videos: 'Has baixat el teu $1\xE8 fitxer amb :appName ',
   v9_yes: 'S\xED',
   v9_no: 'No',
   v9_error: 'Error',
@@ -2166,7 +2165,7 @@ var translationsCa = {
   v9_chrome_noyt_text3:
     "Desafortunadament, la botiga web de Chrome no permet extensions per baixar videos de YouTube i per tant no podem incloure aquesta caracter\xEDstica a la versi\xF3 Chrome de l'extensi\xF3",
   v9_chrome_noyt_text2:
-    'Pots fer servir el Video DownloadHelper per baixar v\xEDdeos de YouTube amb la versi\xF3 de Firefox.',
+    'Pots fer servir el :appName per baixar v\xEDdeos de YouTube amb la versi\xF3 de Firefox.',
   v9_about_qr: 'Fitxer generat',
   v9_explain_qr1:
     "Veur\xE0s que el v\xEDdeo resultant t\xE9 una marca d'aig\xFCes a la cantonada.",
@@ -2184,7 +2183,7 @@ var translationsCa = {
     'Nombre m\xE0xim de baixades simult\xE0nies',
   v9_weh_prefs_description_contextMenuEnabled:
     'Accedeix a les ordres amb clic-dreta dins de la p\xE0gina',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" est\xE0 a punt',
   v9_lic_status_unset: "No s'ha establert la llicencia",
   v9_lic_status_blocked: 'La llic\xE8ncia est\xE0 bloquejada',
@@ -2195,7 +2194,7 @@ var translationsCa = {
   v9_no_license_registered: "No s'ha registrat cap llic\xE8ncia",
 };
 var translationsCo = {
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   Bytes: '$1 ottetti',
   GB: '$1 Go',
   KB: '$1 Ko',
@@ -2207,7 +2206,7 @@ var translationsCo = {
   about_beta_intro: 'Qu\xE8 h\xE8 una versione beta.',
   about_chrome_licenses: 'Infurmazione apprupositu di e licenze Chrome',
   about_qr: 'Schedariu ingeneratu',
-  about_vdh: 'Apprupositu Video DownloadHelper',
+  about_vdh: 'Apprupositu :appName',
   action_abort_description: 'Interrompe l\u2019azzione in corsu',
   action_abort_title: 'Interrompe',
   action_as_default: 'Impieg\xE0 st\u2019azzione cum\u2019\xE8 predefinizione',
@@ -2269,7 +2268,7 @@ var translationsCo = {
   aggregating: 'Aghjunghjitura\u2026',
   analyze_page: 'Analiz\xE0 a pagina',
   appDesc: 'Scaric\xE0 filmetti da u Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Aspettu',
   audio_only: 'Audio solu',
   behavior: 'Cumpurtamentu',
@@ -2284,7 +2283,7 @@ var translationsCo = {
   build_options: 'Ozzioni di custruzzione\xA0: $1',
   built_on: 'Custruitu u $1',
   bulk_in_progress:
-    'Video DownloadHelper face un operazione di gruppu. \xD9n chjudite micca st\u2019unghjetta, qu\xE8 ser\xE0 fattu autumaticamente',
+    ':appName face un operazione di gruppu. \xD9n chjudite micca st\u2019unghjetta, qu\xE8 ser\xE0 fattu autumaticamente',
   bulk_n_videos: '$1 video',
   cancel: 'Abbandun\xE0',
   change: 'Cambi\xE0',
@@ -2301,13 +2300,13 @@ var translationsCo = {
   chrome_inapp_premium_monthly: 'Sottuscrizzione Premium misinca',
   chrome_inapp_premium_yearly: 'Sottuscrizzione Premium annuale',
   chrome_install_firefox: 'Install\xE0 Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper per Firefox',
+  chrome_install_fx_vdh: ':appName per Firefox',
   chrome_license_webstore_accepted: 'A licenza Chrome Webstore h\xE8 attiva',
   chrome_licensing: 'Licenza Chrome',
   chrome_noyt_text:
     'Per disgrazia, u Web Store di Chrome \xF9n permittendu micca i moduli addiziunale ch\xEC scaricheghjanu video YouTube, simu stati custreti di cacci\xE0 sta funzione.',
   chrome_noyt_text2:
-    'Pudete impieg\xE0 Video DownloadHelper per scaric\xE0 video YouTube via a versione Firefox.',
+    'Pudete impieg\xE0 :appName per scaric\xE0 video YouTube via a versione Firefox.',
   chrome_noyt_text3:
     'Per disgrazia, u Web Store di Chrome \xF9n permittendu micca i moduli addiziunale ch\xEC scaricheghjanu video YouTube, \xF9n avemu micca pussutu inchjude sta funzione in a versione Chrome di l\u2019estensione.',
   chrome_premium_audio:
@@ -2444,7 +2443,7 @@ var translationsCo = {
   dlconv_download_and_convert: 'Scaric\xE0 \xE8 cunvertisce',
   dlconv_output_details: 'Cunfigur\xE0 i detaglii d\u2019esciuta',
   donate: 'Dunazione',
-  donate_vdh: 'Aiut\xE0 Video DownloadHelper',
+  donate_vdh: 'Aiut\xE0 :appName',
   download_error: 'Sbagliu di scaricamentu',
   download_method: 'Metoda di scaricamentu',
   download_method_not_again: 'Impieg\xE0 sta metoda a prossima volta',
@@ -2587,8 +2586,7 @@ var translationsCo = {
     'Osinn\xF2, aiutacci \xE0 traduce l\u2019estensione in \xAB\xA0$1\xA0\xBB ch\xEC ci s\xF2 ancu $2 catene micca tradutte\xA0?',
   req_review:
     'Osinn\xF2, ch\xEC ne pensate di lasci\xE0 un bellu cummentu nant\u2019\xE0 u situ di l\u2019estensioni di Mozilla\xA0?',
-  req_review_link:
-    'Scrive un bellu cummentu apprupositu di Video DownloadHelper',
+  req_review_link: 'Scrive un bellu cummentu apprupositu di :appName',
   reset_settings: 'Reinizializazione di i parametri',
   running: 'In funzione',
   save: 'Arregistr\xE0',
@@ -2629,13 +2627,13 @@ var translationsCo = {
   tbsn_quality_hd: 'Qualit\xE0 mediana',
   tbsn_quality_sd: 'Qualit\xE0 bassa',
   tell_me_more: 'Sapene di pi\xF9 apprupositu di qu\xE8',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Traduzzione',
   up: 'Ins\xF9',
   validate_license: 'Arregistr\xE0 a licenza',
   variants_list_adp: 'Variante adattevule',
   variants_list_full: 'Variante',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Versione $1',
   video_only: 'Video solu',
   video_qualities: 'Qualit\xE0 video',
@@ -2884,7 +2882,7 @@ var translationsCo = {
   weh_prefs_titleMode_option_right: 'Ellisse \xE0 manu diritta',
   yes: 'S\xEC',
   you_downloaded_n_videos:
-    'Venite subitu di riesce \xE0 scaric\xE0 u vostru $1u schedariu c\xF9 Video DownloadHelper.',
+    'Venite subitu di riesce \xE0 scaric\xE0 u vostru $1u schedariu c\xF9 :appName.',
   v9_yes: 'S\xEC',
   v9_no: 'Inn\xF2',
   v9_error: 'Sbagliu',
@@ -2916,7 +2914,7 @@ var translationsCo = {
   v9_chrome_noyt_text3:
     'Per disgrazia, u Web Store di Chrome \xF9n permittendu micca i moduli addiziunale ch\xEC scaricheghjanu video YouTube, \xF9n avemu micca pussutu inchjude sta funzione in a versione Chrome di l\u2019estensione.',
   v9_chrome_noyt_text2:
-    'Pudete impieg\xE0 Video DownloadHelper per scaric\xE0 video YouTube via a versione Firefox.',
+    'Pudete impieg\xE0 :appName per scaric\xE0 video YouTube via a versione Firefox.',
   v9_about_qr: 'Schedariu ingeneratu',
   v9_explain_qr1:
     'Viderete ch\xEC a video risultante cuntene una filigrana in un scornu.',
@@ -2937,7 +2935,7 @@ var translationsCo = {
   v9_mup_max_variants: 'Numeru di variante',
   v9_weh_prefs_description_contextMenuEnabled:
     'Accede \xE0 e cumande da un cliccu dirittu nant\u2019\xE0 a pagina',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '\xAB\xA0$1\xA0\xBB h\xE8 prontu av\xE0',
   v9_lic_status_unset: 'Licenza micca definita',
   v9_lic_status_blocked: 'Licenza bluccata',
@@ -3043,7 +3041,7 @@ var translationsCo = {
   v9_save: 'Arregistr\xE0',
   v9_user_message_no_incognito_title: 'Micca modu di navigazione anonima',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper \xF9n h\xE8 micca attivatu in modu di navigazione privata o anonima. Ci culer\xE0 \xE0 attiv\xE0 st\u2019ozzione manualmente (ma \xF9n h\xE8 micca richiestu).',
+    ':appName \xF9n h\xE8 micca attivatu in modu di navigazione privata o anonima. Ci culer\xE0 \xE0 attiv\xE0 st\u2019ozzione manualmente (ma \xF9n h\xE8 micca richiestu).',
   v9_user_message_no_incognito_open_settings:
     'Attiv\xE0 i i parametri di u navigatore',
   v9_yt_bulk_detected: 'Scuperta di $1 filmetti nant\u2019\xE0 Youtube',
@@ -3055,7 +3053,7 @@ var translationsCo = {
   v9_history_button_start_recording: 'Arricurdassi di a mo cronolugia',
   v9_history_button_stop_recording: '\xD9n arricurdassi di a mo cronolugia',
   v9_history_no_recording_description:
-    '\xD9n arricurdemu micca a cronolugia di i vostri scaricamenti. Vulete ch\xEC Video DownloadHelper s\u2019arricurdeghji di a cronolugia di i vostri scaricamenti\xA0?',
+    '\xD9n arricurdemu micca a cronolugia di i vostri scaricamenti. Vulete ch\xEC :appName s\u2019arricurdeghji di a cronolugia di i vostri scaricamenti\xA0?',
   v9_history_no_recording_description_safe:
     '\xD9n v\u2019inchietate, tuttu st\xE0 nant\u2019\xE0 a vostra mascina. Ci impreme a vostra vita privata.',
   v9_history_no_entries: 'Nisuna infurmazione fin\u2019av\xE0.',
@@ -3079,7 +3077,7 @@ var translationsCs = {
   about_beta_intro: 'Toto je beta verze.',
   about_chrome_licenses: 'O licenc\xEDch Chromu',
   about_qr: 'Soubor vygenerov\xE1n',
-  about_vdh: 'O Video DownloadHelperu',
+  about_vdh: 'O :appNameu',
   action_abort_description: 'Zru\u0161it prob\xEDhaj\xEDc\xED \xFAkon',
   action_abort_title: 'Zru\u0161it',
   action_as_default: 'Nastavit \xFAkon jako v\xFDchoz\xED',
@@ -3127,7 +3125,7 @@ var translationsCs = {
   aggregating: 'Agreguji...',
   analyze_page: 'Analyzovat str\xE1nku',
   appDesc: 'St\xE1hnout videa z webu',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Vzhled',
   audio_only: 'Pouze zvuk',
   behavior: 'Chov\xE1n\xED',
@@ -3142,7 +3140,7 @@ var translationsCs = {
   build_options: 'Mo\u017Enosti sestaven\xED: $1',
   built_on: 'Postaveno na $1',
   bulk_in_progress:
-    'Prob\xEDh\xE1 hromadn\xFD \xFAkon Video DownloadHelperu. Nezav\xEDrejte tuto kartu, stane se tak automaticky',
+    'Prob\xEDh\xE1 hromadn\xFD \xFAkon :appNameu. Nezav\xEDrejte tuto kartu, stane se tak automaticky',
   bulk_n_videos: '$1 vide\xED',
   cancel: 'Zru\u0161it',
   change: 'Zm\u011Bnit',
@@ -3162,13 +3160,13 @@ var translationsCs = {
   chrome_inapp_premium_yearly:
     'Ro\u010Dn\xED pr\xE9miov\xE9 p\u0159edplatn\xE9',
   chrome_install_firefox: 'Instalovat Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper pro Firefox',
+  chrome_install_fx_vdh: ':appName pro Firefox',
   chrome_license_webstore_accepted: 'Aktivn\xED licence z webobchodu Chromu',
   chrome_licensing: 'Licencov\xE1n\xED Chromu',
   chrome_noyt_text:
     'Bohu\u017Eel webobchod Chromu nepovoluje roz\u0161\xED\u0159en\xED, kter\xE1 stahuj\xED videa z YouTube, tak\u017Ee jsme tuto funkci museli odstranit',
   chrome_noyt_text2:
-    'M\u016F\u017Eete pou\u017E\xEDt Firefox verzi Video DownloadHelperu ke sta\u017Een\xED vide\xED z YouTube',
+    'M\u016F\u017Eete pou\u017E\xEDt Firefox verzi :appNameu ke sta\u017Een\xED vide\xED z YouTube',
   chrome_noyt_text3:
     'Bohu\u017Eel webobchod Chromu nepovoluje roz\u0161\xED\u0159en\xED, kter\xE1 stahuj\xED videa z YouTube, tak\u017Ee jsme tuto funkci nemohli zahrnout v Chrome verzi roz\u0161\xED\u0159en\xED',
   chrome_premium_audio:
@@ -3293,7 +3291,7 @@ var translationsCs = {
   dlconv_download_and_convert: 'St\xE1hnout & P\u0159ev\xE9st',
   dlconv_output_details: 'Nastavit v\xFDstupn\xED detaily',
   donate: 'Darovat',
-  donate_vdh: 'Pomoc Video DownloadHelperu',
+  donate_vdh: 'Pomoc :appNameu',
   download_error: 'Chyba stahov\xE1n\xED',
   download_method: 'Metoda stahov\xE1n\xED',
   download_method_not_again:
@@ -3420,7 +3418,7 @@ var translationsCs = {
     "Nebo mo\u017En\xE1 pomoci p\u0159elo\u017Een\xEDm roz\u0161\xED\u0159en\xED do '$1' (n\u011Bjak\xE9 $2 vl\xE1kna chyb\xED) ?",
   req_review:
     'P\u0159\xEDpadn\u011B, napsali byste p\u011Bkn\xE9 hodnocen\xED na str\xE1nku Mozilly s roz\u0161\xED\u0159en\xEDm ?',
-  req_review_link: 'Napsat recenzi o Video DownloadHelperu',
+  req_review_link: 'Napsat recenzi o :appNameu',
   reset_settings: 'Resetovat nastaven\xED',
   running: 'B\u011B\u017E\xED',
   save: 'Ulo\u017Eit',
@@ -3460,13 +3458,13 @@ var translationsCs = {
   tbsn_quality_hd: 'St\u0159edn\xED kvalita',
   tbsn_quality_sd: 'N\xEDzk\xE1 kvalita',
   tell_me_more: '\u0158ekni mi v\xEDce o tomhle',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'P\u0159eklad',
   up: 'Nahoru',
   validate_license: 'Registrovat licenci',
   variants_list_adp: 'P\u0159izp\u016Fsobiv\xE9 varianty',
   variants_list_full: 'Varianty',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Verze $1',
   video_only: 'Pouze video',
   video_qualities: 'Kvality videa',
@@ -3706,7 +3704,7 @@ var translationsCs = {
   weh_prefs_titleMode_option_right: 'V\xFDpustka na pravo',
   yes: 'Ano',
   you_downloaded_n_videos:
-    'Pr\xE1v\u011B jste \xFAsp\u011B\u0161n\u011B st\xE1hli v\xE1\u0161 $1t\xFD soubor s Video DownloadHelperem.',
+    'Pr\xE1v\u011B jste \xFAsp\u011B\u0161n\u011B st\xE1hli v\xE1\u0161 $1t\xFD soubor s :appNameem.',
   v9_yes: 'Ano',
   v9_no: 'Ne',
   v9_error: 'Chyba',
@@ -3734,7 +3732,7 @@ var translationsCs = {
   v9_chrome_noyt_text3:
     'Bohu\u017Eel webobchod Chromu nepovoluje roz\u0161\xED\u0159en\xED, kter\xE1 stahuj\xED videa z YouTube, tak\u017Ee jsme tuto funkci nemohli zahrnout v Chrome verzi roz\u0161\xED\u0159en\xED',
   v9_chrome_noyt_text2:
-    'M\u016F\u017Eete pou\u017E\xEDt Firefox verzi Video DownloadHelperu ke sta\u017Een\xED vide\xED z YouTube',
+    'M\u016F\u017Eete pou\u017E\xEDt Firefox verzi :appNameu ke sta\u017Een\xED vide\xED z YouTube',
   v9_about_qr: 'Soubor vygenerov\xE1n',
   v9_explain_qr1:
     'V\u0161imnete si, \u017Ee v\xFDsledn\xE9 video obsahuje vodoznak v rohu.',
@@ -3752,7 +3750,7 @@ var translationsCs = {
     'Max soub\u011B\u017En\xFDch stahov\xE1n\xED',
   v9_weh_prefs_description_contextMenuEnabled:
     'P\u0159\xEDstup k p\u0159\xEDkaz\u016Fm prav\xFDm klinut\xEDm na str\xE1nce',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" je p\u0159ipraveno.',
   v9_lic_status_unset: 'Licence nen\xED nastavena',
   v9_lic_status_blocked: 'Licence zablokov\xE1na',
@@ -3761,7 +3759,7 @@ var translationsCs = {
   v9_lic_mismatch2:
     'Licence je pro $1 ale sestaven\xED roz\u0161\xED\u0159en\xED je pro $2',
   v9_no_license_registered: '\u017D\xE1dn\xE1 licence nen\xED registrovan\xE1',
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   v9_badge_new: 'nov\xE9',
   v9_blacklist_glob: "Pou\u017Eijte '*' pro \u0161ir\u0161\xED shodu.",
   v9_checkbox_remember_action: 'Zapamatovat jako v\xFDchoz\xED akci',
@@ -3870,7 +3868,7 @@ var translationsCs = {
   v9_user_message_auto_hide_downloaded:
     'Automaticky skr\xFDt sta\u017Een\xE1 m\xE9dia?',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper nen\xED povolen v anonymn\xEDch oknech. Tuto mo\u017Enost mus\xEDte zapnout ru\u010Dn\u011B (nen\xED vy\u017Eadov\xE1no).',
+    ':appName nen\xED povolen v anonymn\xEDch oknech. Tuto mo\u017Enost mus\xEDte zapnout ru\u010Dn\u011B (nen\xED vy\u017Eadov\xE1no).',
   v9_user_message_no_incognito_open_settings:
     'Povolit v Nastaven\xED prohl\xED\u017Ee\u010De',
   v9_user_message_no_incognito_title:
@@ -3881,7 +3879,7 @@ var translationsCs = {
   v9_panel_error_reported_button: 'Nahl\xE1\u0161eno, d\xEDky!',
   v9_user_message_one_hundred_downloads: 'U\u017E jste st\xE1hl 100 vide\xED!',
   v9_user_message_one_hundred_downloads_body:
-    'Douf\xE1me, \u017Ee se v\xE1m Video DownloadHelper l\xEDb\xED :-) Napsali byste hezk\xE9 hodnocen\xED na str\xE1nku s roz\u0161\xED\u0159en\xEDmi?',
+    'Douf\xE1me, \u017Ee se v\xE1m :appName l\xEDb\xED :-) Napsali byste hezk\xE9 hodnocen\xED na str\xE1nku s roz\u0161\xED\u0159en\xEDmi?',
   v9_user_message_one_hundred_downloads_leave_review:
     'Napi\u0161te hodnocen\xED',
   v9_user_message_one_hundred_downloads_never_show_again:
@@ -3898,7 +3896,7 @@ var translationsDa = {
   about_alpha_intro: 'Dette er en alfa-version.',
   about_beta_intro: 'Dette er en beta-version.',
   about_qr: 'Fil genereret',
-  about_vdh: 'Om Video DownloadHelper',
+  about_vdh: 'Om :appName',
   action_abort_description: 'Afbryd igangv\xE6rende handling',
   action_abort_title: 'Afbryd',
   action_as_default: 'Brug denne handling som standard',
@@ -3941,7 +3939,7 @@ var translationsDa = {
   aggregating: 'Samler...',
   analyze_page: 'Analyser side',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Udseende',
   audio_only: 'Kun lyd',
   behavior: 'Opf\xF8rsel',
@@ -3949,11 +3947,11 @@ var translationsDa = {
   cancel: 'Annuller',
   change: '\xC6ndre',
   chrome_install_firefox: 'Install\xE9r Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper til Firefox',
+  chrome_install_fx_vdh: ':appName til Firefox',
   chrome_noyt_text:
     'Chrome Web Store tillader desv\xE6rre ikke udvidelser til downloading af YouTube-videoer, s\xE5 vi har fjernet denne funktion.',
   chrome_noyt_text2:
-    'Du kan bruge Video DownloadHelper til at downloade YouTube-videoer p\xE5 Firefox-versionen.',
+    'Du kan bruge :appName til at downloade YouTube-videoer p\xE5 Firefox-versionen.',
   chrome_warning_yt: 'Advarsel om udvidelser til Chrome og YouTube',
   clear: 'Ryd',
   clear_hits: 'Ryd fund',
@@ -4019,7 +4017,7 @@ var translationsDa = {
   dlconv_download_and_convert: 'Download & konverter',
   dlconv_output_details: 'Indstil output-detaljer',
   donate: 'Doner',
-  donate_vdh: 'Hj\xE6lp Video DownloadHelper',
+  donate_vdh: 'Hj\xE6lp :appName',
   download_error: 'Download fejl',
   download_method: 'Download metode',
   download_with_browser: 'Brug browser',
@@ -4119,7 +4117,7 @@ var translationsDa = {
   req_donate: 'Vil du overveje, at st\xF8tte udviklingen og donere lidt ?',
   req_review:
     'Vil du have noget imod, at skrive en p\xE6n anmeldelse p\xE5 Mozillas websted med tilf\xF8jelser?',
-  req_review_link: 'Skriv en anmeldelse af Video DownloadHelper',
+  req_review_link: 'Skriv en anmeldelse af :appName',
   reset_settings: 'Nulstil indstillingerne',
   running: 'K\xF8rer',
   save: 'Gem',
@@ -4148,13 +4146,13 @@ var translationsDa = {
   support_forum: 'Support forum',
   supported_sites: 'Underst\xF8ttede websteder',
   tell_me_more: 'Forklar mere om den',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Overs\xE6ttelse',
   up: 'Op',
   validate_license: 'Registrer licens',
   variants_list_adp: 'Tilpasningsbare varianter',
   variants_list_full: 'Varianter',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Version $1',
   video_only: 'Kun video',
   video_qualities: 'Videokvaliteter',
@@ -4285,8 +4283,7 @@ var translationsDa = {
   weh_prefs_titleMode_option_multiline: 'Over flere linjer',
   weh_prefs_titleMode_option_right: 'Prikker til h\xF8jre',
   yes: 'Ja',
-  you_downloaded_n_videos:
-    'Du har lige downloaded din %. fil med Video DownloadHelper.',
+  you_downloaded_n_videos: 'Du har lige downloaded din %. fil med :appName.',
   v9_yes: 'Ja',
   v9_no: 'Nej',
   v9_error: 'Fejl',
@@ -4302,7 +4299,7 @@ var translationsDa = {
     'Du har, enten udtrykkeligt eller fra en automatisk konverteringsregel, bedt om generering af en mediefil kun med lyd. Dette kr\xE6ver en registreret konverter.',
   v9_chrome_warning_yt: 'Advarsel om udvidelser til Chrome og YouTube',
   v9_chrome_noyt_text2:
-    'Du kan bruge Video DownloadHelper til at downloade YouTube-videoer p\xE5 Firefox-versionen.',
+    'Du kan bruge :appName til at downloade YouTube-videoer p\xE5 Firefox-versionen.',
   v9_about_qr: 'Fil genereret',
   v9_explain_qr1:
     'Du vil bem\xE6rke, at den f\xE6rdige video indeholder et vandm\xE6rke i hj\xF8rnet.',
@@ -4313,7 +4310,7 @@ var translationsDa = {
     'F\xF8lgeprogrammet skal installeres for at kunne validere licensen',
   v9_lic_status_verifying: 'Validerer licensen...',
   v9_weh_prefs_label_downloadControlledMax: 'Maks. samtidige downloads',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" er nu klar',
   v9_lic_status_unset: 'Licens ikke sat',
   v9_lic_status_blocked: 'Licens blokeret',
@@ -4332,7 +4329,7 @@ var translationsDe = {
   about_beta_intro: 'Dies ist eine Beta-Version.',
   about_chrome_licenses: '\xDCber Chrome-Lizenzen',
   about_qr: 'Datei erzeugt',
-  about_vdh: '\xDCber Video DownloadHelper',
+  about_vdh: '\xDCber :appName',
   action_abort_description: 'Laufende Aktion abbrechen',
   action_abort_title: 'Abbrechen',
   action_as_default: 'Diese Aktion als Standard verwenden',
@@ -4377,7 +4374,7 @@ var translationsDe = {
   aggregating: 'Es wird gesammelt\u2026',
   analyze_page: 'Seite analysieren',
   appDesc: 'Videos aus dem Internet herunterladen',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Aussehen',
   audio_only: 'Nur Audio',
   behavior: 'Verhalten',
@@ -4392,7 +4389,7 @@ var translationsDe = {
   build_options: 'Kompilierungsoptionen: $1',
   built_on: 'Kompilierungszeitpunkt: $1',
   bulk_in_progress:
-    'Video DownloadHelper-Massenvorgang in Bearbeitung. Schlie\xDFen Sie den Tab nicht, dies erfolgt automatisch.',
+    ':appName-Massenvorgang in Bearbeitung. Schlie\xDFen Sie den Tab nicht, dies erfolgt automatisch.',
   bulk_n_videos: '$1 Videos',
   cancel: 'Abbrechen',
   change: '\xC4ndern',
@@ -4409,13 +4406,13 @@ var translationsDe = {
   chrome_inapp_premium_monthly: 'Monatliches Premium-Abo',
   chrome_inapp_premium_yearly: 'J\xE4hrliches Premium-Abo',
   chrome_install_firefox: 'Firefox installieren',
-  chrome_install_fx_vdh: 'Video DownloadHelper f\xFCr Firefox',
+  chrome_install_fx_vdh: ':appName f\xFCr Firefox',
   chrome_license_webstore_accepted: 'Aktive Lizenz vom Chrome Web Store',
   chrome_licensing: 'Chrome-Lizenzierung',
   chrome_noyt_text:
     'Leider erlaubt der Chrome Web Store keine Erweiterungen zum Herunterladen von YouTube-Videos, daher mussten wir diese Funktion entfernen.',
   chrome_noyt_text2:
-    'Um YouTube-Videos herunterzuladen, k\xF6nnen Sie Video DownloadHelper f\xFCr Firefox verwenden.',
+    'Um YouTube-Videos herunterzuladen, k\xF6nnen Sie :appName f\xFCr Firefox verwenden.',
   chrome_noyt_text3:
     'Leider erlaubt der Chrome Web Store keine Erweiterungen zum Herunterladen von YouTube-Videos, sodass wir diese Funktion nicht in die Chrome-Version der Erweiterung aufnehmen konnten.',
   chrome_premium_audio:
@@ -4536,7 +4533,7 @@ var translationsDe = {
   dlconv_download_and_convert: 'Herunterladen und konvertieren',
   dlconv_output_details: 'Ausgabedetails konfigurieren',
   donate: 'Spenden',
-  donate_vdh: 'Video DownloadHelper unterst\xFCtzen',
+  donate_vdh: ':appName unterst\xFCtzen',
   download_error: 'Fehler beim Herunterladen',
   download_method: 'Methode zum Herunterladen',
   download_method_not_again:
@@ -4657,7 +4654,7 @@ var translationsDe = {
     "Oder vielleicht dabei helfen, das Add-on auf '$1' zu \xFCbersetzen (es fehlen $2 Felder)?",
   req_review:
     'W\xFCrden Sie alternativ eine gute Bewertung auf der Add-on-Seite von Mozilla schreiben?',
-  req_review_link: 'Eine Bewertung zu Video DownloadHelper schreiben',
+  req_review_link: 'Eine Bewertung zu :appName schreiben',
   reset_settings: 'Einstellungen zur\xFCcksetzen',
   running: 'L\xE4uft',
   save: 'Speichern',
@@ -4694,13 +4691,13 @@ var translationsDe = {
   tbsn_quality_hd: 'Mittlere Qualit\xE4t',
   tbsn_quality_sd: 'Niedrige Qualit\xE4t',
   tell_me_more: 'Teilen Sie uns mehr dar\xFCber mit',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: '\xDCbersetzung',
   up: 'Hinauf',
   validate_license: 'Lizenz registrieren',
   variants_list_adp: 'Adaptive Varianten',
   variants_list_full: 'Varianten',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Version $1',
   video_only: 'Nur Video',
   video_qualities: 'Videoqualit\xE4ten',
@@ -4743,7 +4740,7 @@ var translationsDe = {
   weh_prefs_description_contentRedirectEnabled:
     'Manche Sites k\xF6nnen eine neue URL an Stelle des Medieninhalts zur\xFCckgeben',
   weh_prefs_description_contextMenuEnabled:
-    'Auf Video DownloadHelper-Befehle auf der Seite per Rechtsklick zugreifen',
+    'Auf :appName-Befehle auf der Seite per Rechtsklick zugreifen',
   weh_prefs_description_convertControlledMax:
     'Maximale Anzahl der gleichzeitigen Zusammenf\xFChrungs- oder Konvertierungsvorg\xE4nge',
   weh_prefs_description_converterAggregTuneH264:
@@ -4926,7 +4923,7 @@ var translationsDe = {
   weh_prefs_titleMode_option_right: 'Punkte rechts',
   yes: 'Ja',
   you_downloaded_n_videos:
-    'Sie haben gerade die $1. Datei mit Video DownloadHelper heruntergeladen',
+    'Sie haben gerade die $1. Datei mit :appName heruntergeladen',
   v9_yes: 'Ja',
   v9_no: 'Nein',
   v9_error: 'Fehler',
@@ -4948,7 +4945,7 @@ var translationsDe = {
   v9_chrome_noyt_text3:
     'Leider erlaubt der Chrome Web Store keine Erweiterungen zum Herunterladen von YouTube-Videos, sodass wir diese Funktion nicht in die Chrome-Version der Erweiterung aufnehmen konnten.',
   v9_chrome_noyt_text2:
-    'Um YouTube-Videos herunterzuladen, k\xF6nnen Sie Video DownloadHelper f\xFCr Firefox verwenden.',
+    'Um YouTube-Videos herunterzuladen, k\xF6nnen Sie :appName f\xFCr Firefox verwenden.',
   v9_about_qr: 'Datei erzeugt',
   v9_explain_qr1:
     'Sie werden feststellen, dass das erzeugte Video ein Wasserzeichen in der Ecke hat.',
@@ -4963,8 +4960,8 @@ var translationsDe = {
     'Die Begleitanwendung muss installiert sein, damit die Lizenz gepr\xFCft werden kann.',
   v9_weh_prefs_label_downloadControlledMax: 'Maximal gleichzeitige Downloads',
   v9_weh_prefs_description_contextMenuEnabled:
-    'Auf Video DownloadHelper-Befehle auf der Seite per Rechtsklick zugreifen',
-  v9_vdh_notification: 'Video DownloadHelper',
+    'Auf :appName-Befehle auf der Seite per Rechtsklick zugreifen',
+  v9_vdh_notification: ':appName',
   v9_file_ready: "'$1' ist jetzt fertig.",
   v9_lic_status_verifying: 'Lizenz wird gepr\xFCft\u2026',
   v9_lic_status_accepted: 'Lizenz gepr\xFCft',
@@ -5022,7 +5019,7 @@ var translationsDe = {
     'Diese Medienart unterst\xFCtzt das Herunterladen von Nur-Audio-Dateien nicht',
   v9_copy_settings_info_to_clipboard:
     'Information in die Zwischenablage kopieren',
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   v9_panel_view_show_all_tabs: 'Alle Tabs anzeigen',
   v9_panel_view_show_low_quality: 'Medien niedriger Qualit\xE4t anzeigen',
   v9_panel_view_sort_status: 'Nach Status sortieren',
@@ -5048,7 +5045,7 @@ var translationsDe = {
   v9_user_message_no_incognito_open_settings:
     'In den Browser-Einstellungen aktivieren',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper ist nicht im Privat-/Inkognito-Fenster aktiviert. Sie m\xFCssen diese Option manuell einschalten (dies ist nicht erforderlich).',
+    ':appName ist nicht im Privat-/Inkognito-Fenster aktiviert. Sie m\xFCssen diese Option manuell einschalten (dies ist nicht erforderlich).',
   v9_user_message_no_incognito_title: 'Kein Inkognito-Modus',
   v9_save: 'Speichern',
   v9_reset: 'Zur\xFCcksetzen',
@@ -5126,7 +5123,7 @@ var translationsDe = {
   v9_user_message_one_hundred_downloads:
     'Sie haben 100 Videos heruntergeladen!',
   v9_user_message_one_hundred_downloads_body:
-    'Wir hoffen, Ihnen gef\xE4llt der Video DownloadHelper. Lassen Sie uns doch bitte noch eine gute Bewertung auf der Add-on-Seite da.',
+    'Wir hoffen, Ihnen gef\xE4llt der :appName. Lassen Sie uns doch bitte noch eine gute Bewertung auf der Add-on-Seite da.',
   v9_user_message_one_hundred_downloads_leave_review:
     'Eine Bewertung hinterlassen',
   v9_user_message_one_hundred_downloads_never_show_again:
@@ -5141,7 +5138,7 @@ var translationsDe = {
   v9_history_button_start_recording: 'Chronik anlegen',
   v9_history_button_stop_recording: 'Chronik nicht anlegen',
   v9_history_no_recording_description:
-    'Es ist keine Download-Chronik angelegt. M\xF6chten Sie, dass Video DownloadHelper eine Download-Chronik anlegt?',
+    'Es ist keine Download-Chronik angelegt. M\xF6chten Sie, dass :appName eine Download-Chronik anlegt?',
   v9_history_no_recording_description_safe:
     'Keine Sorge, alles bleibt auf Ihrem Ger\xE4t. Wir respektieren Ihre Privatsph\xE4re.',
   v9_history_no_entries: 'Bisher keine Eintr\xE4ge',
@@ -5163,7 +5160,7 @@ var translationsDsb = {
   about_alpha_intro: 'To jo alfawersija.',
   about_beta_intro: 'To jo betawersija.',
   about_qr: 'Dataja jo se nap\xF3ra\u0142a.',
-  about_vdh: 'W\xF3 Video DownloadHelper',
+  about_vdh: 'W\xF3 :appName',
   action_abort_description: 'B\u011B\u017Eecu akciju p\u015Betergnu\u015B',
   action_abort_title: 'P\u015Betergnu\u015B',
   action_as_default: 'To\u015B tu akciju ako standard wu\u017Eywa\u015B',
@@ -5214,7 +5211,7 @@ var translationsDsb = {
   aggregating: 'Agreg\u011Brujo se\u2026',
   analyze_page: 'Bok analyz\u011Browa\u015B',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Wugl\u011Bdanje',
   audio_only: 'Jano awdio',
   behavior: 'Za\u017Aar\u017Eanje',
@@ -5230,7 +5227,7 @@ var translationsDsb = {
   build_options: 'Wersijowe opcije: $1',
   built_on: '$1 nap\xF3rany',
   bulk_in_progress:
-    'Masowe ze\u015B\u011Bgnjenje Video DownloadHelper b\u011B\u017Ey. Njezacy\u0144\u015Bo to\u015B ten rejtark, to se awtomatiski stanjo.',
+    'Masowe ze\u015B\u011Bgnjenje :appName b\u011B\u017Ey. Njezacy\u0144\u015Bo to\u015B ten rejtark, to se awtomatiski stanjo.',
   bulk_n_videos: '$1 wideo',
   cancel: 'P\u015Betergnu\u015B',
   change: 'Zm\u011Bni\u015B',
@@ -5245,7 +5242,7 @@ var translationsDsb = {
   chrome_inapp_premium_monthly: 'Mjasecny premiumowy abonement',
   chrome_inapp_premium_yearly: 'L\u011Btny premiumowy abonement',
   chrome_install_firefox: 'Firefox instal\u011Browa\u015B',
-  chrome_install_fx_vdh: 'Video DownloadHelper za Firefox',
+  chrome_install_fx_vdh: ':appName za Firefox',
   chrome_licensing: 'Licenc\u011Browanje Chrome',
   chrome_noyt_text:
     'B\xF3\u017Eko Chrome Web Store roz\u0161yrjenja za ze\u015B\u011Bgowanje wideo Youtube njedowolujo. Togodla smy musyli to\u015B tu funkciju w\xF3tw\xF3no\u017Ae\u015B.',
@@ -5384,7 +5381,7 @@ var translationsDsb = {
     'Ze\u015B\u011Bgnu\u015B a konwert\u011Browa\u015B',
   dlconv_output_details: 'Wuda\u015Bowe drobnostki konfigur\u011Browa\u015B',
   donate: 'P\xF3s\u0107i\u015B',
-  donate_vdh: 'Video DownloadHelper p\xF3dpr\u011B\u015B',
+  donate_vdh: ':appName p\xF3dpr\u011B\u015B',
   download_error: 'Ze\u015B\u011Bgowa\u0144ska zm\xF3lka',
   download_method: 'Ze\u015B\u011Bgowa\u0144ska metoda',
   download_method_not_again:
@@ -5499,8 +5496,7 @@ var translationsDsb = {
     "Abo sna\u017A pomaga\u0142, dodank do '$1' p\u015Be\u0142o\u017Eowa\u015B ($2 znamu\u0161kowych rje\u015Bazkow jo p\u015Be\u0142o\u017Eone)?",
   req_review:
     'Jolic co\u015Bo, m\xF3\u017Eo\u015Bo pak teke p\xF3g\xF3dno\u015Benje na sedle dodankow Mozilla pisa\u015B.',
-  req_review_link:
-    'P\xF3g\xF3dno\u015Benje w\xF3 Video DownloadHelper pisa\u015B',
+  req_review_link: 'P\xF3g\xF3dno\u015Benje w\xF3 :appName pisa\u015B',
   reset_settings: 'Nastajenja sl\u011Bdk staji\u015B',
   running: 'B\u011B\u017Ey',
   save: 'Sk\u0142adowa\u015B',
@@ -5540,13 +5536,13 @@ var translationsDsb = {
   tbsn_quality_hd: 'P\u015Ber\u011Bzna kwalita',
   tbsn_quality_sd: 'Niska kwalita',
   tell_me_more: 'Wulicuj\u015Bo w\u011Bcej w\xF3 tom',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'P\u015Be\u0142o\u017Ek',
   up: 'G\xF3rjej',
   validate_license: 'Licencu registr\u011Browa\u015B',
   variants_list_adp: 'P\u015Bim\u011Brjujobne warianty',
   variants_list_full: 'Warianty',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Wersija $1',
   video_only: 'Jano wideo',
   video_qualities: 'Wideokwality',
@@ -5790,7 +5786,7 @@ var translationsDsb = {
   weh_prefs_titleMode_option_right: 'T\u015Bidypk nap\u0161awo',
   yes: 'Jo',
   you_downloaded_n_videos:
-    'S\u0107o rowno ze\u015B\u011Bgnu\u0142 sw\xF3ju $1. dataju z Video DownloadHelper.',
+    'S\u0107o rowno ze\u015B\u011Bgnu\u0142 sw\xF3ju $1. dataju z :appName.',
   v9_yes: 'Jo',
   v9_no: 'N\u011B',
   v9_error: 'Zm\xF3lka',
@@ -5840,7 +5836,7 @@ var translationsDsb = {
     'Maksimalna licba rownocasnych ze\u015B\u011Bgnjenjow',
   v9_weh_prefs_description_contextMenuEnabled:
     'P\u015Bistup na p\u015Bikaze z prawego kliknjenja na boku',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" jo n\u011Bnto g\xF3towy',
   v9_lic_status_unset: 'Licenca njejo p\xF3stajona',
   v9_lic_status_blocked: 'Licenca jo blok\u011Browana',
@@ -5865,7 +5861,7 @@ var translationsEl = {
   about_qr:
     '\u03A4\u03BF \u03B1\u03C1\u03C7\u03B5\u03AF\u03BF \u03B4\u03B7\u03BC\u03B9\u03BF\u03C5\u03C1\u03B3\u03AE\u03B8\u03B7\u03BA\u03B5',
   about_vdh:
-    '\u03A3\u03C7\u03B5\u03C4\u03B9\u03BA\u03AC \u03BC\u03B5 \u03C4\u03BF Video DownloadHelper',
+    '\u03A3\u03C7\u03B5\u03C4\u03B9\u03BA\u03AC \u03BC\u03B5 \u03C4\u03BF :appName',
   action_abort_description:
     '\u0391\u03BA\u03CD\u03C1\u03C9\u03C3\u03B7 \u03C4\u03B7\u03C2 \u03C5\u03C0\u03CC \u03B5\u03BE\u03AD\u03BB\u03B9\u03BE\u03B7 \u03B5\u03BD\u03AD\u03C1\u03B3\u03B5\u03B9\u03B1\u03C2',
   action_abort_title: '\u0391\u03BA\u03CD\u03C1\u03C9\u03C3\u03B7',
@@ -5938,7 +5934,7 @@ var translationsEl = {
     '\u0391\u03BD\u03AC\u03BB\u03C5\u03C3\u03B7 \u03C3\u03B5\u03BB\u03AF\u03B4\u03B1\u03C2',
   appDesc:
     '\u039A\u03B1\u03C4\u03AD\u03B2\u03B1\u03C3\u03BC\u03B1 \u0392\u03AF\u03BD\u03C4\u03B5\u03BF \u03B1\u03C0\u03CC \u03C4\u03BF \u038A\u03BD\u03C4\u03B5\u03C1\u03BD\u03B5\u03C4',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: '\u0395\u03BC\u03C6\u03AC\u03BD\u03B9\u03C3\u03B7',
   audio_only: '\u0389\u03C7\u03BF\u03C2 \u03BC\u03CC\u03BD\u03BF',
   behavior:
@@ -5985,14 +5981,14 @@ var translationsEl = {
     '\u0395\u03C4\u03AE\u03C3\u03B9\u03B1 \u03C3\u03C5\u03BD\u03B4\u03C1\u03BF\u03BC\u03AE Premium',
   chrome_install_firefox:
     '\u0395\u03B3\u03BA\u03B1\u03C4\u03AC\u03C3\u03C4\u03B1\u03C3\u03B7 Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper \u03B3\u03B9\u03B1 Firefox',
+  chrome_install_fx_vdh: ':appName \u03B3\u03B9\u03B1 Firefox',
   chrome_license_webstore_accepted:
     '\u0395\u03BD\u03B5\u03C1\u03B3\u03AE \u03AC\u03B4\u03B5\u03B9\u03B1 \u03B1\u03C0\u03CC \u03C4\u03BF Chrome Webstore',
   chrome_licensing: '\u0386\u03B4\u03B5\u03B9\u03B1 \u03B3\u03B9\u03B1 Chrome',
   chrome_noyt_text:
     '\u0394\u03C5\u03C3\u03C4\u03C5\u03C7\u03CE\u03C2 \u03C4\u03BF Chrome Web Store \u03B4\u03B5\u03BD \u03B5\u03C0\u03B9\u03C4\u03C1\u03AD\u03C0\u03B5\u03B9 \u03B5\u03C0\u03B5\u03BA\u03C4\u03AC\u03C3\u03B5\u03B9\u03C2 \u03B3\u03B9\u03B1 \u03BB\u03AE\u03C8\u03B7 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF \u03B1\u03C0\u03CC \u03C4\u03BF YouTube, \u03BA\u03B1\u03B9 \u03B5\u03C0\u03BF\u03BC\u03AD\u03BD\u03C9\u03C2 \u03B1\u03C5\u03C4\u03AE \u03B7 \u03BB\u03B5\u03B9\u03C4\u03BF\u03C5\u03C1\u03B3\u03AF\u03B1 \u03AD\u03C0\u03C1\u03B5\u03C0\u03B5 \u03BD\u03B1 \u03B1\u03C6\u03B1\u03B9\u03C1\u03B5\u03B8\u03B5\u03AF.',
   chrome_noyt_text2:
-    '\u039C\u03C0\u03BF\u03C1\u03B5\u03AF\u03C4\u03B5 \u03BD\u03B1 \u03BA\u03B1\u03C4\u03B5\u03B2\u03AC\u03C3\u03B5\u03C4\u03B5 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF \u03B1\u03C0\u03CC \u03C4\u03BF YouTube \u03C7\u03C1\u03B7\u03C3\u03B9\u03BC\u03BF\u03C0\u03BF\u03B9\u03CE\u03BD\u03C4\u03B1\u03C2 \u03C4\u03B7\u03BD \u03AD\u03BA\u03B4\u03BF\u03C3\u03B7 \u03C4\u03BF\u03C5 Video DownloadHelper \u03B3\u03B9\u03B1 Firefox.',
+    '\u039C\u03C0\u03BF\u03C1\u03B5\u03AF\u03C4\u03B5 \u03BD\u03B1 \u03BA\u03B1\u03C4\u03B5\u03B2\u03AC\u03C3\u03B5\u03C4\u03B5 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF \u03B1\u03C0\u03CC \u03C4\u03BF YouTube \u03C7\u03C1\u03B7\u03C3\u03B9\u03BC\u03BF\u03C0\u03BF\u03B9\u03CE\u03BD\u03C4\u03B1\u03C2 \u03C4\u03B7\u03BD \u03AD\u03BA\u03B4\u03BF\u03C3\u03B7 \u03C4\u03BF\u03C5 :appName \u03B3\u03B9\u03B1 Firefox.',
   chrome_noyt_text3:
     '\u0394\u03C5\u03C3\u03C4\u03C5\u03C7\u03CE\u03C2, \u03C4\u03BF \u03B4\u03B9\u03B1\u03B4\u03C5\u03BA\u03C4\u03B9\u03B1\u03BA\u03CC \u03BA\u03B1\u03C4\u03AC\u03C3\u03C4\u03B7\u03BC\u03B1 \u03C4\u03BF\u03C5 Chrome \u03B4\u03B5\u03BD \u03B5\u03C0\u03B9\u03C4\u03C1\u03AD\u03C0\u03B5\u03B9 \u03B5\u03C0\u03B5\u03BA\u03C4\u03AC\u03C3\u03B5\u03B9\u03C2 \u03B3\u03B9\u03B1 \u03BA\u03B1\u03C4\u03AD\u03B2\u03B1\u03C3\u03BC\u03B1 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF \u03B1\u03C0\u03CC \u03C4\u03BF YouTube, \u03C3\u03C5\u03BD\u03B5\u03C0\u03CE\u03C2 \u03B4\u03B5\u03BD \u03BC\u03C0\u03BF\u03C1\u03BF\u03CD\u03BC\u03B5 \u03BD\u03B1 \u03C3\u03C5\u03BC\u03C0\u03B5\u03C1\u03B9\u03BB\u03AC\u03B2\u03BF\u03C5\u03BC\u03B5 \u03B1\u03C5\u03C4\u03AE \u03C4\u03B7\u03BD \u03BB\u03B5\u03B9\u03C4\u03BF\u03C5\u03C1\u03B3\u03AF\u03B1 \u03C4\u03B7\u03C2 \u03B5\u03C0\u03AD\u03BA\u03C4\u03B1\u03C3\u03B7\u03C2 \u03C3\u03C4\u03B7\u03BD \u03AD\u03BA\u03B4\u03BF\u03C3\u03B7 \u03B3\u03B9\u03B1 Chrome.',
   chrome_premium_audio:
@@ -6184,7 +6180,7 @@ var translationsEl = {
   donate:
     '\u039A\u03AC\u03BD\u03C4\u03B5 \u03BC\u03B9\u03B1 \u03B4\u03C9\u03C1\u03B5\u03AC',
   donate_vdh:
-    '\u0392\u03BF\u03B7\u03B8\u03AE\u03C3\u03C4\u03B5 \u03C4\u03BF Video DownloadHelper',
+    '\u0392\u03BF\u03B7\u03B8\u03AE\u03C3\u03C4\u03B5 \u03C4\u03BF :appName',
   download_error:
     '\u03A3\u03C6\u03AC\u03BB\u03BC\u03B1 \u03BB\u03AE\u03C8\u03B7\u03C2',
   download_method:
@@ -6370,7 +6366,7 @@ var translationsEl = {
   req_review:
     '\u0395\u03BD\u03B1\u03BB\u03BB\u03B1\u03BA\u03C4\u03B9\u03BA\u03AC, \u03B8\u03B1 \u03B8\u03AD\u03BB\u03B1\u03C4\u03B5 \u03BD\u03B1 \u03B3\u03C1\u03AC\u03C8\u03B5\u03C4\u03B5 \u03BC\u03B9\u03B1 \u03BA\u03B1\u03BB\u03AE \u03BA\u03C1\u03B9\u03C4\u03B9\u03BA\u03AE \u03C3\u03C4\u03BF\u03BD \u03B9\u03C3\u03C4\u03CC\u03C4\u03BF\u03C0\u03BF \u03C4\u03C9\u03BD \u03C0\u03C1\u03CC\u03C3\u03B8\u03B5\u03C4\u03C9\u03BD \u03C4\u03BF\u03C5 Mozilla;',
   req_review_link:
-    '\u0393\u03C1\u03AC\u03C8\u03C4\u03B5 \u03BC\u03B9\u03B1 \u03BA\u03C1\u03B9\u03C4\u03B9\u03BA\u03AE \u03B3\u03B9\u03B1 \u03C4\u03BF Video DownloadHelper',
+    '\u0393\u03C1\u03AC\u03C8\u03C4\u03B5 \u03BC\u03B9\u03B1 \u03BA\u03C1\u03B9\u03C4\u03B9\u03BA\u03AE \u03B3\u03B9\u03B1 \u03C4\u03BF :appName',
   reset_settings:
     '\u0395\u03C0\u03B1\u03BD\u03B1\u03C6\u03BF\u03C1\u03AC \u03C1\u03C5\u03B8\u03BC\u03AF\u03C3\u03B5\u03C9\u03BD',
   running: '\u0395\u03BA\u03C4\u03B5\u03BB\u03B5\u03AF\u03C4\u03B1\u03B9',
@@ -6436,7 +6432,7 @@ var translationsEl = {
     '\u03A7\u03B1\u03BC\u03B7\u03BB\u03AE \u03C0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1',
   tell_me_more:
     "\u03A0\u03B5\u03AF\u03C4\u03B5 \u03BC\u03BF\u03C5 \u03C0\u03B5\u03C1\u03B9\u03C3\u03C3\u03CC\u03C4\u03B5\u03C1\u03B1 \u03B3\u03B9' \u03B1\u03C5\u03C4\u03CC",
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: '\u039C\u03B5\u03C4\u03AC\u03C6\u03C1\u03B1\u03C3\u03B7',
   up: '\u03A0\u03AC\u03BD\u03C9',
   validate_license:
@@ -6445,7 +6441,7 @@ var translationsEl = {
     '\u03A0\u03C1\u03BF\u03C3\u03B1\u03C1\u03BC\u03BF\u03C3\u03C4\u03B9\u03BA\u03AD\u03C2 \u03C0\u03B1\u03C1\u03B1\u03BB\u03BB\u03B1\u03B3\u03AD\u03C2',
   variants_list_full:
     '\u03A0\u03B1\u03C1\u03B1\u03BB\u03BB\u03B1\u03B3\u03AD\u03C2',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: '\u0388\u03BA\u03B4\u03BF\u03C3\u03B7 $1',
   video_only: '\u039C\u03CC\u03BD\u03BF \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF',
   video_qualities:
@@ -6765,7 +6761,7 @@ var translationsEl = {
     '\u0391\u03C0\u03BF\u03C3\u03B9\u03C9\u03C0\u03B7\u03C4\u03B9\u03BA\u03AC \u03C3\u03C4\u03B1 \u03B4\u03B5\u03BE\u03B9\u03AC',
   yes: '\u039D\u03B1\u03B9',
   you_downloaded_n_videos:
-    '\u039C\u03CC\u03BB\u03B9\u03C2 \u03BA\u03B1\u03C4\u03B5\u03B2\u03AC\u03C3\u03B1\u03C4\u03B5 \u03B5\u03C0\u03B9\u03C4\u03C5\u03C7\u03CE\u03C2 \u03C4\u03BF $1\u03BF \u03C3\u03B1\u03C2 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF \u03BC\u03B5 \u03C4\u03BF\u03BD Video DownloadHelper.',
+    '\u039C\u03CC\u03BB\u03B9\u03C2 \u03BA\u03B1\u03C4\u03B5\u03B2\u03AC\u03C3\u03B1\u03C4\u03B5 \u03B5\u03C0\u03B9\u03C4\u03C5\u03C7\u03CE\u03C2 \u03C4\u03BF $1\u03BF \u03C3\u03B1\u03C2 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF \u03BC\u03B5 \u03C4\u03BF\u03BD :appName.',
   v9_yes: '\u039D\u03B1\u03B9',
   v9_no: '\u038C\u03C7\u03B9',
   v9_error: '\u03A3\u03C6\u03AC\u03BB\u03BC\u03B1',
@@ -6800,7 +6796,7 @@ var translationsEl = {
   v9_chrome_noyt_text3:
     '\u0394\u03C5\u03C3\u03C4\u03C5\u03C7\u03CE\u03C2, \u03C4\u03BF \u03B4\u03B9\u03B1\u03B4\u03C5\u03BA\u03C4\u03B9\u03B1\u03BA\u03CC \u03BA\u03B1\u03C4\u03AC\u03C3\u03C4\u03B7\u03BC\u03B1 \u03C4\u03BF\u03C5 Chrome \u03B4\u03B5\u03BD \u03B5\u03C0\u03B9\u03C4\u03C1\u03AD\u03C0\u03B5\u03B9 \u03B5\u03C0\u03B5\u03BA\u03C4\u03AC\u03C3\u03B5\u03B9\u03C2 \u03B3\u03B9\u03B1 \u03BA\u03B1\u03C4\u03AD\u03B2\u03B1\u03C3\u03BC\u03B1 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF \u03B1\u03C0\u03CC \u03C4\u03BF YouTube, \u03C3\u03C5\u03BD\u03B5\u03C0\u03CE\u03C2 \u03B4\u03B5\u03BD \u03BC\u03C0\u03BF\u03C1\u03BF\u03CD\u03BC\u03B5 \u03BD\u03B1 \u03C3\u03C5\u03BC\u03C0\u03B5\u03C1\u03B9\u03BB\u03AC\u03B2\u03BF\u03C5\u03BC\u03B5 \u03B1\u03C5\u03C4\u03AE \u03C4\u03B7\u03BD \u03BB\u03B5\u03B9\u03C4\u03BF\u03C5\u03C1\u03B3\u03AF\u03B1 \u03C4\u03B7\u03C2 \u03B5\u03C0\u03AD\u03BA\u03C4\u03B1\u03C3\u03B7\u03C2 \u03C3\u03C4\u03B7\u03BD \u03AD\u03BA\u03B4\u03BF\u03C3\u03B7 \u03B3\u03B9\u03B1 Chrome.',
   v9_chrome_noyt_text2:
-    '\u039C\u03C0\u03BF\u03C1\u03B5\u03AF\u03C4\u03B5 \u03BD\u03B1 \u03BA\u03B1\u03C4\u03B5\u03B2\u03AC\u03C3\u03B5\u03C4\u03B5 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF \u03B1\u03C0\u03CC \u03C4\u03BF YouTube \u03C7\u03C1\u03B7\u03C3\u03B9\u03BC\u03BF\u03C0\u03BF\u03B9\u03CE\u03BD\u03C4\u03B1\u03C2 \u03C4\u03B7\u03BD \u03AD\u03BA\u03B4\u03BF\u03C3\u03B7 \u03C4\u03BF\u03C5 Video DownloadHelper \u03B3\u03B9\u03B1 Firefox.',
+    '\u039C\u03C0\u03BF\u03C1\u03B5\u03AF\u03C4\u03B5 \u03BD\u03B1 \u03BA\u03B1\u03C4\u03B5\u03B2\u03AC\u03C3\u03B5\u03C4\u03B5 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF \u03B1\u03C0\u03CC \u03C4\u03BF YouTube \u03C7\u03C1\u03B7\u03C3\u03B9\u03BC\u03BF\u03C0\u03BF\u03B9\u03CE\u03BD\u03C4\u03B1\u03C2 \u03C4\u03B7\u03BD \u03AD\u03BA\u03B4\u03BF\u03C3\u03B7 \u03C4\u03BF\u03C5 :appName \u03B3\u03B9\u03B1 Firefox.',
   v9_about_qr:
     '\u03A4\u03BF \u03B1\u03C1\u03C7\u03B5\u03AF\u03BF \u03B4\u03B7\u03BC\u03B9\u03BF\u03C5\u03C1\u03B3\u03AE\u03B8\u03B7\u03BA\u03B5',
   v9_explain_qr1:
@@ -6826,7 +6822,7 @@ var translationsEl = {
     '\u039C\u03AD\u03B3\u03B9\u03C3\u03C4\u03B5\u03C2 \u03C4\u03B1\u03C5\u03C4\u03CC\u03C7\u03C1\u03BF\u03BD\u03B5\u03C2 \u03BB\u03AE\u03C8\u03B5\u03B9\u03C2',
   v9_weh_prefs_description_contextMenuEnabled:
     '\u03A0\u03C1\u03CC\u03C3\u03B2\u03B1\u03C3\u03B7 \u03C3\u03C4\u03B9\u03C2 \u03B5\u03BD\u03C4\u03BF\u03BB\u03AD\u03C2 \u03BC\u03B5 \u03B4\u03B5\u03BE\u03AF \u03BA\u03BB\u03B9\u03BA \u03C3\u03C4\u03B7 \u03C3\u03B5\u03BB\u03AF\u03B4\u03B1',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready:
     '\u03A4\u03BF "$1" \u03B5\u03AF\u03BD\u03B1\u03B9 \u03C4\u03CE\u03C1\u03B1 \u03AD\u03C4\u03BF\u03B9\u03BC\u03BF',
   v9_lic_status_unset:
@@ -6839,7 +6835,7 @@ var translationsEl = {
     '\u0397 \u03AC\u03B4\u03B5\u03B9\u03B1 \u03C7\u03C1\u03AE\u03C3\u03B7\u03C2 \u03B5\u03AF\u03BD\u03B1\u03B9 \u03B3\u03B9\u03B1 \u03C4\u03BF $1 \u03B1\u03BB\u03BB\u03AC \u03B7 \u03AD\u03BA\u03B4\u03BF\u03C3\u03B7 \u03C4\u03B7\u03C2 \u03B5\u03C0\u03AD\u03BA\u03C4\u03B1\u03C3\u03B7\u03C2 \u03B5\u03AF\u03BD\u03B1\u03B9 \u03B3\u03B9\u03B1 \u03C4\u03BF $2',
   v9_no_license_registered:
     '\u0394\u03B5\u03BD \u03AD\u03C7\u03B5\u03B9 \u03B3\u03AF\u03BD\u03B5\u03B9 \u03BA\u03B1\u03C4\u03B1\u03C7\u03CE\u03C1\u03B9\u03C3\u03B7 \u03AC\u03B4\u03B5\u03B9\u03B1\u03C2 \u03C7\u03C1\u03AE\u03C3\u03B7\u03C2',
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   v9_coapp_help:
     '\u03A0\u03B1\u03C4\u03AE\u03C3\u03C4\u03B5 \u03B5\u03B4\u03CE \u03B3\u03B9\u03B1 \u03BD\u03B1 \u03B1\u03BD\u03C4\u03B9\u03BC\u03B5\u03C4\u03C9\u03C0\u03B9\u03C3\u03C4\u03B5\u03AF \u03C4\u03BF \u03C0\u03C1\u03CC\u03B2\u03BB\u03B7\u03BC\u03AC \u03C3\u03B1\u03C2.',
   v9_dialog_audio_impossible_title:
@@ -7000,7 +6996,7 @@ var translationsEl = {
   v9_user_message_no_incognito_title:
     '\u03A7\u03C9\u03C1\u03AF\u03C2 \u03BB\u03B5\u03B9\u03C4\u03BF\u03C5\u03C1\u03B3\u03AF\u03B1 \u03B1\u03BD\u03CE\u03BD\u03C5\u03BC\u03B7\u03C2 \u03C0\u03B5\u03C1\u03B9\u03AE\u03B3\u03B7\u03C3\u03B7\u03C2',
   v9_user_message_no_incognito_body:
-    '\u03A4\u03BF Video DownloadHelper \u03B4\u03B5\u03BD \u03B5\u03AF\u03BD\u03B1\u03B9 \u03B5\u03BD\u03B5\u03C1\u03B3\u03BF\u03C0\u03BF\u03B9\u03B7\u03BC\u03AD\u03BD\u03BF \u03C3\u03B5 \u0399\u03B4\u03B9\u03C9\u03C4\u03B9\u03BA\u03AC/\u0391\u03BD\u03CE\u03BD\u03C5\u03BC\u03B1 \u03C0\u03B1\u03C1\u03AC\u03B8\u03C5\u03C1\u03B1. \u0398\u03B1 \u03C7\u03C1\u03B5\u03B9\u03B1\u03C3\u03C4\u03B5\u03AF \u03BD\u03B1 \u03B5\u03BD\u03B5\u03C1\u03B3\u03BF\u03C0\u03BF\u03B9\u03AE\u03C3\u03B5\u03C4\u03B5 \u03B1\u03C5\u03C4\u03AE\u03BD \u03C4\u03B7\u03BD \u03B5\u03C0\u03B9\u03BB\u03BF\u03B3\u03AE \u03C7\u03B5\u03B9\u03C1\u03BF\u03BA\u03AF\u03BD\u03B7\u03C4\u03B1 (\u03B1\u03C5\u03C4\u03CC \u03B4\u03B5\u03BD \u03C5\u03C0\u03BF\u03C7\u03C1\u03B5\u03C9\u03C4\u03B9\u03BA\u03CC).',
+    '\u03A4\u03BF :appName \u03B4\u03B5\u03BD \u03B5\u03AF\u03BD\u03B1\u03B9 \u03B5\u03BD\u03B5\u03C1\u03B3\u03BF\u03C0\u03BF\u03B9\u03B7\u03BC\u03AD\u03BD\u03BF \u03C3\u03B5 \u0399\u03B4\u03B9\u03C9\u03C4\u03B9\u03BA\u03AC/\u0391\u03BD\u03CE\u03BD\u03C5\u03BC\u03B1 \u03C0\u03B1\u03C1\u03AC\u03B8\u03C5\u03C1\u03B1. \u0398\u03B1 \u03C7\u03C1\u03B5\u03B9\u03B1\u03C3\u03C4\u03B5\u03AF \u03BD\u03B1 \u03B5\u03BD\u03B5\u03C1\u03B3\u03BF\u03C0\u03BF\u03B9\u03AE\u03C3\u03B5\u03C4\u03B5 \u03B1\u03C5\u03C4\u03AE\u03BD \u03C4\u03B7\u03BD \u03B5\u03C0\u03B9\u03BB\u03BF\u03B3\u03AE \u03C7\u03B5\u03B9\u03C1\u03BF\u03BA\u03AF\u03BD\u03B7\u03C4\u03B1 (\u03B1\u03C5\u03C4\u03CC \u03B4\u03B5\u03BD \u03C5\u03C0\u03BF\u03C7\u03C1\u03B5\u03C9\u03C4\u03B9\u03BA\u03CC).',
   v9_user_message_no_incognito_open_settings:
     '\u0395\u03BD\u03B5\u03C1\u03B3\u03BF\u03C0\u03BF\u03AF\u03B7\u03C3\u03B7 \u03C3\u03C4\u03B9\u03C2 \u03A1\u03C5\u03B8\u03BC\u03AF\u03C3\u03B5\u03B9\u03C2 \u03A0\u03C1\u03BF\u03B3\u03C1\u03AC\u03BC\u03B1\u03C4\u03BF\u03C2 \u03A0\u03B5\u03C1\u03B9\u03AE\u03B3\u03B7\u03C3\u03B7\u03C2',
   v9_yt_bulk_detected:
@@ -7010,14 +7006,14 @@ var translationsEl = {
   v9_user_message_one_hundred_downloads:
     '\u0388\u03C7\u03B5\u03C4\u03B5 \u03BA\u03B1\u03C4\u03B5\u03B2\u03AC\u03C3\u03B5\u03B9 100 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF!',
   v9_user_message_one_hundred_downloads_body:
-    '\u0395\u03BB\u03C0\u03AF\u03B6\u03BF\u03C5\u03BC\u03B5 \u03BD\u03B1 \u03B1\u03C0\u03BF\u03BB\u03B1\u03BC\u03B2\u03AC\u03BD\u03B5\u03C4\u03B5 \u03C4\u03BF Video DownloadHelper :) \u0398\u03B1 \u03B8\u03AD\u03BB\u03B1\u03C4\u03B5 \u03BD\u03B1 \u03B3\u03C1\u03AC\u03C8\u03B5\u03C4\u03B5 \u03BC\u03B9\u03B1 \u03C9\u03C1\u03B1\u03AF\u03B1 \u03B1\u03BE\u03B9\u03BF\u03BB\u03CC\u03B3\u03B7\u03C3\u03B7 \u03C3\u03C4\u03BF\u03BD \u03B9\u03C3\u03C4\u03CC\u03C4\u03BF\u03C0\u03BF \u03C4\u03BF\u03C5 \u03C0\u03C1\u03CC\u03C3\u03B8\u03B5\u03C4\u03BF\u03C5;',
+    '\u0395\u03BB\u03C0\u03AF\u03B6\u03BF\u03C5\u03BC\u03B5 \u03BD\u03B1 \u03B1\u03C0\u03BF\u03BB\u03B1\u03BC\u03B2\u03AC\u03BD\u03B5\u03C4\u03B5 \u03C4\u03BF :appName :) \u0398\u03B1 \u03B8\u03AD\u03BB\u03B1\u03C4\u03B5 \u03BD\u03B1 \u03B3\u03C1\u03AC\u03C8\u03B5\u03C4\u03B5 \u03BC\u03B9\u03B1 \u03C9\u03C1\u03B1\u03AF\u03B1 \u03B1\u03BE\u03B9\u03BF\u03BB\u03CC\u03B3\u03B7\u03C3\u03B7 \u03C3\u03C4\u03BF\u03BD \u03B9\u03C3\u03C4\u03CC\u03C4\u03BF\u03C0\u03BF \u03C4\u03BF\u03C5 \u03C0\u03C1\u03CC\u03C3\u03B8\u03B5\u03C4\u03BF\u03C5;',
   v9_user_message_one_hundred_downloads_leave_review:
     '\u0391\u03C6\u03AE\u03C3\u03C4\u03B5 \u03BC\u03B9\u03B1 \u03B1\u03BE\u03B9\u03BF\u03BB\u03CC\u03B3\u03B7\u03C3\u03B7',
   v9_user_message_one_hundred_downloads_never_show_again:
     '\u039D\u03B1 \u03BC\u03B7\u03BD \u03B5\u03C1\u03C9\u03C4\u03B7\u03B8\u03CE \u03BE\u03B1\u03BD\u03AC',
 };
 var translationsEnUS = {
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   Bytes: '$1 Bytes',
   GB: '$1 GB',
   KB: '$1 KB',
@@ -7029,7 +7025,7 @@ var translationsEnUS = {
   about_beta_intro: 'This is a beta version.',
   about_chrome_licenses: 'About Chrome licenses',
   about_qr: 'File generated',
-  about_vdh: 'About Video DownloadHelper',
+  about_vdh: 'About :appName',
   action_abort_description: 'Abort the action in progress',
   action_abort_title: 'Abort',
   action_as_default: 'Use this action as default',
@@ -7086,7 +7082,7 @@ var translationsEnUS = {
   aggregating: 'Aggregating\u2026',
   analyze_page: 'Analyze page',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Appearance',
   audio_only: 'Audio only',
   behavior: 'Behavior',
@@ -7101,7 +7097,7 @@ var translationsEnUS = {
   build_options: 'Build options: $1',
   built_on: 'Built on $1',
   bulk_in_progress:
-    'Video DownloadHelper bulk operation in progress. Do not close this tab, this will be done automatically',
+    ':appName bulk operation in progress. Do not close this tab, this will be done automatically',
   bulk_n_videos: '$1 videos',
   cancel: 'Cancel',
   change: 'Change',
@@ -7118,13 +7114,13 @@ var translationsEnUS = {
   chrome_inapp_premium_monthly: 'Monthly Premium subscription',
   chrome_inapp_premium_yearly: 'Yearly Premium subscription',
   chrome_install_firefox: 'Install Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper for Firefox',
+  chrome_install_fx_vdh: ':appName for Firefox',
   chrome_license_webstore_accepted: 'Active license from Chrome Webstore',
   chrome_licensing: 'Chrome licensing',
   chrome_noyt_text:
     'Unfortunately, the Chrome Web Store does not allow extensions for downloading YouTube videos so we had to remove this feature.',
   chrome_noyt_text2:
-    'You can use Video DownloadHelper to download YouTube videos on the Firefox version.',
+    'You can use :appName to download YouTube videos on the Firefox version.',
   chrome_noyt_text3:
     'Unfortunately, the Chrome Web Store does not allow extensions for downloading YouTube videos so we could not include this feature in the Chrome version of the extension.',
   chrome_premium_audio:
@@ -7250,7 +7246,7 @@ var translationsEnUS = {
   dlconv_download_and_convert: 'Download & Convert',
   dlconv_output_details: 'Configure output details',
   donate: 'Donate',
-  donate_vdh: 'Help Video DownloadHelper',
+  donate_vdh: 'Help :appName',
   download_error: 'Download error',
   download_method: 'Download method',
   download_method_not_again: 'Use this method by default next time',
@@ -7385,7 +7381,7 @@ var translationsEnUS = {
     "Or maybe help translating the add-on to '$1' (there are $2 strings missing) ?",
   req_review:
     'Alternatively, would you mind writing a nice review on Mozilla addon site ?',
-  req_review_link: 'Write a review about Video DownloadHelper',
+  req_review_link: 'Write a review about :appName',
   reset_settings: 'Reset settings',
   running: 'Running',
   save: 'Save',
@@ -7422,13 +7418,13 @@ var translationsEnUS = {
   tbsn_quality_hd: 'Medium quality',
   tbsn_quality_sd: 'Low quality',
   tell_me_more: 'Tell me more about this',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Translation',
   up: 'Up',
   validate_license: 'Register license',
   variants_list_adp: 'Adaptive variants',
   variants_list_full: 'Variants',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Version $1',
   video_only: 'Video only',
   video_qualities: 'Video qualities',
@@ -7643,7 +7639,7 @@ var translationsEnUS = {
   weh_prefs_titleMode_option_right: 'Ellipsis at right',
   yes: 'Yes',
   you_downloaded_n_videos:
-    'You just downloaded successfully your $1th file with Video DownloadHelper.',
+    'You just downloaded successfully your $1th file with :appName.',
   v9_yes: 'Yes',
   v9_no: 'No',
   v9_error: 'Error',
@@ -7671,7 +7667,7 @@ var translationsEnUS = {
   v9_chrome_noyt_text3:
     'Unfortunately, the Chrome Web Store does not allow extensions for downloading YouTube videos so we could not include this feature in the Chrome version of the extension.',
   v9_chrome_noyt_text2:
-    'You can use Video DownloadHelper to download YouTube videos on the Firefox version.',
+    'You can use :appName to download YouTube videos on the Firefox version.',
   v9_about_qr: 'File generated',
   v9_explain_qr1:
     'You will notice the resulting video contains a watermark in the corner.',
@@ -7690,7 +7686,7 @@ var translationsEnUS = {
   v9_mup_max_variants: 'Variants count',
   v9_weh_prefs_description_contextMenuEnabled:
     'Access commands from right-click in page',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" is now ready',
   v9_lic_status_unset: 'License not set',
   v9_lic_status_blocked: 'License blocked',
@@ -7788,13 +7784,13 @@ var translationsEnUS = {
   v9_save: 'Save',
   v9_user_message_no_incognito_title: 'No Incognito mode',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper is not enabled in a Private/Incognito windows. You need to turn on that option manually (this is not required).',
+    ':appName is not enabled in a Private/Incognito windows. You need to turn on that option manually (this is not required).',
   v9_user_message_no_incognito_open_settings: 'Enable in Browser Settings',
   v9_yt_bulk_detected: 'Detected $1 videos from Youtube',
   v9_yt_bulk_detected_trigger: 'Start bulk download',
   v9_user_message_one_hundred_downloads: "You've downloaded 100 videos!",
   v9_user_message_one_hundred_downloads_body:
-    "We hope you're enjoying Video DownloadHelper :) Would you mind writing a nice review on the addon website?",
+    "We hope you're enjoying :appName :) Would you mind writing a nice review on the addon website?",
   v9_user_message_one_hundred_downloads_leave_review: 'Leave a review',
   v9_user_message_one_hundred_downloads_never_show_again: "Don't ask again",
   v9_panel_footer_show_history_tooltip: 'Show Download History',
@@ -7803,7 +7799,7 @@ var translationsEnUS = {
   v9_history_button_start_recording: 'Remember History',
   v9_history_button_stop_recording: 'Do not remember my history',
   v9_history_no_recording_description:
-    'We do not record your download history. Do you want Video DownloadHelper to remember your download history?',
+    'We do not record your download history. Do you want :appName to remember your download history?',
   v9_history_no_recording_description_safe:
     "Don't worry, everything stays on your machine. We value your privacy.",
   v9_history_no_entries: 'No entries yet.',
@@ -7826,7 +7822,7 @@ var translationsEs = {
   about_beta_intro: 'Esta es una versi\xF3n Beta.',
   about_chrome_licenses: 'Acerca de las Licencias de Chrome',
   about_qr: 'Archivo generado.',
-  about_vdh: 'Acerca de Video DownloadHelper',
+  about_vdh: 'Acerca de :appName',
   action_abort_description: 'Cancelar el proceso en marcha.',
   action_abort_title: 'Cancelar',
   action_as_default: 'Usar esta acci\xF3n por defecto.',
@@ -7879,7 +7875,7 @@ var translationsEs = {
   aggregating: 'Procesando...',
   analyze_page: 'Analizar la p\xE1gina',
   appDesc: 'Descarga Videos desde la Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Apariencia',
   audio_only: 'S\xF3lo audio',
   behavior: 'Comportamiento',
@@ -7894,7 +7890,7 @@ var translationsEs = {
   build_options: 'Opciones de compilaci\xF3n: $1',
   built_on: 'Compilado el $1',
   bulk_in_progress:
-    'Video Downloadhelper esta procesando sus v\xEDdeos en bruto. No cierre esta pesta\xF1a, se cerrar\xE1 autom\xE1ticamente.',
+    ':appName esta procesando sus v\xEDdeos en bruto. No cierre esta pesta\xF1a, se cerrar\xE1 autom\xE1ticamente.',
   bulk_n_videos: '$1 v\xEDdeos',
   cancel: 'Cancelar',
   change: 'Cambiar',
@@ -7911,14 +7907,14 @@ var translationsEs = {
   chrome_inapp_premium_monthly: 'Suscripci\xF3n premium mensual',
   chrome_inapp_premium_yearly: 'Suscripci\xF3n premium anual',
   chrome_install_firefox: 'Instalar Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper para Firefox',
+  chrome_install_fx_vdh: ':appName para Firefox',
   chrome_license_webstore_accepted:
     'La Licencia de Webstore Chrome se encuentra Activa (Aceptada)',
   chrome_licensing: 'Licencia de Chrome',
   chrome_noyt_text:
     'Por desgracia, la Web Store de Chrome no permite extensiones para descargar v\xEDdeos de Youtube as\xED que debemos quitar esta caracter\xEDstica',
   chrome_noyt_text2:
-    'Puedes usar Video DownloadHelper para descargar v\xEDdeos de YouTube en la versi\xF3n de Firefox',
+    'Puedes usar :appName para descargar v\xEDdeos de YouTube en la versi\xF3n de Firefox',
   chrome_noyt_text3:
     'Desgraciadamente, la Chrome Web Store no permite la descarga de v\xEDdeos de YouTube, por lo que no hemos podido incluir esta funci\xF3n en la versi\xF3n de Chrome de la extensi\xF3n.',
   chrome_premium_audio:
@@ -8045,7 +8041,7 @@ var translationsEs = {
   dlconv_download_and_convert: 'Descargar y Convertir',
   dlconv_output_details: 'Configurar los detalles de salida',
   donate: 'Donar',
-  donate_vdh: 'Ayuda a Video DownloadHelper',
+  donate_vdh: 'Ayuda a :appName',
   download_error: 'Error en la descarga',
   download_method: 'M\xE9todo de descarga',
   download_method_not_again:
@@ -8169,7 +8165,7 @@ var translationsEs = {
     "\xBFO quiz\xE1 ayudar a traducir el complemento a '$1' (hay '$2' cadenas sin traducir)?",
   req_review:
     'En todo caso, \xBFle importar\xEDa escribir una rese\xF1a en el Sitio Mozilla de Complementos?',
-  req_review_link: 'Escriba una rese\xF1a sobre Video Downloadhelper',
+  req_review_link: 'Escriba una rese\xF1a sobre :appName',
   reset_settings: 'Restabecer las preferencias',
   running: 'Acciones en marcha',
   save: 'Guardar',
@@ -8211,13 +8207,13 @@ var translationsEs = {
   tbsn_quality_hd: 'Media calidad',
   tbsn_quality_sd: 'Baja calidad',
   tell_me_more: 'Explicar esto un poco m\xE1s',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Traducci\xF3n',
   up: 'Arriba',
   validate_license: 'Registrar la licencia',
   variants_list_adp: 'Variantes adaptativas',
   variants_list_full: 'Variantes',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Versi\xF3n $1',
   video_only: 'S\xF3lo v\xEDdeo',
   video_qualities: 'Calidades de v\xEDdeo',
@@ -8454,7 +8450,7 @@ var translationsEs = {
   weh_prefs_titleMode_option_right: 'Cortar el t\xEDtulo por la derecha',
   yes: 'S\xED',
   you_downloaded_n_videos:
-    'Ha descargado correctamente su $1\xBA archivo con Video DownloadHelper.',
+    'Ha descargado correctamente su $1\xBA archivo con :appName.',
   v9_yes: 'S\xED',
   v9_no: 'No',
   v9_error: 'Error',
@@ -8482,7 +8478,7 @@ var translationsEs = {
   v9_chrome_noyt_text3:
     'Desgraciadamente, la Chrome Web Store no permite la descarga de v\xEDdeos de YouTube, por lo que no hemos podido incluir esta funci\xF3n en la versi\xF3n de Chrome de la extensi\xF3n.',
   v9_chrome_noyt_text2:
-    'Puedes usar Video DownloadHelper para descargar v\xEDdeos de YouTube en la versi\xF3n de Firefox',
+    'Puedes usar :appName para descargar v\xEDdeos de YouTube en la versi\xF3n de Firefox',
   v9_about_qr: 'Archivo generado.',
   v9_explain_qr1:
     'Advertir\xE1 que el v\xEDdeo resultante tiene una marca de agua en la esquina.',
@@ -8501,7 +8497,7 @@ var translationsEs = {
     'N\xFAmero m\xE1ximo de descargas simult\xE1neas',
   v9_weh_prefs_description_contextMenuEnabled:
     'Acceder al men\xFA contextual al hacer click en el bot\xF3n derecho',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" est\xE1 listo',
   v9_lic_status_unset: 'La licencia no se ha realizado',
   v9_lic_status_blocked: 'Licencia bloqueada',
@@ -8556,7 +8552,7 @@ var translationsFr = {
   about_beta_intro: 'Ceci est une version b\xEAta.',
   about_chrome_licenses: '\xC0 propos des licences Chrome',
   about_qr: 'Fichier g\xE9n\xE9r\xE9',
-  about_vdh: '\xC0 propos de Video DownloadHelper',
+  about_vdh: '\xC0 propos de :appName',
   action_abort_description: "Annule l'action en cours",
   action_abort_title: 'Annuler',
   action_as_default: 'Utiliser cette action par d\xE9faut',
@@ -8620,7 +8616,7 @@ var translationsFr = {
   aggregating: 'Assemblage...',
   analyze_page: 'Analyser la page',
   appDesc: 'T\xE9l\xE9charger des vid\xE9os depuis le Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Apparence',
   audio_only: 'Audio uniquement',
   behavior: 'Comportement',
@@ -8635,7 +8631,7 @@ var translationsFr = {
   build_options: 'Options de g\xE9n\xE9ration: $1',
   built_on: 'G\xE9n\xE9r\xE9 le $1',
   bulk_in_progress:
-    'Video DownloadHelper effectue une op\xE9ration de groupes. Ne fermez pas cet onglet, cela sera fait automatiquement',
+    ':appName effectue une op\xE9ration de groupes. Ne fermez pas cet onglet, cela sera fait automatiquement',
   bulk_n_videos: '$1 vid\xE9os',
   cancel: 'Annuler',
   change: 'Changer',
@@ -8652,13 +8648,13 @@ var translationsFr = {
   chrome_inapp_premium_monthly: 'Souscription Premium mensuelle',
   chrome_inapp_premium_yearly: 'Souscription Premium annuelle',
   chrome_install_firefox: 'Installer Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper pour Firefox',
+  chrome_install_fx_vdh: ':appName pour Firefox',
   chrome_license_webstore_accepted: 'Licence Chrome Webstore active',
   chrome_licensing: 'Licence Chrome',
   chrome_noyt_text:
     "Malheureusement, le Web Store Chrome n'autorisant pas d'extensions qui t\xE9l\xE9chargent des vid\xE9os YouTube, nous avons d\xFB enlever cette fonctionnalit\xE9.",
   chrome_noyt_text2:
-    'Vous pouvez utiliser Video DownloadHelper pour t\xE9l\xE9charger des vid\xE9os YouTube depuis la version Firefox.',
+    'Vous pouvez utiliser :appName pour t\xE9l\xE9charger des vid\xE9os YouTube depuis la version Firefox.',
   chrome_noyt_text3:
     "Malheureusement, le Web Store Chrome n'autorisant pas d'extensions qui t\xE9l\xE9chargent des vid\xE9os YouTube, nous n'avons pas pu int\xE9grer cette fonctionnalit\xE9 dans la version Chrome de l'extension.",
   chrome_premium_audio:
@@ -8789,7 +8785,7 @@ var translationsFr = {
   dlconv_download_and_convert: 'T\xE9l\xE9charger & convertir',
   dlconv_output_details: '(configurer les d\xE9tails de sortie)',
   donate: 'Faire un don',
-  donate_vdh: 'Aider Video DownloadHelper',
+  donate_vdh: 'Aider :appName',
   download_error: 'Erreur de t\xE9l\xE9chargement',
   download_method: 'M\xE9thode de t\xE9l\xE9chargement',
   download_method_not_again: 'Utiliser cette m\xE9thode la prochaine fois',
@@ -8921,7 +8917,7 @@ var translationsFr = {
     "Ou peut-\xEAtre aider \xE0 traduire l'extension en '$1' (il reste $2 textes non-traduits)",
   req_review:
     'Autrement, peut-\xEAtre pourriez-vous \xE9crire une bonne revue sur le site des extensions Mozilla ?',
-  req_review_link: '\xC9crire une revue \xE0 propos de Video DownloadHelper',
+  req_review_link: '\xC9crire une revue \xE0 propos de :appName',
   reset_settings: 'Remise \xE0 z\xE9ro de la configuration',
   running: 'En cours',
   save: 'Enregistrer',
@@ -8963,13 +8959,13 @@ var translationsFr = {
   tbsn_quality_hd: 'Qualit\xE9 moyenne',
   tbsn_quality_sd: 'Basse qualit\xE9',
   tell_me_more: 'En savoir plus',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Traduction',
   up: 'Haut',
   validate_license: 'Enregistrer la licence',
   variants_list_adp: 'Variantes adaptatives :',
   variants_list_full: 'Variantes :',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Version $1',
   video_only: 'Vid\xE9o uniquement',
   video_qualities: 'Qualit\xE9 vid\xE9o',
@@ -9208,7 +9204,7 @@ var translationsFr = {
   weh_prefs_titleMode_option_right: 'Ellipse \xE0 droite',
   yes: 'Oui',
   you_downloaded_n_videos:
-    'Vous venez juste de t\xE9l\xE9charger avec succ\xE8s votre $1e fichier avec Video DownloadHelper.',
+    'Vous venez juste de t\xE9l\xE9charger avec succ\xE8s votre $1e fichier avec :appName.',
   v9_yes: 'Oui',
   v9_no: 'Non',
   v9_error: 'Erreur',
@@ -9238,7 +9234,7 @@ var translationsFr = {
   v9_chrome_noyt_text3:
     "Malheureusement, le Web Store Chrome n'autorisant pas d'extensions qui t\xE9l\xE9chargent des vid\xE9os YouTube, nous n'avons pas pu int\xE9grer cette fonctionnalit\xE9 dans la version Chrome de l'extension.",
   v9_chrome_noyt_text2:
-    'Vous pouvez utiliser Video DownloadHelper pour t\xE9l\xE9charger des vid\xE9os YouTube depuis la version Firefox.',
+    'Vous pouvez utiliser :appName pour t\xE9l\xE9charger des vid\xE9os YouTube depuis la version Firefox.',
   v9_about_qr: 'Fichier g\xE9n\xE9r\xE9',
   v9_explain_qr1:
     'Vous remarquerez que la vid\xE9o r\xE9sultante contient un filigrane dans un coin.',
@@ -9258,7 +9254,7 @@ var translationsFr = {
   v9_mup_max_variants: 'Nombre de variants ',
   v9_weh_prefs_description_contextMenuEnabled:
     'Acc\xE9der aux commandes via un clic droit dans la page',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '\xAB $1 \xBB est maintenant disponible',
   v9_lic_status_unset: 'Licence non enregistr\xE9e',
   v9_lic_status_blocked: 'Licence bloqu\xE9e',
@@ -9277,7 +9273,7 @@ var translationsFr = {
     'Utiliser le s\xE9lecteur de fichier natif',
   mup_prefered_container: 'Format de conteneur pr\xE9f\xE9r\xE9',
   mup_page_title: 'Pr\xE9f\xE9rences m\xE9dias',
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   v9_panel_view_show_all_tabs: 'Afficher tous les onglets',
   v9_panel_view_show_low_quality: 'Afficher les m\xE9dias de basse qualit\xE9',
   v9_panel_view_sort_status: 'Trier par statut',
@@ -9374,7 +9370,7 @@ var translationsFr = {
   v9_save: 'Sauvegarder',
   v9_user_message_no_incognito_title: 'Pas de mode navigation priv\xE9e',
   v9_user_message_no_incognito_body:
-    "Video DownloadHelper n'est pas activ\xE9 en mode navigation priv\xE9e. Vous devez activer cette option \xE0 la main. (ce n'est pas obligatoire)",
+    ":appName n'est pas activ\xE9 en mode navigation priv\xE9e. Vous devez activer cette option \xE0 la main. (ce n'est pas obligatoire)",
   v9_user_message_no_incognito_open_settings:
     'Activer dans les param\xE8tres du navigateur',
   v9_lic_status_locked2: 'Licence v\xE9rouill\xE9e (v\xE9rifier vos emails)',
@@ -9383,7 +9379,7 @@ var translationsFr = {
   v9_user_message_one_hundred_downloads:
     'Vous avez t\xE9l\xE9charg\xE9 100 vid\xE9os !',
   v9_user_message_one_hundred_downloads_body:
-    "Nous esp\xE9rons que vous appr\xE9ciez Video DownloadHelper :) Voudriez-vous laisser un gentil commentaire sur le site de l'addon ?",
+    "Nous esp\xE9rons que vous appr\xE9ciez :appName :) Voudriez-vous laisser un gentil commentaire sur le site de l'addon ?",
   v9_user_message_one_hundred_downloads_leave_review: 'Laissez un commentaire',
   v9_user_message_one_hundred_downloads_never_show_again:
     'Ne pas demander \xE0 nouveau',
@@ -9422,7 +9418,7 @@ var translationsHsb = {
   about_alpha_intro: 'To je alfawersija.',
   about_beta_intro: 'To je betawersija',
   about_qr: 'Dataja je so wutwori\u0142a.',
-  about_vdh: 'Wo Video DownloadHelper',
+  about_vdh: 'Wo :appName',
   action_abort_description: 'B\u011B\u017Eacu akciju p\u0159etorhny\u0107',
   action_abort_title: 'P\u0159etorhny\u0107',
   action_as_default: 'Wu\u017Eiwaj\u0107e tutu akciju jako standard',
@@ -9471,7 +9467,7 @@ var translationsHsb = {
   aggregating: 'Agreguje so\u2026',
   analyze_page: 'Stronu analyzowa\u0107',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Napohlad',
   audio_only: 'Jeno\u017E awdio',
   behavior: 'Zad\u017Aer\u017Eenje',
@@ -9487,7 +9483,7 @@ var translationsHsb = {
   build_options: 'Wersijowe opcije: $1',
   built_on: '$1 wutworjeny',
   bulk_in_progress:
-    'Masowe s\u0107ehnjenje Video DownloadHelper b\u011B\u017Ei. Njeza\u010Di\u0144\u0107e tut\xF3n rajtark, to so awtomatisce stanje.',
+    'Masowe s\u0107ehnjenje :appName b\u011B\u017Ei. Njeza\u010Di\u0144\u0107e tut\xF3n rajtark, to so awtomatisce stanje.',
   bulk_n_videos: '$1 widejow',
   cancel: 'P\u0159etorhny\u0107',
   change: 'Zm\u011Bni\u0107',
@@ -9503,7 +9499,7 @@ var translationsHsb = {
   chrome_inapp_premium_monthly: 'M\u011Bsa\u010Dny premiumowy abonement',
   chrome_inapp_premium_yearly: 'L\u011Btny premiumowy abonement',
   chrome_install_firefox: 'Firefox instalowa\u0107',
-  chrome_install_fx_vdh: 'Video DownloadHelper za Firefox',
+  chrome_install_fx_vdh: ':appName za Firefox',
   chrome_licensing: 'Licencowanje Chrome',
   chrome_noyt_text:
     'Bohu\u017Eel Chrome Web Store roz\u0161\u011Brjenja za s\u0107ahowanje widejow Youtube njedowola. Tohodla dyrbjachmy tutu funkciju wotstroni\u0107.',
@@ -9633,7 +9629,7 @@ var translationsHsb = {
   dlconv_download_and_convert: 'S\u0107ahny\u0107 a konwertowa\u0107',
   dlconv_output_details: 'Wudawanske podrobnos\u0107e konfigurowa\u0107',
   donate: 'Dari\u0107',
-  donate_vdh: 'Video DownloadHelper pomha\u0107',
+  donate_vdh: ':appName pomha\u0107',
   download_error: 'S\u0107ehnjenski zmylk',
   download_method: 'S\u0107ehnjenska metoda',
   download_method_not_again:
@@ -9745,7 +9741,7 @@ var translationsHsb = {
     "Abo snano pomha\u0142, p\u0159idatk do '$1' p\u0159e\u0142o\u017Eowa\u0107 ($2 znamje\u017Ekowych rje\u0107azkow je p\u0159e\u0142o\u017Eene)?",
   req_review:
     'Jeli chce\u0107e, m\xF3\u017Ee\u0107e w\u0161ak te\u017E poh\xF3dno\u0107enje na sydle p\u0159idatkow Mozilla pisa\u0107.',
-  req_review_link: 'Poh\xF3dno\u0107enje wo Video DownloadHelper pisa\u0107',
+  req_review_link: 'Poh\xF3dno\u0107enje wo :appName pisa\u0107',
   reset_settings: 'Nastajenja za wr\xF3\u0107ostajenje',
   running: 'B\u011B\u017Ei',
   save: 'Sk\u0142adowa\u0107',
@@ -9783,13 +9779,13 @@ var translationsHsb = {
   tbsn_quality_hd: 'P\u0159er\u011Bzna kwalita',
   tbsn_quality_sd: 'Niska kwalita',
   tell_me_more: 'Pow\u011Bdaj\u0107e wjace wo tym',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'P\u0159e\u0142o\u017Ek',
   up: 'Horje',
   validate_license: 'Licencu registrowa\u0107',
   variants_list_adp: 'P\u0159im\u011Brjomne warianty',
   variants_list_full: 'Warianty',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Wersija $1',
   video_only: 'Jeno\u017E widejo',
   video_qualities: 'Widejokwality',
@@ -10030,7 +10026,7 @@ var translationsHsb = {
   weh_prefs_titleMode_option_right: 'T\u0159idypk naprawo',
   yes: 'Haj',
   you_downloaded_n_videos:
-    'S\u0107e runje swoju dataju $1. dataju z Video DownloadHelper wusp\u011B\u0161nje s\u0107ahny\u0142.',
+    'S\u0107e runje swoju dataju $1. dataju z :appName wusp\u011B\u0161nje s\u0107ahny\u0142.',
   v9_yes: 'Haj',
   v9_no: 'N\u011B',
   v9_error: 'Zmylk',
@@ -10074,7 +10070,7 @@ var translationsHsb = {
     'Maksimalna li\u010Dba runo\u010Dasnych s\u0107ehnjenjow',
   v9_weh_prefs_description_contextMenuEnabled:
     'P\u0159istup na prikazy z praweho kliknjenja na stronje',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" je n\u011Btko hotowa',
   v9_lic_status_unset: 'Licenca njeje postajena',
   v9_lic_status_blocked: 'Licenca je so blokowa\u0142a',
@@ -10093,7 +10089,7 @@ var translationsHu = {
   about_beta_intro: 'Ez egy b\xE9ta verzi\xF3',
   about_chrome_licenses: 'A Chrome licenszekr\u0151l',
   about_qr: 'F\xE1jl l\xE9trehozva',
-  about_vdh: 'A Video DownloadHelper-r\u0151l',
+  about_vdh: 'A :appName-r\u0151l',
   action_abort_description:
     'A folyamatban l\xE9v\u0151 m\u0171velet megszak\xEDt\xE1sa',
   action_abort_title: 'Megszak\xEDt\xE1s',
@@ -10143,7 +10139,7 @@ var translationsHu = {
   aggregating: '\xD6sszef\u0171z\xE9s',
   analyze_page: 'Oldal elemz\xE9se',
   appDesc: 'Vide\xF3 let\xF6lt\xE9se az Internetr\u0151l',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Megjelen\xE9s',
   audio_only: 'Csak hang',
   behavior: 'Viselked\xE9s',
@@ -10158,7 +10154,7 @@ var translationsHu = {
   build_options: 'Build opci\xF3k: $1',
   built_on: 'Build id\u0151pontja: $1',
   bulk_in_progress:
-    'Video DownloadHelper csoportos m\u0171velet folyamatban. Ne z\xE1rd be ezt a lapot, ez automatikusan megt\xF6rt\xE9nik',
+    ':appName csoportos m\u0171velet folyamatban. Ne z\xE1rd be ezt a lapot, ez automatikusan megt\xF6rt\xE9nik',
   bulk_n_videos: '$1 vide\xF3',
   cancel: 'M\xE9gse',
   change: 'Megv\xE1ltoztat\xE1s',
@@ -10176,14 +10172,14 @@ var translationsHu = {
   chrome_inapp_premium_monthly: 'Pr\xE9mium havi el\u0151fizet\xE9ssel',
   chrome_inapp_premium_yearly: 'Pr\xE9mium \xE9vi el\u0151fizet\xE9ssel',
   chrome_install_firefox: 'Firefox let\xF6lt\xE9se',
-  chrome_install_fx_vdh: 'Video DownloadHelper Firefox-hoz',
+  chrome_install_fx_vdh: ':appName Firefox-hoz',
   chrome_license_webstore_accepted:
     'Akt\xEDv licensz a Chrome Web\xE1ruh\xE1zb\xF3l',
   chrome_licensing: 'Chrome licenszel\xE9s',
   chrome_noyt_text:
     'Sajnos, a Chrome Web\xE1ruh\xE1z nem enged\xE9lyez YouTube-vide\xF3 let\xF6lt\u0151 b\u0151v\xEDtm\xE9nyeket, ez\xE9rt ezt a funkci\xF3t el kellett t\xE1vol\xEDtanunk a b\u0151v\xEDtm\xE9ny Chrome-os verzi\xF3j\xE1b\xF3l.',
   chrome_noyt_text2:
-    'A Video DownloadHelper Firefox-os verzi\xF3ja le tud t\xF6lteni vide\xF3kat a YouTube-r\xF3l is.',
+    'A :appName Firefox-os verzi\xF3ja le tud t\xF6lteni vide\xF3kat a YouTube-r\xF3l is.',
   chrome_noyt_text3:
     'Sajnos, a Chrome Web\xE1ruh\xE1z nem enged\xE9lyez YouTube-vide\xF3 let\xF6lt\u0151 b\u0151v\xEDtm\xE9nyeket, ez\xE9rt ezt a funkci\xF3t el kellett t\xE1vol\xEDtanunk a b\u0151v\xEDtm\xE9ny Chrome-os verzi\xF3j\xE1b\xF3l.',
   chrome_premium_audio:
@@ -10309,7 +10305,7 @@ var translationsHu = {
   dlconv_download_and_convert: 'Let\xF6lt\xE9s \xE9s konvert\xE1l\xE1s',
   dlconv_output_details: 'Kimeneti r\xE9szletek szerkeszt\xE9se',
   donate: 'Adom\xE1nyozz!',
-  donate_vdh: 'T\xE1mogasd a Video DownloadHelpert!',
+  donate_vdh: 'T\xE1mogasd a :appNamet!',
   download_error: 'Let\xF6lt\xE9si hiba',
   download_method: 'Let\xF6lt\xE9si m\xF3dszer',
   download_method_not_again: 'Be\xE1ll\xEDt\xE1s alap\xE9rtelmezettk\xE9nt',
@@ -10431,7 +10427,7 @@ var translationsHu = {
     'Vagy seg\xEDtesz leford\xEDtani a b\u0151v\xEDtm\xE9nyt "$1"-ra ($2 sz\xF6veg hi\xE1nyzik)?',
   req_review:
     'Vagy esetleg \xEDrn\xE1l egy j\xF3 \xE9rt\xE9kel\xE9st a Mozilla b\u0151v\xEDtm\xE9ny-oldal\xE1n?',
-  req_review_link: '\xC9rt\xE9keld a Video DownloadHelper-t',
+  req_review_link: '\xC9rt\xE9keld a :appName-t',
   reset_settings: 'Be\xE1ll\xEDt\xE1sok vissza\xE1ll\xEDt\xE1sa',
   running: 'Fut',
   save: 'Ment\xE9s',
@@ -10479,7 +10475,7 @@ var translationsHu = {
   validate_license: 'Licensz regisztr\xE1l\xE1sa',
   variants_list_adp: 'Adapt\xEDv v\xE1ltozatok',
   variants_list_full: 'V\xE1ltozatok',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Verzi\xF3: $1',
   video_only: 'Csak vide\xF3',
   video_qualities: 'Vide\xF3 min\u0151s\xE9g',
@@ -10729,7 +10725,7 @@ var translationsHu = {
   weh_prefs_titleMode_option_right: '"..." a jobb oldalon',
   yes: 'Igen',
   you_downloaded_n_videos:
-    'Sikeresen let\xF6lt\xF6tted a(z) $1. f\xE1jlodat a Video DownloadHelper-rel!',
+    'Sikeresen let\xF6lt\xF6tted a(z) $1. f\xE1jlodat a :appName-rel!',
   v9_yes: 'Igen',
   v9_no: 'Nem',
   v9_error: 'Hiba',
@@ -10756,7 +10752,7 @@ var translationsHu = {
   v9_chrome_noyt_text3:
     'Sajnos, a Chrome Web\xE1ruh\xE1z nem enged\xE9lyez YouTube-vide\xF3 let\xF6lt\u0151 b\u0151v\xEDtm\xE9nyeket, ez\xE9rt ezt a funkci\xF3t el kellett t\xE1vol\xEDtanunk a b\u0151v\xEDtm\xE9ny Chrome-os verzi\xF3j\xE1b\xF3l.',
   v9_chrome_noyt_text2:
-    'A Video DownloadHelper Firefox-os verzi\xF3ja le tud t\xF6lteni vide\xF3kat a YouTube-r\xF3l is.',
+    'A :appName Firefox-os verzi\xF3ja le tud t\xF6lteni vide\xF3kat a YouTube-r\xF3l is.',
   v9_about_qr: 'F\xE1jl l\xE9trehozva',
   v9_explain_qr1: 'A vide\xF3 tartalmaz egy v\xEDzjelet a sarokban.',
   v9_not_see_again: 'Ne mutassa t\xF6bbsz\xF6r',
@@ -10773,7 +10769,7 @@ var translationsHu = {
     'Maximum egyidej\u0171 let\xF6lt\xE9sek',
   v9_weh_prefs_description_contextMenuEnabled:
     'Parancsok el\xE9r\xE9se a helyi (jobb-klikkre megjelen\u0151) men\xFCb\u0151l',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: 'A(z) "$1" k\xE9sz',
   v9_lic_status_unset: 'A licensz nincs be\xE1ll\xEDtva',
   v9_lic_status_blocked: 'Licensz elutas\xEDva',
@@ -10794,7 +10790,7 @@ var translationsId = {
   about_beta_intro: 'Ini versi beta.',
   about_chrome_licenses: 'Tentang lisensi chrome',
   about_qr: 'Berkas yg dihasilkan',
-  about_vdh: 'Tentang Video DownloadHelper',
+  about_vdh: 'Tentang :appName',
   action_abort_description: 'Batalkan tindakan yg berjalan',
   action_abort_title: 'Batal',
   action_as_default: 'Gunakan tindakan ini sebagai bawaan',
@@ -10836,7 +10832,7 @@ var translationsId = {
   aggregating: 'Menghimpun...',
   analyze_page: 'Menganalisa laman',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Tampilan',
   audio_only: 'Hanya audia',
   behavior: 'Perilaku',
@@ -10851,7 +10847,7 @@ var translationsId = {
   build_options: 'Opsi bentukan: $1',
   built_on: 'Dibuat berdasar $1',
   bulk_in_progress:
-    'Unduhan massal Video DownloadHelper sedang berlangsung. Jangan tutup tab ini, ini akan dilakukan secara otomatis',
+    'Unduhan massal :appName sedang berlangsung. Jangan tutup tab ini, ini akan dilakukan secara otomatis',
   bulk_n_videos: 'Video $1',
   cancel: 'Batal',
   change: 'Ubah',
@@ -10866,13 +10862,13 @@ var translationsId = {
   chrome_inapp_premium_monthly: 'Premium Langganan Bulanan',
   chrome_inapp_premium_yearly: 'Premium Langganan Tahunan',
   chrome_install_firefox: 'Pasang Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper untuk Firefox',
+  chrome_install_fx_vdh: ':appName untuk Firefox',
   chrome_license_webstore_accepted: 'lisensi aktif dari chrome webstore',
   chrome_licensing: 'Lisensi Chrome',
   chrome_noyt_text:
     'Sayangnya, Chrome Web Store tidak mengizinkan ekstensi untuk mengunduh video YouTube sehingga kami harus menghapus fitur ini.',
   chrome_noyt_text2:
-    'Anda dapat menggunakan Video DownloadHelper untuk mengunduh video YouTube pada versi Firefox.',
+    'Anda dapat menggunakan :appName untuk mengunduh video YouTube pada versi Firefox.',
   chrome_noyt_text3:
     'Mohon maaf, Chrome webstore tidak mengizinkan ekstensi untuk mengunduh video YouTube sehingga kami tidak dapat menyediakan fitur ini dalam versi ekstensi Chrome.',
   chrome_premium_audio:
@@ -10995,7 +10991,7 @@ var translationsId = {
   dlconv_download_and_convert: 'Unduhan & Konversi',
   dlconv_output_details: 'Konfigurasi detail keluaran',
   donate: 'Donasi',
-  donate_vdh: 'Bantu Video DownloadHelper',
+  donate_vdh: 'Bantu :appName',
   download_error: 'Kesalahan unduhan',
   download_method: 'Metode unduhan',
   download_method_not_again: 'Lain kali gunakan metode ini sebagai bawaan',
@@ -11113,7 +11109,7 @@ var translationsId = {
     "Atau mungkin bantu menerjemahkan pengaya ke '$1' (ada $2 strings kurang) ?",
   req_review:
     'Atau, maukah anda menulis ulasan bagus di situs pengaya Mozilla?',
-  req_review_link: 'Tulis ulasan mengenai Video DownloadHelper',
+  req_review_link: 'Tulis ulasan mengenai :appName',
   reset_settings: 'Setel ulang setelan',
   running: 'Berjalan',
   save: 'Simpan',
@@ -11150,13 +11146,13 @@ var translationsId = {
   tbsn_quality_hd: 'Kualitas sedang',
   tbsn_quality_sd: 'Kualitas rendah',
   tell_me_more: 'Info lebih lanjut tentang ini',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Terjemahan',
   up: 'Naik',
   validate_license: 'Daftarkan lisensi',
   variants_list_adp: 'Varian adaptif',
   variants_list_full: 'Varian',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Versi $1',
   video_only: 'Hanya video',
   video_qualities: 'Kualitas video',
@@ -11367,7 +11363,7 @@ var translationsId = {
   weh_prefs_titleMode_option_right: 'Tanda pengganti di kanan',
   yes: 'Ya',
   you_downloaded_n_videos:
-    'Anda baru saja berhasil mengunduh berkas $1th dengan Video DownloadHelper.',
+    'Anda baru saja berhasil mengunduh berkas $1th dengan :appName.',
   v9_yes: 'Ya',
   v9_no: 'Tidak',
   v9_error: 'Kesalahan',
@@ -11392,7 +11388,7 @@ var translationsId = {
   v9_chrome_noyt_text3:
     'Mohon maaf, Chrome webstore tidak mengizinkan ekstensi untuk mengunduh video YouTube sehingga kami tidak dapat menyediakan fitur ini dalam versi ekstensi Chrome.',
   v9_chrome_noyt_text2:
-    'Anda dapat menggunakan Video DownloadHelper untuk mengunduh video YouTube pada versi Firefox.',
+    'Anda dapat menggunakan :appName untuk mengunduh video YouTube pada versi Firefox.',
   v9_about_qr: 'Berkas yg dihasilkan',
   v9_explain_qr1: 'Anda akan melihat hasil video memiliki tanda air dipojok.',
   v9_not_see_again: 'Jangan tampilkan pesan itu lagi',
@@ -11408,7 +11404,7 @@ var translationsId = {
   v9_weh_prefs_label_downloadControlledMax: 'Maks unduhan bersamaan ',
   v9_weh_prefs_description_contextMenuEnabled:
     'Perintah akses dari klik-kanan di laman',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" sudah siap',
   v9_lic_status_unset: 'Lisensi tidak disetel',
   v9_lic_status_blocked: 'Lisensi terblokir',
@@ -11424,7 +11420,7 @@ var translationsIs = {
   about_alpha_intro: '\xDEetta er alfa-\xFAtg\xE1fa.',
   about_beta_intro: '\xDEetta er beta-\xFAtg\xE1fa.',
   about_qr: 'Skr\xE1 \xFAtb\xFAin',
-  about_vdh: 'Um Video DownloadHelper ni\xF0urhalshj\xE1lpina',
+  about_vdh: 'Um :appName ni\xF0urhalshj\xE1lpina',
   action_abort_description: 'H\xE6tta vi\xF0 a\xF0ger\xF0ina sem er \xED gangi',
   action_abort_title: 'H\xE6tta vi\xF0',
   action_as_default: 'Nota sj\xE1lfgefi\xF0 \xFEessa a\xF0ger\xF0',
@@ -11464,18 +11460,18 @@ var translationsIs = {
   aggregating: 'Safna saman...',
   analyze_page: 'Greina s\xED\xF0u',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: '\xDAtlit',
   audio_only: 'Einungis hlj\xF3\xF0',
   behavior: 'Heg\xF0un',
   blacklist: 'Bannlisti',
   cancel: 'H\xE6tta vi\xF0',
   chrome_install_firefox: 'Setja upp Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper fyrir Firefox',
+  chrome_install_fx_vdh: ':appName fyrir Firefox',
   chrome_noyt_text:
     '\xDEv\xED mi\xF0ur, leyfir Chrome Web Store ekki vi\xF0b\xE6tur sem s\xE6kja YouTube-myndskei\xF0, \xFEannig a\xF0 vi\xF0 \xFEurftum a\xF0 fjarl\xE6gja \xFEennan eiginleika.',
   chrome_noyt_text2:
-    '\xDE\xFA getur nota\xF0 VDH-ni\xF0urhalshj\xE1lpina til a\xF0 s\xE6kja YouTube-myndskei\xF0 me\xF0 Firefox-\xFAtg\xE1funni.',
+    '\xDE\xFA getur nota\xF0 :appName-ni\xF0urhalshj\xE1lpina til a\xF0 s\xE6kja YouTube-myndskei\xF0 me\xF0 Firefox-\xFAtg\xE1funni.',
   chrome_warning_yt: 'A\xF0v\xF6run vegna Chrome-vi\xF0b\xF3ta og YouTube',
   clear_hits: 'Hreinsa samsvaranir',
   clear_logs: 'Hreinsa ann\xE1la',
@@ -11533,7 +11529,7 @@ var translationsIs = {
   dlconv_download_and_convert: 'S\xE6kja og umbreyta',
   dlconv_output_details: 'Stilla fr\xE1lag n\xE1nar',
   donate: 'Styrkja',
-  donate_vdh: 'Hj\xE1lpa Video DownloadHelper',
+  donate_vdh: 'Hj\xE1lpa :appName',
   downloading: 'S\xE6ki...',
   errors: 'Villur',
   explain_qr1:
@@ -11587,7 +11583,7 @@ var translationsIs = {
     'Myndir\xF0u \xEDhuga a\xF0 sty\xF0ja vi\xF0 verkefni\xF0 og gefa einhverja sm\xE1upph\xE6\xF0 ?',
   req_review:
     'N\xFA, e\xF0a kannski skrifa skemmtilega ums\xF6gn \xE1 vefsv\xE6\xF0inu fyrir Mozilla vi\xF0b\xE6turnar ?',
-  req_review_link: 'Skrifa ums\xF6gn um VDH-ni\xF0urhalshj\xE1lpina',
+  req_review_link: 'Skrifa ums\xF6gn um :appName-ni\xF0urhalshj\xE1lpina',
   running: '\xCD gangi',
   save: 'Vista',
   select_files_to_convert: 'Umbreyta sta\xF0v\xE6rum skr\xE1m',
@@ -11606,11 +11602,11 @@ var translationsIs = {
   smartnamer_xpath_expr: 'XPath-seg\xF0',
   supported_sites: 'Studd vefsv\xE6\xF0i',
   tell_me_more: 'Seg\xF0u m\xE9r meira um \xFEetta',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   validate_license: 'Skr\xE1 notkunarleyfi',
   variants_list_adp: 'A\xF0laganleg tilbrig\xF0i (ADP)',
   variants_list_full: 'Tilbrig\xF0i',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: '\xDAtg\xE1fa $1',
   video_only: 'Einungis myndskei\xF0',
   video_qualities: 'G\xE6\xF0i myndskei\xF0a',
@@ -11705,7 +11701,7 @@ var translationsIs = {
   weh_prefs_titleMode_option_multiline: 'Yfir margar l\xEDnur',
   weh_prefs_titleMode_option_right: '\xDArfellingarmerki til h\xE6gri',
   you_downloaded_n_videos:
-    '\xDE\xFA varst a\xF0 s\xE6kja skr\xE1 n\xFAmer $1th me\xF0 VDH-ni\xF0urhalshj\xE1lpinni.',
+    '\xDE\xFA varst a\xF0 s\xE6kja skr\xE1 n\xFAmer $1th me\xF0 :appName-ni\xF0urhalshj\xE1lpinni.',
   v9_no_media_current_tab:
     'Engin margmi\xF0lunarg\xF6gn til a\xF0 vinna me\xF0 \xED n\xFAverandi flipa',
   v9_no_media_to_process_descr:
@@ -11716,7 +11712,7 @@ var translationsIs = {
     '\xDE\xFA ba\xF0st, anna\xF0 hvort s\xE9rstaklega e\xF0a me\xF0 reglum fyrir sj\xE1lfvirka umbreytingu, um a\xF0 \xFAtb\xFAin v\xE6ri margmi\xF0lunarskr\xE1 sem inniheldur eing\xF6ngu hlj\xF3\xF0. \xDEetta krefst skr\xE1\xF0s umbreytiforrits.',
   v9_chrome_warning_yt: 'A\xF0v\xF6run vegna Chrome-vi\xF0b\xF3ta og YouTube',
   v9_chrome_noyt_text2:
-    '\xDE\xFA getur nota\xF0 VDH-ni\xF0urhalshj\xE1lpina til a\xF0 s\xE6kja YouTube-myndskei\xF0 me\xF0 Firefox-\xFAtg\xE1funni.',
+    '\xDE\xFA getur nota\xF0 :appName-ni\xF0urhalshj\xE1lpina til a\xF0 s\xE6kja YouTube-myndskei\xF0 me\xF0 Firefox-\xFAtg\xE1funni.',
   v9_about_qr: 'Skr\xE1 \xFAtb\xFAin',
   v9_explain_qr1:
     '\xDE\xFA munt taka eftir \xFEv\xED a\xF0 myndskei\xF0i\xF0 mun innifela vatnsmerki \xED horninu.',
@@ -11725,11 +11721,11 @@ var translationsIs = {
   v9_settings: 'Stillingar',
   v9_weh_prefs_label_downloadControlledMax:
     'H\xE1marksfj\xF6ldi samt\xEDmis ni\xF0urhala',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" er n\xFAna tilb\xFAi\xF0',
 };
 var translationsIt = {
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   Bytes: '$1 Byte',
   GB: '$1 GB',
   KB: '$1 KB',
@@ -11741,7 +11737,7 @@ var translationsIt = {
   about_beta_intro: 'Questa \xE8 una versione beta.',
   about_chrome_licenses: 'Info sulla licenza Chrome',
   about_qr: 'File generato',
-  about_vdh: 'Info su Video DownloadHelper',
+  about_vdh: 'Info su :appName',
   action_abort_description: 'Annulla azione in esecuzione',
   action_abort_title: 'Annulla',
   action_as_default: 'Usa questa azione come predefinita',
@@ -11798,7 +11794,7 @@ var translationsIt = {
   aggregating: 'Unione...',
   analyze_page: 'Analizza pagina',
   appDesc: 'Scarica video dal web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Aspetto',
   audio_only: 'Solo audio',
   behavior: 'Comportamento',
@@ -11813,7 +11809,7 @@ var translationsIt = {
   build_options: 'Opzioni versione: $1',
   built_on: 'Compilato il $1',
   bulk_in_progress:
-    'Video DownloadHelper \xE8 in elaborazione. Non chiudere questa scheda, verr\xE0 chiusa automaticamente',
+    ':appName \xE8 in elaborazione. Non chiudere questa scheda, verr\xE0 chiusa automaticamente',
   bulk_n_videos: '$1 video',
   cancel: 'Annulla',
   change: 'Modifica',
@@ -11829,13 +11825,13 @@ var translationsIt = {
   chrome_inapp_premium_monthly: 'Abbonamento mensile Premium',
   chrome_inapp_premium_yearly: 'Abbonamento annuale Premium',
   chrome_install_firefox: 'Installa Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper per Firefox',
+  chrome_install_fx_vdh: ':appName per Firefox',
   chrome_license_webstore_accepted: 'Attiva licenza dal web store di Chrome',
   chrome_licensing: 'Licenza Chrome',
   chrome_noyt_text:
     'Sfortunatamente, il web store di Chrome non consente estensioni per lo scaricamento di video da YouTube, pertanto si \xE8 reso necessario rimuovere questa funzionalit\xE0.',
   chrome_noyt_text2:
-    'Puoi usare Video DownloadHelper con Firefox per scaricare video da YouTube.',
+    'Puoi usare :appName con Firefox per scaricare video da YouTube.',
   chrome_noyt_text3:
     "Sfortunatamente, il web Store di Chrome non accetta estensioni per lo scaricamento di video da YouTube, quindi non abbiamo potuto includere questa funzione nella versione dell'estensione per Chrome.",
   chrome_premium_audio:
@@ -11964,7 +11960,7 @@ var translationsIt = {
   dlconv_download_and_convert: 'Scarica e converti',
   dlconv_output_details: 'Configura dettagli destinazione',
   donate: 'Dona',
-  donate_vdh: 'Aiuta Video DownloadHelper',
+  donate_vdh: 'Aiuta :appName',
   download_error: 'Errore scaricamento',
   download_method: 'Metodo scaricamento',
   download_method_not_again:
@@ -12104,7 +12100,7 @@ var translationsIt = {
     'O forse puoi aiutare a tradurre il componente aggiuntivo in $1 ($2 stringhe non tradotte)?',
   req_review:
     'Oppure, ti dispiacerebbe scrivere una recensione positiva sul sito di Mozilla del componente aggiuntivo?',
-  req_review_link: 'Scrivi una recensione su Video DownloadHelper',
+  req_review_link: 'Scrivi una recensione su :appName',
   reset_settings: 'Ripristina impostazioni',
   running: 'In esecuzione',
   save: 'Salva',
@@ -12143,13 +12139,13 @@ var translationsIt = {
   tbsn_quality_hd: 'Qualit\xE0 media',
   tbsn_quality_sd: 'Qualit\xE0 bassa',
   tell_me_more: 'Dammi altre informazioni',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Traduzione',
   up: 'Su',
   validate_license: 'Registra licenza',
   variants_list_adp: 'Varianti adattive',
   variants_list_full: 'Varianti',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Versione $1',
   video_only: 'Solo video',
   video_qualities: 'Qualit\xE0 video',
@@ -12389,7 +12385,7 @@ var translationsIt = {
   weh_prefs_titleMode_option_right: 'Puntini di sospensione a destra',
   yes: 'S\xEC',
   you_downloaded_n_videos:
-    'Hai appena completato lo scaricamento del file n\xB0 $1 con Video DownloadHelper!',
+    'Hai appena completato lo scaricamento del file n\xB0 $1 con :appName!',
   v9_yes: 'S\xEC',
   v9_no: 'No',
   v9_error: 'Errore',
@@ -12418,7 +12414,7 @@ var translationsIt = {
   v9_chrome_noyt_text3:
     "Sfortunatamente, il web store di Chrome non accetta estensioni per lo scaricamento di video da YouTube, quindi non abbiamo potuto includere questa funzione nella versione dell'estensione per Chrome.",
   v9_chrome_noyt_text2:
-    'Per scaricare video da YouTube puoi usare Video DownloadHelper con Firefox.',
+    'Per scaricare video da YouTube puoi usare :appName con Firefox.',
   v9_about_qr: 'File generato',
   v9_explain_qr1:
     'Noterai che il video risultante avr\xE0 una filigrana in un angolo.',
@@ -12438,7 +12434,7 @@ var translationsIt = {
   v9_mup_max_variants: 'Numero variabti',
   v9_weh_prefs_description_contextMenuEnabled:
     'Accedi ai comandi nella pagina con il clic destro del mouse',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: 'Il file $1 \xE8 pronto',
   v9_lic_status_unset: 'Licenza non impostata',
   v9_lic_status_blocked: 'Licenza bloccata',
@@ -12539,14 +12535,14 @@ var translationsIt = {
   v9_save: 'Salva',
   v9_user_message_no_incognito_title: 'Nessuna modalit\xE0 incognito',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper non \xE8 abilitato nelle finestre privata/in incognito. \xC8 necessario attivare questa opzione manualmente (non \xE8 necessario).',
+    ':appName non \xE8 abilitato nelle finestre privata/in incognito. \xC8 necessario attivare questa opzione manualmente (non \xE8 necessario).',
   v9_user_message_no_incognito_open_settings:
     'Abilita nelle Impostazioni del browser',
   v9_yt_bulk_detected: 'Rilevati $1 video in Youtube',
   v9_yt_bulk_detected_trigger: 'Avvia scaricamento in blocco',
   v9_user_message_one_hundred_downloads: 'Hai scaricato 100 video!',
   v9_user_message_one_hundred_downloads_body:
-    'Ci auguriamo che Video DownloadHelper ti piaccia :) Ti dispiacerebbe scrivere una bella recensione sul sito Web del componente aggiuntivo?',
+    'Ci auguriamo che :appName ti piaccia :) Ti dispiacerebbe scrivere una bella recensione sul sito Web del componente aggiuntivo?',
   v9_user_message_one_hundred_downloads_leave_review: 'Lascia una recensione',
   v9_user_message_one_hundred_downloads_never_show_again:
     'Non chiedermelo pi\xF9',
@@ -12556,7 +12552,7 @@ var translationsIt = {
   v9_history_button_start_recording: 'Salva cronologia',
   v9_history_button_stop_recording: 'Non salvare cronologia',
   v9_history_no_recording_description:
-    'Non registriamo la cronologia degli scaricamenti. Vuoi che Video DownloadHelper salvi la cronologia degli scaricamenti?',
+    'Non registriamo la cronologia degli scaricamenti. Vuoi che :appName salvi la cronologia degli scaricamenti?',
   v9_history_no_recording_description_safe:
     'Non preoccuparti, tutto rimane in questo pc. Apprezziamo la tua privacy.',
   v9_history_no_entries: 'Nessuna voce ancora.',
@@ -12581,7 +12577,7 @@ var translationsJa = {
   about_chrome_licenses:
     'Chrome \u30E9\u30A4\u30BB\u30F3\u30B9\u306B\u3064\u3044\u3066',
   about_qr: '\u751F\u6210\u3055\u308C\u305F\u30D5\u30A1\u30A4\u30EB',
-  about_vdh: 'Video DownloadHelper \u306B\u3064\u3044\u3066',
+  about_vdh: ':appName \u306B\u3064\u3044\u3066',
   action_abort_description:
     '\u9032\u884C\u4E2D\u306E\u52D5\u4F5C\u3092\u4E2D\u65AD\u3057\u307E\u3059\u3002',
   action_abort_title: '\u4E2D\u6B62',
@@ -12644,7 +12640,7 @@ var translationsJa = {
   analyze_page: '\u5206\u6790\u30DA\u30FC\u30B8',
   appDesc:
     'Web \u304B\u3089\u30D3\u30C7\u30AA\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3059\u308B',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: '\u5916\u89B3',
   audio_only: '\u30AA\u30FC\u30C7\u30A3\u30AA\u306E\u307F',
   behavior: '\u52D5\u4F5C',
@@ -12685,14 +12681,14 @@ var translationsJa = {
     '\u5E74\u9593\u30D7\u30EC\u30DF\u30A2\u30E0\u5B9A\u671F\u8CFC\u8AAD',
   chrome_install_firefox:
     'Firefox \u3092\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u3059\u308B',
-  chrome_install_fx_vdh: 'Firefox \u7528 Video DownloadHelper',
+  chrome_install_fx_vdh: 'Firefox \u7528 :appName',
   chrome_license_webstore_accepted:
     'Chrome \u30A6\u30A7\u30D6\u30B9\u30C8\u30A2\u304B\u3089\u306E\u6709\u52B9\u306A\u30E9\u30A4\u30BB\u30F3\u30B9',
   chrome_licensing: 'Chrome \u306E\u30E9\u30A4\u30BB\u30F3\u30B9',
   chrome_noyt_text:
     '\u7533\u3057\u8A33\u3042\u308A\u307E\u305B\u3093\u304C\u3001Chrome \u30A6\u30A7\u30D6\u30B9\u30C8\u30A2\u3067\u306F YouTube \u306E\u52D5\u753B\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3059\u308B\u305F\u3081\u306E\u62E1\u5F35\u6A5F\u80FD\u3092\u4F7F\u7528\u3067\u304D\u306A\u3044\u305F\u3081\u3001\u3053\u306E\u6A5F\u80FD\u3092\u524A\u9664\u3059\u308B\u5FC5\u8981\u304C\u3042\u308A\u307E\u3057\u305F\u3002',
   chrome_noyt_text2:
-    'Video DownloadHelper \u3092\u4F7F\u7528\u3059\u308B\u3068\u3001Firefox \u7248\u3067 YouTube \u306E\u52D5\u753B\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3067\u304D\u307E\u3059\u3002',
+    ':appName \u3092\u4F7F\u7528\u3059\u308B\u3068\u3001Firefox \u7248\u3067 YouTube \u306E\u52D5\u753B\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3067\u304D\u307E\u3059\u3002',
   chrome_noyt_text3:
     '\u7533\u3057\u8A33\u3042\u308A\u307E\u305B\u3093\u304C\u3001Chrome \u30A6\u30A7\u30D6\u30B9\u30C8\u30A2\u3067\u306F YouTube \u52D5\u753B\u306E\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u7528\u306E\u62E1\u5F35\u6A5F\u80FD\u304C\u8A31\u53EF\u3055\u308C\u306A\u3044\u305F\u3081\u3001\u3053\u306E\u6A5F\u80FD\u3092 Chrome \u30D0\u30FC\u30B8\u30E7\u30F3\u306E\u62E1\u5F35\u6A5F\u80FD\u306B\u542B\u3081\u308B\u3053\u3068\u304C\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002',
   chrome_premium_audio:
@@ -12854,7 +12850,7 @@ var translationsJa = {
   dlconv_output_details:
     '\u51FA\u529B\u306E\u8A73\u7D30\u3092\u8A2D\u5B9A\u3059\u308B',
   donate: '\u5BC4\u4ED8\u3059\u308B',
-  donate_vdh: 'Video DownloadHelper \u306E\u30D8\u30EB\u30D7',
+  donate_vdh: ':appName \u306E\u30D8\u30EB\u30D7',
   download_error: '\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u30A8\u30E9\u30FC',
   download_method: '\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u65B9\u5F0F',
   download_method_not_again:
@@ -13012,7 +13008,7 @@ var translationsJa = {
   req_review:
     '\u3042\u308B\u3044\u306F\u3001Mozilla \u30A2\u30C9\u30AA\u30F3\u306E\u30B5\u30A4\u30C8\u3067\u7D20\u6575\u306A\u30EC\u30D3\u30E5\u30FC\u3092\u66F8\u3044\u3066\u3082\u3089\u3048\u307E\u3059\u304B?',
   req_review_link:
-    'Video DownloadHelper \u306B\u95A2\u3059\u308B\u30EC\u30D3\u30E5\u30FC\u3092\u66F8\u304F',
+    ':appName \u306B\u95A2\u3059\u308B\u30EC\u30D3\u30E5\u30FC\u3092\u66F8\u304F',
   reset_settings: '\u8A2D\u5B9A\u3092\u30EA\u30BB\u30C3\u30C8\u3059\u308B',
   running: '\u7A3C\u50CD\u4E2D',
   save: '\u4FDD\u5B58',
@@ -13064,13 +13060,13 @@ var translationsJa = {
   tbsn_quality_sd: '\u4F4E\u54C1\u8CEA',
   tell_me_more:
     '\u8A73\u7D30\u60C5\u5831\u3092 Web \u3067\u78BA\u8A8D\u3059\u308B',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: '\u7FFB\u8A33\u3092\u7DE8\u96C6\u3059\u308B',
   up: '\u2191',
   validate_license: '\u30E9\u30A4\u30BB\u30F3\u30B9\u767B\u9332',
   variants_list_adp: '\u9069\u5FDC\u3057\u305F\u5909\u7A2E',
   variants_list_full: '\u5909\u7A2E',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: '\u30D0\u30FC\u30B8\u30E7\u30F3 $1',
   video_only: '\u30D3\u30C7\u30AA\u306E\u307F',
   video_qualities: '\u30D3\u30C7\u30AA\u306E\u54C1\u8CEA',
@@ -13366,7 +13362,7 @@ var translationsJa = {
     '\u53F3\u5074\u3092\u7701\u7565\u3057\u3066\u8868\u793A',
   yes: '\u306F\u3044',
   you_downloaded_n_videos:
-    'Video DownloadHelper \u3067 $1 \u500B\u76EE\u306E\u30D5\u30A1\u30A4\u30EB\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3057\u307E\u3057\u305F\u3002',
+    ':appName \u3067 $1 \u500B\u76EE\u306E\u30D5\u30A1\u30A4\u30EB\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3057\u307E\u3057\u305F\u3002',
   v9_yes: '\u306F\u3044',
   v9_no: '\u3044\u3044\u3048',
   v9_error: '\u30A8\u30E9\u30FC',
@@ -13399,7 +13395,7 @@ var translationsJa = {
   v9_chrome_noyt_text3:
     '\u7533\u3057\u8A33\u3042\u308A\u307E\u305B\u3093\u304C\u3001Chrome \u30A6\u30A7\u30D6\u30B9\u30C8\u30A2\u3067\u306F YouTube \u52D5\u753B\u306E\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u7528\u306E\u62E1\u5F35\u6A5F\u80FD\u304C\u8A31\u53EF\u3055\u308C\u306A\u3044\u305F\u3081\u3001\u3053\u306E\u6A5F\u80FD\u3092 Chrome \u30D0\u30FC\u30B8\u30E7\u30F3\u306E\u62E1\u5F35\u6A5F\u80FD\u306B\u542B\u3081\u308B\u3053\u3068\u304C\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\u3002',
   v9_chrome_noyt_text2:
-    'Firefox \u7248\u306A\u3089\u3001Video DownloadHelper \u3092\u4F7F\u7528\u3057\u3066 YouTube \u306E\u52D5\u753B\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3067\u304D\u307E\u3059\u3002',
+    'Firefox \u7248\u306A\u3089\u3001:appName \u3092\u4F7F\u7528\u3057\u3066 YouTube \u306E\u52D5\u753B\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3067\u304D\u307E\u3059\u3002',
   v9_about_qr: '\u751F\u6210\u3055\u308C\u305F\u30D5\u30A1\u30A4\u30EB',
   v9_explain_qr1:
     '\u51FA\u529B\u3055\u308C\u305F\u30D3\u30C7\u30AA\u306E\u89D2\u306B\u900F\u304B\u3057\u304C\u542B\u307E\u308C\u3066\u3044\u308B\u3053\u3068\u304C\u308F\u304B\u308A\u307E\u3059\u3002',
@@ -13424,7 +13420,7 @@ var translationsJa = {
     '\u6700\u5927\u540C\u6642\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u6570',
   v9_weh_prefs_description_contextMenuEnabled:
     '\u30DA\u30FC\u30B8\u5185\u3092\u53F3\u30AF\u30EA\u30C3\u30AF\u3057\u3066\u30B3\u30DE\u30F3\u30C9\u306B\u30A2\u30AF\u30BB\u30B9\u3057\u307E\u3059\u3002',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready:
     '"$1" \u306F\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u5B8C\u4E86\u3067\u3059\u3002',
   v9_lic_status_unset: '\u30E9\u30A4\u30BB\u30F3\u30B9\u304C\u672A\u8A2D\u5B9A',
@@ -13436,7 +13432,7 @@ var translationsJa = {
     '\u30E9\u30A4\u30BB\u30F3\u30B9\u306F $1 \u7528\u3067\u3059\u304C\u3001\u62E1\u5F35\u69CB\u7BC9\u306F $2 \u7528\u3067\u3059\u3002',
   v9_no_license_registered:
     '\u30E9\u30A4\u30BB\u30F3\u30B9\u306F\u767B\u9332\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002',
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   v9_blacklist_glob:
     '\u3088\u308A\u5E83\u7BC4\u56F2\u306E\u4E00\u81F4\u306B\u306F\u300C*\u300D\u3092\u4F7F\u7528\u3057\u307E\u3059\u3002',
   v9_checkbox_remember_action:
@@ -13566,13 +13562,13 @@ var translationsJa = {
   v9_user_message_auto_hide_downloaded:
     '\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3057\u305F\u30E1\u30C7\u30A3\u30A2\u3092\u81EA\u52D5\u7684\u306B\u975E\u8868\u793A\u306B\u3057\u307E\u3059\u304B?',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper \u306F\u30D7\u30E9\u30A4\u30D9\u30FC\u30C8/\u30B7\u30FC\u30AF\u30EC\u30C3\u30C8 \u30A6\u30A3\u30F3\u30C9\u30A6\u3067\u306F\u6709\u52B9\u306B\u306A\u308A\u307E\u305B\u3093\u3002\u305D\u306E\u30AA\u30D7\u30B7\u30E7\u30F3\u3092\u624B\u52D5\u3067\u30AA\u30F3\u306B\u3059\u308B\u5FC5\u8981\u304C\u3042\u308A\u307E\u3059 (\u3053\u308C\u306F\u5FC5\u9808\u3067\u306F\u3042\u308A\u307E\u305B\u3093)\u3002',
+    ':appName \u306F\u30D7\u30E9\u30A4\u30D9\u30FC\u30C8/\u30B7\u30FC\u30AF\u30EC\u30C3\u30C8 \u30A6\u30A3\u30F3\u30C9\u30A6\u3067\u306F\u6709\u52B9\u306B\u306A\u308A\u307E\u305B\u3093\u3002\u305D\u306E\u30AA\u30D7\u30B7\u30E7\u30F3\u3092\u624B\u52D5\u3067\u30AA\u30F3\u306B\u3059\u308B\u5FC5\u8981\u304C\u3042\u308A\u307E\u3059 (\u3053\u308C\u306F\u5FC5\u9808\u3067\u306F\u3042\u308A\u307E\u305B\u3093)\u3002',
   v9_user_message_no_incognito_open_settings:
     '\u30D6\u30E9\u30A6\u30B6\u8A2D\u5B9A\u3067\u6709\u52B9\u306B\u3059\u308B',
   v9_user_message_no_incognito_title:
     '\u30B7\u30FC\u30AF\u30EC\u30C3\u30C8\u30E2\u30FC\u30C9\u306A\u3057',
   v9_user_message_one_hundred_downloads_body:
-    'Video DownloadHelper \u3092\u304A\u697D\u3057\u307F\u3044\u305F\u3060\u3051\u308C\u3070\u5E78\u3044\u3067\u3059 :) \u30A2\u30C9\u30AA\u30F3 Web \u30B5\u30A4\u30C8\u306B\u7D20\u6575\u306A\u30EC\u30D3\u30E5\u30FC\u3092\u66F8\u3044\u3066\u3044\u305F\u3060\u3051\u307E\u305B\u3093\u304B?',
+    ':appName \u3092\u304A\u697D\u3057\u307F\u3044\u305F\u3060\u3051\u308C\u3070\u5E78\u3044\u3067\u3059 :) \u30A2\u30C9\u30AA\u30F3 Web \u30B5\u30A4\u30C8\u306B\u7D20\u6575\u306A\u30EC\u30D3\u30E5\u30FC\u3092\u66F8\u3044\u3066\u3044\u305F\u3060\u3051\u307E\u305B\u3093\u304B?',
   v9_yt_bulk_detected_trigger:
     '\u4E00\u62EC\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u3092\u958B\u59CB',
 };
@@ -13588,7 +13584,7 @@ var translationsKo = {
   about_chrome_licenses:
     '\uD06C\uB86C \uB77C\uC774\uC13C\uC2A4\uC5D0 \uB300\uD558\uC5EC',
   about_qr: '\uD30C\uC77C \uC0DD\uC131\uB428',
-  about_vdh: 'Video DownloadHelper \uC815\uBCF4',
+  about_vdh: ':appName \uC815\uBCF4',
   action_abort_description:
     '\uC9C4\uD589\uC911\uC778 \uC791\uC5C5 \uC911\uB2E8',
   action_abort_title: '\uC911\uB2E8',
@@ -13644,7 +13640,7 @@ var translationsKo = {
   aggregating: '\uBAA8\uC73C\uB294 \uC911...',
   analyze_page: '\uD398\uC774\uC9C0 \uBD84\uC11D',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: '\uC678\uD615',
   audio_only: '\uC624\uB514\uC624',
   behavior: '\uB3D9\uC791',
@@ -13691,7 +13687,7 @@ var translationsKo = {
   chrome_noyt_text:
     '\uBD88\uD589\uD558\uAC8C\uB3C4, \uD06C\uB86C \uC6F9 \uC2A4\uD1A0\uC5B4\uB294 \uC720\uD29C\uBE0C \uB3D9\uC601\uC0C1',
   chrome_noyt_text2:
-    '\uD30C\uC774\uC5B4\uD3ED\uC2A4 \uBC84\uC804 Video DownloadHelper\uB97C \uC0AC\uC6A9\uD558\uBA74 \uC720\uD29C\uBE0C \uB3D9\uC601\uC0C1\uC744 \uB2E4\uC6B4\uB85C\uB4DC \uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.',
+    '\uD30C\uC774\uC5B4\uD3ED\uC2A4 \uBC84\uC804 :appName\uB97C \uC0AC\uC6A9\uD558\uBA74 \uC720\uD29C\uBE0C \uB3D9\uC601\uC0C1\uC744 \uB2E4\uC6B4\uB85C\uB4DC \uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.',
   chrome_noyt_text3:
     '\uD06C\uB86C \uC6F9 \uC2A4\uD1A0\uC5B4\uAC00 \uC720\uD29C\uBE0C \uBE44\uB514\uC624 \uB2E4\uC6B4\uB85C\uB4DC\uB97C \uC9C0\uC6D0\uD558\uB294 \uD655\uC7A5\uAE30\uB2A5\uC744 \uD5C8\uC6A9\uD558\uC9C0 \uC54A\uC544, \uC6B0\uB9AC\uB294 \uD06C\uB86C \uD655\uC7A5\uAE30\uB2A5\uC5D0 \uC774 \uAE30\uB2A5\uC744 \uD3EC\uD568\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.',
   chrome_premium_audio:
@@ -13808,7 +13804,7 @@ var translationsKo = {
   dlconv_download_and_convert: '\uB2E4\uC6B4\uB85C\uB4DC \uBC0F \uBCC0\uD658',
   dlconv_output_details: '\uCD9C\uB825 \uC0C1\uC138 \uC815\uBCF4 \uAD6C\uC131',
   donate: '\uAE30\uBD80',
-  donate_vdh: 'Video DownloadHelper \uB3C4\uC6C0\uB9D0',
+  donate_vdh: ':appName \uB3C4\uC6C0\uB9D0',
   download_error: '\uB2E4\uC6B4\uB85C\uB4DC \uC624\uB958',
   download_method: '\uB2E4\uC6B4\uB85C\uB4DC \uBC29\uBC95',
   download_method_not_again:
@@ -13882,7 +13878,7 @@ var translationsKo = {
     '\uAC1C\uBC1C\uC744 \uC9C0\uC6D0\uD558\uACE0 \uC870\uADF8\uB9CC\uD55C \uAC83\uC774\uB77C\uB3C4 \uAE30\uBD80\uD558\uAE38 \uC6D0\uD558\uC2ED\uB2C8\uAE4C?',
   req_review:
     '\uB2E4\uB978 \uBC29\uBC95\uC73C\uB85C, \uBAA8\uC9C8\uB77C \uBD80\uAC00\uAE30\uB2A5 \uC6F9\uC0AC\uC774\uD2B8\uC5D0\uC11C \uC88B\uC740 \uB9AC\uBDF0\uB97C \uC4F0\uB294 \uAC83\uC740 \uC5B4\uB5A8\uAE4C\uC694?',
-  req_review_link: 'Video DownloadHelper \uB9AC\uBDF0 \uC791\uC131',
+  req_review_link: ':appName \uB9AC\uBDF0 \uC791\uC131',
   reset_settings: '\uC124\uC815 \uCD08\uAE30\uD654',
   running: '\uC2E4\uD589 \uC911',
   save: '\uC800\uC7A5',
@@ -13983,7 +13979,7 @@ var translationsKo = {
   v9_chrome_noyt_text3:
     '\uD06C\uB86C \uC6F9 \uC2A4\uD1A0\uC5B4\uAC00 \uC720\uD29C\uBE0C \uBE44\uB514\uC624 \uB2E4\uC6B4\uB85C\uB4DC\uB97C \uC9C0\uC6D0\uD558\uB294 \uD655\uC7A5\uAE30\uB2A5\uC744 \uD5C8\uC6A9\uD558\uC9C0 \uC54A\uC544, \uC6B0\uB9AC\uB294 \uD06C\uB86C \uD655\uC7A5\uAE30\uB2A5\uC5D0 \uC774 \uAE30\uB2A5\uC744 \uD3EC\uD568\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.',
   v9_chrome_noyt_text2:
-    '\uD30C\uC774\uC5B4\uD3ED\uC2A4 \uBC84\uC804 Video DownloadHelper\uB97C \uC0AC\uC6A9\uD558\uBA74 \uC720\uD29C\uBE0C \uB3D9\uC601\uC0C1\uC744 \uB2E4\uC6B4\uB85C\uB4DC \uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.',
+    '\uD30C\uC774\uC5B4\uD3ED\uC2A4 \uBC84\uC804 :appName\uB97C \uC0AC\uC6A9\uD558\uBA74 \uC720\uD29C\uBE0C \uB3D9\uC601\uC0C1\uC744 \uB2E4\uC6B4\uB85C\uB4DC \uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.',
   v9_about_qr: '\uD30C\uC77C \uC0DD\uC131\uB428',
   v9_explain_qr1:
     '\uACB0\uACFC \uBE44\uB514\uC624 \uCF54\uB108 \uBD80\uBD84\uC5D0 \uC6CC\uD130\uB9C8\uD06C\uAC00 \uC788\uB294 \uAC83\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4.',
@@ -14009,7 +14005,7 @@ var translationsNb = {
   about_beta_intro: 'Dette er en betaversjon.',
   about_chrome_licenses: 'Om Chrome-lisenser',
   about_qr: 'Fil generert',
-  about_vdh: 'Om Video DownloadHelper',
+  about_vdh: 'Om :appName',
   action_abort_description: 'Avbryt gjeldende operasjon',
   action_abort_title: 'Avbryt',
   action_as_default: 'Utf\xF8r denne handlingen som standard',
@@ -14051,7 +14047,7 @@ var translationsNb = {
   aggregating: 'Aggregerer',
   analyze_page: 'Analyser siden.',
   appDesc: 'Last ned videoer fra Internett',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Utseende',
   audio_only: 'Kun audio',
   behavior: 'Oppf\xF8rsel',
@@ -14070,13 +14066,13 @@ var translationsNb = {
   chrome_inapp_premium_monthly: 'M\xE5nedlig Premium-abonnement',
   chrome_inapp_premium_yearly: '\xC5rlig Premium-abonnement',
   chrome_install_firefox: 'Installer Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper for Firefox',
+  chrome_install_fx_vdh: ':appName for Firefox',
   chrome_license_webstore_accepted: 'Aktiv lisens fra Chrome Webstore',
   chrome_licensing: 'Chrome-lisensiering',
   chrome_noyt_text:
     'Dessverre tillater ikke Chrome Web Store utvidelser som laster ned videoer fra YouTube, s\xE5 vi ble n\xF8dt til \xE5 fjerne denne funksjonen.',
   chrome_noyt_text2:
-    'Du kan bruke Video DownloadHelper for \xE5 laste ned YouTube videoer p\xE5 Firefox-versjonen.',
+    'Du kan bruke :appName for \xE5 laste ned YouTube videoer p\xE5 Firefox-versjonen.',
   chrome_premium_audio:
     'Generering av kun lydfiler er bare tilgjengelig i Premium-modus',
   chrome_premium_check_error: 'Feil ved sjekk av Premium-status',
@@ -14146,7 +14142,7 @@ var translationsNb = {
   dlconv_download_and_convert: 'Last ned og konverter',
   dlconv_output_details: 'Konfigurer detaljer',
   donate: 'Doner',
-  donate_vdh: 'Hjelp Video DownloadHelper',
+  donate_vdh: 'Hjelp :appName',
   downloading: 'Laster ned...',
   errors: 'Feil',
   explain_qr1:
@@ -14192,7 +14188,7 @@ var translationsNb = {
   req_donate: 'Kunne du tenke deg \xE5 st\xF8tte utviklingen og donere litt?',
   req_review:
     'Alternativt, kunne du tenkt deg \xE5 skrive en hyggelig anmeldelse p\xE5 Mozilla sin utvidelsesside?',
-  req_review_link: 'Skriv en anmeldelse om Video DownloadHelper',
+  req_review_link: 'Skriv en anmeldelse om :appName',
   running: 'Kj\xF8rer',
   save: 'Lagre',
   select_files_to_convert: 'Konverter lokale filer',
@@ -14207,11 +14203,11 @@ var translationsNb = {
   smartnamer_xpath_expr: 'XPath uttrykk',
   supported_sites: 'St\xF8ttede sider',
   tell_me_more: 'Fortell meg mer',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   validate_license: 'Registrer lisens',
   variants_list_adp: 'Adaptive varianter',
   variants_list_full: 'Varianter',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Version',
   video_only: 'Kun video',
   video_qualities: 'Videoegenskaper',
@@ -14260,7 +14256,7 @@ var translationsNb = {
   weh_prefs_smartnamerFnameSpaces_option_underscore: 'Erstatt med understrek',
   yes: 'Ja',
   you_downloaded_n_videos:
-    'Du har nettopp lastet ned din $1th vellykkede fil med Video DownloadHelper.',
+    'Du har nettopp lastet ned din $1th vellykkede fil med :appName.',
   v9_yes: 'Ja',
   v9_no_media_current_tab: 'Ingen media \xE5 behandle i n\xE5v\xE6rende fane',
   v9_no_media_to_process_descr:
@@ -14272,7 +14268,7 @@ var translationsNb = {
   v9_chrome_premium_required: 'Premium-status kreves',
   v9_chrome_warning_yt: 'Advarsel om Chrome utvidelser og YouTube',
   v9_chrome_noyt_text2:
-    'Du kan bruke Video DownloadHelper for \xE5 laste ned YouTube videoer p\xE5 Firefox-versjonen.',
+    'Du kan bruke :appName for \xE5 laste ned YouTube videoer p\xE5 Firefox-versjonen.',
   v9_about_qr: 'Fil generert',
   v9_explain_qr1:
     'Du vil legge merke til at videoen vil inneholde et vannmerke i hj\xF8rnet.',
@@ -14280,7 +14276,7 @@ var translationsNb = {
   v9_tell_me_more: 'Fortell meg mer',
   v9_settings: 'Innstillinger',
   v9_weh_prefs_label_downloadControlledMax: 'Maks. samtidige nedlastinger',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" er n\xE5 klar',
 };
 var translationsNl = {
@@ -14295,7 +14291,7 @@ var translationsNl = {
   about_beta_intro: 'Dit is een b\xE8taversie.',
   about_chrome_licenses: 'Over Chrome licenties',
   about_qr: 'Bestand aangemaakt',
-  about_vdh: 'Over Video DownloadHelper',
+  about_vdh: 'Over :appName',
   action_abort_description: 'Lopende actie afbreken',
   action_abort_title: 'Afbreken',
   action_as_default: 'Deze actie standaard gebruiken',
@@ -14339,7 +14335,7 @@ var translationsNl = {
   aggregating: 'Samenvoegen\u2026',
   analyze_page: 'Pagina analyseren',
   appDesc: 'Download videos van het web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Weergave',
   audio_only: 'Alleen audio',
   behavior: 'Gedrag',
@@ -14354,7 +14350,7 @@ var translationsNl = {
   build_options: 'Buildopties: $1',
   built_on: 'Gebouwd op $1',
   bulk_in_progress:
-    'Video DownloadHelper bulk download bezig. Sluit dit tabblad niet, dat gebeurt automatisch',
+    ':appName bulk download bezig. Sluit dit tabblad niet, dat gebeurt automatisch',
   bulk_n_videos: "$1 video's",
   cancel: 'Annuleren',
   change: 'Wijzigen',
@@ -14370,13 +14366,13 @@ var translationsNl = {
   chrome_inapp_premium_monthly: 'Maandelijks Premiumabonnement',
   chrome_inapp_premium_yearly: 'Jaarlijks Premiumabonnement',
   chrome_install_firefox: 'Installeer Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper voor Firefox',
+  chrome_install_fx_vdh: ':appName voor Firefox',
   chrome_license_webstore_accepted: 'Actieve licentie uit de Chrome Webstore',
   chrome_licensing: 'Chromelicentie',
   chrome_noyt_text:
     'Jammer genoeg laat de Chrome Web Store geen extensies om YouTubefilms te downloaden toe, dus moesten we deze feature verwijderen.',
   chrome_noyt_text2:
-    'Met de Firefoxversie kan je Video DownloadHelper wel gebruiken om YouTubefilms te downloaden.',
+    'Met de Firefoxversie kan je :appName wel gebruiken om YouTubefilms te downloaden.',
   chrome_noyt_text3:
     'Helaas, de Chrome Web winkel laat geen invoegtoepassingen toe voor het downloaden van Youtube videos, daarom is deze toevoeging niet bijgevoegd in de Chrome extensie',
   chrome_premium_audio:
@@ -14496,7 +14492,7 @@ var translationsNl = {
   dlconv_download_and_convert: 'Downloaden en converteren',
   dlconv_output_details: 'Uitvoerdetails instellen',
   donate: 'Doneren',
-  donate_vdh: 'Help Video DownloadHelper',
+  donate_vdh: 'Help :appName',
   download_error: 'Downloadfout',
   download_method: 'Downloadmethode',
   download_method_not_again: 'Deze methode volgende keer standaard gebruiken',
@@ -14614,7 +14610,7 @@ var translationsNl = {
     "Of misschien kan je helpen bij het vertalen van de add-on naar het '$1' (er ontbreken nog $2 strings)?",
   req_review:
     'Zou u als alternatief een mooie beoordeling op de Mozilla-add-ons-website willen schrijven?',
-  req_review_link: 'Een beoordeling over Video DownloadHelper schrijven',
+  req_review_link: 'Een beoordeling over :appName schrijven',
   reset_settings: 'Reset de instellingen',
   running: 'Lopend',
   save: 'Opslaan',
@@ -14651,13 +14647,13 @@ var translationsNl = {
   tbsn_quality_hd: 'Gemiddelde kwaliteit',
   tbsn_quality_sd: 'Lage kwaliteit',
   tell_me_more: 'Meer hierover',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Vertaling',
   up: 'Omhoog',
   validate_license: 'Licentie registreren',
   variants_list_adp: 'Adaptieve varianten',
   variants_list_full: 'Varianten',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Versie $1',
   video_only: 'Alleen video',
   video_qualities: 'Videokwaliteiten',
@@ -14875,7 +14871,7 @@ var translationsNl = {
   weh_prefs_titleMode_option_right: 'Ellipsis rechts',
   yes: 'Ja',
   you_downloaded_n_videos:
-    'U hebt zojuist met succes uw $1e bestand met Video DownloadHelper gedownload.',
+    'U hebt zojuist met succes uw $1e bestand met :appName gedownload.',
   v9_yes: 'Ja',
   v9_no: 'Nee',
   v9_error: 'Fout',
@@ -14900,7 +14896,7 @@ var translationsNl = {
   v9_chrome_noyt_text3:
     'Helaas, de Chrome Web winkel laat geen invoegtoepassingen toe voor het downloaden van Youtube videos, daarom is deze toevoeging niet bijgevoegd in de Chrome extensie',
   v9_chrome_noyt_text2:
-    'Met de Firefoxversie kan je Video DownloadHelper wel gebruiken om YouTubefilms te downloaden.',
+    'Met de Firefoxversie kan je :appName wel gebruiken om YouTubefilms te downloaden.',
   v9_about_qr: 'Bestand aangemaakt',
   v9_explain_qr1:
     'U zult zien dat de resulterende video een watermerk in de hoek heeft aangebracht.',
@@ -14918,7 +14914,7 @@ var translationsNl = {
     'Maximaal aantal gelijktijdige downloads',
   v9_weh_prefs_description_contextMenuEnabled:
     "Toegang tot commando's door rechter muisklik op de pagina",
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '\u201C$1\u201D is nu klaar',
   v9_lic_status_unset: 'Licentie niet ingesteld',
   v9_lic_status_blocked: 'Licentie geblokkeerd',
@@ -14926,7 +14922,7 @@ var translationsNl = {
   v9_lic_mismatch2:
     'De licentie is voor $1 maar de extensie is gemaakt voor $2',
   v9_no_license_registered: 'Geen licentie geregistreerd',
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   v9_badge_new: 'Nieuw',
   v9_blacklist_glob: 'Gebruik een * voor een breder resultaat',
   v9_checkbox_remember_action: 'Onthoud als standaard actie',
@@ -15029,7 +15025,7 @@ var translationsNl = {
   v9_yt_bulk_detected_trigger: 'Start de bulk download',
   v9_user_message_one_hundred_downloads: "U heeft 100 video's gedownload!",
   v9_user_message_one_hundred_downloads_body:
-    'Wij hopen dat Video DownloadHelper U bevat :) Zou U een beoordeling voor de website willen schrijven?',
+    'Wij hopen dat :appName U bevat :) Zou U een beoordeling voor de website willen schrijven?',
   v9_user_message_one_hundred_downloads_leave_review:
     'Laat een beoordeling achter',
   v9_user_message_one_hundred_downloads_never_show_again: 'Niet meer vragen',
@@ -15068,7 +15064,7 @@ var translationsPl = {
   about_beta_intro: 'To jest wersja beta.',
   about_chrome_licenses: 'O licencji Chrome',
   about_qr: 'Plik zosta\u0142 wygenerowany',
-  about_vdh: 'Video DownloadHelper \u2013 informacje',
+  about_vdh: ':appName \u2013 informacje',
   action_abort_description: 'Przerwij trwaj\u0105ce dzia\u0142anie',
   action_abort_title: 'Przerwij',
   action_as_default: 'Stosuj to dzia\u0142anie jako domy\u015Blne',
@@ -15114,7 +15110,7 @@ var translationsPl = {
   aggregating: 'Sumowanie\u2026',
   analyze_page: 'Analizuj stron\u0119',
   appDesc: '\u015Aci\u0105gnij wideo ze strony',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Wygl\u0105d',
   audio_only: 'Tylko audio',
   behavior: 'Zachowanie',
@@ -15129,7 +15125,7 @@ var translationsPl = {
   build_options: 'Opcje budowy: $1',
   built_on: 'Budowa w $1',
   bulk_in_progress:
-    'Video DownloadHelper Masowe pobieranie w toku - nie zamykaj tej zak\u0142adki, zostanie ona zamkni\u0119ta automatycznie',
+    ':appName Masowe pobieranie w toku - nie zamykaj tej zak\u0142adki, zostanie ona zamkni\u0119ta automatycznie',
   bulk_n_videos: 'wideo $1',
   cancel: 'Anuluj',
   change: 'Zmie\u0144',
@@ -15145,13 +15141,13 @@ var translationsPl = {
   chrome_inapp_premium_monthly: 'Miesi\u0119czna subskrypcja Premium',
   chrome_inapp_premium_yearly: 'Roczna subskrypcja Premium',
   chrome_install_firefox: 'Zainstaluj Firefoks',
-  chrome_install_fx_vdh: 'Video DownloadHelper dla Firefoxa',
+  chrome_install_fx_vdh: ':appName dla Firefoxa',
   chrome_license_webstore_accepted: 'Aktywna licencja dla Chrome Webstore',
   chrome_licensing: 'Licencje Chrome',
   chrome_noyt_text:
     'Niestety, Chrome Web Store nie pozwala na rozszerzenia umo\u017Cliwiaj\u0105ce pobieranie film\xF3w z serwisu Youtube, wi\u0119c byli\u015Bmy zmuszeni usun\u0105\u0107 t\u0119 funkcj\u0119.',
   chrome_noyt_text2:
-    'Mo\u017Cesz skorzysta\u0107 z Video DownloadHelper dla przegl\u0105darki Firefox, aby pobiera\u0107 filmy z serwisu Youtube.',
+    'Mo\u017Cesz skorzysta\u0107 z :appName dla przegl\u0105darki Firefox, aby pobiera\u0107 filmy z serwisu Youtube.',
   chrome_noyt_text3:
     'Niestety, Chrome Web Store nie pozwala na zamieszczanie rozszerze\u0144 pozwalajacych na pobieranie plik\xF3w wideo z serwisu YouTube. Nie mo\u017Cemy wi\u0119c do\u0142\u0105czy\u0107 tej funkcji do tego rozszerzenia w wersji dla przegl\u0105darki Chrome.',
   chrome_premium_audio:
@@ -15277,7 +15273,7 @@ var translationsPl = {
   dlconv_download_and_convert: 'Pobieranie i konwersja',
   dlconv_output_details: 'Skonfiguruj dane wyj\u015Bciowe',
   donate: 'Dotacja',
-  donate_vdh: 'Video DownloadHelper \u2013 pomoc',
+  donate_vdh: ':appName \u2013 pomoc',
   download_error: 'B\u0142\u0105d pobierania',
   download_method: 'Metoda pobierania',
   download_method_not_again:
@@ -15401,7 +15397,7 @@ var translationsPl = {
     "A mo\u017Ce pom\xF3\u017C t\u0142umaczy\u0107 dodatek na '$1' (brakuje $2 linii)?",
   req_review:
     'Lub napisz wspania\u0142\u0105 recenzj\u0119 na witrynie dodatk\xF3w Mozilli.',
-  req_review_link: 'Napisz opini\u0119 o Video DownloadHelper',
+  req_review_link: 'Napisz opini\u0119 o :appName',
   reset_settings: 'Restartuj ustawienia',
   running: 'Uruchamianie',
   save: 'Zapisz',
@@ -15684,7 +15680,7 @@ var translationsPl = {
   weh_prefs_titleMode_option_right: 'Wielokropek po prawej stronie',
   yes: 'Tak',
   you_downloaded_n_videos:
-    'Za pomoc\u0105 Video DownloadHelpera zosta\u0142 pobrany %ty plik.',
+    'Za pomoc\u0105 :appNamea zosta\u0142 pobrany %ty plik.',
   v9_yes: 'Tak',
   v9_no: 'Nie',
   v9_error: 'B\u0142\u0105d',
@@ -15711,7 +15707,7 @@ var translationsPl = {
   v9_chrome_noyt_text3:
     'Niestety, Chrome Web Store nie pozwala na zamieszczanie rozszerze\u0144 pozwalajacych na pobieranie plik\xF3w wideo z serwisu YouTube. Nie mo\u017Cemy wi\u0119c do\u0142\u0105czy\u0107 tej funkcji do tego rozszerzenia w wersji dla przegl\u0105darki Chrome.',
   v9_chrome_noyt_text2:
-    'Mo\u017Cesz skorzysta\u0107 z Video DownloadHelper dla przegl\u0105darki Firefox, aby pobiera\u0107 filmy z serwisu Youtube.',
+    'Mo\u017Cesz skorzysta\u0107 z :appName dla przegl\u0105darki Firefox, aby pobiera\u0107 filmy z serwisu Youtube.',
   v9_about_qr: 'Plik zosta\u0142 wygenerowany',
   v9_explain_qr1:
     'B\u0119dzie ukazywa\u0142a si\u0119 informacja, \u017Ce skonwertowany film w rogu ekranu b\u0119dzie zawiera\u0142 znak wodny.',
@@ -15846,13 +15842,13 @@ var translationsPl = {
   v9_user_message_auto_hide_downloaded:
     'Automatycznie ukry\u0107 pobrane multimedia?',
   v9_user_message_no_incognito_body:
-    'Narz\u0119dzie Video DownloadHelper nie jest w\u0142\u0105czone w oknach prywatnych/incognito. Musisz w\u0142\u0105czy\u0107 t\u0119 opcj\u0119 r\u0119cznie (nie jest to wymagane).',
+    'Narz\u0119dzie :appName nie jest w\u0142\u0105czone w oknach prywatnych/incognito. Musisz w\u0142\u0105czy\u0107 t\u0119 opcj\u0119 r\u0119cznie (nie jest to wymagane).',
   v9_user_message_no_incognito_open_settings:
     'W\u0142\u0105cz w Ustawieniach przegl\u0105darki',
   v9_user_message_no_incognito_title: 'Brak trybu incognito',
   v9_user_message_one_hundred_downloads: 'Pobra\u0142e\u015B 100 film\xF3w!',
   v9_user_message_one_hundred_downloads_body:
-    'Mamy nadziej\u0119, \u017Ce podoba Ci si\u0119 Video DownloadHelper :) Czy zechcia\u0142by\u015B napisa\u0107 mi\u0142\u0105 recenzj\u0119 na stronie dodatku?',
+    'Mamy nadziej\u0119, \u017Ce podoba Ci si\u0119 :appName :) Czy zechcia\u0142by\u015B napisa\u0107 mi\u0142\u0105 recenzj\u0119 na stronie dodatku?',
   v9_user_message_one_hundred_downloads_leave_review: 'Zostaw recenzj\u0119',
   v9_user_message_one_hundred_downloads_never_show_again: 'Nie pytaj ponownie',
   v9_yt_bulk_detected: 'Wykryto $1 video z Youtube',
@@ -15870,7 +15866,7 @@ var translationsPtBR = {
   about_beta_intro: 'Esta \xE9 uma vers\xE3o beta.',
   about_chrome_licenses: 'Acerca das licen\xE7as Chrome',
   about_qr: 'Arquivo gerado',
-  about_vdh: 'Sobre o Video DownloadHelper',
+  about_vdh: 'Sobre o :appName',
   action_abort_description: 'Anula a a\xE7\xE3o em andamento',
   action_abort_title: 'Anular',
   action_as_default: 'Usar esta a\xE7\xE3o como padr\xE3o',
@@ -15916,7 +15912,7 @@ var translationsPtBR = {
   aggregating: 'Agregando...',
   analyze_page: 'Analisar p\xE1gina',
   appDesc: 'Baixar v\xEDdeos da Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Apar\xEAncia',
   audio_only: 'Somente \xE1udio',
   behavior: 'Comportamento',
@@ -15931,7 +15927,7 @@ var translationsPtBR = {
   build_options: 'Op\xE7\xF5es de Constru\xE7\xE3o: $1',
   built_on: 'Constru\xEDdo em $1',
   bulk_in_progress:
-    'Opera\xE7\xF5es em massa do Video DownloadHelper em progresso. N\xE3o feche esta aba, isso ocorrer\xE1 automaticamente',
+    'Opera\xE7\xF5es em massa do :appName em progresso. N\xE3o feche esta aba, isso ocorrer\xE1 automaticamente',
   bulk_n_videos: '$1 v\xEDdeos',
   cancel: 'Cancelar',
   change: 'Mudar',
@@ -15948,13 +15944,13 @@ var translationsPtBR = {
   chrome_inapp_premium_monthly: 'Inscri\xE7\xE3o Premium mensal',
   chrome_inapp_premium_yearly: 'Inscri\xE7\xE3o Premium anual',
   chrome_install_firefox: 'Instalar Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper para o Firefox',
+  chrome_install_fx_vdh: ':appName para o Firefox',
   chrome_license_webstore_accepted: 'Licen\xE7a Chrome Webstore aceite',
   chrome_licensing: 'Licensiamento do Chrome',
   chrome_noyt_text:
     'Infelizmente, a Loja Web do Chrome n\xE3o permite extens\xF5es para baixar v\xEDdeos do YouTube, ent\xE3o n\xF3s tivemos que remover esta funcionalidade',
   chrome_noyt_text2:
-    'Voc\xEA pode usar o Video DownloadHelper para baixar v\xEDdeos do Youtube na vers\xE3o para Firefox',
+    'Voc\xEA pode usar o :appName para baixar v\xEDdeos do Youtube na vers\xE3o para Firefox',
   chrome_noyt_text3:
     'Infelizmente, a loja do navegador Chrome n\xE3o permite realizar transfer\xEAncias de v\xEDdeos, sendo assim n\xE3o podemos incluir esta fun\xE7\xE3o na vers\xE3o destinada ao Chrome.',
   chrome_premium_audio:
@@ -16080,7 +16076,7 @@ var translationsPtBR = {
   dlconv_download_and_convert: 'Baixar & Converter',
   dlconv_output_details: 'Configurar detalhes de sa\xEDda',
   donate: 'Doe',
-  donate_vdh: 'Ajude o Video DownloadHelper',
+  donate_vdh: 'Ajude o :appName',
   download_error: 'Erro no download',
   download_method: 'M\xE9todo de download',
   download_method_not_again:
@@ -16202,7 +16198,7 @@ var translationsPtBR = {
     "Ou ent\xE3o ajudar traduzindo o add-on para '$1' ? (ainda faltam '$2' strings para traduzir)",
   req_review:
     'Alternativamente, voc\xEA se importaria de escrever um coment\xE1rio legal no site de complementos da Mozilla ?',
-  req_review_link: 'Escreva um coment\xE1rio sobre o Video DownloadHelper',
+  req_review_link: 'Escreva um coment\xE1rio sobre o :appName',
   reset_settings: 'Resetar configura\xE7\xF5es',
   running: 'Executando',
   save: 'Salvar',
@@ -16244,13 +16240,13 @@ var translationsPtBR = {
   tbsn_quality_hd: 'Qualidade m\xE9dia',
   tbsn_quality_sd: 'Qualidade baixa',
   tell_me_more: 'Mais informa\xE7\xF5es sobre isso',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Tradu\xE7\xE3o',
   up: 'Acima',
   validate_license: 'Registrar licen\xE7a',
   variants_list_adp: 'Variantes adapt\xE1veis',
   variants_list_full: 'Variantes',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Vers\xE3o $1',
   video_only: 'Somente v\xEDdeo',
   video_qualities: 'Qualidades de v\xEDdeo',
@@ -16482,7 +16478,7 @@ var translationsPtBR = {
   weh_prefs_titleMode_option_right: 'Retic\xEAncias \xE0 direita',
   yes: 'Sim',
   you_downloaded_n_videos:
-    'Voc\xEA acabou de baixar com sucesso seu $1\xBA arquivo com o Video DownloadHelper.',
+    'Voc\xEA acabou de baixar com sucesso seu $1\xBA arquivo com o :appName.',
   v9_yes: 'Sim',
   v9_no: 'N\xE3o',
   v9_error: 'Erro ',
@@ -16508,7 +16504,7 @@ var translationsPtBR = {
   v9_chrome_noyt_text3:
     'Infelizmente, a loja do navegador Chrome n\xE3o permite realizar transfer\xEAncias de v\xEDdeos, sendo assim n\xE3o podemos incluir esta fun\xE7\xE3o na vers\xE3o destinada ao Chrome.',
   v9_chrome_noyt_text2:
-    'Voc\xEA pode usar o Video DownloadHelper para baixar v\xEDdeos do Youtube na vers\xE3o para Firefox',
+    'Voc\xEA pode usar o :appName para baixar v\xEDdeos do Youtube na vers\xE3o para Firefox',
   v9_about_qr: 'Arquivo gerado',
   v9_explain_qr1:
     "Voc\xEA notar\xE1 que o v\xEDdeo resultante cont\xE9m uma marca d'\xE1gua no canto.",
@@ -16526,7 +16522,7 @@ var translationsPtBR = {
     'M\xE1ximo de downloads simult\xE2neos',
   v9_weh_prefs_description_contextMenuEnabled:
     'Comandos de acesso a partir do bot\xE3o direito na p\xE1gina',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" j\xE1 est\xE1 pronto',
   v9_lic_status_unset: 'Licen\xE7a n\xE3o selecionada',
   v9_lic_status_blocked: 'Licen\xE7a bloqueada',
@@ -16586,7 +16582,7 @@ var translationsPtBR = {
   v9_copy_settings_info_to_clipboard:
     'Copiar informa\xE7\xF5es para a \xE1rea de transfer\xEAncia',
   v9_mup_max_variants: 'M\xE1ximo de formatos',
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   v9_badge_new: 'novo',
   v9_blacklist_glob: "Use '*' para uma correspond\xEAncia mais ampla.",
   v9_checkbox_remember_action: 'Lembrar como a\xE7\xE3o padr\xE3o',
@@ -16674,7 +16670,7 @@ var translationsPtBR = {
   v9_user_message_auto_hide_downloaded:
     'Ocultar automaticamente a m\xEDdia baixada?',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper n\xE3o est\xE1 habilitado em janelas privadas/an\xF4nimas. Voc\xEA precisa ativar essa op\xE7\xE3o manualmente (isso n\xE3o \xE9 obrigat\xF3rio).',
+    ':appName n\xE3o est\xE1 habilitado em janelas privadas/an\xF4nimas. Voc\xEA precisa ativar essa op\xE7\xE3o manualmente (isso n\xE3o \xE9 obrigat\xF3rio).',
   v9_user_message_no_incognito_open_settings:
     'Ativar nas Configura\xE7\xF5es do Navegador',
   v9_user_message_no_incognito_title: 'Sem modo de Navega\xE7\xE3o An\xF4nima',
@@ -16697,7 +16693,7 @@ var translationsRo = {
   MB: '$1 MO',
   about: 'Despre',
   about_qr: 'Fi\u0219ier generat',
-  about_vdh: 'Despre Video DownloadHelper',
+  about_vdh: 'Despre :appName',
   action_abort_description:
     'Renun\u021B\u0103 la ac\u021Biunea \xEEn desf\u0103\u0219urare',
   action_abort_title: 'Renun\u021B\u0103',
@@ -16734,7 +16730,7 @@ var translationsRo = {
   aggregating: 'Se agregheaz\u0103...',
   analyze_page: 'Analizeaz\u0103 pagina',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Aspect',
   audio_only: 'Doar audio',
   behavior: 'Comportament',
@@ -16794,7 +16790,7 @@ var translationsRo = {
   dlconv_download_and_convert: 'Descarc\u0103 \u0219i converte\u0219te',
   dlconv_output_details: 'Configureaz\u0103 detaliile ie\u0219irii',
   donate: 'Doneaz\u0103',
-  donate_vdh: 'Help Video DownloadHelper',
+  donate_vdh: 'Help :appName',
   downloading: 'Se descarc\u0103...',
   errors: 'Erori',
   explain_qr1:
@@ -16846,7 +16842,7 @@ var translationsRo = {
     'A\u021Bi lua \xEEn considerare s\u0103 sprijini\u021Bi dezvoltarea \u0219i s\u0103 dona\u021Bi c\xE2t de pu\u021Bin?',
   req_review:
     'Ca alternativ\u0103, a\u021Bi vrea s\u0103 scrie\u021Bi o recenzie dr\u0103gu\u021B\u0103 pe site-ul addon-urilor Mozilla?',
-  req_review_link: 'Scrie\u021Bi o recenzie despre Video DownloadHelper',
+  req_review_link: 'Scrie\u021Bi o recenzie despre :appName',
   running: 'Ruleaz\u0103',
   save: 'Salveaz\u0103',
   select_files_to_convert: 'Converte\u0219te fi\u0219ierele locale',
@@ -16864,11 +16860,11 @@ var translationsRo = {
   smartnamer_xpath_expr: 'Expresia XPath',
   supported_sites: 'Site-uri suportate',
   tell_me_more: 'Spune mai multe despre asta.',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   validate_license: '\xCEnregistreaz\u0103 licen\u021Ba',
   variants_list_adp: 'Variante adaptive',
   variants_list_full: 'Variante',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Versiune $1',
   video_only: 'Doar video',
   video_qualities: 'Calitate video',
@@ -16909,7 +16905,7 @@ var translationsRo = {
   weh_prefs_smartnamerFnameSpaces_option_underscore:
     '\xCEnlocuie\u0219te cu linie de subliniere',
   you_downloaded_n_videos:
-    'Tocmai a\u021Bi desc\u0103rcat cu succes al $1th fi\u0219ier cu Video DownloadHelper.',
+    'Tocmai a\u021Bi desc\u0103rcat cu succes al $1th fi\u0219ier cu :appName.',
   v9_no_media_current_tab:
     'Nu exist\u0103 media de procesat \xEEn fila curent\u0103',
   v9_no_media_to_process_descr:
@@ -16924,7 +16920,7 @@ var translationsRo = {
   v9_not_see_again: 'Nu mai vede\u021Bi din nou acest mesaj',
   v9_tell_me_more: 'Spune mai multe despre asta.',
   v9_settings: 'Set\u0103ri',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" este gata',
   v9_yes: 'Da',
   v9_no: 'Nu',
@@ -16962,7 +16958,7 @@ var translationsRo = {
     'Arat\u0103 film\u0103rile cu calitate mic\u0103',
   v9_panel_view_sort_status: 'Sortare dup\u0103 status',
   v9_panel_view_sort_reverse: 'Sortare invers\u0103',
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
 };
 var translationsRu = {
   Bytes: '$1 \u0411\u0430\u0439\u0442',
@@ -17050,7 +17046,7 @@ var translationsRu = {
     '\u0410\u043D\u0430\u043B\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443',
   appDesc:
     '\u0421\u043A\u0430\u0447\u0430\u0442\u044C \u0432\u0438\u0434\u0435\u043E \u0438\u0437 \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0430',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: '\u0412\u043D\u0435\u0448\u043D\u0438\u0439 \u0432\u0438\u0434',
   audio_only:
     '\u0422\u043E\u043B\u044C\u043A\u043E \u0430\u0443\u0434\u0438\u043E \u0434\u043E\u0440\u043E\u0436\u043A\u0430',
@@ -17073,7 +17069,7 @@ var translationsRu = {
   built_on:
     '\u0421\u043A\u043E\u043C\u043F\u0438\u043B\u0438\u0440\u043E\u0432\u0430\u043D\u043E $1',
   bulk_in_progress:
-    '\u0412\u044B\u043F\u043E\u043B\u043D\u044F\u0435\u0442\u0441\u044F \u043F\u0430\u043A\u0435\u0442\u043D\u0430\u044F \u043E\u043F\u0435\u0440\u0430\u0446\u0438\u044F Video DownloadHelper. \u041D\u0435 \u0437\u0430\u043A\u0440\u044B\u0432\u0430\u0439\u0442\u0435 \u0432\u043A\u043B\u0430\u0434\u043A\u0443, \u044D\u0442\u043E \u0431\u0443\u0434\u0435\u0442 \u0441\u0434\u0435\u043B\u0430\u043D\u043E \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438',
+    '\u0412\u044B\u043F\u043E\u043B\u043D\u044F\u0435\u0442\u0441\u044F \u043F\u0430\u043A\u0435\u0442\u043D\u0430\u044F \u043E\u043F\u0435\u0440\u0430\u0446\u0438\u044F :appName. \u041D\u0435 \u0437\u0430\u043A\u0440\u044B\u0432\u0430\u0439\u0442\u0435 \u0432\u043A\u043B\u0430\u0434\u043A\u0443, \u044D\u0442\u043E \u0431\u0443\u0434\u0435\u0442 \u0441\u0434\u0435\u043B\u0430\u043D\u043E \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438',
   bulk_n_videos: '$1 \u0432\u0438\u0434\u0435\u043E',
   cancel: '\u041E\u0442\u043C\u0435\u043D\u0430',
   change: '\u0418\u0437\u043C\u0435\u043D\u0438\u0442\u044C',
@@ -17097,7 +17093,7 @@ var translationsRu = {
     '\u0413\u043E\u0434\u043E\u0432\u0430\u044F Premium \u043F\u043E\u0434\u043F\u0438\u0441\u043A\u0430',
   chrome_install_firefox:
     '\u0423\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u0435 Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper \u0434\u043B\u044F Firefox',
+  chrome_install_fx_vdh: ':appName \u0434\u043B\u044F Firefox',
   chrome_license_webstore_accepted:
     '\u0410\u043A\u0442\u0438\u0432\u043D\u0430\u044F \u043B\u0438\u0446\u0435\u043D\u0437\u0438\u044F \u0438\u0437 \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442-\u043C\u0430\u0433\u0430\u0437\u0438\u043D\u0430 Chrome',
   chrome_licensing:
@@ -17105,7 +17101,7 @@ var translationsRu = {
   chrome_noyt_text:
     '\u041A \u0441\u043E\u0436\u0430\u043B\u0435\u043D\u0438\u044E, Chrome Web Store \u043D\u0435 \u043F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u044F\u043C \u0437\u0430\u0433\u0440\u0443\u0436\u0430\u0442\u044C YouTube-\u0432\u0438\u0434\u0435\u043E, \u043F\u043E\u044D\u0442\u043E\u043C\u0443 \u043D\u0430\u043C \u043F\u0440\u0438\u0448\u043B\u043E\u0441\u044C \u0443\u0431\u0440\u0430\u0442\u044C \u0442\u0430\u043A\u0443\u044E \u0432\u043E\u0437\u043C\u043E\u0436\u043D\u043E\u0441\u0442\u044C',
   chrome_noyt_text2:
-    '\u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C Video DownloadHelper \u0434\u043B\u044F \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u044F YouTube-\u0432\u0438\u0434\u0435\u043E, \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u044F Firefox \u0432\u0435\u0440\u0441\u0438\u044E',
+    '\u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C :appName \u0434\u043B\u044F \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u044F YouTube-\u0432\u0438\u0434\u0435\u043E, \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u044F Firefox \u0432\u0435\u0440\u0441\u0438\u044E',
   chrome_noyt_text3:
     '\u041A \u0441\u043E\u0436\u0430\u043B\u0435\u043D\u0438\u044E, \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442-\u043C\u0430\u0433\u0430\u0437\u0438\u043D Chrome \u043D\u0435 \u0434\u043E\u043F\u0443\u0441\u043A\u0430\u0435\u0442 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u0439 \u0434\u043B\u044F \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438 \u0432\u0438\u0434\u0435\u043E \u0441 YouTube, \u043F\u043E\u0442\u043E\u043C\u0443 \u044D\u0442\u0430 \u0444\u0443\u043D\u043A\u0446\u0438\u044F \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442 \u0432 \u0432\u0435\u0440\u0441\u0438\u0438 \u0434\u043E\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u0434\u043B\u044F Chrome.',
   chrome_premium_audio:
@@ -17297,7 +17293,7 @@ var translationsRu = {
   donate:
     '\u041F\u043E\u0436\u0435\u0440\u0442\u0432\u043E\u0432\u0430\u043D\u0438\u044F',
   donate_vdh:
-    '\u0421\u043F\u0440\u0430\u0432\u043A\u0430 \u043F\u043E Video DownloadHelper',
+    '\u0421\u043F\u0440\u0430\u0432\u043A\u0430 \u043F\u043E :appName',
   download_error:
     '\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438',
   download_method:
@@ -17479,7 +17475,7 @@ var translationsRu = {
   req_review:
     '\u0418\u043B\u0438 \u0436\u0435, \u043D\u0435 \u0445\u043E\u0442\u0438\u0442\u0435 \u043B\u0438 \u043D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u043E\u0442\u043B\u0438\u0447\u043D\u044B\u0439 \u043E\u0442\u0437\u044B\u0432 \u043D\u0430 \u0441\u0430\u0439\u0442\u0435 \u0434\u043E\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0439 Mozilla ?',
   req_review_link:
-    '\u041D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u043E\u0442\u0437\u044B\u0432 \u043E Video DownloadHelper',
+    '\u041D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u043E\u0442\u0437\u044B\u0432 \u043E :appName',
   reset_settings:
     '\u0421\u0431\u0440\u043E\u0441 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A',
   running: '\u0412\u044B\u043F\u043E\u043B\u043D\u044F\u0435\u0442\u0441\u044F',
@@ -17546,7 +17542,7 @@ var translationsRu = {
     '\u041D\u0438\u0437\u043A\u043E\u0435 \u043A\u0430\u0447\u0435\u0441\u0442\u0432\u043E',
   tell_me_more:
     '\u0420\u0430\u0441\u0441\u043A\u0430\u0437\u0430\u0442\u044C \u0431\u043E\u043B\u044C\u0448\u0435 \u043E\u0431 \u044D\u0442\u043E\u043C',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: '\u041F\u0435\u0440\u0435\u0432\u043E\u0434',
   up: '\u0412\u0432\u0435\u0440\u0445',
   validate_license:
@@ -17554,7 +17550,7 @@ var translationsRu = {
   variants_list_adp:
     '\u0410\u0434\u0430\u043F\u0442\u0438\u0432\u043D\u044B\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442\u044B',
   variants_list_full: '\u0412\u0430\u0440\u0438\u0430\u043D\u0442\u044B',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: '\u0412\u0435\u0440\u0441\u0438\u044F $1',
   video_only:
     '\u0422\u043E\u043B\u044C\u043A\u043E \u0432\u0438\u0434\u0435\u043E\u0440\u044F\u0434',
@@ -17869,7 +17865,7 @@ var translationsRu = {
     '\u0422\u0440\u043E\u0435\u0442\u043E\u0447\u0438\u0435 \u0441\u043F\u0440\u0430\u0432\u0430',
   yes: '\u0414\u0430',
   you_downloaded_n_videos:
-    '\u0412\u044B \u0442\u043E\u043B\u044C\u043A\u043E \u0447\u0442\u043E \u0443\u0441\u043F\u0435\u0448\u043D\u043E \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u043B\u0438 \u0412\u0430\u0448 $1th \u0444\u0430\u0439\u043B \u0441 \u043F\u043E\u043C\u043E\u0449\u044C\u044E Video DownloadHelper.',
+    '\u0412\u044B \u0442\u043E\u043B\u044C\u043A\u043E \u0447\u0442\u043E \u0443\u0441\u043F\u0435\u0448\u043D\u043E \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u043B\u0438 \u0412\u0430\u0448 $1th \u0444\u0430\u0439\u043B \u0441 \u043F\u043E\u043C\u043E\u0449\u044C\u044E :appName.',
   v9_yes: '\u0414\u0430',
   v9_no: '\u041D\u0435\u0442',
   v9_error: '\u041E\u0448\u0438\u0431\u043A\u0430',
@@ -17904,7 +17900,7 @@ var translationsRu = {
   v9_chrome_noyt_text3:
     '\u041A \u0441\u043E\u0436\u0430\u043B\u0435\u043D\u0438\u044E, \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442-\u043C\u0430\u0433\u0430\u0437\u0438\u043D Chrome \u043D\u0435 \u0434\u043E\u043F\u0443\u0441\u043A\u0430\u0435\u0442 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u0439 \u0434\u043B\u044F \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438 \u0432\u0438\u0434\u0435\u043E \u0441 YouTube, \u043F\u043E\u0442\u043E\u043C\u0443 \u044D\u0442\u0430 \u0444\u0443\u043D\u043A\u0446\u0438\u044F \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442 \u0432 \u0432\u0435\u0440\u0441\u0438\u0438 \u0434\u043E\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u0434\u043B\u044F Chrome.',
   v9_chrome_noyt_text2:
-    '\u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C Video DownloadHelper \u0434\u043B\u044F \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u044F YouTube-\u0432\u0438\u0434\u0435\u043E, \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u044F Firefox \u0432\u0435\u0440\u0441\u0438\u044E',
+    '\u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C :appName \u0434\u043B\u044F \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u044F YouTube-\u0432\u0438\u0434\u0435\u043E, \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u044F Firefox \u0432\u0435\u0440\u0441\u0438\u044E',
   v9_about_qr:
     '\u0424\u0430\u0439\u043B \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D',
   v9_explain_qr1:
@@ -17930,7 +17926,7 @@ var translationsRu = {
     '\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u043E\u0435 \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u043F\u0430\u0440\u0430\u043B\u043B\u0435\u043B\u044C\u043D\u044B\u0445 \u0437\u0430\u0433\u0440\u0443\u0437\u043E\u043A',
   v9_weh_prefs_description_contextMenuEnabled:
     '\u0414\u043E\u0441\u0442\u0443\u043F \u043A \u043C\u0435\u043D\u044E \u043A\u043E\u043C\u0430\u043D\u0434 \u043F\u043E \u043F\u0440\u0430\u0432\u043E\u043C\u0443 \u043A\u043B\u0438\u043A\u0443 \u043C\u044B\u0448\u044C\u044E \u043D\u0430 \u0446\u0435\u043B\u0435\u0432\u043E\u0439 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0435',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" \u0433\u043E\u0442\u043E\u0432',
   v9_lic_status_unset:
     '\u041B\u0438\u0446\u0435\u043D\u0437\u0438\u044F \u043D\u0435 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430',
@@ -18075,7 +18071,7 @@ var translationsSk = {
   aggregating: 'Agregovanie...',
   analyze_page: 'Anal\xFDza str\xE1nky',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'V\xFDstup',
   audio_only: 'Iba zvuk',
   behavior: 'Po\u010D\xEDnanie',
@@ -18090,7 +18086,7 @@ var translationsSk = {
   build_options: 'Vo\u013Eby vytvorenia: $1',
   built_on: 'Vytvorenie: $1',
   bulk_in_progress:
-    'Prebiehaj\xFA hromadn\xE9 oper\xE1cie vo Video DownloadHelper. Nezatv\xE1rajte t\xFAto kartu, zatvoren\xE1 bude automaticky.',
+    'Prebiehaj\xFA hromadn\xE9 oper\xE1cie vo :appName. Nezatv\xE1rajte t\xFAto kartu, zatvoren\xE1 bude automaticky.',
   bulk_n_videos: '$1 vide\xE1',
   cancel: 'Preru\u0161enie',
   change: 'Zmeny',
@@ -18106,12 +18102,12 @@ var translationsSk = {
   chrome_inapp_premium_monthly: 'Me\u0161a\u010Dn\xE1 objedn\xE1vka Premium',
   chrome_inapp_premium_yearly: 'Ro\u010Dn\xE1 objedn\xE1vka Premium',
   chrome_install_firefox: 'Nain\u0161talujte Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper pre Firefox',
+  chrome_install_fx_vdh: ':appName pre Firefox',
   chrome_licensing: 'Chrome licencie',
   chrome_noyt_text:
     '\u017Dia\u013E, obchod Google Web Store nepovo\u013Euje roz\u0161\xEDrenia na s\u0165ahovanie YouTube vide\xED, tak\u017Ee sme museli funkciu odstr\xE1ni\u0165.',
   chrome_noyt_text2:
-    'Video DownloadHelper m\xF4\u017Eete pou\u017E\xEDva\u0165 na s\u0165ahovanie YouTube vide\xED vo verzii pre Firefox.',
+    ':appName m\xF4\u017Eete pou\u017E\xEDva\u0165 na s\u0165ahovanie YouTube vide\xED vo verzii pre Firefox.',
   chrome_noyt_text3:
     'Bohu\u017Eia\u013E, Internetov\xFD obchod Chrome neumo\u017E\u0148uje roz\u0161\xEDreniam s\u0165ahova\u0165 vide\xE1 z YouTube, tak\u017Ee sme t\xFAto funkcionalitu nemohli zahrn\xFA\u0165 do vydania tohto roz\u0161\xEDrenia pre Chrome.',
   chrome_premium_audio:
@@ -18674,7 +18670,7 @@ var translationsSk = {
   v9_chrome_noyt_text3:
     'Bohu\u017Eia\u013E, Internetov\xFD obchod Chrome neumo\u017E\u0148uje roz\u0161\xEDreniam s\u0165ahova\u0165 vide\xE1 z YouTube, tak\u017Ee sme t\xFAto funkcionalitu nemohli zahrn\xFA\u0165 do vydania tohto roz\u0161\xEDrenia pre Chrome.',
   v9_chrome_noyt_text2:
-    'Video DownloadHelper m\xF4\u017Eete pou\u017E\xEDva\u0165 na s\u0165ahovanie YouTube vide\xED vo verzii pre Firefox.',
+    ':appName m\xF4\u017Eete pou\u017E\xEDva\u0165 na s\u0165ahovanie YouTube vide\xED vo verzii pre Firefox.',
   v9_about_qr: 'S\xFAbor vygenerovan\xFD',
   v9_explain_qr1:
     'M\xF4\u017Eete si v\u0161imn\xFA\u0165, \u017Ee v\xFDsledn\xE9 video obsahuje v rohu vodoznak.',
@@ -18712,7 +18708,7 @@ var translationsSl = {
   about_beta_intro: 'To je razli\u010Dica beta.',
   about_chrome_licenses: 'O Cromovi licenci',
   about_qr: 'Datoteka je bila ustvarjena',
-  about_vdh: 'O Video DownloadHelperju',
+  about_vdh: 'O :appNameju',
   action_abort_description: 'Prekini dejanje, ki se izvaja',
   action_abort_title: 'Prekini',
   action_as_default: 'Uporabi to dejanje kot privzeto',
@@ -18758,7 +18754,7 @@ var translationsSl = {
   aggregating: 'Zdru\u017Eevanje ...',
   analyze_page: 'Analiziraj stran',
   appDesc: 'Prenesi video iz interneta',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Videz',
   audio_only: 'Samo zvok',
   behavior: 'Vedenje',
@@ -18773,7 +18769,7 @@ var translationsSl = {
   build_options: 'Mo\u017Enosti izgradnje: $1',
   built_on: 'Izgrajeno $1',
   bulk_in_progress:
-    'Paketno opravilo Video DownloadHelper je v teku. Ne zapirajte tega zavihka - to se bo zgodilo samodejno',
+    'Paketno opravilo :appName je v teku. Ne zapirajte tega zavihka - to se bo zgodilo samodejno',
   bulk_n_videos: '$1 videoposnetkov',
   cancel: 'Prekli\u010Di',
   change: 'Spremeni',
@@ -18796,7 +18792,7 @@ var translationsSl = {
   chrome_noyt_text:
     'Na \u017Ealost Spletna trgovina Chrome ne dovoli raz\u0161iritev za prenos videoposnetkov z YouTuba, tako da smo morali to zna\u010Dilnost odstraniti.',
   chrome_noyt_text2:
-    'Za prenos videoposnetkov z YouTuba lahko uporabljate razli\u010Dico raz\u0161iritve Video DownloadHelper za Firefox.',
+    'Za prenos videoposnetkov z YouTuba lahko uporabljate razli\u010Dico raz\u0161iritve :appName za Firefox.',
   chrome_noyt_text3:
     'Spletna trgovina Chrome \u017Eal ne dovoljuje raz\u0161iritev za prenos videoposnetkov YouTube, zato te funkcije nismo mogli vklju\u010Diti v razli\u010Dico raz\u0161iritve za Chrome.',
   chrome_premium_audio:
@@ -18916,7 +18912,7 @@ var translationsSl = {
   dlconv_download_and_convert: 'Prenesi in pretvori',
   dlconv_output_details: 'Nastavi izhodne nastavitve',
   donate: 'Prispevaj',
-  donate_vdh: 'Pomagajte dodatku Video DownloadHelper',
+  donate_vdh: 'Pomagajte dodatku :appName',
   download_error: 'Napaka pri prenosu',
   download_method: 'Na\u010Din prenosa',
   download_method_not_again: 'V prihodnje privzeto uporabi ta postopek',
@@ -19035,7 +19031,7 @@ var translationsSl = {
   req_locale: "Ali pa pomagajte prevesti dodatek v '$1' (manjka $2 nizov)?",
   req_review:
     'Po drugi strani ali bi imeli kaj proti pisanju prijazne ocene na strani Mozillinih dodatkov?',
-  req_review_link: 'Napi\u0161i oceno o raz\u0161iritvi Video DownloadHelper',
+  req_review_link: 'Napi\u0161i oceno o raz\u0161iritvi :appName',
   reset_settings: 'Ponastavi nastavitve',
   running: 'V izvajanju',
   save: 'Shrani',
@@ -19072,13 +19068,13 @@ var translationsSl = {
   tbsn_quality_hd: 'Srednja kakovost',
   tbsn_quality_sd: 'Nizka kakovost',
   tell_me_more: 'Povej ve\u010D o tem',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: 'Prevajanje',
   up: 'Gor',
   validate_license: 'Registriraj dovoljenje',
   variants_list_adp: 'Na\u010Dini prilagajanja',
   variants_list_full: 'Razli\u010Dice',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Razli\u010Dica $1',
   video_only: 'Samo videoposnetki',
   video_qualities: 'Kakovosti slike',
@@ -19303,7 +19299,7 @@ var translationsSl = {
   weh_prefs_titleMode_option_right: 'Tropi\u010Dje na desni',
   yes: 'Da',
   you_downloaded_n_videos:
-    'Z Video DownloadHelperjem ste uspe\u0161no prenesli $1. datoteko.',
+    'Z :appNamejem ste uspe\u0161no prenesli $1. datoteko.',
   v9_yes: 'Da',
   v9_no: 'Ne',
   v9_error: 'Napaka',
@@ -19328,7 +19324,7 @@ var translationsSl = {
   v9_chrome_noyt_text3:
     'Spletna trgovina Chrome \u017Eal ne dovoljuje raz\u0161iritev za prenos videoposnetkov YouTube, zato te funkcije nismo mogli vklju\u010Diti v razli\u010Dico raz\u0161iritve za Chrome.',
   v9_chrome_noyt_text2:
-    'Za prenos videoposnetkov z YouTuba lahko uporabljate razli\u010Dico raz\u0161iritve Video DownloadHelper za Firefox.',
+    'Za prenos videoposnetkov z YouTuba lahko uporabljate razli\u010Dico raz\u0161iritve :appName za Firefox.',
   v9_about_qr: 'Datoteka je bila ustvarjena',
   v9_explain_qr1:
     'Opazili boste, da nastali videoposnetek v kotu vsebuje vodni \u017Eig.',
@@ -19346,7 +19342,7 @@ var translationsSl = {
     'Najve\u010Dje \u0161t. vzporednih prenosov',
   v9_weh_prefs_description_contextMenuEnabled:
     'Dostop do ukazov z desnim klikom na strani',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" je sedaj pripravljen',
   v9_lic_status_unset: 'Dovoljenje ni nastavljeno',
   v9_lic_status_blocked: 'Dovoljenje je zavrnjeno',
@@ -19367,7 +19363,7 @@ var translationsSv = {
   about_beta_intro: 'Detta \xE4r en betaversion.',
   about_chrome_licenses: 'Om Chrome licenser',
   about_qr: 'Fil genererades',
-  about_vdh: 'Om Video DownloadHelper',
+  about_vdh: 'Om :appName',
   action_abort_description: 'Avbryt p\xE5g\xE5ende handling',
   action_abort_title: 'Avbryt',
   action_as_default: 'Anv\xE4nd denna handling som standard',
@@ -19412,7 +19408,7 @@ var translationsSv = {
   aggregating: 'Samlar ihop...',
   analyze_page: 'Analysera sida',
   appDesc: 'Ladda ner Videos fr\xE5n Webben',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'Utseende',
   audio_only: 'Endast ljud',
   behavior: 'Beteende',
@@ -19427,7 +19423,7 @@ var translationsSv = {
   build_options: 'Versionens valm\xF6jligheter: $1',
   built_on: 'Baserat p\xE5 $1',
   bulk_in_progress:
-    'Video DownloadHelper nerladdning av media p\xE5g\xE5r. St\xE4ng inte denna flik, det g\xF6rs automatiskt',
+    ':appName nerladdning av media p\xE5g\xE5r. St\xE4ng inte denna flik, det g\xF6rs automatiskt',
   bulk_n_videos: '$1 video',
   cancel: 'Avbryt',
   change: '\xC4ndra',
@@ -19450,7 +19446,7 @@ var translationsSv = {
   chrome_noyt_text:
     'Tyv\xE4rr till\xE5ter Chrome Web Store inte till\xE4gg f\xF6r nedladdning av YouTube-videoklipp s\xE5 att vi blev tvugna att ta bort den h\xE4r funktionen.',
   chrome_noyt_text2:
-    'Du kan anv\xE4nda Video DownloadHelper f\xF6r att ladda ner YouTube-videor i Firefox-versionen.',
+    'Du kan anv\xE4nda :appName f\xF6r att ladda ner YouTube-videor i Firefox-versionen.',
   chrome_noyt_text3:
     'Tyv\xE4rr till\xE5ter inte Chrome Web Store till\xE4gg att ladda ner videos from YouTube, s\xE5 vi kunde inte erbjuda den egenskapen i Chrome-verisionen av v\xE5rt till\xE4gg.',
   chrome_premium_audio:
@@ -19574,7 +19570,7 @@ var translationsSv = {
   dlconv_download_and_convert: 'Ladda ned och konvertera',
   dlconv_output_details: 'Konfigurera utmatningsdetaljer',
   donate: 'Donera',
-  donate_vdh: 'Hj\xE4lp Video DownloadHelper',
+  donate_vdh: 'Hj\xE4lp :appName',
   download_error: 'Nedladdningsfel',
   download_method: 'Nedladdningsmetod',
   download_method_not_again:
@@ -19695,7 +19691,7 @@ var translationsSv = {
     "Eller kanske hj\xE4lp till att \xF6vers\xE4tta till\xE4gget till '$1' (det fattas $2-str\xE4ngar) ?",
   req_review:
     'Alternativt, kanske du vill skriva en sn\xE4ll recension p\xE5 Mozillas webbplats f\xF6r till\xE4gg?',
-  req_review_link: 'Skriv en recension om Video DownloadHelper',
+  req_review_link: 'Skriv en recension om :appName',
   reset_settings: '\xC5terst\xE4ll inst\xE4llningar',
   running: 'K\xF6rs',
   save: 'Spara',
@@ -19735,13 +19731,13 @@ var translationsSv = {
   tbsn_quality_hd: 'Mellankvalitet',
   tbsn_quality_sd: 'L\xE5g kvalitet',
   tell_me_more: 'Ber\xE4tta mer om detta',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: '\xD6vers\xE4ttning',
   up: 'upp',
   validate_license: 'Registrera licens',
   variants_list_adp: 'Adaptiva varianter',
   variants_list_full: 'Varianter',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'Version $1',
   video_only: 'Endast video',
   video_qualities: 'Videokvaliteter',
@@ -19959,8 +19955,7 @@ var translationsSv = {
   weh_prefs_titleMode_option_multiline: '\xD6ver flera rader',
   weh_prefs_titleMode_option_right: 'Punkter till h\xF6ger',
   yes: 'Ja',
-  you_downloaded_n_videos:
-    'Du har precis laddat ned $1 filer med Video DownloadHelper.',
+  you_downloaded_n_videos: 'Du har precis laddat ned $1 filer med :appName.',
   v9_yes: 'Ja',
   v9_no: 'Nej',
   v9_error: 'Fel',
@@ -19985,7 +19980,7 @@ var translationsSv = {
   v9_chrome_noyt_text3:
     'Tyv\xE4rr till\xE5ter inte Chrome Web Store till\xE4gg att ladda ner videos from YouTube, s\xE5 vi kunde inte erbjuda den egenskapen i Chrome-verisionen av v\xE5rt till\xE4gg.',
   v9_chrome_noyt_text2:
-    'Du kan anv\xE4nda Video DownloadHelper f\xF6r att ladda ner YouTube-videor i Firefox-versionen.',
+    'Du kan anv\xE4nda :appName f\xF6r att ladda ner YouTube-videor i Firefox-versionen.',
   v9_about_qr: 'Fil genererades',
   v9_explain_qr1:
     'Du kommer att se att den f\xE4rdiga videon har ett vattenm\xE4rke i h\xF6rnet.',
@@ -20002,7 +19997,7 @@ var translationsSv = {
   v9_weh_prefs_label_downloadControlledMax: 'Max antal samtidiga nedladdningar',
   v9_weh_prefs_description_contextMenuEnabled:
     '\xC5tkomst till kommandon via h\xF6gerklick i sidan',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" \xE4r nu redo',
   v9_lic_status_unset: 'Licens inte satt',
   v9_lic_status_blocked: 'Licens blockerad',
@@ -20023,7 +20018,7 @@ var translationsTr = {
   about_beta_intro: 'Bu bir beta s\xFCr\xFCm\xFC.',
   about_chrome_licenses: 'Chrome lisanslar\u0131 hakk\u0131nda',
   about_qr: '\xDCretilen dosya',
-  about_vdh: 'Video DownloadHelper hakk\u0131nda',
+  about_vdh: ':appName hakk\u0131nda',
   action_abort_description: 'S\xFCren eylemi durdurun',
   action_abort_title: 'Durdur',
   action_as_default: 'Bu eylemi varsay\u0131lan olarak kullan\u0131n',
@@ -20069,7 +20064,7 @@ var translationsTr = {
   aggregating: 'K\xFCmeleme...',
   analyze_page: 'Sayfay\u0131 incele',
   appDesc: 'Download Videos from the Web',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: 'G\xF6r\xFCn\xFCm',
   audio_only: 'Yaln\u0131zca ses',
   behavior: 'Davran\u0131\u015F',
@@ -20084,7 +20079,7 @@ var translationsTr = {
   build_options: 'Derleme ayarlar\u0131: $1',
   built_on: '$1 \xFCzerine derlenmi\u015Ftir.',
   bulk_in_progress:
-    'Video DownloadHelper toplu i\u015Flemleri s\xFCrd\xFCr\xFClmektedir. Bu sekmeyi kapatmay\u0131n, kendili\u011Finden kapat\u0131lacakt\u0131r.',
+    ':appName toplu i\u015Flemleri s\xFCrd\xFCr\xFClmektedir. Bu sekmeyi kapatmay\u0131n, kendili\u011Finden kapat\u0131lacakt\u0131r.',
   bulk_n_videos: '$1 videolar',
   cancel: 'Vazge\xE7',
   change: 'De\u011Fi\u015Ftir',
@@ -20102,14 +20097,14 @@ var translationsTr = {
   chrome_inapp_premium_monthly: 'Ayl\u0131k Premium abonelik',
   chrome_inapp_premium_yearly: 'Y\u0131ll\u0131k Premium abonelik',
   chrome_install_firefox: 'Firefox Y\xFCkle',
-  chrome_install_fx_vdh: 'Firefox i\xE7in Video DownloadHelper',
+  chrome_install_fx_vdh: 'Firefox i\xE7in :appName',
   chrome_license_webstore_accepted:
     'Lisans\u0131 Chrome Web ma\u011Fazas\u0131ndan aktifle\u015Ftir',
   chrome_licensing: 'Chrome lisanslama',
   chrome_noyt_text:
     'Maalesef, Chrome Web Ma\u011Fazas\u0131 YouTube videolar\u0131n\u0131 indirmeye yarayan uzant\u0131lara izin vermedi\u011Fi i\xE7in bu \xF6zelli\u011Fi kald\u0131rmak zorunda kald\u0131k.',
   chrome_noyt_text2:
-    'YouTube videolar\u0131n\u0131 indirebilmek i\xE7in Video DownloadHelper uzant\u0131s\u0131n\u0131n Firefox versiyonunu kullanabilirsiniz.',
+    'YouTube videolar\u0131n\u0131 indirebilmek i\xE7in :appName uzant\u0131s\u0131n\u0131n Firefox versiyonunu kullanabilirsiniz.',
   chrome_noyt_text3:
     'Ne yaz\u0131kki, Chrome Web Ma\u011Fazas\u0131 YouTube videolar\u0131n\u0131n indirilmesini sa\u011Flayan eklentilere izin vermemektedir, bu nedenle biz eklentinin Chrome s\xFCr\xFCm\xFCne bu \xF6zelli\u011Fi koymuyoruz.',
   chrome_premium_audio:
@@ -20239,7 +20234,7 @@ var translationsTr = {
   dlconv_output_details:
     '\xC7\u0131kt\u0131 ayr\u0131nt\u0131lar\u0131n\u0131 ayarla',
   donate: 'Ba\u011F\u0131\u015F yap',
-  donate_vdh: "Video DownloadHelper'a yard\u0131m et",
+  donate_vdh: ":appName'a yard\u0131m et",
   download_error: '\u0130ndirme  Hatas\u0131',
   download_method: '\u0130ndirme Y\xF6ntemi',
   download_method_not_again: 'Bu metodu varsay\u0131lan olarak ayarla',
@@ -20365,8 +20360,7 @@ var translationsTr = {
     "Ya da eklentinin '$1' dili \xE7evirisine yard\u0131mc\u0131 olmak ister misin ($2 \xE7eviri eksik)?",
   req_review:
     'Se\xE7enek olarak, Mozilla eklenti sitesinde g\xFCzel bir yorum yazmak ister misiniz?',
-  req_review_link:
-    'Video DownloadHelper hakk\u0131nda yorum yazar m\u0131s\u0131n\u0131z',
+  req_review_link: ':appName hakk\u0131nda yorum yazar m\u0131s\u0131n\u0131z',
   reset_settings: 'S\u0131f\u0131rlama Ayarlar\u0131',
   running: '\xC7al\u0131\u015F\u0131yor',
   save: 'Kaydet',
@@ -20410,13 +20404,13 @@ var translationsTr = {
   tbsn_quality_hd: 'Orta kalite',
   tbsn_quality_sd: 'D\xFC\u015F\xFCk kalite',
   tell_me_more: 'Bununla ilgili daha \xE7ok bilgi ver',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: '\xC7eviri',
   up: 'Yukar\u0131',
   validate_license: 'Lisans\u0131 kaydet',
   variants_list_adp: 'Uyarlamal\u0131 de\u011Fi\u015Fke',
   variants_list_full: 'De\u011Fi\u015Fkeler',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: 'S\xFCr\xFCm $1',
   video_only: 'Yaln\u0131zca video',
   video_qualities: 'Video kalitesi',
@@ -20652,7 +20646,7 @@ var translationsTr = {
   weh_prefs_titleMode_option_right: '\xDC\xE7 nokta sa\u011Fda',
   yes: 'Evet',
   you_downloaded_n_videos:
-    '\u015Eu anda $1 adedinci dosyay\u0131 Video DownloadHelper ile ba\u015Far\u0131yla indirdin.',
+    '\u015Eu anda $1 adedinci dosyay\u0131 :appName ile ba\u015Far\u0131yla indirdin.',
   v9_yes: 'Evet',
   v9_no: 'Hay\u0131r',
   v9_error: 'Hata',
@@ -20678,7 +20672,7 @@ var translationsTr = {
   v9_chrome_noyt_text3:
     'Ne yaz\u0131kki, Chrome Web Ma\u011Fazas\u0131 YouTube videolar\u0131n\u0131n indirilmesini sa\u011Flayan eklentilere izin vermemektedir, bu nedenle biz eklentinin Chrome s\xFCr\xFCm\xFCne bu \xF6zelli\u011Fi koymuyoruz.',
   v9_chrome_noyt_text2:
-    'YouTube videolar\u0131n\u0131 indirebilmek i\xE7in Video DownloadHelper uzant\u0131s\u0131n\u0131n Firefox versiyonunu kullanabilirsiniz.',
+    'YouTube videolar\u0131n\u0131 indirebilmek i\xE7in :appName uzant\u0131s\u0131n\u0131n Firefox versiyonunu kullanabilirsiniz.',
   v9_about_qr: '\xDCretilen dosya',
   v9_explain_qr1:
     '\xDCretilen videonun k\xF6\u015Fesinde filigran i\xE7erdi\u011Fine dikkat edin.',
@@ -20697,7 +20691,7 @@ var translationsTr = {
     'Ayn\u0131 anda indirme \xFCst s\u0131n\u0131r\u0131',
   v9_weh_prefs_description_contextMenuEnabled:
     'Sayfa i\xE7i sa\u011F-click ten eri\u015Fim komutlar\u0131',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '"$1" \u015Fimdi haz\u0131r',
   v9_lic_status_unset: 'Lisans Ayarlanmad\u0131',
   v9_lic_status_blocked: 'Lisans Blokland\u0131',
@@ -20792,19 +20786,19 @@ var translationsTr = {
   v9_user_message_auto_hide_downloaded:
     '\u0130ndirilen Medya Otomatik Kald\u0131r\u0131ls\u0131n M\u0131?',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper Gizli Sekmede \xC7al\u0131\u015Fmaz. Fakat Ayarlardan Manuel Olarak A\xE7abilirsiniz. (Zorunlu De\u011Fil)',
+    ':appName Gizli Sekmede \xC7al\u0131\u015Fmaz. Fakat Ayarlardan Manuel Olarak A\xE7abilirsiniz. (Zorunlu De\u011Fil)',
   v9_user_message_no_incognito_open_settings:
     'Taray\u0131c\u0131 Ayarlar\u0131nda A\xE7',
   v9_user_message_no_incognito_title: 'Gizli Sekmede \u0130zin Verme',
   v9_user_message_one_hundred_downloads:
     '100 \u0130ndirmeye Ula\u015Ft\u0131n!',
   v9_user_message_one_hundred_downloads_body:
-    "Umar\u0131z Video DownloadHelper'\u0131n Tad\u0131n\u0131 \xC7\u0131karabilmi\u015Fsinizdir. :) Sitemizde Bizi De\u011Ferlendirmeyi D\xFC\u015F\xFCn\xFCrm\xFCs\xFCn\xFCz?",
+    "Umar\u0131z :appName'\u0131n Tad\u0131n\u0131 \xC7\u0131karabilmi\u015Fsinizdir. :) Sitemizde Bizi De\u011Ferlendirmeyi D\xFC\u015F\xFCn\xFCrm\xFCs\xFCn\xFCz?",
   v9_user_message_one_hundred_downloads_leave_review: 'Bizi De\u011Ferlendir.',
   v9_user_message_one_hundred_downloads_never_show_again: 'Bir Daha Sorma',
 };
 var translationsUk = {
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   Bytes: '$1 \u0431\u0430\u0439\u0442',
   GB: '$1 \u0413\u0431',
   KB: '$1 \u041A\u0431',
@@ -20820,7 +20814,7 @@ var translationsUk = {
     '\u041F\u0440\u043E \u043B\u0456\u0446\u0435\u043D\u0437\u0456\u0457 Chrome',
   about_qr:
     '\u0424\u0430\u0439\u043B \u0441\u0442\u0432\u043E\u0440\u0435\u043D\u043E',
-  about_vdh: '\u041F\u0440\u043E Video DownloadHelper',
+  about_vdh: '\u041F\u0440\u043E :appName',
   action_abort_description:
     '\u0421\u043A\u0430\u0441\u0443\u0432\u0430\u043D\u043D\u044F \u0446\u0456\u0454\u0457 \u0434\u0456\u0457 \u0443 \u043F\u0440\u043E\u0446\u0435\u0441\u0456',
   action_abort_title: '\u0421\u043A\u0430\u0441\u0443\u0432\u0430\u0442\u0438',
@@ -20909,7 +20903,7 @@ var translationsUk = {
     '\u0410\u043D\u0430\u043B\u0456\u0437\u0443\u0432\u0430\u0442\u0438 \u0441\u0442\u043E\u0440\u0456\u043D\u043A\u0443',
   appDesc:
     '\u0417\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0435\u043D\u043D\u044F \u0432\u0456\u0434\u0435\u043E \u0437 \u0406\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: '\u0412\u0438\u0433\u043B\u044F\u0434',
   audio_only:
     '\u0410\u0443\u0434\u0456\u043E \u0442\u0456\u043B\u044C\u043A\u0438',
@@ -20956,7 +20950,7 @@ var translationsUk = {
     '\u0420\u0456\u0447\u043D\u0430 \u041F\u0440\u0435\u043C\u0456\u0443\u043C \u043F\u0456\u0434\u043F\u0438\u0441\u043A\u0430',
   chrome_install_firefox:
     '\u0412\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u0438 Firefox',
-  chrome_install_fx_vdh: 'Video DownloadHelper \u0434\u043B\u044F Firefox',
+  chrome_install_fx_vdh: ':appName \u0434\u043B\u044F Firefox',
   chrome_license_webstore_accepted:
     '\u0410\u043A\u0442\u0438\u0432\u043D\u0430 \u043B\u0456\u0446\u0435\u043D\u0437\u0456\u044F \u0437 Chrome Webstore',
   chrome_licensing:
@@ -20964,7 +20958,7 @@ var translationsUk = {
   chrome_noyt_text:
     '\u041D\u0430 \u0436\u0430\u043B\u044C, Chrome Web Store \u043D\u0435 \u0434\u043E\u0437\u0432\u043E\u043B\u044F\u0454 \u0434\u043E\u0434\u0430\u0442\u043A\u0438 \u0434\u043B\u044F \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0435\u043D\u043D\u044F \u0432\u0456\u0434\u0435\u043E YouTube \u0456 \u0442\u043E\u043C\u0443 \u043C\u0438 \u043F\u0440\u0438\u0431\u0440\u0430\u043B\u0438 \u0446\u044E \u0444\u0443\u043D\u043A\u0446\u0456\u044E.',
   chrome_noyt_text2:
-    '\u0412\u0438 \u043C\u043E\u0436\u0435\u0442\u0435 \u0432\u0438\u043A\u043E\u0440\u0438\u0441\u0442\u0430\u0442\u0438 Video DownloadHelper, \u0449\u043E\u0431 \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0438\u0442\u0438 \u0432\u0456\u0434\u0435\u043E YouTube \u0432 Firefox \u0432\u0435\u0440\u0441\u0456\u0457.',
+    '\u0412\u0438 \u043C\u043E\u0436\u0435\u0442\u0435 \u0432\u0438\u043A\u043E\u0440\u0438\u0441\u0442\u0430\u0442\u0438 :appName, \u0449\u043E\u0431 \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0438\u0442\u0438 \u0432\u0456\u0434\u0435\u043E YouTube \u0432 Firefox \u0432\u0435\u0440\u0441\u0456\u0457.',
   chrome_noyt_text3:
     '\u041D\u0430 \u0436\u0430\u043B\u044C, \u0412\u0435\u0431-\u043C\u0430\u0433\u0430\u0437\u0438\u043D Chrome \u043D\u0435 \u0434\u043E\u0437\u0432\u043E\u043B\u044F\u0454 \u0440\u043E\u0437\u0448\u0438\u0440\u0435\u043D\u043D\u044F \u0434\u043B\u044F \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0435\u043D\u043D\u044F \u0432\u0456\u0434\u0435\u043E YouTube, \u0442\u043E\u043C\u0443 \u043C\u0438 \u043D\u0435 \u043C\u043E\u0433\u043B\u0438 \u0432\u043A\u043B\u044E\u0447\u0438\u0442\u0438 \u0446\u044E \u0444\u0443\u043D\u043A\u0446\u0456\u044E \u0434\u043E \u0432\u0435\u0440\u0441\u0456\u0457 \u0440\u043E\u0437\u0448\u0438\u0440\u0435\u043D\u043D\u044F Chrome.',
   chrome_premium_audio:
@@ -21163,8 +21157,7 @@ var translationsUk = {
     '\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u0442\u0438 \u0432\u0438\u0445\u0456\u0434\u043D\u0456 \u0434\u0435\u0442\u0430\u043B\u0456',
   donate:
     '\u041F\u043E\u0436\u0435\u0440\u0442\u0432\u0443\u0432\u0430\u0442\u0438',
-  donate_vdh:
-    '\u0414\u043E\u043F\u043E\u043C\u043E\u0433\u0430 Video DownloadHelper',
+  donate_vdh: '\u0414\u043E\u043F\u043E\u043C\u043E\u0433\u0430 :appName',
   download_error:
     '\u041F\u043E\u043C\u0438\u043B\u043A\u0430 \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0435\u043D\u043D\u044F',
   download_method:
@@ -21373,7 +21366,7 @@ var translationsUk = {
   req_review:
     '\u041A\u0440\u0456\u043C \u0442\u043E\u0433\u043E, \u0432\u0438 \u043D\u0435 \u043C\u043E\u0433\u043B\u0438 \u0431 \u043D\u0430\u043F\u0438\u0441\u0430\u0442\u0438 \u0445\u043E\u0440\u043E\u0448\u0438\u0439 \u0432\u0456\u0434\u0433\u0443\u043A \u043D\u0430 \u0441\u0430\u0439\u0442\u0456 \u0434\u043E\u0434\u0430\u0442\u043A\u0456\u0432 Mozilla?',
   req_review_link:
-    '\u041D\u0430\u043F\u0438\u0441\u0430\u0442\u0438 \u0432\u0456\u0434\u0433\u0443\u043A \u043F\u0440\u043E Video DownloadHelper',
+    '\u041D\u0430\u043F\u0438\u0441\u0430\u0442\u0438 \u0432\u0456\u0434\u0433\u0443\u043A \u043F\u0440\u043E :appName',
   reset_settings:
     '\u0421\u043A\u0438\u043D\u0443\u0442\u0438 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F',
   running: '\u0425\u0456\u0434',
@@ -21440,7 +21433,7 @@ var translationsUk = {
     '\u041D\u0438\u0437\u044C\u043A\u0430 \u044F\u043A\u0456\u0441\u0442\u044C',
   tell_me_more:
     '\u0420\u043E\u0437\u043A\u0430\u0436\u0456\u0442\u044C \u0431\u0456\u043B\u044C\u0448\u0435 \u043F\u0440\u043E \u0446\u0435',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: '\u041F\u0435\u0440\u0435\u043A\u043B\u0430\u0434',
   up: '\u0412\u0433\u043E\u0440\u0443',
   v9_about_qr:
@@ -21451,7 +21444,7 @@ var translationsUk = {
   v9_checkbox_remember_action:
     "\u0417\u0430\u043F\u0430\u043C'\u044F\u0442\u0430\u0442\u0438, \u044F\u043A \u0437\u0432\u0438\u0447\u0430\u0439\u043D\u0443 \u0434\u0456\u044E",
   v9_chrome_noyt_text2:
-    '\u0412\u0438 \u043C\u043E\u0436\u0435\u0442\u0435 \u0432\u0438\u043A\u043E\u0440\u0438\u0441\u0442\u0430\u0442\u0438 Video DownloadHelper, \u0449\u043E\u0431 \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0438\u0442\u0438 \u0432\u0456\u0434\u0435\u043E YouTube \u0432 Firefox \u0432\u0435\u0440\u0441\u0456\u0457.',
+    '\u0412\u0438 \u043C\u043E\u0436\u0435\u0442\u0435 \u0432\u0438\u043A\u043E\u0440\u0438\u0441\u0442\u0430\u0442\u0438 :appName, \u0449\u043E\u0431 \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0438\u0442\u0438 \u0432\u0456\u0434\u0435\u043E YouTube \u0432 Firefox \u0432\u0435\u0440\u0441\u0456\u0457.',
   v9_chrome_noyt_text3:
     '\u041D\u0430 \u0436\u0430\u043B\u044C, \u0412\u0435\u0431-\u043C\u0430\u0433\u0430\u0437\u0438\u043D Chrome \u043D\u0435 \u0434\u043E\u0437\u0432\u043E\u043B\u044F\u0454 \u0440\u043E\u0437\u0448\u0438\u0440\u0435\u043D\u043D\u044F \u0434\u043B\u044F \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0435\u043D\u043D\u044F \u0432\u0456\u0434\u0435\u043E YouTube, \u0442\u043E\u043C\u0443 \u043C\u0438 \u043D\u0435 \u043C\u043E\u0433\u043B\u0438 \u0432\u043A\u043B\u044E\u0447\u0438\u0442\u0438 \u0446\u044E \u0444\u0443\u043D\u043A\u0446\u0456\u044E \u0434\u043E \u0432\u0435\u0440\u0441\u0456\u0457 \u0440\u043E\u0437\u0448\u0438\u0440\u0435\u043D\u043D\u044F Chrome.',
   v9_chrome_premium_hls:
@@ -21671,7 +21664,7 @@ var translationsUk = {
   v9_user_message_auto_hide_downloaded:
     '\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u043D\u043E \u043F\u0440\u0438\u0445\u043E\u0432\u0443\u0432\u0430\u0442\u0438 \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0435\u043D\u0456 \u043C\u0435\u0434\u0456\u0430?',
   v9_user_message_no_incognito_body:
-    "Video DownloadHelper \u043D\u0435 \u0430\u043A\u0442\u0438\u0432\u043E\u0432\u0430\u043D\u043E \u0432 \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u0438\u0445/\u0456\u043D\u043A\u043E\u0433\u043D\u0456\u0442\u043E \u0432\u0456\u043A\u043D\u0430\u0445. \u0412\u0430\u043C \u043F\u043E\u0442\u0440\u0456\u0431\u043D\u043E \u0430\u043A\u0442\u0438\u0432\u0443\u0432\u0430\u0442\u0438 \u0446\u044E \u043E\u043F\u0446\u0456\u044E \u0432\u0440\u0443\u0447\u043D\u0443 (\u0446\u0435 \u043D\u0435\u043E\u0431\u043E\u0432'\u044F\u0437\u043A\u043E\u0432\u043E).",
+    ":appName \u043D\u0435 \u0430\u043A\u0442\u0438\u0432\u043E\u0432\u0430\u043D\u043E \u0432 \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u0438\u0445/\u0456\u043D\u043A\u043E\u0433\u043D\u0456\u0442\u043E \u0432\u0456\u043A\u043D\u0430\u0445. \u0412\u0430\u043C \u043F\u043E\u0442\u0440\u0456\u0431\u043D\u043E \u0430\u043A\u0442\u0438\u0432\u0443\u0432\u0430\u0442\u0438 \u0446\u044E \u043E\u043F\u0446\u0456\u044E \u0432\u0440\u0443\u0447\u043D\u0443 (\u0446\u0435 \u043D\u0435\u043E\u0431\u043E\u0432'\u044F\u0437\u043A\u043E\u0432\u043E).",
   v9_user_message_no_incognito_open_settings:
     '\u0423\u0432\u0456\u043C\u043A\u043D\u0456\u0442\u044C \u0443 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F\u0445 \u0431\u0440\u0430\u0443\u0437\u0435\u0440\u0430',
   v9_user_message_no_incognito_title:
@@ -21679,12 +21672,12 @@ var translationsUk = {
   v9_user_message_one_hundred_downloads:
     '\u0412\u0438 \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0438\u043B\u0438 100 \u0432\u0456\u0434\u0435\u043E!',
   v9_user_message_one_hundred_downloads_body:
-    '\u041C\u0438 \u0441\u043F\u043E\u0434\u0456\u0432\u0430\u0454\u043C\u043E\u0441\u044F, \u0449\u043E \u0432\u0430\u043C \u043F\u043E\u0434\u043E\u0431\u0430\u0454\u0442\u044C\u0441\u044F Video DownloadHelper :) \u041D\u0435 \u043C\u043E\u0433\u043B\u0438 \u0431 \u0432\u0438 \u043D\u0430\u043F\u0438\u0441\u0430\u0442\u0438 \u0445\u043E\u0440\u043E\u0448\u0438\u0439 \u0432\u0456\u0434\u0433\u0443\u043A \u043D\u0430 \u0432\u0435\u0431-\u0441\u0430\u0439\u0442\u0456 \u0434\u043E\u0434\u0430\u0442\u043A\u0430?',
+    '\u041C\u0438 \u0441\u043F\u043E\u0434\u0456\u0432\u0430\u0454\u043C\u043E\u0441\u044F, \u0449\u043E \u0432\u0430\u043C \u043F\u043E\u0434\u043E\u0431\u0430\u0454\u0442\u044C\u0441\u044F :appName :) \u041D\u0435 \u043C\u043E\u0433\u043B\u0438 \u0431 \u0432\u0438 \u043D\u0430\u043F\u0438\u0441\u0430\u0442\u0438 \u0445\u043E\u0440\u043E\u0448\u0438\u0439 \u0432\u0456\u0434\u0433\u0443\u043A \u043D\u0430 \u0432\u0435\u0431-\u0441\u0430\u0439\u0442\u0456 \u0434\u043E\u0434\u0430\u0442\u043A\u0430?',
   v9_user_message_one_hundred_downloads_leave_review:
     '\u0417\u0430\u043B\u0438\u0448\u0438\u0442\u0438 \u0432\u0456\u0434\u0433\u0443\u043A',
   v9_user_message_one_hundred_downloads_never_show_again:
     '\u041D\u0435 \u0437\u0430\u043F\u0438\u0442\u0443\u0432\u0430\u0442\u0438 \u0437\u043D\u043E\u0432\u0443 ',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_weh_prefs_description_contextMenuEnabled:
     '\u0414\u043E\u0441\u0442\u0443\u043F \u0434\u043E \u043A\u043E\u043C\u0430\u043D\u0434 \u0447\u0435\u0440\u0435\u0437 \u043A\u043B\u0456\u043A \u043F\u0440\u0430\u0432\u043E\u044E \u043A\u043D\u043E\u043F\u043A\u043E\u044E \u043C\u0438\u0448\u0456 \u043D\u0430 \u0441\u0442\u043E\u0440\u0456\u043D\u0446\u0456',
   v9_weh_prefs_label_downloadControlledMax:
@@ -21699,7 +21692,7 @@ var translationsUk = {
   variants_list_adp:
     '\u0410\u0434\u0430\u043F\u0442\u0438\u0432\u043D\u0456 \u0432\u0430\u0440\u0456\u0430\u043D\u0442\u0438',
   variants_list_full: '\u0412\u0430\u0440\u0456\u0430\u043D\u0442\u0438',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: '\u0412\u0435\u0440\u0441\u0456\u044F $1',
   video_only:
     '\u0412\u0456\u0434\u0435\u043E \u0442\u0456\u043B\u044C\u043A\u0438',
@@ -22023,7 +22016,7 @@ var translationsUk = {
     '\u0415\u043B\u0456\u043F\u0441\u0438\u0441 \u0437\u043F\u0440\u0430\u0432\u0430',
   yes: '\u0422\u0430\u043A',
   you_downloaded_n_videos:
-    '\u0412\u0438 \u0442\u0456\u043B\u044C\u043A\u0438 \u0449\u043E \u0443\u0441\u043F\u0456\u0448\u043D\u043E \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0438\u043B\u0438 \u0432\u0430\u0448 $1\u0439 \u0444\u0430\u0439\u043B \u0437 Video DownloadHelper.',
+    '\u0412\u0438 \u0442\u0456\u043B\u044C\u043A\u0438 \u0449\u043E \u0443\u0441\u043F\u0456\u0448\u043D\u043E \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0438\u043B\u0438 \u0432\u0430\u0448 $1\u0439 \u0444\u0430\u0439\u043B \u0437 :appName.',
 };
 var translationsZhCN = {
   Bytes: '$1 \u5B57\u8282',
@@ -22037,7 +22030,7 @@ var translationsZhCN = {
   about_beta_intro: '\u8FD9\u662F\u4E00\u4E2A\u6D4B\u8BD5\u7248\u672C\u3002',
   about_chrome_licenses: '\u5173\u4E8EChrome\u7684\u8BB8\u53EF\u8BC1',
   about_qr: '\u751F\u6210\u6587\u4EF6',
-  about_vdh: '\u5173\u4E8E Video DownloadHelper',
+  about_vdh: '\u5173\u4E8E :appName',
   action_abort_description:
     '\u7EC8\u6B62\u6B63\u5728\u8FD0\u884C\u7684\u6D3B\u52A8',
   action_abort_title: '\u7EC8\u6B62',
@@ -22090,7 +22083,7 @@ var translationsZhCN = {
   aggregating: '\u6B63\u5728\u6C47\u603B...',
   analyze_page: '\u5206\u6790\u9875\u9762',
   appDesc: '\u4E0B\u8F7D\u7F51\u9875\u4E0A\u9762\u7684\u89C6\u9891',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: '\u754C\u9762',
   audio_only: '\u4EC5\u97F3\u9891',
   behavior: '\u5E38\u89C4',
@@ -22134,7 +22127,7 @@ var translationsZhCN = {
   chrome_noyt_text:
     '\u62B1\u6B49\uFF0CChrome Web Store \u4E0D\u5141\u8BB8\u6269\u5C55\u4E0B\u8F7D YouTube \u89C6\u9891\uFF0C\u6240\u4EE5\u6211\u4EEC\u4E0D\u5F97\u4E0D\u53BB\u6389\u8FD9\u4E2A\u529F\u80FD\u3002',
   chrome_noyt_text2:
-    '\u4F60\u53EF\u4EE5\u5728 Firefox \u7248\u672C\u4E0A\u4F7F\u7528 Video DownloadHelper \u4E0B\u8F7D YouTube \u89C6\u9891\u3002',
+    '\u4F60\u53EF\u4EE5\u5728 Firefox \u7248\u672C\u4E0A\u4F7F\u7528 :appName \u4E0B\u8F7D YouTube \u89C6\u9891\u3002',
   chrome_noyt_text3:
     '\u9057\u61BE\u7684\u662F\uFF0CChrome\u7F51\u4E0A\u5E94\u7528\u5E97\u4E0D\u5141\u8BB8\u6269\u5C55\u7A0B\u5E8F\u4E0B\u8F7DYouTube\u89C6\u9891\uFF0C\u56E0\u6B64\u6211\u4EEC\u65E0\u6CD5\u5728\u6269\u5C55\u7A0B\u5E8F\u7684Chrome\u7248\u672C\u4E2D\u5305\u542B\u6B64\u529F\u80FD\u3002',
   chrome_premium_audio:
@@ -22265,7 +22258,7 @@ var translationsZhCN = {
   dlconv_download_and_convert: '\u4E0B\u8F7D\u5E76\u8F6C\u6362',
   dlconv_output_details: '\u914D\u7F6E\u8F93\u51FA\u7EC6\u8282',
   donate: '\u6350\u6B3E',
-  donate_vdh: '\u5E2E\u52A9 Video DownloadHelper',
+  donate_vdh: '\u5E2E\u52A9 :appName',
   download_error: '\u4E0B\u8F7D\u9519\u8BEF',
   download_method: '\u4E0B\u8F7D\u65B9\u5F0F',
   download_method_not_again:
@@ -22395,7 +22388,7 @@ var translationsZhCN = {
     "\u6216\u8005\u53EF\u4EE5\u5E2E\u52A9\u7FFB\u8BD1\u9644\u52A0\u7EC4\u4EF6\u4E3A '$1' (\u7F3A\u5C11 $2 \u4E2A\u5B57\u7B26\u4E32)?",
   req_review:
     '\u6216\u8005\uFF0C\u5728 Mozilla \u9644\u52A0\u7EC4\u4EF6\u4E0A\u5199\u4E00\u4E2A\u4F18\u79C0\u8BC4\u4EF7\uFF1F',
-  req_review_link: '\u64B0\u5199\u5BF9 Video DownloadHelper \u7684\u8BC4\u4EF7',
+  req_review_link: '\u64B0\u5199\u5BF9 :appName \u7684\u8BC4\u4EF7',
   reset_settings: '\u91CD\u7F6E\u8BBE\u7F6E',
   running: '\u8FD0\u884C',
   save: '\u4FDD\u5B58',
@@ -22438,13 +22431,13 @@ var translationsZhCN = {
   tbsn_quality_hd: '\u4E2D\u7B49\u8D28\u91CF',
   tbsn_quality_sd: '\u4F4E\u8D28\u91CF',
   tell_me_more: '\u4E86\u89E3\u66F4\u591A',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: '\u7FFB\u8BD1',
   up: '\u4E0A',
   validate_license: '\u6CE8\u518C\u8BB8\u53EF\u8BC1',
   variants_list_adp: '\u81EA\u52A8\u53D8\u91CF',
   variants_list_full: '\u53D8\u91CF',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: '\u7248\u672C $1',
   video_only: '\u4EC5\u89C6\u9891',
   video_qualities: '\u89C6\u9891\u54C1\u8D28',
@@ -22692,7 +22685,7 @@ var translationsZhCN = {
   weh_prefs_titleMode_option_right: '\u7701\u7565\u53F7\u5C45\u53F3',
   yes: '\u662F',
   you_downloaded_n_videos:
-    '\u60A8\u521A\u521A\u6210\u529F\u7528 Video DownloadHelper \u4E0B\u8F7D\u60A8\u7684\u7B2C $1 \u4E2A\u6587\u4EF6\u3002',
+    '\u60A8\u521A\u521A\u6210\u529F\u7528 :appName \u4E0B\u8F7D\u60A8\u7684\u7B2C $1 \u4E2A\u6587\u4EF6\u3002',
   v9_yes: '\u662F',
   v9_no: '\u5426',
   v9_error: '\u9519\u8BEF',
@@ -22719,7 +22712,7 @@ var translationsZhCN = {
   v9_chrome_noyt_text3:
     '\u9057\u61BE\u7684\u662F\uFF0CChrome\u7F51\u4E0A\u5E94\u7528\u5E97\u4E0D\u5141\u8BB8\u6269\u5C55\u7A0B\u5E8F\u4E0B\u8F7DYouTube\u89C6\u9891\uFF0C\u56E0\u6B64\u6211\u4EEC\u65E0\u6CD5\u5728\u6269\u5C55\u7A0B\u5E8F\u7684Chrome\u7248\u672C\u4E2D\u5305\u542B\u6B64\u529F\u80FD\u3002',
   v9_chrome_noyt_text2:
-    '\u4F60\u53EF\u4EE5\u5728 Firefox \u7248\u672C\u4E0A\u4F7F\u7528 Video DownloadHelper \u4E0B\u8F7D YouTube \u89C6\u9891\u3002',
+    '\u4F60\u53EF\u4EE5\u5728 Firefox \u7248\u672C\u4E0A\u4F7F\u7528 :appName \u4E0B\u8F7D YouTube \u89C6\u9891\u3002',
   v9_about_qr: '\u6587\u4EF6\u5DF2\u751F\u6210',
   v9_explain_qr1:
     '\u60A8\u4F1A\u53D1\u73B0\u751F\u6210\u7684\u89C6\u9891\u89D2\u843D\u5305\u542B\u6C34\u5370\u3002',
@@ -22737,7 +22730,7 @@ var translationsZhCN = {
     '\u6700\u5927\u4E0B\u8F7D\u4EFB\u52A1\u6570',
   v9_weh_prefs_description_contextMenuEnabled:
     '\u8BBF\u95EE\u6765\u81EA\u9875\u9762\u53F3\u51FB\u7684\u547D\u4EE4',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '\u201C$1\u201D\u73B0\u5DF2\u5C31\u7EEA',
   v9_lic_status_unset: '\u8BB8\u53EF\u672A\u8BBE\u7F6E',
   v9_lic_status_blocked: '\u8BB8\u53EF\u5DF2\u5C4F\u853D',
@@ -22895,7 +22888,7 @@ var translationsZhCN = {
   v9_user_message_auto_hide_downloaded:
     '\u81EA\u52A8\u9690\u85CF\u5DF2\u4E0B\u8F7D\u5A92\u4F53\uFF1F',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper \u672A\u5728\u9690\u8EAB\u6A21\u5F0F\u4E2D\u542F\u7528\uFF0C\u4F60\u9700\u8981\u5728\u9009\u9879\u4E2D\u624B\u5DE5\u542F\u52A8\uFF08\u975E\u5FC5\u987B\uFF09\u3002',
+    ':appName \u672A\u5728\u9690\u8EAB\u6A21\u5F0F\u4E2D\u542F\u7528\uFF0C\u4F60\u9700\u8981\u5728\u9009\u9879\u4E2D\u624B\u5DE5\u542F\u52A8\uFF08\u975E\u5FC5\u987B\uFF09\u3002',
   v9_user_message_no_incognito_open_settings:
     '\u542F\u7528\u6D4F\u89C8\u5668\u4E2D\u8BBE\u7F6E',
   v9_user_message_no_incognito_title:
@@ -22927,7 +22920,7 @@ var translationsZhTW = {
   about_beta_intro: '\u9019\u662F\u4E00\u500B beta \u6E2C\u8A66\u7248\u672C.',
   about_chrome_licenses: '\u95DC\u65BC Chrome \u7684\u6191\u8B49\u8A31\u53EF',
   about_qr: '\u751F\u6210\u6587\u4EF6',
-  about_vdh: '\u95DC\u65BC Video DownloadHelper',
+  about_vdh: '\u95DC\u65BC :appName',
   action_abort_description:
     '\u7D42\u6B62\u6B63\u5728\u904B\u884C\u7684\u6D3B\u52D5',
   action_abort_title: '\u7D42\u6B62',
@@ -22984,7 +22977,7 @@ var translationsZhTW = {
   aggregating: '\u5F59\u96C6...',
   analyze_page: '\u5206\u6790\u9801\u9762',
   appDesc: '\u5F9E\u7DB2\u9801\u4E0B\u8F09\u8996\u8A0A',
-  appName: 'Video DownloadHelper',
+  appName: ':appName',
   appearance: '\u5916\u89C0',
   audio_only: '\u53EA\u6709\u8072\u97F3',
   behavior: '\u884C\u70BA',
@@ -23029,7 +23022,7 @@ var translationsZhTW = {
   chrome_noyt_text:
     '\u7531\u65BCChrome\u700F\u89BD\u5668\u4E0D\u652F\u63F4\u9644\u52A0\u5143\u4EF6\u4E0B\u8F09Youtube\u5F71\u7247\uFF0C\u56E0\u6B64\u6211\u5011\u5C07\u6B64\u529F\u80FD\u79FB\u9664',
   chrome_noyt_text2:
-    '\u60A8\u53EF\u4EE5\u900F\u904EFirefox\u700F\u89BD\u5668\u5B89\u88DDVideo DownloadHelper\u9644\u52A0\u5143\u4EF6\u4F86\u4E0B\u8F09Youtube\u5F71\u7247',
+    '\u60A8\u53EF\u4EE5\u900F\u904EFirefox\u700F\u89BD\u5668\u5B89\u88DD:appName\u9644\u52A0\u5143\u4EF6\u4F86\u4E0B\u8F09Youtube\u5F71\u7247',
   chrome_noyt_text3:
     '\u5F88\u907A\u61BE\uFF0C\u56E0\u70BA Chrome \u7DDA\u4E0A\u61C9\u7528\u7A0B\u5F0F\u5546\u5E97\u4E0D\u5141\u8A31\u53EF\u4E0B\u8F09 Youtube \u5F71\u7247\u7684\u64F4\u5145\u529F\u80FD\uFF0C\u6240\u4EE5\u6211\u5011\u5728 Chrome \u7248\u672C\u7684\u64F4\u5145\u529F\u80FD\u4E0D\u63D0\u4F9B\u9019\u9805\u529F\u80FD\u3002',
   chrome_premium_audio:
@@ -23164,7 +23157,7 @@ var translationsZhTW = {
   dlconv_download_and_convert: '\u4E0B\u8F09 & \u8F49\u63DB',
   dlconv_output_details: '\u8A73\u7D30\u914D\u7F6E\u8F38\u51FA\u65B9\u5F0F',
   donate: '\u6350\u8D08',
-  donate_vdh: '\u5E6B\u52A9 Video DownloadHelper',
+  donate_vdh: '\u5E6B\u52A9 :appName',
   download_error: '\u4E0B\u8F09\u932F\u8AA4',
   download_method: '\u4E0B\u8F09\u65B9\u6CD5',
   download_method_not_again:
@@ -23295,7 +23288,7 @@ var translationsZhTW = {
     "\u6216\u8005\u53EF\u80FD\u5E6B\u52A9\u7FFB\u8B6F\u6B64\u9644\u52A0\u5143\u4EF6\u70BA '$1' (\u76EE\u524D\u6709 $2 \u5B57\u4E32\u672A\u7FFB\u8B6F) ?",
   req_review:
     '\u6216\u8005, \u4F60\u53EF\u4EE5\u5728 Mozilla addon site \u5BEB\u4E00\u500B\u597D\u7684\u8A55\u8AD6\u55CE?',
-  req_review_link: '\u70BA Video DownloadHelper \u5BEB\u4E00\u500B\u8A55\u8AD6',
+  req_review_link: '\u70BA :appName \u5BEB\u4E00\u500B\u8A55\u8AD6',
   reset_settings: '\u91CD\u7F6E\u8A2D\u5B9A',
   running: '\u904B\u884C',
   save: '\u4FDD\u5B58',
@@ -23337,13 +23330,13 @@ var translationsZhTW = {
   tbsn_quality_hd: '\u5F71\u50CF\u89E3\u6790\u5EA6',
   tbsn_quality_sd: '\u4F4E\u89E3\u6790\u5EA6',
   tell_me_more: '\u77AD\u89E3\u66F4\u591A',
-  title: 'Video DownloadHelper',
+  title: ':appName',
   translation: '\u7FFB\u8B6F',
   up: '\u4E0A\u4E00\u5C64',
   validate_license: '\u8A3B\u518A\u78BC\u9A57\u8B49',
   variants_list_adp: '\u81EA\u9069\u61C9(ADP)\u7248\u672C',
   variants_list_full: '\u7248\u672C',
-  vdh_notification: 'Video DownloadHelper',
+  vdh_notification: ':appName',
   version: '\u7248\u672C $1',
   video_only: '\u50C5\u8996\u983B',
   video_qualities: '\u8996\u983B\u54C1\u8CEA',
@@ -23595,7 +23588,7 @@ var translationsZhTW = {
   weh_prefs_titleMode_option_right: '\u53F3\u65B9\u7701\u7565\u7B26\u865F',
   yes: '\u662F',
   you_downloaded_n_videos:
-    '\u4F60\u525B\u525B\u7528 Video DownloadHelper \u6210\u529F\u4E0B\u8F09\u7B2C $1 \u500B\u6A94\u6848',
+    '\u4F60\u525B\u525B\u7528 :appName \u6210\u529F\u4E0B\u8F09\u7B2C $1 \u500B\u6A94\u6848',
   v9_yes: '\u662F',
   v9_no: '\u5426',
   v9_error: '\u932F\u8AA4',
@@ -23625,7 +23618,7 @@ var translationsZhTW = {
   v9_chrome_noyt_text3:
     '\u5F88\u907A\u61BE\uFF0C\u56E0\u70BA Chrome \u7DDA\u4E0A\u61C9\u7528\u7A0B\u5F0F\u5546\u5E97\u4E0D\u5141\u8A31\u53EF\u4E0B\u8F09 Youtube \u5F71\u7247\u7684\u64F4\u5145\u529F\u80FD\uFF0C\u6240\u4EE5\u6211\u5011\u5728 Chrome \u7248\u672C\u7684\u64F4\u5145\u529F\u80FD\u4E0D\u63D0\u4F9B\u9019\u9805\u529F\u80FD\u3002',
   v9_chrome_noyt_text2:
-    '\u60A8\u53EF\u4EE5\u900F\u904EFirefox\u700F\u89BD\u5668\u5B89\u88DDVideo DownloadHelper\u9644\u52A0\u5143\u4EF6\u4F86\u4E0B\u8F09Youtube\u5F71\u7247',
+    '\u60A8\u53EF\u4EE5\u900F\u904EFirefox\u700F\u89BD\u5668\u5B89\u88DD:appName\u9644\u52A0\u5143\u4EF6\u4F86\u4E0B\u8F09Youtube\u5F71\u7247',
   v9_about_qr: '\u7522\u751F\u6A94\u6848',
   v9_explain_qr1:
     '\u60A8\u7684\u5F71\u7247\u89D2\u843D\u6703\u6709QR Code\u6D6E\u6C34\u5370\u3002',
@@ -23644,14 +23637,14 @@ var translationsZhTW = {
     '\u6700\u5927\u540C\u6642\u4E0B\u8F09\u6578\u91CF',
   v9_weh_prefs_description_contextMenuEnabled:
     '\u4F7F\u7528\u53F3\u9375\u4F86\u67E5\u8A62\u53EF\u7528\u7684\u6307\u4EE4',
-  v9_vdh_notification: 'Video DownloadHelper',
+  v9_vdh_notification: ':appName',
   v9_file_ready: '\u6A94\u6848\u6E96\u5099\u5C31\u7DD2',
   v9_lic_status_unset: '\u672A\u8A2D\u5B9A\u5E8F\u865F',
   v9_lic_status_blocked: '\u5E8F\u865F\u88AB\u963B\u64CB',
   v9_lic_status_locked:
     '\u5E8F\u865F\u88AB\u9396\u5B9A(\u91CD\u65B0\u9A57\u8B49)',
   v9_no_license_registered: '\u7121\u8A3B\u518A\u5E8F\u865F',
-  __MSG_appDesc_: 'Video DownloadHelper',
+  __MSG_appDesc_: ':appName',
   v9_badge_new: '\u65B0\u7684',
   v9_checkbox_remember_action: '\u8A2D\u5B9A\u70BA\u9810\u8A2D',
   v9_dialog_audio_impossible:
@@ -23752,7 +23745,7 @@ var translationsZhTW = {
     '\u662F\u5426\u81EA\u52D5\u96B1\u85CF\u4E0B\u8F09\u5B8C\u6210\u7684\u5F71\u7247?',
   v9_user_message_no_incognito_title: '\u975E\u7121\u75D5\u6A21\u5F0F',
   v9_user_message_no_incognito_body:
-    'Video DownloadHelper \u65BC\u7121\u75D5\u8996\u7A97\u4E2D\u672A\u555F\u7528\u81EA\u52D5\u5075\u6E2C\uFF0C\u8ACB\u624B\u52D5\u555F\u7528 (\u5982\u975E\u5FC5\u8981)',
+    ':appName \u65BC\u7121\u75D5\u8996\u7A97\u4E2D\u672A\u555F\u7528\u81EA\u52D5\u5075\u6E2C\uFF0C\u8ACB\u624B\u52D5\u555F\u7528 (\u5982\u975E\u5FC5\u8981)',
   v9_user_message_no_incognito_open_settings:
     '\u65BC\u700F\u89BD\u5668\u8A2D\u5B9A\u4E2D\u555F\u7528',
   v9_blacklist_glob: "\u4F7F\u7528'*'\u5927\u91CF\u914D\u5C0D",
@@ -23769,7 +23762,7 @@ var translationsZhTW = {
   v9_user_message_one_hundred_downloads:
     '\u60A8\u5DF2\u4E0B\u8F09 100 \u500B\u5F71\u7247\uFF01',
   v9_user_message_one_hundred_downloads_body:
-    '\u5E0C\u671B\u60A8\u559C\u6B61 Video DownloadHelper\uFF0C \u60A8\u4ECB\u610F\u5728\u5916\u7DB2\u4E0A\u7D66\u4E88\u597D\u8A55\u55CE\uFF1F',
+    '\u5E0C\u671B\u60A8\u559C\u6B61 :appName\uFF0C \u60A8\u4ECB\u610F\u5728\u5916\u7DB2\u4E0A\u7D66\u4E88\u597D\u8A55\u55CE\uFF1F',
   v9_user_message_one_hundred_downloads_leave_review:
     '\u767C\u8868\u8A55\u8AD6',
   v9_user_message_one_hundred_downloads_never_show_again:
@@ -24424,7 +24417,7 @@ async function handleEvent(event) {
       ((filterEl || onlyEmptyEl) && applyFilter(),
       helpButton
         && browserApi.default.tabs.create({
-          url: 'https://github.com/aclap-dev/video-downloadhelper/wiki/Translations',
+          url: '__CLEANROOM_TRANSLATIONS_HELP_URL__',
         }),
       resetButton && (await removeSetting(viewOptionsSetting), renderEntries()),
       exportButton)

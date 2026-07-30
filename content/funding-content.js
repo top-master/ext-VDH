@@ -96,7 +96,7 @@
        */
       createDonateHandler() {
         return () => {
-          weh.rpc.call('goto', 'https://www.downloadhelper.net/donate');
+          weh.rpc.call('goto', globalThis.extConfig.getUrlValue('donateUrl'));
         };
       }
 
@@ -107,7 +107,7 @@
         return () => {
           weh.rpc.call(
             'goto',
-            'https://github.com/aclap-dev/video-downloadhelper/discussions/categories/language-translation',
+            globalThis.extConfig.getUrlValue('translationDiscussionsUrl'),
           );
         };
       }

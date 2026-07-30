@@ -32,7 +32,10 @@
      */
     createOpenLicensingInfoHandler() {
       return () => {
-        weh.rpc.call('goto', 'https://www.downloadhelper.net/about-licensing');
+        weh.rpc.call(
+          'goto',
+          globalThis.extConfig.getUrlValue('licenseInfoUrl'),
+        );
       };
     }
 
@@ -41,7 +44,7 @@
      */
     createOpenConversionLicenseHandler() {
       return () => {
-        weh.rpc.call('goto', 'https://www.downloadhelper.net/convert');
+        weh.rpc.call('goto', globalThis.extConfig.getUrlValue('convertUrl'));
       };
     }
 
