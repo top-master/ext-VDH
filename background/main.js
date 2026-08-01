@@ -299,6 +299,41 @@ importScripts('../vendor/ts-results.js');
           }
         });
       }
+      /**
+       * Same as {@link #call}, however, will not produce any error log in case
+       * of the receiving end not being prepared yet or not having that
+       * called-method yet.
+       *
+       * It simply redirects to {@link #call} and pipes the rejection through a
+       * `catch`. That catch diagnoses the reason: it swallows ONLY the
+       * "receiver not ready" case - `receive()` rejecting an unregistered method
+       * with the remote error `Method <name> is not a function` (which happens
+       * while a just-opened UI has connected but not yet installed its rpc
+       * listeners) - and rethrows every unrelated error (network, serialization,
+       * or a genuine error thrown by the remote method) so real failures still
+       * surface.
+       *
+       * @example
+       * // The service worker pushes progress to the 'main' popup. If the popup
+       * // only just opened - connected before weh.is_safe registered its
+       * // handlers - the 'progress' method is not there yet, so skip quietly
+       * // instead of leaking "Method progress is not a function".
+       * storeRpc.callOptional('main', 'progress', reduxStore.getState().progress);
+       */
+      callOptional() {
+        return this.call.apply(this, arguments).catch(error => {
+          if (
+            error
+            && typeof error.remoteError == 'string'
+            && /^Method .+ is not a function$/.test(error.remoteError)
+          ) {
+            // The receiver is not ready yet, which is expected, so stay quiet.
+            return undefined;
+          }
+          // The failure is unrelated, so forward it.
+          throw error;
+        });
+      }
       receive(message, sendReply, caller) {
         let self = this;
         if (message._request) {
@@ -10468,7 +10503,25 @@ const store = createStore(
     let result = converterCoapp.call('probe', url, parse, headers);
     if (parse) {
       return result.then(
-        text => JSON.parse(text),
+        text => {
+          try {
+            return JSON.parse(text);
+          } catch (jsonError) {
+            // The ffprobe JSON output can be invalid (for example an unescaped
+            // character in a stream or format tag), which would otherwise abort
+            // the whole download. Callers only read format.duration, so recover
+            // it from the non-JSON probe instead of failing.
+            appLog(
+              'probe returned malformed JSON, recovering duration: '
+                + jsonError.message,
+              'warning',
+            );
+            return info(url, !1, headers).then(basicInfo => ({
+              format: { duration: basicInfo && basicInfo.duration },
+              streams: [],
+            }));
+          }
+        },
         probeError =>
           diagnoseProbeFailure(probeError, url, headers).then(() => {
             throw probeError;
@@ -20956,7 +21009,7 @@ const store = createStore(
           let hits = await getSerializedHits();
           try {
             if (storeWeh.openedContents().indexOf('main') >= 0) {
-              storeRpc.call('main', 'hits', hits);
+              storeRpc.callOptional('main', 'hits', hits);
             }
             storeSidePanel?.updateHits(hits);
             updateBadgeAndIcon();
@@ -20968,16 +21021,16 @@ const store = createStore(
     );
     reduxStore.subscribe(
       watchProgressState(() => {
-        try {
-          storeRpc.call('main', 'progress', reduxStore.getState().progress);
-        } catch {}
+        storeRpc.callOptional(
+          'main',
+          'progress',
+          reduxStore.getState().progress,
+        );
       }),
     );
     reduxStore.subscribe(
       watchLogsState(() => {
-        try {
-          storeRpc.call('main', 'logs', reduxStore.getState().logs);
-        } catch {}
+        storeRpc.callOptional('main', 'logs', reduxStore.getState().logs);
         try {
           updateBadgeAndIcon();
         } catch (err) {
