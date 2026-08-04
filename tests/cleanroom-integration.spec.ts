@@ -68,10 +68,10 @@ describe('clean-room config integration (a real page loads cleanroom-shared.js)'
 
   it('the in-page i18n.getMessage guard substitutes :appName with the brand', () => {
     expect(windowObject.chrome.i18n.getMessage('v9_coapp_help')).toBe(
-      'Help Clean-Room Helper',
+      'Help Video Downloader',
     );
     expect(windowObject.chrome.i18n.getMessage('appName')).toBe(
-      'Clean-Room Helper',
+      'Video Downloader',
     );
     expect(windowObject.chrome.i18n.getMessage('v9_plain')).toBe(
       'No token here',

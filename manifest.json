@@ -58,19 +58,19 @@
   },
   "action": {
     "default_popup": "/content/popup.html?panel=main",
-    "default_title": "Clean-Room Helper",
+    "default_title": "Video Downloader",
     "default_icon": {
       "128": "/content2/icons/stable-color.png"
     }
   },
   "side_panel": {
     "default_path": "/content2/sidebar.html",
-    "default_title": "Clean-Room Helper",
+    "default_title": "Video Downloader",
     "default_icon": {
       "128": "/content2/icons/stable-color.png"
     }
   },
-  "name": "Clean-Room Helper",
+  "name": "Video Downloader",
   "icons": {
     "128": "/content2/icons/stable-color.png"
   },

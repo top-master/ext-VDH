@@ -19,7 +19,7 @@ const ownExtensionOrigin = 'chrome-extension://' + upstreamChromeId;
 /**
  * Verifies cleanroom-shared.js: the single-source brand/URL config exposed as
  * globalThis.extConfig. In clean-room mode (default) the brand resolves to
- * "Clean-Room Helper", the :appName token in i18n strings is substituted, the
+ * "Video Downloader", the :appName token in i18n strings is substituted, the
  * i18n.getMessage guard rewrites every localized string, upstream URLs are
  * neutralised to about:blank#cleanroom-*, and the runtime toggle flips both the
  * brand and the URLs back to the originals. The upstream fingerprints live only
@@ -80,11 +80,11 @@ describe('cleanroom-shared.js (globalThis.extConfig)', () => {
   it('resolves the brand and :appName token to the clean-room name by default', () => {
     const extConfig = loadConfig().extConfig;
     expect(extConfig.isCleanRoom).toBe(true);
-    expect(extConfig.getLiteralValue('productName')).toBe('Clean-Room Helper');
+    expect(extConfig.getLiteralValue('productName')).toBe('Video Downloader');
     expect(extConfig.getLiteralValue('shortName')).toBe('CRH');
-    expect(extConfig.resolveLocaleText(':appName')).toBe('Clean-Room Helper');
+    expect(extConfig.resolveLocaleText(':appName')).toBe('Video Downloader');
     expect(extConfig.resolveLocaleText('Help :appName')).toBe(
-      'Help Clean-Room Helper',
+      'Help Video Downloader',
     );
     expect(extConfig.resolveLocaleText('no token here')).toBe('no token here');
   });
@@ -157,9 +157,9 @@ describe('cleanroom-shared.js (globalThis.extConfig)', () => {
     });
     // the module wraps chrome.i18n.getMessage in place
     expect(sandbox.chrome.i18n.getMessage('welcome')).toBe(
-      'Welcome to Clean-Room Helper',
+      'Welcome to Video Downloader',
     );
-    expect(sandbox.chrome.i18n.getMessage('appName')).toBe('Clean-Room Helper');
+    expect(sandbox.chrome.i18n.getMessage('appName')).toBe('Video Downloader');
     expect(sandbox.chrome.i18n.getMessage('plain')).toBe(
       'Nothing to substitute',
     );

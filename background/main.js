@@ -22196,7 +22196,7 @@ const store = createStore(
       let currentVersion = manifest.version.split('.').slice(0, 2).join('.');
       if (installDetails.reason == 'install') {
         tabTracker.gotoOrOpenTab(
-          'https://github.com/top-master/ext-VDH/blob/master/README.md',
+          'https://github.com/top-master/ext-VDH/blob/master/docs/welcome.md',
         );
       } else if (installDetails.reason == 'update') {
         let previousVersion = installDetails.previousVersion

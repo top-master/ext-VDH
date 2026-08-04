@@ -68,6 +68,7 @@ const ignoredDirectories = new Set(['.git', 'node_modules', 'todo']);
 const ignoredRelativePaths = new Set([
   'CLEANROOM_STATUS.md',
   'README.md',
+  path.join('docs', 'welcome.md'),
   path.join('tests', 'cleanroom-audit.ts'),
   path.join('vitest.config.ts'),
   path.join('package.json'),

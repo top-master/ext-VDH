@@ -54,7 +54,7 @@
     __CLEANROOM_TRANSLATIONS_HELP_URL__: "translationsHelpUrl",
   };
   const cleanRoomTextValues = {
-    productName: "Clean-Room Helper",
+    productName: "Video Downloader",
     shortName: "CRH",
     nativeHostId: "cleanroom.coapp",
     logsFileName: "cleanroom-logs.txt",
