@@ -149,6 +149,17 @@ importScripts('../vendor/ts-results.js');
       return error;
     }
     error.details = Object.assign({}, error.details, details);
+    // The CoApp version is ambient context every report should carry - a
+    // mismatched or outdated CoApp is the usual root cause - so stamp it here
+    // once instead of at each call site. The `typeof` guard keeps this helper
+    // usable when extracted in isolation (tests), where the var is absent.
+    if (
+      typeof coappKnownVersion != 'undefined'
+      && coappKnownVersion
+      && error.details.coappVersion == null
+    ) {
+      error.details.coappVersion = coappKnownVersion;
+    }
     let blockLines = [errorDetailsStart];
     for (let key of Object.keys(error.details)) {
       let value = error.details[key];
@@ -10427,6 +10438,7 @@ const store = createStore(
     getFormats: () => getFormats,
     getOutputConfigs: () => getOutputConfigs,
     info: () => info,
+    probeDurationSeconds: () => probeDurationSeconds,
     makeUniqueFileName: () => makeUniqueFileName,
     open: () => open,
     play: () => play,
@@ -10475,6 +10487,45 @@ const store = createStore(
           && !/^lib[a-z]+ +[0-9]/.test(line),
       );
     return lines.slice(-3).join('\n');
+  }
+  // A failed convert/download surfaces as an error whose message is what the log
+  // shows beside the stack. When ffmpeg leaves no stderr - some coapp builds
+  // capture none, and a killed or immediately-refused process can exit without
+  // printing anything - that message was reason-less ("SideDownload error:"),
+  // leaving the log a dead end. Build a one-line cause that is never empty:
+  // ffmpeg's own last words when it left any, otherwise the bare exit code.
+  function describeConvertFailure(result) {
+    let reason = extractFfprobeReason(result && result.stderr).replace(
+      /\n+/g,
+      '; ',
+    );
+    if (reason) {
+      return reason;
+    }
+    let exitCode = result && result.exitCode;
+    return (
+      'ffmpeg exited with code ' + exitCode + ' without any diagnostic output'
+    );
+  }
+  // Build the error for a failed convert/download. The one-line reason goes in
+  // the message; the call context - the media URLs, the output file, ffmpeg's
+  // exit code and its stderr - is attached through injectErrorDetails, the same
+  // path RPC failures use, so it renders as a details block (and picks up the
+  // ambient CoApp version) rather than being hand-formatted per throw site.
+  function convertFailureError(label, result, context) {
+    let error = new Error(label + ': ' + describeConvertFailure(result));
+    injectErrorDetails(
+      error,
+      Object.assign(
+        {
+          method: 'convert',
+          exitCode: result && result.exitCode,
+          response: result && result.stderr,
+        },
+        context,
+      ),
+    );
+    return error;
   }
   function diagnoseProbeFailure(probeError, url, headers) {
     if (!coappGaveNoReason(probeError)) {
@@ -10531,6 +10582,30 @@ const store = createStore(
       return result;
     }
   }
+  // A download's pre-flight probe exists only to seed the progress bar's total
+  // duration. ffprobe can reject it outright - for example when it misdetects an
+  // HLS media playlist as raw mp3 ("Invalid frame size ... Could not seek to")
+  // and gives up with "Invalid argument" - and letting that rejection propagate
+  // would abort a whole download that sideDownload could otherwise complete. So
+  // treat the probe as best effort: on failure, log a warning and report an
+  // unknown duration, which leaves the progress bar indeterminate while the
+  // download proceeds.
+  function probeDurationSeconds(url, headers = []) {
+    return info(url, !0, headers).then(
+      mediaInfo => {
+        let seconds = parseFloat(mediaInfo?.format?.duration);
+        return seconds > 0 ? seconds : 0;
+      },
+      probeError => {
+        appLog(
+          'duration probe failed, downloading without a progress total: '
+            + (probeError?.message ?? String(probeError)),
+          'warning',
+        );
+        return 0;
+      },
+    );
+  }
   function play(url) {
     return converterCoapp.call('play', url);
   }
@@ -10556,7 +10631,10 @@ const store = createStore(
           converterDebug
             && (console.warn('exitCode|convert3', result.exitCode),
             console.warn(result.stderr)),
-          new converterUtil.DetailsError('Convert3 error: ', result.stderr)
+          convertFailureError('Convert3 error', result, {
+            input: input,
+            file: output,
+          })
         );
       }
       return output;
@@ -10608,7 +10686,10 @@ const store = createStore(
           converterDebug
             && (console.warn('exitCode|convert2', result.exitCode),
             console.warn(result.stderr)),
-          new converterUtil.DetailsError('Convert2 error: ', result.stderr)
+          convertFailureError('Convert2 error', result, {
+            input: input,
+            file: output,
+          })
         );
       }
       return output;
@@ -10705,7 +10786,12 @@ const store = createStore(
           converterDebug
             && (console.warn('exitCode|sideDownloadMPD', result.exitCode),
             console.warn(result.stderr)),
-          new converterUtil.DetailsError('SideDownload error: ', result.stderr)
+          convertFailureError('SideDownload error', result, {
+            url: url,
+            videoTrack: videoTrack,
+            audioTrack: audioTrack,
+            file: options.filePath,
+          })
         );
       }
     } finally {
@@ -10814,10 +10900,12 @@ const store = createStore(
           console.warn('Re-trying with forceHls');
           return sideDownload(videoUrl, audioUrl, options, !0);
         }
-        throw new converterUtil.DetailsError(
-          'SideDownload error: ',
-          result.stderr,
-        );
+        throw convertFailureError('SideDownload error', result, {
+          videoUrl: videoUrl,
+          audioUrl: audioUrl,
+          forceHls: forceHls,
+          file: options.filePath,
+        });
       }
     } finally {
       if (qrPath) {
@@ -19154,12 +19242,10 @@ const store = createStore(
         hitData.mediaManifest
         ?? hitData.videoMediaManifest
         ?? hitData.audioMediaManifest;
-      let mediaInfo = await downloadConverter.info(
+      duration = await downloadConverter.probeDurationSeconds(
         manifestUrl,
-        !0,
         hit.headers,
       );
-      duration = parseFloat(mediaInfo.format?.duration);
       let sideOptions = {
         filePath: filePath,
         qr_code_needed: needsQr,
@@ -19191,12 +19277,10 @@ const store = createStore(
     }
     if (strategy == 'mpd') {
       let hitData = hit;
-      let mediaInfo = await downloadConverter.info(
+      duration = await downloadConverter.probeDurationSeconds(
         hitData.mpd_url,
-        !0,
         hit.headers,
       );
-      duration = parseFloat(mediaInfo.format?.duration);
       let sideOptions = {
         filePath: filePath,
         qr_code_needed: needsQr,
@@ -19222,8 +19306,10 @@ const store = createStore(
     }
     if (strategy == 'file_coapp') {
       if (duration == 0) {
-        let mediaInfo = await downloadConverter.info(hit.url, !0, hit.headers);
-        duration = parseFloat(mediaInfo.format?.duration);
+        duration = await downloadConverter.probeDurationSeconds(
+          hit.url,
+          hit.headers,
+        );
       }
       let sideOptions = {
         filePath: filePath,
@@ -19266,12 +19352,10 @@ const store = createStore(
       if (audioUrlObj) {
         audioUrlObj.searchParams.set('n', transformedN);
       }
-      let mediaInfo = await downloadConverter.info(
+      duration = await downloadConverter.probeDurationSeconds(
         videoUrlObj.href,
-        !0,
         hit.headers,
       );
-      duration = parseFloat(mediaInfo.format?.duration);
       let sideOptions = {
         filePath: filePath,
         qr_code_needed: needsQr,
