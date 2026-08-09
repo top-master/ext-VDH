@@ -1238,6 +1238,17 @@ importScripts('../vendor/ts-results.js');
           defaultValue: !1,
         },
         {
+          name: 'ffmpegLogLevel',
+          type: 'choice',
+          defaultValue: 'warning',
+          choices: ['silent', 'error', 'warning', 'info', 'verbose', 'debug'],
+        },
+        {
+          name: 'stripSegmentWrapper',
+          type: 'boolean',
+          defaultValue: !0,
+        },
+        {
           name: 'networkFilterOut',
           type: 'string',
           defaultValue:
@@ -10883,6 +10894,25 @@ const store = createStore(
       await converterCoapp.call('fs.write2', tmpGifFd, converterPlaceholderGif);
       await converterCoapp.call('fs.close', tmpGifFd);
       qrPath = path;
+    }
+    // Hand the coapp our per-download directives: how chatty ffmpeg should be,
+    // and whether to de-wrap image-wrapped segments. They are coapp-private (the
+    // coapp strips them before ffmpeg) and gated to coapp >= 2.0.23, the first
+    // build that understands them, so an older coapp never receives them. Not
+    // added to shellArgs, which mirrors a plain ffmpeg command.
+    if (
+      coappKnownVersion
+      && coappCompareSemVer
+      && coappCompareSemVer(coappKnownVersion, '2.0.23') >= 0
+    ) {
+      ffmpegArgs.push(
+        '-vdh_loglevel',
+        (prefs && prefs.ffmpegLogLevel) || 'warning',
+      );
+      ffmpegArgs.push(
+        '-vdh_strip_wrapper',
+        prefs && prefs.stripSegmentWrapper === !1 ? '0' : '1',
+      );
     }
     if (
       (ffmpegArgs.push('-analyzeduration', '10M'),

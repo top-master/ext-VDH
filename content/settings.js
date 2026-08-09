@@ -1955,100 +1955,103 @@
     });
     let store = createStore(rootReducer);
     listenPrefs(store);
-    window.UseNewUIButton = class extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = {};
-      }
-      enableNewUI() {
-        return () =>
-          browser.storage.local.set({
-            use_legacy_ui: !1,
-          });
-      }
-      render() {
-        return React.createElement(
-          'button',
-          {
-            onClick: this.enableNewUI(),
-            style: {
-              marginRight: '12px',
-            },
-            className: 'btn btn-outline-secondary float-right',
-          },
-          'Enable New UI',
-        );
-      }
-    };
-    window.CompactViewCheckbox = class extends React.Component {
+    // The user interface picker: one combo-box over the two stored booleans
+    // (use_legacy_ui, use_wide_ui). It renders with the same form-group/row markup
+    // as the WehParam controls so it lines up with the rest of the settings list.
+    window.UiModeSelect = class extends React.Component {
       constructor(props) {
         super(props);
         this.state = {
-          isCompactViewEnabled: !0,
+          mode: 'compact',
         };
         this.handleStorageChange = this.handleStorageChange.bind(this);
-        this.syncCompactViewPreference =
-          this.syncCompactViewPreference.bind(this);
+        this.syncMode = this.syncMode.bind(this);
+        this.handleChange = this.handleChange.bind(this);
       }
       componentDidMount() {
-        this.syncCompactViewPreference();
+        this.syncMode();
         browser.storage.onChanged.addListener(this.handleStorageChange);
       }
       componentWillUnmount() {
         browser.storage.onChanged.removeListener(this.handleStorageChange);
       }
-      async syncCompactViewPreference() {
-        let { use_wide_ui: useWideUi = !1 } =
-          await browser.storage.local.get('use_wide_ui');
+      modeFromStored(useLegacyUi, useWideUi) {
+        if (useLegacyUi) {
+          return 'legacy';
+        }
+        return useWideUi ? 'compact_large' : 'compact';
+      }
+      async syncMode() {
+        let stored = await browser.storage.local.get([
+          'use_legacy_ui',
+          'use_wide_ui',
+        ]);
         this.setState({
-          isCompactViewEnabled: !useWideUi,
+          mode: this.modeFromStored(stored.use_legacy_ui, stored.use_wide_ui),
         });
       }
       handleStorageChange(changes, areaName) {
-        if (areaName !== 'local' || !changes.use_wide_ui) {
+        if (
+          areaName !== 'local'
+          || (!changes.use_legacy_ui && !changes.use_wide_ui)
+        ) {
           return;
         }
-        let newWideUi =
-          typeof changes.use_wide_ui.newValue == 'boolean'
-            ? changes.use_wide_ui.newValue
-            : !1;
-        this.setState({
-          isCompactViewEnabled: !newWideUi,
+        this.syncMode();
+      }
+      handleChange(event) {
+        let mode = event.target.value;
+        browser.storage.local.set({
+          use_legacy_ui: mode === 'legacy',
+          use_wide_ui: mode === 'compact_large',
         });
       }
-      setCompactView() {
-        return event => {
-          browser.storage.local.set({
-            use_wide_ui: !event.target.checked,
-          });
-        };
-      }
       render() {
+        let options = [
+          ['legacy', 'Legacy UI'],
+          ['compact', 'Compact UI'],
+          ['compact_large', 'Compact UI Larger'],
+        ];
         return React.createElement(
           'div',
           {
-            style: {
-              marginBottom: '1rem',
-            },
+            className: 'form-group row',
           },
           React.createElement(
             'label',
             {
-              style: {
-                alignItems: 'center',
-                cursor: 'pointer',
-                display: 'inline-flex',
-              },
+              className: 'col-3 col-form-label',
+              htmlFor: 'ui-mode-select',
             },
-            React.createElement('input', {
-              checked: this.state.isCompactViewEnabled,
-              onChange: this.setCompactView(),
-              style: {
-                marginRight: '8px',
+            'User interface',
+          ),
+          React.createElement(
+            'div',
+            {
+              className: 'col-8',
+            },
+            React.createElement(
+              'select',
+              {
+                className: 'form-control',
+                id: 'ui-mode-select',
+                value: this.state.mode,
+                onChange: this.handleChange,
+                style: {
+                  width: '12em',
+                },
               },
-              type: 'checkbox',
-            }),
-            'Compact view in the new UI',
+              options.map(([optionValue, optionName]) =>
+                React.createElement(
+                  'option',
+                  {
+                    key: optionValue,
+                    value: optionValue,
+                  },
+                  optionName,
+                ),
+              ),
+            ),
           ),
         );
       }
@@ -2490,7 +2493,6 @@
               'div',
               null,
               React.createElement(CopyButton, null),
-              React.createElement(UseNewUIButton, null),
               React.createElement(AddonInfoPanel, null),
               React.createElement(PlatformInfoPanel, null),
               React.createElement(CoAppInfoPanel, null),
@@ -2506,7 +2508,7 @@
           {
             tabId: 'appearance',
           },
-          React.createElement(CompactViewCheckbox, null),
+          React.createElement(UiModeSelect, null),
           React.createElement(WehParam, {
             prefName: 'titleMode',
           }),
@@ -2618,6 +2620,12 @@
           }),
           React.createElement(WehParam, {
             prefName: 'hlsDownloadAsM2ts',
+          }),
+          React.createElement(WehParam, {
+            prefName: 'ffmpegLogLevel',
+          }),
+          React.createElement(WehParam, {
+            prefName: 'stripSegmentWrapper',
           }),
           React.createElement(WehParam, {
             prefName: 'hlsRememberPrevLiveChunks',

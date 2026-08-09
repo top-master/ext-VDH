@@ -2875,6 +2875,7 @@ async function initSettingsPage() {
         let exportSettingsBtn = clickTarget.closest('#button-export-settings');
         let importSettingsBtn = clickTarget.closest('#button-import-settings');
         let reloadAddonBtn = clickTarget.closest('#button-reload-addon');
+        let moreSettingsBtn = clickTarget.closest('#button-more-settings');
         let changeDirectoryBtn = clickTarget.closest(
           '#button-download-directory-change',
         );
@@ -2930,6 +2931,10 @@ async function initSettingsPage() {
           (translateBtn
             && browserRuntimeApi.default.tabs.create({
               url: '/content2/locales.html',
+            }),
+          moreSettingsBtn
+            && browserRuntimeApi.default.tabs.create({
+              url: '/content/settings.html',
             }),
           licenseGetBtn
             && browserRuntimeApi.default.tabs.create({

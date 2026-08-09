@@ -1238,6 +1238,30 @@
   "weh_prefs_description_hitsGotoTab": {
     "message": "Display a link in entry description to switch to video tab"
   },
+  "weh_prefs_description_ffmpegLogLevel": {
+    "message": "How much detail the Companion App's ffmpeg records in the download log. 'Warning' surfaces the real reason a download fails; 'Silent' logs the least."
+  },
+  "weh_prefs_ffmpegLogLevel_option_silent": {
+    "message": "Silent"
+  },
+  "weh_prefs_ffmpegLogLevel_option_error": {
+    "message": "Errors only"
+  },
+  "weh_prefs_ffmpegLogLevel_option_warning": {
+    "message": "Warnings (recommended)"
+  },
+  "weh_prefs_ffmpegLogLevel_option_info": {
+    "message": "Info"
+  },
+  "weh_prefs_ffmpegLogLevel_option_verbose": {
+    "message": "Verbose"
+  },
+  "weh_prefs_ffmpegLogLevel_option_debug": {
+    "message": "Debug"
+  },
+  "weh_prefs_description_stripSegmentWrapper": {
+    "message": "Some sites hide their video segments behind a fake image header to block downloads. When enabled, the Companion App strips that header so the video can be saved."
+  },
   "weh_prefs_description_hlsDownloadAsM2ts": {
     "message": "Download HLS streams as M2TS"
   },
@@ -1474,6 +1498,12 @@
   },
   "weh_prefs_label_hitsGotoTab": {
     "message": "Display Go-to-Tab handle"
+  },
+  "weh_prefs_label_ffmpegLogLevel": {
+    "message": "ffmpeg log level"
+  },
+  "weh_prefs_label_stripSegmentWrapper": {
+    "message": "Unwrap disguised video segments"
   },
   "weh_prefs_label_hlsDownloadAsM2ts": {
     "message": "HLS as M2TS"
@@ -1816,6 +1846,9 @@
   },
   "v9_short_help": {
     "message": "help?"
+  },
+  "v9_settings_button_more": {
+    "message": "More settings…"
   },
   "v9_settings_button_reset": {
     "message": "Reset settings"

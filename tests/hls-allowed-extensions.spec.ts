@@ -40,6 +40,18 @@ describe('HLS forceHls args (background/main.js)', () => {
     );
   });
 
+  it('hands the coapp the version-gated log-level and de-wrap directives (ffmpeg args only)', () => {
+    // Gated to coapp >= 2.0.23 (the build that understands them); ffmpeg args
+    // only, never shellArgs.
+    expect(src).toContain("'-vdh_loglevel'");
+    expect(src).toContain("'-vdh_strip_wrapper'");
+    expect(src).toContain(
+      "coappCompareSemVer(coappKnownVersion, '2.0.23') >= 0",
+    );
+    // the directives never leak into the shell-preview args
+    expect(/shellArgs\.push\(\s*'-vdh_/.test(src)).toBe(false);
+  });
+
   it('never forces -f hls without also allowing all extensions', () => {
     // Any remaining bare `push('-f', 'hls')` (i.e. not followed by the
     // allowed-extensions args) would reintroduce the fake-extension failure.
