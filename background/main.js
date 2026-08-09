@@ -10452,13 +10452,23 @@ const store = createStore(
   function updateHit(hit) {
     console.warn('TODO converter.updateHit');
   }
-  function stripBrotliEncoding(headers) {
+  // ffmpeg's HTTP client can inflate gzip and deflate but not brotli ("br") or
+  // zstd. Forwarding the browser's "Accept-Encoding: gzip, deflate, br, zstd"
+  // verbatim lets a CDN answer brotli- or zstd-compressed, and ffmpeg then reads
+  // the still-compressed bytes as garbage - failing an HLS manifest or segment
+  // with "Invalid data found when processing input". Drop only the codings ffmpeg
+  // cannot decode (matching the base token, so weighted forms like "zstd;q=1.0"
+  // are caught too) and keep the rest.
+  function stripUnsupportedEncodings(headers) {
     (headers || []).forEach(header => {
       if (header.name == 'Accept-Encoding') {
         header.value = header.value
           .split(',')
           .map(enc => enc.trim())
-          .filter(enc => enc != 'br')
+          .filter(enc => {
+            let coding = enc.split(';')[0].trim().toLowerCase();
+            return coding != 'br' && coding != 'zstd';
+          })
           .join(', ');
       }
     });
@@ -10507,13 +10517,74 @@ const store = createStore(
       'ffmpeg exited with code ' + exitCode + ' without any diagnostic output'
     );
   }
+  // Add a plain-language diagnosis for the convert failures that are easy to
+  // misread as a downloader bug, or return null. All three below reach ffmpeg as
+  // a bare "Invalid data found" / "does not contain any stream", so name the real
+  // cause when the stderr reveals it. ffmpeg hides some of it at `-loglevel error`
+  // (e.g. the HTTP status, the segment codec), so this is best effort and degrades
+  // to an honest generic note. It is only ever attached alongside the raw stderr,
+  // never in place of it.
+  function diagnoseConvertStderr(stderr, context) {
+    let text = String(stderr || '');
+    // 1. ffmpeg reads the segments as images, not video. Some sites glue a small
+    //    fake image header (e.g. a tiny PNG) onto real TS/MP4 segments, or serve
+    //    an image decoy, so only their own player can assemble the stream (it
+    //    plays from a blob/MSE URL). Either way ffmpeg cannot unwrap it.
+    if (
+      /Could not find codec parameters/i.test(text)
+      && /Video:\s*(?:png|mjpeg|bmp|gif|image)/i.test(text)
+    ) {
+      return (
+        'ffmpeg reads the segments as images, not video. The site is wrapping or'
+        + ' obfuscating its segments (they play only through its own player, via'
+        + ' a blob/MSE URL), so this downloader cannot unwrap them here.'
+      );
+    }
+    // 2. The segments could not be fetched: a down or blocking host.
+    let segMatch = text.match(
+      /(?:Error when loading (?:first )?segment|Failed to open segment)[^']*'?(https?:\/\/[^'\s]+)?/i,
+    );
+    let statusMatch = text.match(/HTTP error (\d{3})|Server returned (\d{3})/i);
+    if (segMatch || statusMatch) {
+      let host =
+        segMatch && segMatch[1] && segMatch[1].match(/https?:\/\/([^/]+)/);
+      let status = statusMatch && (statusMatch[1] || statusMatch[2]);
+      return (
+        'The HLS manifest loaded but its media segments could not be fetched'
+        + (host ? ' from ' + host[1] : '')
+        + (status ? ' (HTTP ' + status + ')' : '')
+        + '. The segment host looks down or blocking - a server-side issue, not'
+        + ' a download error. Retrying may pick a different host.'
+      );
+    }
+    // 3. An HLS input that yielded no playable stream, with the cause hidden at
+    //    error level - unreachable segments or a non-video decoy.
+    let isHls =
+      (context && context.forceHls)
+      || (context
+        && typeof context.videoUrl == 'string'
+        && /\.m3u8(?:\?|$)/i.test(context.videoUrl))
+      || /\bhls\b/i.test(text);
+    if (isHls && /does not contain any stream/i.test(text)) {
+      return (
+        'ffmpeg opened the HLS playlist but found no playable video or audio'
+        + ' stream: the segments were either unreachable or not real media (some'
+        + ' sites serve decoy image/ad segments). This is a source-side problem,'
+        + ' not a download bug.'
+      );
+    }
+    return null;
+  }
   // Build the error for a failed convert/download. The one-line reason goes in
   // the message; the call context - the media URLs, the output file, ffmpeg's
   // exit code and its stderr - is attached through injectErrorDetails, the same
   // path RPC failures use, so it renders as a details block (and picks up the
   // ambient CoApp version) rather than being hand-formatted per throw site.
+  // A best-effort diagnosis is added as an extra field when one applies; it never
+  // replaces the raw stderr or any other detail.
   function convertFailureError(label, result, context) {
     let error = new Error(label + ': ' + describeConvertFailure(result));
+    let diagnosis = diagnoseConvertStderr(result && result.stderr, context);
     injectErrorDetails(
       error,
       Object.assign(
@@ -10522,6 +10593,7 @@ const store = createStore(
           exitCode: result && result.exitCode,
           response: result && result.stderr,
         },
+        diagnosis ? { diagnosis: diagnosis } : null,
         context,
       ),
     );
@@ -10547,7 +10619,7 @@ const store = createStore(
       });
   }
   function info(url, parse = !1, headers = []) {
-    stripBrotliEncoding(headers);
+    stripUnsupportedEncodings(headers);
     if (converterDebug) {
       console.log('probe', url, parse, headers);
     }
@@ -10732,7 +10804,7 @@ const store = createStore(
   async function sideDownloadMPD(url, videoTrack, audioTrack, options) {
     let ffmpegArgs = [];
     let shellArgs = [];
-    stripBrotliEncoding(options.headers);
+    stripUnsupportedEncodings(options.headers);
     if (options.headers && options.headers.length) {
       ffmpegArgs.push('-headers');
       ffmpegArgs.push(
@@ -10824,7 +10896,7 @@ const store = createStore(
         && (ffmpegArgs.push('-i', qrPath), shellArgs.push('-i', qrPath)),
       options.headers && options.headers.length > 0)
     ) {
-      stripBrotliEncoding(options.headers);
+      stripUnsupportedEncodings(options.headers);
       let headerStr = options.headers
         .map(
           header => `${header.name}: ${header.value}\r
@@ -10842,8 +10914,29 @@ const store = createStore(
           + "'",
       );
     }
+    // The HLS retry also passes "-allowed_extensions ALL". Some sites disguise
+    // their segments with rotating fake extensions (.jpg, .css, .png, ...) as an
+    // anti-download measure, and ffmpeg's HLS demuxer refuses any segment whose
+    // extension is not in its whitelist - reporting it as "Invalid data found
+    // when processing input". Allowing every extension lets those streams mux.
+    // It is gated to the forceHls branch because the option belongs to the HLS
+    // demuxer: passing it when the input is not HLS aborts with "Option
+    // allowed_extensions not found".
+    //
+    // As a last resort it also hands the coapp "-vdh_proxy_fallback invalid-data"
+    // - a coapp-private directive (stripped before ffmpeg runs) that lets an
+    // "Invalid data" failure retry through the HTTP/2 media proxy. It is gated to
+    // coapp >= 2.0.22, the first build that understands and strips it; an older
+    // coapp would pass it to ffmpeg and abort, so it is never sent to one. This
+    // is not added to shellArgs, which mirrors a plain ffmpeg command.
     if (
-      (forceHls && (ffmpegArgs.push('-f', 'hls'), shellArgs.push('-f', 'hls')),
+      (forceHls
+        && (ffmpegArgs.push('-f', 'hls', '-allowed_extensions', 'ALL'),
+        shellArgs.push('-f', 'hls', '-allowed_extensions', 'ALL'),
+        coappKnownVersion
+          && coappCompareSemVer
+          && coappCompareSemVer(coappKnownVersion, '2.0.22') >= 0
+          && ffmpegArgs.push('-vdh_proxy_fallback', 'invalid-data')),
       videoUrl
         && (ffmpegArgs.push('-i', videoUrl),
         shellArgs.push('-i', `'${videoUrl}'`)),

@@ -17,7 +17,7 @@ function loadInfo(converterCoapp: any, appLog: any) {
   expect(end).toBeGreaterThan(start);
   // eslint-disable-next-line no-new-func
   return new Function(
-    'stripBrotliEncoding',
+    'stripUnsupportedEncodings',
     'converterDebug',
     'converterCoapp',
     'appLog',
