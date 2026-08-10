@@ -31,7 +31,18 @@ const ignoredDirectories = new Set([
 // Standalone, unreferenced files that ship nothing and are exempt from the
 // naming rule. tests/main.js is an older formatted main.js variant kept by the
 // repo owner; the extension loads background/main.js, not this copy.
-const ignoredRelativePaths = new Set(['tests/main.js']);
+// content/content-libs.js is a GENERATED esbuild bundle (source is content/src/,
+// which this audit still scans) - its output carries esbuild's own short-named
+// runtime helpers (cb/e/to), so the generated artifact itself is exempt.
+const ignoredRelativePaths = new Set([
+  'tests/main.js',
+  'content/content-libs.js',
+]);
+
+// Directories holding VERBATIM vendored third-party sources. content/src/weh is a
+// byte-for-byte copy of the upstream weh framework (see content/src/weh/README.md);
+// its names are upstream's, not ours to rename, so the whole tree is exempt.
+const ignoredRelativePrefixes = ['content/src/weh/'];
 
 // A name of one or two characters is always too short. A three-character name
 // is reported unless it is a real word and/or a standard abbreviation listed
@@ -267,8 +278,10 @@ function scanNamingConflicts(): NamingConflictReport {
   const report = new NamingConflictReport();
 
   for (const filePath of collectCodeFiles(repoRoot)) {
+    const relativePath = normalizePath(path.relative(repoRoot, filePath));
     if (
-      ignoredRelativePaths.has(normalizePath(path.relative(repoRoot, filePath)))
+      ignoredRelativePaths.has(relativePath)
+      || ignoredRelativePrefixes.some(prefix => relativePath.startsWith(prefix))
     ) {
       continue;
     }

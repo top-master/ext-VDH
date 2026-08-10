@@ -6,6 +6,10 @@
 /vendor/
 /3rd-party/
 
+# Verbatim vendored weh framework (content/src/weh) - kept byte-for-byte identical
+# to upstream, so prettier must not reformat it. See content/src/weh/README.md.
+/content/src/weh/
+
 # Unreferenced minified test fixture (also excluded from the naming audit).
 /tests/main.js
 

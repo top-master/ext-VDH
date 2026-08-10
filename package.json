@@ -6,7 +6,9 @@
     "test": "vitest run",
     "test:cleanroom": "vitest run tests/cleanroom-audit.ts",
     "format": "node 3rd-party/automation/run-format.js",
-    "postinstall": "node 3rd-party/automation/git-dependency-reuse.js"
+    "postinstall": "node 3rd-party/automation/git-dependency-reuse.js",
+    "build:content": "node 3rd-party/automation/build-content.mjs",
+    "build": "yarn build:content"
   },
   "gitDependencies": {
     "git@github.com:top-master/XDTestUtils-JS.git": {
@@ -17,6 +19,7 @@
   "devDependencies": {
     "@types/jsdom": "^28.0.0",
     "@types/node": "^25.6.0",
+    "esbuild": "^0.28.2",
     "jsdom": "^28.1.0",
     "prettier": "3.8.1",
     "typescript": "^6.0.2",

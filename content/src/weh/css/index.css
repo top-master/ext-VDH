@@ -1,0 +1,7 @@
+/* Aggregates the vendored weh framework CSS (see ./README is in ../). Order
+   mirrors the original bundle: form states, header, sticky-header-footer, then
+   the native-messaging shell. */
+@import "./weh-form-states.css";
+@import "./weh-header.css";
+@import "./weh-shf.css";
+@import "./weh-natmsg-shell.scss";

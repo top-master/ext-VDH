@@ -1,4 +1,17 @@
-@import "content-libs.css";
+@import "../vendor/bootstrap.css";
+@import "content-weh.css";
+
+/*
+ * The weh framework CSS (imported above from content-weh.css) is vendored
+ * verbatim, and upstream positions the panel icon on .weh-header-title. Our
+ * WehHeader (content/src/weh -> weh-header.js) instead sets the icon as a
+ * background-image on the <header> element itself, so position it here.
+ */
+header {
+  background-repeat: no-repeat;
+  background-position: 6px 6px;
+  background-size: 30px;
+}
 button:focus,
 a:focus, a:active,
 button::-moz-focus-inner,

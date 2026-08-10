@@ -77,6 +77,14 @@ const ignoredRelativePaths = new Set([
   path.join('.gitignore'),
 ]);
 
+// content/src/weh is a VERBATIM vendored copy of the upstream weh framework
+// (MPL-2.0). MPL section 3.3 requires its author/license notices be preserved, so
+// the `@author Michel Gutierrez` headers and the attribution README here must stay
+// even though "Michel Gutierrez"/"VDH" are otherwise blocked. This is source-only:
+// the build strips these header comments (esbuild legalComments:'none'), so the
+// shipped content-libs.js carries none of them - verified separately.
+const ignoredRelativePrefixes = [path.join('content', 'src', 'weh') + path.sep];
+
 function collectTextFiles(directoryPath: string): string[] {
   const collectedFiles: string[] = [];
 
@@ -95,7 +103,12 @@ function collectTextFiles(directoryPath: string): string[] {
 
     if (textFileExtensions.has(path.extname(directoryEntry.name))) {
       const relativePath = path.relative(repoRoot, fullPath);
-      if (!ignoredRelativePaths.has(relativePath)) {
+      if (
+        !ignoredRelativePaths.has(relativePath)
+        && !ignoredRelativePrefixes.some(prefix =>
+          relativePath.startsWith(prefix),
+        )
+      ) {
         collectedFiles.push(fullPath);
       }
     }

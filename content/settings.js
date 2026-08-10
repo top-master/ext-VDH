@@ -2007,53 +2007,17 @@
         });
       }
       render() {
-        let options = [
-          ['legacy', 'Legacy UI'],
-          ['compact', 'Compact UI'],
-          ['compact_large', 'Compact UI Larger'],
-        ];
-        return React.createElement(
-          'div',
-          {
-            className: 'form-group row',
-          },
-          React.createElement(
-            'label',
-            {
-              className: 'col-3 col-form-label',
-              htmlFor: 'ui-mode-select',
-            },
-            'User interface',
-          ),
-          React.createElement(
-            'div',
-            {
-              className: 'col-8',
-            },
-            React.createElement(
-              'select',
-              {
-                className: 'form-control',
-                id: 'ui-mode-select',
-                value: this.state.mode,
-                onChange: this.handleChange,
-                style: {
-                  width: '12em',
-                },
-              },
-              options.map(([optionValue, optionName]) =>
-                React.createElement(
-                  'option',
-                  {
-                    key: optionValue,
-                    value: optionValue,
-                  },
-                  optionName,
-                ),
-              ),
-            ),
-          ),
-        );
+        return React.createElement(ComboBoxLabeled, {
+          id: 'ui-mode-select',
+          label: 'User interface',
+          value: this.state.mode,
+          onChange: this.handleChange,
+          options: [
+            { value: 'legacy', name: 'Legacy UI' },
+            { value: 'compact', name: 'Compact UI' },
+            { value: 'compact_large', name: 'Compact UI Larger' },
+          ],
+        });
       }
     };
     function rpcCaller(...rpcArgs) {
