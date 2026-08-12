@@ -291,6 +291,49 @@ function scanNamingConflicts(): NamingConflictReport {
   return report;
 }
 
+// The content-libs de-mangling once left a family of TYPE-PREFIXED bindings -
+// `fnVar_qm`, `localVar_A5`, `helperFn_gr`, `lookupTable_G4`, `listVar_O5`,
+// `paramArg_eM`, `numVar_H4`, ... - where a type prefix plus a mangled 1-2 char
+// suffix stands in for a real name. That is exactly the "prefix/suffix to hide a
+// missing name" anti-pattern: name the binding for what it IS instead
+// (`reactModule`, `translateReducer`, `browserRef`, ...). The generated bundle
+// (ignoredRelativePaths) and the verbatim vendored weh tree
+// (ignoredRelativePrefixes) are exempt like above; nothing else may carry them.
+const bannedNamePatterns: { label: string; pattern: RegExp }[] = [
+  {
+    label: 'mangled type-prefixed binding',
+    pattern:
+      /\b(?:fnVar|localVar|helperFn|lookupTable|listVar|paramArg|numVar|objHelper|strVar)_.{1,5}\b/g,
+  },
+];
+
+/** Finds banned mangled binding names across the audited source files. */
+function scanBannedNames(): string[] {
+  // This audit file necessarily spells the banned pattern out (comment + regex),
+  // so it excludes itself, the way cleanroom-audit.ts does for its patterns.
+  const selfPath = normalizePath(path.relative(repoRoot, fileURLToPath(import.meta.url)));
+  const offenders: string[] = [];
+  for (const filePath of collectCodeFiles(repoRoot)) {
+    const relativePath = normalizePath(path.relative(repoRoot, filePath));
+    if (
+      relativePath === selfPath
+      || ignoredRelativePaths.has(relativePath)
+      || ignoredRelativePrefixes.some(prefix => relativePath.startsWith(prefix))
+    ) {
+      continue;
+    }
+    const content = fs.readFileSync(filePath, 'utf8');
+    for (const { label, pattern } of bannedNamePatterns) {
+      const matches = content.match(pattern);
+      if (matches) {
+        const unique = [...new Set(matches)].sort();
+        offenders.push(`${relativePath}: ${label}: ${unique.join(', ')}`);
+      }
+    }
+  }
+  return offenders;
+}
+
 describe('naming audit', () => {
   it('contains no one-, two-, or unlisted three-character binding names in the repository code', () => {
     const report = scanNamingConflicts();
@@ -303,6 +346,15 @@ describe('naming audit', () => {
           '',
           formatEntries(report.namingConflicts),
         ].join('\n'),
+      );
+    }
+  });
+
+  it('contains no leftover mangled type-prefixed binding names in the source', () => {
+    const offenders = scanBannedNames();
+    if (offenders.length > 0) {
+      throw new Error(
+        ['Banned mangled binding names:', '', ...offenders].join('\n'),
       );
     }
   });

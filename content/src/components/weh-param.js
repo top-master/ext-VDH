@@ -5,20 +5,18 @@ import { weh } from '../core/runtime.js';
 import { ComboBox } from './combo-box.js';
 
 // Aliases so the mangled class body (kept verbatim) resolves to the module imports.
-const localVar_qt = { default: React };
-const localVar_Rn = { default: weh };
-const localVar_Xr = connect;
-const helperFn_gr = bindActionCreators;
-let numVar_H4 = 1;
+const reactRef = { default: React };
+const wehRef = { default: weh };
+let nextParamIndex = 1;
 
-export const WehParam = localVar_Xr(
+export const WehParam = connect(
   (valueRef, entryRef) => ({
     initialValue: valueRef.prefs.values[entryRef.prefName] || '',
     value: valueRef.prefs.current[entryRef.prefName] || '',
     spec: valueRef.prefs.specs[entryRef.prefName] || {},
   }),
   valueRef =>
-    helperFn_gr(
+    bindActionCreators(
       {
         updateCurrentPref: (entryRef, resultRef) => ({
           type: 'PREF_UPDATE',
@@ -31,14 +29,14 @@ export const WehParam = localVar_Xr(
       valueRef,
     ),
 )(
-  class extends localVar_qt.default.Component {
+  class extends reactRef.default.Component {
     constructor(valueRef) {
       super(valueRef);
       this.state = {
         value: this.props.value || '',
         spec: this.props.spec,
       };
-      this.paramIndex = numVar_H4++;
+      this.paramIndex = nextParamIndex++;
       this.handleChange = this.handleChange.bind(this);
     }
     componentWillReceiveProps(valueRef) {
@@ -80,7 +78,7 @@ export const WehParam = localVar_Xr(
         valueRef = this.state.value;
       }
       if (entryRef) {
-        return localVar_Rn.default.unsafe_prefs.isValid(
+        return wehRef.default.unsafe_prefs.isValid(
           this.props.prefName,
           valueRef,
         );
@@ -121,7 +119,7 @@ export const WehParam = localVar_Xr(
         case 'string':
         case 'integer':
         case 'float':
-          return localVar_qt.default.createElement('input', {
+          return reactRef.default.createElement('input', {
             className: 'form-control',
             value: this.state.value,
             onChange: this.handleChange,
@@ -133,10 +131,10 @@ export const WehParam = localVar_Xr(
             },
           });
         case 'boolean':
-          return localVar_qt.default.createElement(
+          return reactRef.default.createElement(
             'div',
             null,
-            localVar_qt.default.createElement('input', {
+            reactRef.default.createElement('input', {
               className: 'form-control',
               checked: this.state.value,
               onChange: this.handleChange,
@@ -151,7 +149,7 @@ export const WehParam = localVar_Xr(
           if ((this.state.spec.choices || []).length === 0) {
             return !1;
           }
-          return localVar_qt.default.createElement(ComboBox, {
+          return reactRef.default.createElement(ComboBox, {
             value: this.state.value,
             onChange: this.handleChange,
             id: 'weh-param-' + this.paramIndex,
@@ -161,12 +159,12 @@ export const WehParam = localVar_Xr(
       }
     }
     render() {
-      return localVar_qt.default.createElement(
+      return reactRef.default.createElement(
         'div',
         {
           className: 'form-group row ' + this.formGroupClass(),
         },
-        localVar_qt.default.createElement(
+        reactRef.default.createElement(
           'label',
           {
             className: 'col-3 col-form-label',
@@ -174,7 +172,7 @@ export const WehParam = localVar_Xr(
           },
           this.state.spec.label,
         ),
-        localVar_qt.default.createElement(
+        reactRef.default.createElement(
           'div',
           {
             className: 'col-8',
@@ -182,12 +180,12 @@ export const WehParam = localVar_Xr(
           (this.props.renderInput && this.props.renderInput.call(this))
             || this.renderInput(),
           this.state.spec.description
-            && localVar_qt.default.createElement(
+            && reactRef.default.createElement(
               'div',
               {
                 className: 'form-text',
               },
-              localVar_qt.default.createElement(
+              reactRef.default.createElement(
                 'em',
                 null,
                 this.state.spec.description,

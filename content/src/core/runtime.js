@@ -62,471 +62,68 @@ import wehContentModule from '../weh/weh-content.js';
       esmMod,
     )
   );
-  var fnVar_wg = defineCommonjsModule((exports, module) => {
+  var reactVendorModule = defineCommonjsModule((exports, module) => {
     'use strict';
 
     module.exports = window.React; // de-vendored: React 16.14.0 loaded from content/vendor/react-v16.js
   });
-  var fnVar_gt = defineCommonjsModule((paramArg_eM, paramArg__g) => {
+  var reactModule = defineCommonjsModule((exports, module) => {
     'use strict';
 
-    paramArg__g.exports = fnVar_wg();
+    module.exports = reactVendorModule();
   });
-  var fnVar_Xl = defineCommonjsModule((exports, module) => {
+  var reactDomModule = defineCommonjsModule((exports, module) => {
     'use strict';
 
     module.exports = window.ReactDOM; // de-vendored: loaded from content/vendor/
   });
-  var fnVar_kn = defineCommonjsModule((exports, module) => {
+  var propTypesModule = defineCommonjsModule((exports, module) => {
     'use strict';
 
     module.exports = window.PropTypes; // de-vendored: loaded from content/vendor/
   });
-  var fnVar_E0 = defineCommonjsModule((exports, module) => {
+  var reduxLoggerModule = defineCommonjsModule((exports, module) => {
     'use strict';
 
     module.exports = window.reduxLogger; // de-vendored: loaded from content/vendor/
   });
-  var fnVar_T0 = defineCommonjsModule((exports, module) => {
+  var classNamesModule = defineCommonjsModule((exports, module) => {
     'use strict';
 
     module.exports = window.classNames; // de-vendored: loaded from content/vendor/
   });
-  var fnVar_k_ = defineCommonjsModule((exports, module) => {
+  var deepEqualModule = defineCommonjsModule((exports, module) => {
     'use strict';
 
     module.exports = window.__vdhDeepEqual; // de-vendored: loaded from content/vendor/
   });
-  var fnVar_qm = defineCommonjsModule((exports, module) => {
+  var reactJsonModule = defineCommonjsModule((exports, module) => {
     'use strict';
 
     module.exports = window.__vdhReactJson; // de-vendored: loaded from content/vendor/
   });
-  var fnVar_wc = defineCommonjsModule((exports, module) => {
+  var wehCoreFactory = defineCommonjsModule((exports, module) => {
     module.exports = wehCoreModule;
   });
-  var fnVar_Qm = defineCommonjsModule((exports, module) => {
+  var wehRpcFactory = defineCommonjsModule((exports, module) => {
     module.exports = wehRpcModule;
   });
-  var fnVar_jn = defineCommonjsModule((exports, module) => {
+  var wehContentFactory = defineCommonjsModule((exports, module) => {
     module.exports = wehContentModule;
   });
-  var localVar_A5 = toEsm(fnVar_gt());
-  var localVar_j5 = toEsm(fnVar_Xl());
-  function helperFn_Hi(valueRef, entryRef) {
-    helperFn_Hi = Object.setPrototypeOf
-      ? Object.setPrototypeOf.bind()
-      : function (countRef, optionRef) {
-          countRef.__proto__ = optionRef;
-          return countRef;
-        };
-    return helperFn_Hi(valueRef, entryRef);
-  }
-  var localVar_Do = toEsm(fnVar_gt());
-  var localVar_Rr = toEsm(fnVar_kn());
-  var localVar_Ki = localVar_Rr.default.shape({
-    trySubscribe: localVar_Rr.default.func.isRequired,
-    tryUnsubscribe: localVar_Rr.default.func.isRequired,
-    notifyNestedSubs: localVar_Rr.default.func.isRequired,
-    isSubscribed: localVar_Rr.default.func.isRequired,
-  });
-  var localVar_Gi = localVar_Rr.default.shape({
-    subscribe: localVar_Rr.default.func.isRequired,
-    dispatch: localVar_Rr.default.func.isRequired,
-    getState: localVar_Rr.default.func.isRequired,
-  });
-  var localVar_vM = typeof localVar_Do.default.forwardRef < 'u';
-  var localVar_Qd = window.ReactRedux.Provider;
-  function helperFn_Ir() {
-    helperFn_Ir = Object.assign
-      ? Object.assign.bind()
-      : function (valueRef) {
-          for (var entryRef = 1; entryRef < arguments.length; entryRef++) {
-            var resultRef = arguments[entryRef];
-            for (var countRef in resultRef) {
-              if (Object.prototype.hasOwnProperty.call(resultRef, countRef)) {
-                valueRef[countRef] = resultRef[countRef];
-              }
-            }
-          }
-          return valueRef;
-        };
-    return helperFn_Ir.apply(this, arguments);
-  }
-  var localVar_Fo = toEsm(fnVar_gt());
-  var localVar_rp = null;
-  var lookupTable_e0 = {
-    notify: function () {},
-  };
-  function helperFn_g3() {
-    var valueRef = [];
-    var entryRef = [];
-    return {
-      clear: function () {
-        entryRef = localVar_rp;
-        valueRef = localVar_rp;
-      },
-      notify: function () {
-        for (
-          var countRef = (valueRef = entryRef), optionRef = 0;
-          optionRef < countRef.length;
-          optionRef++
-        ) {
-          countRef[optionRef]();
-        }
-      },
-      get: function () {
-        return entryRef;
-      },
-      subscribe: function (countRef) {
-        var optionRef = !0;
-        if (entryRef === valueRef) {
-          entryRef = valueRef.slice();
-        }
-        entryRef.push(countRef);
-        return function () {
-          if (!(!optionRef || valueRef === localVar_rp)) {
-            optionRef = !1;
-            if (entryRef === valueRef) {
-              entryRef = valueRef.slice();
-            }
-            entryRef.splice(entryRef.indexOf(countRef), 1);
-          }
-        };
-      },
-    };
-  }
-  var fnVar_t0 = (function () {
-    function valueRef(resultRef, countRef, optionRef) {
-      this.store = resultRef;
-      this.parentSub = countRef;
-      this.onStateChange = optionRef;
-      this.unsubscribe = null;
-      this.listeners = lookupTable_e0;
-    }
-    var entryRef = valueRef.prototype;
-    entryRef.addNestedSub = function (countRef) {
-      this.trySubscribe();
-      return this.listeners.subscribe(countRef);
-    };
-    entryRef.notifyNestedSubs = function () {
-      this.listeners.notify();
-    };
-    entryRef.isSubscribed = function () {
-      return !!this.unsubscribe;
-    };
-    entryRef.trySubscribe = function () {
-      if (!this.unsubscribe) {
-        this.unsubscribe = this.parentSub
-          ? this.parentSub.addNestedSub(this.onStateChange)
-          : this.store.subscribe(this.onStateChange);
-        this.listeners = helperFn_g3();
-      }
-    };
-    entryRef.tryUnsubscribe = function () {
-      if (this.unsubscribe) {
-        this.unsubscribe();
-        this.unsubscribe = null;
-        this.listeners.clear();
-        this.listeners = lookupTable_e0;
-      }
-    };
-    return valueRef;
-  })();
-  var localVar_h3 = typeof localVar_Fo.default.forwardRef < 'u';
-  var lookupTable_v3 = {};
-  var localVar_x3 = Object.prototype.hasOwnProperty;
-  var strVar_w3 =
-    typeof global == 'object' && global && global.Object === Object && global;
-  var localVar_a0 = strVar_w3;
-  var strVar__3 =
-    typeof self == 'object' && self && self.Object === Object && self;
-  var localVar_k3 = localVar_a0 || strVar__3 || Function('return this')();
-  var localVar_l0 = localVar_k3;
-  var localVar_E3 = localVar_l0.Symbol;
-  var localVar_zo = localVar_E3;
-  var localVar_s0 = Object.prototype;
-  var localVar_T3 = localVar_s0.hasOwnProperty;
-  var localVar_S3 = localVar_s0.toString;
-  var localVar_Yi = localVar_zo ? localVar_zo.toStringTag : void 0;
-  function helperFn_O3(valueRef) {
-    var entryRef = localVar_T3.call(valueRef, localVar_Yi);
-    var resultRef = valueRef[localVar_Yi];
-    try {
-      valueRef[localVar_Yi] = void 0;
-      var countRef = !0;
-    } catch {}
-    var optionRef = localVar_S3.call(valueRef);
-    if (countRef) {
-      if (entryRef) {
-        valueRef[localVar_Yi] = resultRef;
-      } else {
-        delete valueRef[localVar_Yi];
-      }
-    }
-    return optionRef;
-  }
-  var localVar_c0 = helperFn_O3;
-  var localVar_P3 = Object.prototype;
-  var localVar_C3 = localVar_P3.toString;
-  function helperFn_N3(valueRef) {
-    return localVar_C3.call(valueRef);
-  }
-  var localVar_u0 = helperFn_N3;
-  var strVar_M3 = '[object Null]';
-  var strVar_A3 = '[object Undefined]';
-  var localVar_d0 = localVar_zo ? localVar_zo.toStringTag : void 0;
-  function helperFn_j3(valueRef) {
-    if (valueRef == null) {
-      if (valueRef === void 0) {
-        return strVar_A3;
-      } else {
-        return strVar_M3;
-      }
-    } else {
-      if (localVar_d0 && localVar_d0 in Object(valueRef)) {
-        return localVar_c0(valueRef);
-      } else {
-        return localVar_u0(valueRef);
-      }
-    }
-  }
-  var localVar_p0 = helperFn_j3;
-  function helperFn_R3(valueRef, entryRef) {
-    return function (resultRef) {
-      return valueRef(entryRef(resultRef));
-    };
-  }
-  var localVar_f0 = helperFn_R3;
-  var objHelper_I3 = localVar_f0(Object.getPrototypeOf, Object);
-  var localVar_m0 = objHelper_I3;
-  function helperFn_D3(valueRef) {
-    return valueRef != null && typeof valueRef == 'object';
-  }
-  var localVar_g0 = helperFn_D3;
-  var strVar_F3 = '[object Object]';
-  var localVar_z3 = Function.prototype;
-  var localVar_L3 = Object.prototype;
-  var localVar_h0 = localVar_z3.toString;
-  var localVar_$3 = localVar_L3.hasOwnProperty;
-  var localVar_q3 = localVar_h0.call(Object);
-  function helperFn_B3(valueRef) {
-    if (!localVar_g0(valueRef) || localVar_p0(valueRef) != strVar_F3) {
-      return !1;
-    }
-    var entryRef = localVar_m0(valueRef);
-    if (entryRef === null) {
-      return !0;
-    }
-    var resultRef =
-      localVar_$3.call(entryRef, 'constructor') && entryRef.constructor;
-    return (
-      typeof resultRef == 'function'
-      && resultRef instanceof resultRef
-      && localVar_h0.call(resultRef) == localVar_q3
-    );
-  }
-  var localVar_b0 = helperFn_B3;
-  function helperFn_np(valueRef) {
-    var entryRef;
-    var resultRef = valueRef.Symbol;
-    if (typeof resultRef == 'function') {
-      if (resultRef.observable) {
-        entryRef = resultRef.observable;
-      } else {
-        entryRef = resultRef('observable');
-        resultRef.observable = entryRef;
-      }
-    } else {
-      entryRef = '@@observable';
-    }
-    return entryRef;
-  }
-  var localVar_Lo;
-  if (typeof self < 'u') {
-    localVar_Lo = self;
-  } else {
-    if (typeof window < 'u') {
-      localVar_Lo = window;
-    } else {
-      if (typeof global < 'u') {
-        localVar_Lo = global;
-      } else {
-        if (typeof module < 'u') {
-          localVar_Lo = module;
-        } else {
-          localVar_Lo = Function('return this')();
-        }
-      }
-    }
-  }
-  var localVar_U3 = helperFn_np(localVar_Lo);
-  var localVar_op = localVar_U3;
-  var lookupTable_Xi = {
-    INIT: '@@redux/INIT',
-  };
-  function helperFn_Ji(valueRef, entryRef, resultRef) {
-    return window.Redux.createStore.apply(this, arguments); // de-vendored
-  }
-  function helperFn_ds(valueRef) {
-    return window.Redux.combineReducers.apply(this, arguments); // de-vendored
-  }
-  function helperFn_gr(valueRef, entryRef) {
-    return window.Redux.bindActionCreators.apply(this, arguments); // de-vendored
-  }
-  var objHelper_V3 =
-    Object.assign
-    || function (valueRef) {
-      for (var entryRef = 1; entryRef < arguments.length; entryRef++) {
-        var resultRef = arguments[entryRef];
-        for (var countRef in resultRef) {
-          if (Object.prototype.hasOwnProperty.call(resultRef, countRef)) {
-            valueRef[countRef] = resultRef[countRef];
-          }
-        }
-      }
-      return valueRef;
-    };
-  function helperFn_fs() {
-    return window.Redux.applyMiddleware.apply(this, arguments); // de-vendored
-  }
-  function helperFn_Zi(valueRef) {
-    return function (resultRef, countRef) {
-      var optionRef = valueRef(resultRef, countRef);
-      function indexRef() {
-        return optionRef;
-      }
-      indexRef.dependsOnOwnProps = !1;
-      return indexRef;
-    };
-  }
-  function helperFn_y0(valueRef) {
-    if (
-      valueRef.dependsOnOwnProps !== null
-      && valueRef.dependsOnOwnProps !== void 0
-    ) {
-      return !!valueRef.dependsOnOwnProps;
-    } else {
-      return valueRef.length !== 1;
-    }
-  }
-  function helperFn_ms(valueRef, entryRef) {
-    return function (countRef, optionRef) {
-      var indexRef = optionRef.displayName;
-      var accumulator = function (configRef, unitRef) {
-        if (accumulator.dependsOnOwnProps) {
-          return accumulator.mapToProps(configRef, unitRef);
-        } else {
-          return accumulator.mapToProps(configRef);
-        }
-      };
-      accumulator.dependsOnOwnProps = !0;
-      accumulator.mapToProps = function (configRef, unitRef) {
-        accumulator.mapToProps = valueRef;
-        accumulator.dependsOnOwnProps = helperFn_y0(valueRef);
-        var propRef = accumulator(configRef, unitRef);
-        if (typeof propRef == 'function') {
-          accumulator.mapToProps = propRef;
-          accumulator.dependsOnOwnProps = helperFn_y0(propRef);
-          propRef = accumulator(configRef, unitRef);
-        }
-        return propRef;
-      };
-      return accumulator;
-    };
-  }
-  function helperFn_K3(valueRef) {
-    if (typeof valueRef == 'function') {
-      return helperFn_ms(valueRef, 'mapDispatchToProps');
-    } else {
-      return void 0;
-    }
-  }
-  function helperFn_G3(valueRef) {
-    if (valueRef) {
-      return void 0;
-    } else {
-      return helperFn_Zi(function (entryRef) {
-        return {
-          dispatch: entryRef,
-        };
-      });
-    }
-  }
-  function helperFn_Q3(valueRef) {
-    if (valueRef && typeof valueRef == 'object') {
-      return helperFn_Zi(function (entryRef) {
-        return helperFn_gr(valueRef, entryRef);
-      });
-    } else {
-      return void 0;
-    }
-  }
-  var listVar_x0 = [helperFn_K3, helperFn_G3, helperFn_Q3];
-  function helperFn_Y3(valueRef) {
-    if (typeof valueRef == 'function') {
-      return helperFn_ms(valueRef, 'mapStateToProps');
-    } else {
-      return void 0;
-    }
-  }
-  function helperFn_X3(valueRef) {
-    if (valueRef) {
-      return void 0;
-    } else {
-      return helperFn_Zi(function () {
-        return {};
-      });
-    }
-  }
-  var listVar_w0 = [helperFn_Y3, helperFn_X3];
-  function helperFn_J3(valueRef, entryRef, resultRef) {
-    return helperFn_Ir({}, resultRef, valueRef, entryRef);
-  }
-  function helperFn_Z3(valueRef) {
-    return function (resultRef, countRef) {
-      var optionRef = countRef.displayName;
-      var indexRef = countRef.pure;
-      var accumulator = countRef.areMergedPropsEqual;
-      var listRef = !1;
-      var configRef;
-      return function (propRef, funcRef, coordY) {
-        var outputRef = valueRef(propRef, funcRef, coordY);
-        if (listRef) {
-          if (!indexRef || !accumulator(outputRef, configRef)) {
-            configRef = outputRef;
-          }
-        } else {
-          listRef = !0;
-          configRef = outputRef;
-        }
-        return configRef;
-      };
-    };
-  }
-  function helperFn_eE(valueRef) {
-    if (typeof valueRef == 'function') {
-      return helperFn_Z3(valueRef);
-    } else {
-      return void 0;
-    }
-  }
-  function helperFn_tE(valueRef) {
-    if (valueRef) {
-      return void 0;
-    } else {
-      return function () {
-        return helperFn_J3;
-      };
-    }
-  }
-  var listVar__0 = [helperFn_eE, helperFn_tE];
-  var localVar_Xr = window.ReactRedux.connect;
-  var localVar_R5 = toEsm(fnVar_E0());
-  var localVar_I5 = toEsm(fnVar_k_());
-  var localVar_D5 = toEsm(fnVar_qm());
-  var fnVar_Vm = function (valueRef, entryRef) {
-    fnVar_Vm =
+  var reactEsm = toEsm(reactModule());
+  var reactDomEsm = toEsm(reactDomModule());
+  var reactReduxProvider = window.ReactRedux.Provider;
+  var reduxCreateStore = window.Redux.createStore;
+  var reduxCombineReducers = window.Redux.combineReducers;
+  var reduxApplyMiddleware = window.Redux.applyMiddleware;
+  var reduxBindActionCreators = window.Redux.bindActionCreators;
+  var reactReduxConnect = window.ReactRedux.connect;
+  var reduxLoggerEsm = toEsm(reduxLoggerModule());
+  var deepEqualEsm = toEsm(deepEqualModule());
+  var reactJsonEsm = toEsm(reactJsonModule());
+  var extendStatics = function (valueRef, entryRef) {
+    extendStatics =
       Object.setPrototypeOf
       || ({
         __proto__: [],
@@ -541,17 +138,16 @@ import wehContentModule from '../weh/weh-content.js';
           }
         }
       };
-    return fnVar_Vm(valueRef, entryRef);
+    return extendStatics(valueRef, entryRef);
   };
-  var fnVar_xc = window.__vdhReactResizeDetector;
-  var localVar_qt = toEsm(fnVar_gt());
-  var localVar_Rn = toEsm(fnVar_jn());
-  function helperFn_k5(valueRef, entryRef) {
+  var reactResizeDetector = window.__vdhReactResizeDetector;
+  var wehContentEsm = toEsm(wehContentFactory());
+  function prefsSettingsReducer(valueRef, entryRef) {
     if (!valueRef) {
       valueRef = {
-        values: localVar_Rn.default.unsafe_prefs.getAll(),
-        current: localVar_Rn.default.unsafe_prefs.getAll(),
-        specs: localVar_Rn.default.unsafe_prefs.getSpecs(),
+        values: wehContentEsm.default.unsafe_prefs.getAll(),
+        current: wehContentEsm.default.unsafe_prefs.getAll(),
+        specs: wehContentEsm.default.unsafe_prefs.getSpecs(),
         flags: {},
       };
       valueRef.flags = resultRef();
@@ -573,7 +169,7 @@ import wehContentModule from '../weh/weh-content.js';
             countRef.isModified = !0;
           }
           if (
-            !localVar_Rn.default.unsafe_prefs.isValid(optionRef, accumulator)
+            !wehContentEsm.default.unsafe_prefs.isValid(optionRef, accumulator)
           ) {
             countRef.isValid = !1;
           }
@@ -623,13 +219,13 @@ import wehContentModule from '../weh/weh-content.js';
         valueRef.flags = resultRef();
         break;
       case 'PREFS_SAVE':
-        localVar_Rn.default.unsafe_prefs.assign(valueRef.current);
+        wehContentEsm.default.unsafe_prefs.assign(valueRef.current);
         break;
     }
     return valueRef;
   }
-  var localVar_ri = toEsm(fnVar_wc());
-  var listVar_O5 = [
+  var wehCoreEsm = toEsm(wehCoreFactory());
+  var translationKeys = [
     '__MSG_appDesc_',
     'Bytes',
     'GB',
@@ -1313,12 +909,12 @@ import wehContentModule from '../weh/weh-content.js';
     'v9_date_x_days_ago',
     'v9_date_long_ago',
   ];
-  var lookupTable_G4 = {
-    keys: listVar_O5,
+  var translateInitialState = {
+    keys: translationKeys,
     custom: {},
     modified: {},
   };
-  function helperFn_C5(valueRef = lookupTable_G4, entryRef) {
+  function translateReducer(valueRef = translateInitialState, entryRef) {
     switch (entryRef.type) {
       case 'UPDATE_STRING':
         valueRef = Object.assign({}, valueRef, {
@@ -1345,7 +941,7 @@ import wehContentModule from '../weh/weh-content.js';
             message: valueRef.custom[countRef],
           };
         });
-        localVar_ri.browser.storage.local.set({
+        wehCoreEsm.browser.storage.local.set({
           wehI18nCustom: resultRef,
         });
         break;
@@ -1378,28 +974,28 @@ import wehContentModule from '../weh/weh-content.js';
     }
     return valueRef;
   }
-  var localVar_og = toEsm(fnVar_Qm());
-  var localVar_ig = toEsm(fnVar_jn());
-  window.React = localVar_A5.default;
-  window.render = localVar_j5.render;
-  window.Provider = localVar_Qd;
-  window.connect = localVar_Xr;
-  window.applyMiddleware = helperFn_fs;
-  window.createStore = helperFn_Ji;
-  window.combineReducers = helperFn_ds;
-  window.bindActionCreators = helperFn_gr;
-  window.logger = localVar_R5.default;
-  window.deepEqual = localVar_I5.default;
-  window.ReactJson = localVar_D5.default;
-  window.ReactResizeDetector = fnVar_xc;
-  window.prefsSettingsReducer = helperFn_k5;
-  window.translateReducer = helperFn_C5;
-  window.weh = localVar_ig.default;
+  var wehRpcEsm = toEsm(wehRpcFactory());
+  var wehEsm = toEsm(wehContentFactory());
+  window.React = reactEsm.default;
+  window.render = reactDomEsm.render;
+  window.Provider = reactReduxProvider;
+  window.connect = reactReduxConnect;
+  window.applyMiddleware = reduxApplyMiddleware;
+  window.createStore = reduxCreateStore;
+  window.combineReducers = reduxCombineReducers;
+  window.bindActionCreators = reduxBindActionCreators;
+  window.logger = reduxLoggerEsm.default;
+  window.deepEqual = deepEqualEsm.default;
+  window.ReactJson = reactJsonEsm.default;
+  window.ReactResizeDetector = reactResizeDetector;
+  window.prefsSettingsReducer = prefsSettingsReducer;
+  window.translateReducer = translateReducer;
+  window.weh = wehEsm.default;
   // reactstrap is now an external vendor script (window.Reactstrap, loaded from
   // /vendor/reactstrap.js); fan its components out onto window like before.
   Object.keys(window.Reactstrap || {}).forEach(valueRef => {
     window[valueRef] = window.Reactstrap[valueRef];
   });
-  window.browser = localVar_ig.default.browser;
-export const weh = localVar_ig.default;
-export const wehRpc = localVar_og.default;
+  window.browser = wehEsm.default.browser;
+export const weh = wehEsm.default;
+export const wehRpc = wehRpcEsm.default;

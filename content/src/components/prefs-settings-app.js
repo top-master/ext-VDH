@@ -1,17 +1,17 @@
 import React from '../externals/react.js';
 
-const localVar_qt = { default: React };
+const reactRef = { default: React };
 
-export const PrefsSettingsApp = class extends localVar_qt.default.Component {
+export const PrefsSettingsApp = class extends reactRef.default.Component {
   render() {
-    return localVar_qt.default.createElement(
+    return reactRef.default.createElement(
       'form',
       {
         className: 'weh-shf',
         noValidate: !0,
         onSubmit: entryRef => entryRef.preventDefault(),
       },
-      localVar_qt.default.createElement('div', null, this.props.children),
+      reactRef.default.createElement('div', null, this.props.children),
     );
   }
 };

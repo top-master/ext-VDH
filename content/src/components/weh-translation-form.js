@@ -5,16 +5,12 @@ import { weh } from '../core/runtime.js';
 import { WehHeader } from './weh-header.js';
 import { WehTranslationRow } from './weh-translation-row.js';
 
-const localVar_Be = { default: React };
-const localVar_Xr = connect;
-const helperFn_gr = bindActionCreators;
-const localVar_ri = { browser: weh.browser };
-const localVar_io = WehHeader;
-const fnVar_Y4 = WehTranslationRow;
+const reactRef = { default: React };
+const browserRef = { browser: weh.browser };
 // One-shot flag: restore the persisted custom translations on first mount.
-let localVar_P5 = !0;
+let restorePending = !0;
 
-function helperFn_Q4(valueRef) {
+function isEmpty(valueRef) {
   var entryRef = !0;
   for (var resultRef in valueRef) {
     if (valueRef.hasOwnProperty(resultRef)) {
@@ -25,15 +21,15 @@ function helperFn_Q4(valueRef) {
   return entryRef;
 }
 
-export const WehTranslationForm = localVar_Xr(
+export const WehTranslationForm = connect(
   valueRef => ({
     keys: valueRef.translate.keys || [],
     custom: valueRef.translate.custom,
-    isModified: !helperFn_Q4(valueRef.translate.modified),
+    isModified: !isEmpty(valueRef.translate.modified),
     modified: valueRef.translate.modified,
   }),
   valueRef =>
-    helperFn_gr(
+    bindActionCreators(
       {
         save: () => ({
           type: 'SAVE',
@@ -56,7 +52,7 @@ export const WehTranslationForm = localVar_Xr(
       valueRef,
     ),
 )(
-  class extends localVar_Be.default.Component {
+  class extends reactRef.default.Component {
     constructor(valueRef) {
       super(valueRef);
       this.state = {
@@ -77,9 +73,9 @@ export const WehTranslationForm = localVar_Xr(
     }
     componentWillMount(valueRef) {
       var entryRef = this;
-      if (localVar_P5) {
-        localVar_P5 = !1;
-        localVar_ri.browser.storage.local
+      if (restorePending) {
+        restorePending = !1;
+        browserRef.browser.storage.local
           .get('wehI18nCustom')
           .then(resultRef => {
             let countRef = resultRef.wehI18nCustom;
@@ -115,7 +111,7 @@ export const WehTranslationForm = localVar_Xr(
         ) {
           return !0;
         }
-        var countRef = localVar_ri.browser.i18n
+        var countRef = browserRef.browser.i18n
           .getMessage(entryRef, valueRef.argPlaceHolders)
           .toLowerCase();
         return countRef.indexOf(resultRef) >= 0;
@@ -191,7 +187,7 @@ export const WehTranslationForm = localVar_Xr(
           valueRef.props.modified,
         );
         var resultRef = new Blob([JSON.stringify(entryRef, null, 4)]);
-        localVar_ri.browser.downloads.download({
+        browserRef.browser.downloads.download({
           url: window.URL.createObjectURL(resultRef),
           filename: 'messages.json',
           saveAs: !0,
@@ -205,22 +201,22 @@ export const WehTranslationForm = localVar_Xr(
         .filter(this.typeFilter())
         .sort()
         .map(entryRef =>
-          localVar_Be.default.createElement(fnVar_Y4, {
+          reactRef.default.createElement(WehTranslationRow, {
             key: entryRef,
             keyName: entryRef,
           }),
         );
-      return localVar_Be.default.createElement(
+      return reactRef.default.createElement(
         'form',
         {
           className: 'weh-shf',
           onChange: this.handleChange,
           role: 'form',
         },
-        localVar_Be.default.createElement(
-          localVar_io,
+        reactRef.default.createElement(
+          WehHeader,
           null,
-          localVar_Be.default.createElement(
+          reactRef.default.createElement(
             'div',
             {
               className: 'col-sm-4 float-sm-right',
@@ -229,7 +225,7 @@ export const WehTranslationForm = localVar_Xr(
                 marginTop: '2px',
               },
             },
-            localVar_Be.default.createElement('input', {
+            reactRef.default.createElement('input', {
               className: 'form-control',
               onChange: this.handleSearchChange,
               placeholder: 'Filter...',
@@ -239,21 +235,21 @@ export const WehTranslationForm = localVar_Xr(
             '\xA0',
             this.props.missingTags
               && this.props.missingTags.length > 0
-              && localVar_Be.default.createElement(
+              && reactRef.default.createElement(
                 'select',
                 {
                   className: 'form-control',
                   value: this.state.filter,
                   onChange: this.changedFilter(),
                 },
-                localVar_Be.default.createElement(
+                reactRef.default.createElement(
                   'option',
                   {
                     value: 'all',
                   },
                   'All strings',
                 ),
-                localVar_Be.default.createElement(
+                reactRef.default.createElement(
                   'option',
                   {
                     value: 'missing',
@@ -263,52 +259,52 @@ export const WehTranslationForm = localVar_Xr(
               ),
           ),
         ),
-        localVar_Be.default.createElement(
+        reactRef.default.createElement(
           'main',
           null,
-          localVar_Be.default.createElement(
+          reactRef.default.createElement(
             'div',
             {
               className: 'container',
             },
-            localVar_Be.default.createElement('section', null, valueRef),
+            reactRef.default.createElement('section', null, valueRef),
           ),
         ),
-        localVar_Be.default.createElement(
+        reactRef.default.createElement(
           'footer',
           null,
-          localVar_Be.default.createElement(
+          reactRef.default.createElement(
             'div',
             {
               style: {
                 display: 'none',
               },
             },
-            localVar_Be.default.createElement('input', {
+            reactRef.default.createElement('input', {
               type: 'file',
               accept: 'application/json',
               ref: this.setFileInput(),
             }),
           ),
           this.props.footerExtra
-            && localVar_Be.default.createElement(
+            && reactRef.default.createElement(
               'div',
               {
                 className: 'form-control translation-footer-extra',
               },
               this.props.footerExtra,
             ),
-          localVar_Be.default.createElement(
+          reactRef.default.createElement(
             'div',
             {
               className: 'btn-toolbar justify-content-end',
             },
-            localVar_Be.default.createElement(
+            reactRef.default.createElement(
               'div',
               {
                 className: 'btn-group pull-right',
               },
-              localVar_Be.default.createElement(
+              reactRef.default.createElement(
                 'button',
                 {
                   type: 'button',
@@ -317,7 +313,7 @@ export const WehTranslationForm = localVar_Xr(
                 },
                 'Import',
               ),
-              localVar_Be.default.createElement(
+              reactRef.default.createElement(
                 'button',
                 {
                   type: 'button',
@@ -326,7 +322,7 @@ export const WehTranslationForm = localVar_Xr(
                 },
                 'Export',
               ),
-              localVar_Be.default.createElement(
+              reactRef.default.createElement(
                 'button',
                 {
                   type: 'button',
@@ -335,7 +331,7 @@ export const WehTranslationForm = localVar_Xr(
                 },
                 'Reset',
               ),
-              localVar_Be.default.createElement(
+              reactRef.default.createElement(
                 'button',
                 {
                   type: 'button',
@@ -345,7 +341,7 @@ export const WehTranslationForm = localVar_Xr(
                 },
                 'Cancel',
               ),
-              localVar_Be.default.createElement(
+              reactRef.default.createElement(
                 'button',
                 {
                   type: 'button',

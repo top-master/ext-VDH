@@ -2,12 +2,12 @@ import React from '../externals/react.js';
 import ReactJson from '../externals/react-json.js';
 import { wehRpc } from '../core/runtime.js';
 
-const localVar__t = { default: React };
-const localVar_M5 = { default: ReactJson };
-const localVar_og = { default: wehRpc };
+const reactRef = { default: React };
+const reactJsonRef = { default: ReactJson };
+const wehRpcRef = { default: wehRpc };
 
 export const NativeMessagingShell = class
-  extends localVar__t.default.Component
+  extends reactRef.default.Component
 {
   constructor(entryRef) {
     super(entryRef);
@@ -83,7 +83,7 @@ export const NativeMessagingShell = class
           method: this.state.method,
           args: this.state.args,
         }),
-        localVar_og.default
+        wehRpcRef.default
           .call(this.props.proxyFnName, this.state.method, ...this.state.args)
           .then(countRef => {
             console.info('result', countRef);
@@ -146,12 +146,12 @@ export const NativeMessagingShell = class
   renderJson(entryRef) {
     switch (typeof entryRef) {
       case 'undefined':
-        return localVar__t.default.createElement(
+        return reactRef.default.createElement(
           'div',
           {
             className: 'react-json-view scalar-view',
           },
-          localVar__t.default.createElement(
+          reactRef.default.createElement(
             'em',
             null,
             'no explicit return value',
@@ -160,7 +160,7 @@ export const NativeMessagingShell = class
       case 'number':
       case 'string':
       case 'boolean':
-        return localVar__t.default.createElement(
+        return reactRef.default.createElement(
           'div',
           {
             className: 'react-json-view scalar-view',
@@ -168,7 +168,7 @@ export const NativeMessagingShell = class
           JSON.stringify(entryRef),
         );
     }
-    return localVar__t.default.createElement(localVar_M5.default, {
+    return reactRef.default.createElement(reactJsonRef.default, {
       src: entryRef,
       name: null,
       collapsed: !0,
@@ -184,14 +184,14 @@ export const NativeMessagingShell = class
   render() {
     var entryRef = this;
     var resultRef = this.state.items.map(countRef =>
-      localVar__t.default.createElement(
+      reactRef.default.createElement(
         'div',
         {
           key: countRef.key,
           className: 'natmsgsh-item',
         },
         countRef.type == 'call'
-          && localVar__t.default.createElement(
+          && reactRef.default.createElement(
             'div',
             {
               className: 'natmsgsh-call',
@@ -199,12 +199,12 @@ export const NativeMessagingShell = class
             entryRef.entryString(countRef),
           ),
         countRef.type == 'result'
-          && localVar__t.default.createElement(
+          && reactRef.default.createElement(
             'div',
             {
               className: 'natmsgsh-return',
             },
-            localVar__t.default.createElement('span', {
+            reactRef.default.createElement('span', {
               className: 'natmsgsh-ret-marker',
               dangerouslySetInnerHTML: {
                 __html: '&rArr;',
@@ -213,12 +213,12 @@ export const NativeMessagingShell = class
             entryRef.renderJson(countRef.result),
           ),
         countRef.type == 'error'
-          && localVar__t.default.createElement(
+          && reactRef.default.createElement(
             'div',
             {
               className: 'natmsgsh-error',
             },
-            localVar__t.default.createElement('span', {
+            reactRef.default.createElement('span', {
               className: 'natmsgsh-ret-marker',
               dangerouslySetInnerHTML: {
                 __html: '&rArr;',
@@ -228,18 +228,18 @@ export const NativeMessagingShell = class
           ),
       ),
     );
-    return localVar__t.default.createElement(
+    return reactRef.default.createElement(
       'div',
       {
         className: 'natmsgsh',
       },
-      localVar__t.default.createElement(
+      reactRef.default.createElement(
         'div',
         {
           className: 'natmsgsh-result',
         },
         resultRef,
-        localVar__t.default.createElement('div', {
+        reactRef.default.createElement('div', {
           style: {
             float: 'left',
             clear: 'both',
@@ -249,12 +249,12 @@ export const NativeMessagingShell = class
           },
         }),
       ),
-      localVar__t.default.createElement(
+      reactRef.default.createElement(
         'div',
         {
           className: 'natmsgsh-input',
         },
-        localVar__t.default.createElement('input', {
+        reactRef.default.createElement('input', {
           ref: countRef => (this.input = countRef),
           className: this.state.className,
           onChange: this.handleChange,
@@ -262,17 +262,17 @@ export const NativeMessagingShell = class
           onKeyDown: this.handleKeyDown,
           type: 'text',
         }),
-        localVar__t.default.createElement(
+        reactRef.default.createElement(
           'button',
           {
             className: 'btn btn-outline-secondary',
             onClick: () => {
-              localVar_og.default.call(this.props.proxyFnName, 'quit');
+              wehRpcRef.default.call(this.props.proxyFnName, 'quit');
             },
           },
           this.props.exitAppText || 'Exit app',
         ),
-        localVar__t.default.createElement(
+        reactRef.default.createElement(
           'button',
           {
             className: 'btn btn-outline-secondary',

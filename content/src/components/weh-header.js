@@ -1,20 +1,20 @@
 import React from '../externals/react.js';
 import { weh } from '../core/runtime.js';
 
-const localVar_Oa = { default: React };
-const localVar_kc = { default: weh };
-const localVar_K4 = localVar_kc.default.browser.runtime.getManifest();
+const reactRef = { default: React };
+const wehRef = { default: weh };
+const manifest = wehRef.default.browser.runtime.getManifest();
 
-export const WehHeader = class extends localVar_Oa.default.Component {
+export const WehHeader = class extends reactRef.default.Component {
   close() {
-    localVar_kc.default.rpc.call('closePanel', localVar_kc.default.uiName);
+    wehRef.default.rpc.call('closePanel', wehRef.default.uiName);
   }
   render() {
     var entryRef;
     if (this.props.title) {
       entryRef = this.props.title;
     } else {
-      entryRef = localVar_K4.name;
+      entryRef = manifest.name;
     }
     var resultRef = {
       backgroundImage:
@@ -22,20 +22,20 @@ export const WehHeader = class extends localVar_Oa.default.Component {
         + (this.props.image || '/content2/icons/stable-color.png')
         + ')',
     };
-    return localVar_Oa.default.createElement(
+    return reactRef.default.createElement(
       'header',
       {
         className: 'weh-header',
         style: resultRef,
       },
-      localVar_Oa.default.createElement(
+      reactRef.default.createElement(
         'span',
         {
           className: 'weh-header-title',
         },
         entryRef,
       ),
-      localVar_Oa.default.createElement(
+      reactRef.default.createElement(
         'span',
         {
           className: 'weh-header-close',

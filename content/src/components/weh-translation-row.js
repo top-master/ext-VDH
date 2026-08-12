@@ -3,12 +3,10 @@ import { connect } from '../externals/react-redux.js';
 import { bindActionCreators } from '../externals/redux.js';
 import { weh } from '../core/runtime.js';
 
-const localVar_Be = { default: React };
-const localVar_Xr = connect;
-const helperFn_gr = bindActionCreators;
-const localVar_ri = { browser: weh.browser };
+const reactRef = { default: React };
+const browserRef = { browser: weh.browser };
 
-export const WehTranslationRow = localVar_Xr(
+export const WehTranslationRow = connect(
   (valueRef, entryRef) => {
     var resultRef = valueRef.translate.custom[entryRef.keyName];
     var countRef = resultRef;
@@ -21,7 +19,7 @@ export const WehTranslationRow = localVar_Xr(
     };
   },
   valueRef =>
-    helperFn_gr(
+    bindActionCreators(
       {
         updateString: (entryRef, resultRef) => ({
           type: 'UPDATE_STRING',
@@ -34,7 +32,7 @@ export const WehTranslationRow = localVar_Xr(
       valueRef,
     ),
 )(
-  class extends localVar_Be.default.Component {
+  class extends reactRef.default.Component {
     constructor(valueRef) {
       super(valueRef);
       this.state = {
@@ -45,7 +43,7 @@ export const WehTranslationRow = localVar_Xr(
       var resultRef = new Array(entryRef)
         .fill('')
         .map((countRef, optionRef) => '$ARG' + (optionRef + 1) + '$');
-      this.defaultString = localVar_ri.browser.i18n.getMessage(
+      this.defaultString = browserRef.browser.i18n.getMessage(
         this.props.keyName,
         resultRef,
       );
@@ -77,12 +75,12 @@ export const WehTranslationRow = localVar_Xr(
       this.props.updateString(this.props.keyName, entryRef);
     }
     render() {
-      return localVar_Be.default.createElement(
+      return reactRef.default.createElement(
         'div',
         {
           className: 'form-group row ' + this.formClass('has-'),
         },
-        localVar_Be.default.createElement(
+        reactRef.default.createElement(
           'label',
           {
             className: 'col-4 col-form-label',
@@ -91,24 +89,24 @@ export const WehTranslationRow = localVar_Xr(
           },
           this.props.keyName,
         ),
-        localVar_Be.default.createElement(
+        reactRef.default.createElement(
           'div',
           {
             className: 'col-8',
           },
-          localVar_Be.default.createElement('input', {
+          reactRef.default.createElement('input', {
             className: 'form-control',
             onChange: this.handleChange,
             value: this.state.value,
             type: 'text',
             id: 'weh-' + this.props.keyName,
           }),
-          localVar_Be.default.createElement(
+          reactRef.default.createElement(
             'div',
             {
               className: 'form-text',
             },
-            localVar_Be.default.createElement('em', null, this.defaultString),
+            reactRef.default.createElement('em', null, this.defaultString),
           ),
         ),
       );

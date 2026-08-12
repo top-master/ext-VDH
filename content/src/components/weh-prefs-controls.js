@@ -3,17 +3,15 @@ import { connect } from '../externals/react-redux.js';
 import { bindActionCreators } from '../externals/redux.js';
 import { weh } from '../core/runtime.js';
 
-const localVar_qt = { default: React };
-const localVar_Rn = { default: weh };
-const localVar_Xr = connect;
-const helperFn_gr = bindActionCreators;
+const reactRef = { default: React };
+const wehRef = { default: weh };
 
-export const WehPrefsControls = localVar_Xr(
+export const WehPrefsControls = connect(
   valueRef => ({
     flags: valueRef.prefs.flags || {},
   }),
   valueRef =>
-    helperFn_gr(
+    bindActionCreators(
       {
         save: () => ({
           type: 'PREFS_SAVE',
@@ -28,14 +26,14 @@ export const WehPrefsControls = localVar_Xr(
       valueRef,
     ),
 )(
-  class extends localVar_qt.default.Component {
+  class extends reactRef.default.Component {
     render() {
       return this.props.render.call(this);
     }
   },
 );
-function helperFn_S5(valueRef) {
-  let entryRef = localVar_Rn.default.unsafe_prefs;
+function listenPrefsImpl(valueRef) {
+  let entryRef = wehRef.default.unsafe_prefs;
   entryRef.on(
     '',
     {
@@ -63,4 +61,4 @@ function helperFn_S5(valueRef) {
   );
 }
 
-export const listenPrefs = helperFn_S5;
+export const listenPrefs = listenPrefsImpl;
