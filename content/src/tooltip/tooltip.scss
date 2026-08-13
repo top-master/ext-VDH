@@ -1,0 +1,120 @@
+@use './theme-tokens' as theme;
+@use './theme-rem' as *;
+
+// Tooltip used by the dashboard refresh button.
+.so-tooltip-anchor {
+  position: relative;
+  display: inline-flex;
+}
+
+.so-tooltip {
+  // Fixed (not absolute) so the overlay escapes a clipping/scrolling
+  // ancestor — a dialog body — exactly like the suggestion dropdown. JS
+  // (ViewportMetrics) sets `left`/`top`; this matches `.so-tag-menu`.
+  position: fixed;
+  z-index: 120;
+  width: min(#{rem(300)}, calc(100vw - #{rem(24)}));
+  padding: rem(10) rem(12);
+  border: rem(1) solid theme.$so-tooltip-border;
+  border-radius: rem(6);
+  color: theme.$so-text-tooltip;
+  background: theme.$so-surface-tooltip;
+  box-shadow: theme.$so-shadow-raised;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(var(--so-tooltip-hidden-shift, #{rem(-4)}));
+  transition:
+    opacity 130ms ease-out,
+    transform 130ms ease-out,
+    visibility 130ms ease-out;
+}
+
+// Placement only drives the entrance shift + arrow side now; the actual
+// coordinates are supplied inline by ViewportMetrics (like the dropdown).
+.so-tooltip[data-placement='bottom'] {
+  --so-tooltip-hidden-shift: #{rem(-4)};
+}
+
+.so-tooltip[data-placement='top'] {
+  --so-tooltip-hidden-shift: #{rem(4)};
+}
+
+.so-tooltip::before {
+  content: '';
+  position: absolute;
+  left: var(--so-tooltip-arrow-left, 50%);
+  width: rem(12);
+  height: rem(12);
+  background: theme.$so-surface-tooltip;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.so-tooltip[data-placement='bottom']::before {
+  top: rem(-7);
+  // Only the two outward edges (pointing up at the hovered element)
+  // carry the border; the inner edges blend into the tooltip body.
+  border-top: rem(1) solid theme.$so-tooltip-border;
+  border-left: rem(1) solid theme.$so-tooltip-border;
+}
+
+.so-tooltip[data-placement='top']::before {
+  bottom: rem(-7);
+  // Only the two outward edges (pointing down at the hovered element)
+  // carry the border; the inner edges blend into the tooltip body.
+  border-right: rem(1) solid theme.$so-tooltip-border;
+  border-bottom: rem(1) solid theme.$so-tooltip-border;
+}
+
+.so-tooltip-anchor:hover .so-tooltip,
+.so-tooltip-anchor:focus-within .so-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+// A selectable tooltip stays interactive while shown so the user can move into
+// it and select/copy its text, rather than the panel ignoring the pointer.
+.so-tooltip-selectable {
+  user-select: text;
+}
+
+.so-tooltip-anchor:hover .so-tooltip-selectable,
+.so-tooltip-anchor:focus-within .so-tooltip-selectable {
+  pointer-events: auto;
+}
+
+.so-tooltip-anchor.so-tooltip-hover-only:focus-within .so-tooltip {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(rem(-4));
+}
+
+.so-tooltip-anchor.so-tooltip-hover-only:hover .so-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.so-tooltip-title {
+  margin: 0;
+  font-size: rem(13);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.so-tooltip-copy {
+  margin: rem(4) 0 0;
+  color: theme.$so-text-tooltip-muted;
+  font-size: rem(11);
+  line-height: 1.35;
+}
+
+.so-role-tooltip-list {
+  margin: rem(4) 0 0;
+  padding-left: rem(16);
+}
+
+.so-role-tooltip-list li + li {
+  margin-top: rem(2);
+}

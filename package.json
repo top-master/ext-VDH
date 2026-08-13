@@ -22,6 +22,7 @@
     "esbuild": "^0.28.2",
     "jsdom": "^28.1.0",
     "prettier": "3.8.1",
+    "sass": "^1.102.0",
     "typescript": "^6.0.2",
     "vite": "^8.0.8",
     "vitest": "^4.1.4"

@@ -13,7 +13,9 @@
  *   Edit `content/src/**`, then run:  yarn build:content
  */
 import * as esbuild from 'esbuild';
+import * as sass from 'sass';
 import { execFileSync } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const outfile = 'content/content-libs.js';
@@ -74,6 +76,16 @@ await esbuild.build({
   legalComments: 'none',
 });
 
+// Compile the tooltip SCSS (the vendored tooltip styles + the settings-row
+// warning icon) to content/content-tooltip.css. esbuild cannot run SCSS
+// @use/functions, so dart-sass does it. This output is GENERATED and git-ignored
+// (unlike content-libs.js/content-weh.css) - run this build before packing.
+const tooltipCssOutfile = 'content/content-tooltip.css';
+writeFileSync(
+  tooltipCssOutfile,
+  sass.compile(resolve('content/src/tooltip/index.scss')).css,
+);
+
 // Keep the committed artifacts beautified (repo ethos), same as the
 // hand-maintained sources they replace.
 execFileSync(
@@ -82,4 +94,4 @@ execFileSync(
   { stdio: 'inherit' },
 );
 
-console.log('built ' + outfile + ' + ' + cssOutfile);
+console.log('built ' + outfile + ' + ' + cssOutfile + ' + ' + tooltipCssOutfile);

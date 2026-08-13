@@ -1,0 +1,14 @@
+// Minimal token module for the vendored tooltip: just the rem() helper and the
+// five tooltip tokens its _tooltip.scss references (values from the
+// transcoder-manager theme). theme-rem.scss @forwards rem from here.
+@use 'sass:math';
+
+@function rem($pixels) {
+  @return math.div($pixels, 16) * 1rem;
+}
+
+$so-surface-tooltip: #2f3337 !default;
+$so-tooltip-border: $so-surface-tooltip !default;
+$so-text-tooltip: #ffffff !default;
+$so-text-tooltip-muted: #d9dde0 !default;
+$so-shadow-raised: 0 rem(10) rem(30) rgba(0, 0, 0, 0.18) !default;

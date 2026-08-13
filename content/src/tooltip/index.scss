@@ -1,0 +1,14 @@
+// Build entry for the content tooltip CSS: the vendored tooltip styles plus the
+// settings-row CoApp-version warning icon. Compiled by build-content.mjs (sass)
+// to the generated, git-ignored content/content-tooltip.css.
+@use 'tooltip';
+
+// CoApp-version warning icon that anchors the tooltip in a settings row
+// (content/src/components/coapp-version-warning.js).
+.coapp-version-warning {
+  margin-left: 0.35em;
+  color: #e0a800;
+  cursor: help;
+  font-size: 1em;
+  line-height: 1;
+}

@@ -1,0 +1,2 @@
+// Forwards the shared rem helper without exposing the full token module.
+@forward './theme-tokens' show rem;
