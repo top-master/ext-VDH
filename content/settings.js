@@ -2584,12 +2584,15 @@
           }),
           React.createElement(WehParam, {
             prefName: 'hlsDownloadAsM2ts',
+            coappMinVersion: '2.0.22',
           }),
           React.createElement(WehParam, {
             prefName: 'ffmpegLogLevel',
+            coappMinVersion: '2.0.23',
           }),
           React.createElement(WehParam, {
             prefName: 'stripSegmentWrapper',
+            coappMinVersion: '2.0.23',
           }),
           React.createElement(WehParam, {
             prefName: 'hlsRememberPrevLiveChunks',

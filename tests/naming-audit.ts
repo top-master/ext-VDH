@@ -42,7 +42,7 @@ const ignoredRelativePaths = new Set([
 // Directories holding VERBATIM vendored third-party sources. content/src/weh is a
 // byte-for-byte copy of the upstream weh framework (see content/src/weh/README.md);
 // its names are upstream's, not ours to rename, so the whole tree is exempt.
-const ignoredRelativePrefixes = ['content/src/weh/'];
+const ignoredRelativePrefixes = ['content/src/weh/', 'content/src/tooltip/'];
 
 // A name of one or two characters is always too short. A three-character name
 // is reported unless it is a real word and/or a standard abbreviation listed

@@ -203,6 +203,48 @@ describe('content-libs.js bundle (behavioural parity guard)', () => {
     expect(select.querySelectorAll('option')).toHaveLength(2);
   });
 
+  it('renders a WehParam CoApp-version warning icon + tooltip when coappMinVersion is set', () => {
+    // A version-gated setting passes coappMinVersion; WehParam then renders the
+    // shared warning icon (content/src/components/coapp-version-warning.js), which
+    // wraps the vendored Tooltip (content/src/tooltip). Assert the icon and the
+    // version-filled tooltip message both appear in the row's label.
+    const root = window.document.getElementById('root');
+    const rootReducer = window.combineReducers({
+      prefs: window.prefsSettingsReducer,
+    });
+    const spec = {
+      name: 'smokeGated',
+      type: 'boolean',
+      label: 'Smoke gated',
+      defaultValue: false,
+    };
+    const store = window.createStore(rootReducer, {
+      prefs: {
+        specs: { smokeGated: spec },
+        current: { smokeGated: false },
+        values: { smokeGated: false },
+      },
+    });
+    window.ReactDOM.render(
+      window.React.createElement(
+        window.Provider,
+        { store },
+        window.React.createElement(window.WehParam, {
+          prefName: 'smokeGated',
+          coappMinVersion: '2.0.23',
+        }),
+      ),
+      root,
+    );
+    const icon = root.querySelector('.coapp-version-warning');
+    expect(icon).not.toBeNull();
+    const tooltip = root.querySelector('[role="tooltip"]');
+    expect(tooltip).not.toBeNull();
+    expect(tooltip.textContent).toContain(
+      'This feature is only available in v2.0.23 of the CoApp.',
+    );
+  });
+
   it('renders the connected WehTranslationForm with its WehHeader and rows', () => {
     // WehTranslationForm is connect()-wrapped and renders a WehHeader plus one
     // WehTranslationRow per translation key. Build the store the translation page

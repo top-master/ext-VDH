@@ -1,5 +1,6 @@
 @import "../vendor/bootstrap.css";
 @import "content-weh.css";
+@import "content-tooltip.css";
 
 /*
  * The weh framework CSS (imported above from content-weh.css) is vendored

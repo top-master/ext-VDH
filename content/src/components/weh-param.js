@@ -3,6 +3,7 @@ import { connect } from '../externals/react-redux.js';
 import { bindActionCreators } from '../externals/redux.js';
 import { weh } from '../core/runtime.js';
 import { ComboBox } from './combo-box.js';
+import { CoappVersionWarning } from './coapp-version-warning.js';
 
 // Aliases so the mangled class body (kept verbatim) resolves to the module imports.
 const reactRef = { default: React };
@@ -171,6 +172,10 @@ export const WehParam = connect(
             htmlFor: 'weh-param-' + this.paramIndex,
           },
           this.state.spec.label,
+          this.props.coappMinVersion
+            && reactRef.default.createElement(CoappVersionWarning, {
+              version: this.props.coappMinVersion,
+            }),
         ),
         reactRef.default.createElement(
           'div',

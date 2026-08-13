@@ -32,6 +32,15 @@ const alias = {
   'webextension-polyfill': resolve(
     'content/src/externals/webextension-polyfill.js',
   ),
+  // The vendored tooltip (content/src/tooltip/*, a verbatim copy of the
+  // transcoder-manager component) imports React and its sibling by the paths
+  // that repo used. Map those to the local files so the copies stay verbatim:
+  // `react` -> a namespace shim over the vendor React global; the sibling path
+  // -> the co-located viewport-metrics.
+  react: resolve('content/src/externals/react-namespace.js'),
+  'shared/public/components/viewport-metrics': resolve(
+    'content/src/tooltip/viewport-metrics.ts',
+  ),
 };
 
 await esbuild.build({
@@ -43,7 +52,10 @@ await esbuild.build({
   target: ['es2020'],
   minify: false,
   legalComments: 'none',
+  // .ts/.tsx are auto-detected by extension; the vendored tooltip is TSX, so set
+  // the classic JSX transform (its `import * as React` puts React in scope).
   loader: { '.js': 'js' },
+  jsx: 'transform',
   alias,
 });
 

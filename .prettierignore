@@ -10,6 +10,10 @@
 # to upstream, so prettier must not reformat it. See content/src/weh/README.md.
 /content/src/weh/
 
+# Verbatim vendored Tooltip + ViewportMetrics (content/src/tooltip) - byte-for-byte
+# copies of the transcoder-manager components, so prettier must not reformat them.
+/content/src/tooltip/
+
 # Unreferenced minified test fixture (also excluded from the naming audit).
 /tests/main.js
 
