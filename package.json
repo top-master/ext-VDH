@@ -3,22 +3,26 @@
   "private": true,
   "packageManager": "yarn@4.9.4",
   "scripts": {
+    "postinstall": "node 3rd-party/automation/git-dependency-reuse.js",
+    "install:force": "FORCE_MODE=1 FORCE_COLOR=1 yarn install",
     "test": "vitest run",
     "test:cleanroom": "vitest run tests/cleanroom-audit.ts",
     "format": "node 3rd-party/automation/run-format.js",
-    "postinstall": "node 3rd-party/automation/git-dependency-reuse.js",
     "build:content": "node 3rd-party/automation/build-content.mjs",
-    "build": "yarn build:content"
+    "build": "yarn build:content",
+    "export": "node 3rd-party/automation/export.mjs"
   },
   "gitDependencies": {
     "git@github.com:top-master/XDTestUtils-JS.git": {
       "^1.0.0": "3rd-party/xdtestutils",
+      "@ssh-key": "3rd-party/automation/ssh-key-for-XD-JS.txt",
       "@reuse": "../XDTestUtils-JS/."
     }
   },
   "devDependencies": {
     "@types/jsdom": "^28.0.0",
     "@types/node": "^25.6.0",
+    "crx": "^5.0.1",
     "esbuild": "^0.28.2",
     "jsdom": "^28.1.0",
     "prettier": "3.8.1",

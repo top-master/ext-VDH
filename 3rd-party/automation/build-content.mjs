@@ -14,7 +14,7 @@
  */
 import * as esbuild from 'esbuild';
 import * as sass from 'sass';
-import { execFileSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -88,9 +88,8 @@ writeFileSync(
 
 // Keep the committed artifacts beautified (repo ethos), same as the
 // hand-maintained sources they replace.
-execFileSync(
-  'node',
-  ['node_modules/.bin/prettier', '--write', outfile, cssOutfile],
+execSync(
+  `node node_modules/prettier/bin/prettier.cjs --write ${outfile} ${cssOutfile}`,
   { stdio: 'inherit' },
 );
 
