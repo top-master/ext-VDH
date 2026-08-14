@@ -40,3 +40,6 @@ coverage/
 /content/content-libs.js
 /content/content-weh.css
 /content/content-tooltip.css
+
+# Build/export output (the .crx package, its signing key, and staging).
+/dist/
